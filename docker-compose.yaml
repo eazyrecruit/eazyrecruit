@@ -1,0 +1,75 @@
+version: "3"
+
+services:
+    nginx:
+        image: nginx:alpine
+        container_name: ez_ngx
+        ports:
+            - "80:8000"
+        volumes:
+            - ./nginx:/etc/nginx/conf.d
+        depends_on:
+            - ez_web
+            - ez_engine
+
+    ez_web_build:
+        container_name: ez_web_build
+        build:
+            context: ./web
+
+    ez_web:
+        container_name: ez_web
+        build:
+            context: ./core
+            dockerfile: dockerfile
+        expose:
+            - "8082"
+        environment:
+            - NODE_ENV=dev
+        depends_on:
+            - ez_engine
+            - ez_web_build
+
+
+    ez_engine:
+        container_name: ez_engine
+        image: ez-engine:latest
+        build:
+            context: ./engine
+            dockerfile: dockerfile
+        command: [ "gunicorn", "api.wsgi:application", "--bind","0.0.0.0:8000", "--workers", "3" ]
+        environment:
+            - CORE_SERVICE_PATH=http://ez_web:8082
+        expose:
+            - "8000"
+        depends_on:
+            - mongodb
+            - ez_elastic
+            
+    
+    ez_elastic:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+        container_name: ez_elastic
+        environment:
+            - discovery.type=single-node
+        volumes:
+            - ./elastic_search_data:/usr/share/elasticsearch/data
+        ports:
+            - 9500:9300
+            - 9400:9200
+        depends_on:
+            - mongodb
+
+    mongodb:
+        image: mongo:latest
+        container_name: ez_mongodb
+        environment:
+            - MONGO_DATA_DIR=/data/db
+            - MONGO_INITDB_ROOT_USERNAME=eazyrecruit
+            - MONGO_INITDB_ROOT_PASSWORD=klkjhgbvfcf
+        volumes:
+            - ./elastic_search_db:/data/db
+        ports:
+            - 27019:27017
+    
+    

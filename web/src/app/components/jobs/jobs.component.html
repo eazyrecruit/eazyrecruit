@@ -1,0 +1,86 @@
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header">
+            <div class="row">
+                <div class="col-sm-5  mt-10">
+                    <h3 class="box-title display-inline">All Jobs</h3>
+                </div>
+                <div class="col-sm-7">
+                    <div class="pull-right btn-sm">
+                        <div class="form-inline">
+                            <div class="form-group margin-right-10px">
+                                <button (click)="createJob()" data-toggle="modal" type="button" 
+                                    class="btn btn-sm btn-primary">
+                                    <i class="fa fa-plus"></i> Create
+                                </button>
+                            </div>
+                            <div class="form-group ">
+                                <label for="">Search Job :</label><input type="text" placeholder="Job Title"
+                                    class="form-control margin-left-15px" (keyup)="searchJob($event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content padding-20px-tb plr-15" *ngIf="jobs && jobs.length > 0">
+            <div class="row">
+                <div class="col-md-3" *ngFor="let job of jobs; let jobIndex = index;">
+                    <!-- Widget: user widget style 1 -->
+                    <div class="bg-box box box-widget pad widget-user-2">
+                        <!-- Add the bg color to the header using any of the bg-* classes -->
+                        <div class="widget-user-header">
+                            <!--extra menu-->
+                            <div class="jobs-menu dropdown">
+                                <i class="dropdown-toggle ti-more" data-toggle="dropdown"></i>
+                                <ul class="dropdown-menu jobOption">
+                                    <li class="dropdown-item" (click)="editJob(job._id, jobIndex)">
+                                        <!-- <a routerLink="/jobs/create"> -->
+                                        <a><i class="fa fa-pencil"></i>Edit Job</a>
+                                    </li>
+                                    <li class="dropdown-item" (click)="copyText(url+job.guid)">
+                                        <a>
+                                            <i class="ti-layers"></i> Copy Link</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- /.widget-user-image -->
+                            <h3 class="mt-0 text-large text-ellipsis">
+                                <a [routerLink]="['/jobs/pipeline',job._id]">{{job.title}}</a>
+                            </h3>
+                            <h5>{{job.applicants ? job.applicants.length : '0'}}</h5>
+                            <!-- <h5 class="widget-user-desc text-ellipsis" *ngIf="job.locations">
+                                <span *ngFor="let location of job.locations">
+                                    {{location.city + ' | '}}
+                                </span>
+                            </h5> -->
+                        </div>
+                        <div class="box-footer no-padding">
+                            <div class="list-group-item border-radius-0 bl-red">
+                                <p class="mt-10 text-12 font-weight-600 mb-5 mt-5">
+                                    <span class="tags">Experiance:</span>
+                                    {{job.minExperience}} - {{job.maxExperience}} (Years)
+                                </p>
+                                <!-- <p class="mt-10 text-12 font-weight-600 mb-5 mt-5"> <span class="tags"> Link:</span>
+                                                <a href="">{{url}}{{job.guid}}</a>
+                                            </p> -->
+                                <p class="mt-10 text-12 font-weight-600 mb-5 mt-5">
+                                    <span class="tags">Job Type:</span>
+                                    {{job.type}}
+                                </p>
+                                <p class="mt-10 text-12 font-weight-600 mb-5 mt-5">
+                                    <span class="tags">Published:</span>
+                                    {{job.Published ? 'True': 'False'}}
+                                </p>
+                                <!-- <div>
+                                    <app-select-dropdown [jobPostId]="job.id"></app-select-dropdown>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.widget-user -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

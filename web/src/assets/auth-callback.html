@@ -1,0 +1,50 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <script src="js/jquery-3.2.0.min.js"></script>        
+        <script>            
+            $(document).ready(function () {
+                var code = getParameterByName('code');
+                $.ajax({
+                    type: 'GET',
+                    url: getApiUrl() + '/account/google/callback?code=' + code,
+                    success: function (data) {
+                        if(data.success){
+                            window.localStorage.setItem('Authorization', data.success.data.token);
+                            window.localStorage.setItem('auth_data', JSON.stringify(data.success));
+                            window.localStorage.setItem('userId', data.success.data.id);
+                            window.localStorage.setItem('DisplayName', data.success.data.displayName);    
+                            window.localStorage.removeItem('app');
+                            window.close();                        
+                        }
+                    },
+                    error: function(error){
+                        window.localStorage.removeItem('app');
+                        window.close();
+                    }
+                })
+            })
+
+            function getParameterByName(name, url) {
+                if (!url) url = window.location.href;
+                name = name.replace(/[\[\]]/g, "\\$&");
+                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, " "));
+            }
+
+            function getApiUrl() {
+                var serviceBase = 'http://localhost:8082/api';
+                if (window.location.host=='dev.eazyrecruit.in') {
+                    serviceBase = 'https://dev-api.eazyrecruit.in/api';
+                } else if (window.location.host =="web.eazyrecruit.in") {
+                    serviceBase = 'https://app.eazyrecruit.in/api';
+                }
+                return serviceBase;
+            }
+        </script>
+    </body>
+</html>

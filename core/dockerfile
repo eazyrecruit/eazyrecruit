@@ -1,0 +1,12 @@
+FROM akeodocker/eazyrecruit-public
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# Bundle app source
+COPY . .
+
+RUN npm install
+
+EXPOSE 8082
+CMD [ "npm", "start" ]

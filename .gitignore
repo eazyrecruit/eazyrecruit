@@ -1,0 +1,8 @@
+core/node_modules
+web/node_modules
+engine/venv
+.adminpass
+elastic_search_data
+elastic_search_db
+core/admin
+.DS_Store

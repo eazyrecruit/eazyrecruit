@@ -1,0 +1,71 @@
+<section class="content">
+  <div class="box box-info">
+    <div class="box-header">
+      <i class="fa fa-inbox"></i>
+      <h3 class="box-title"> Companies</h3>
+      <div class="pull-right box-tools">
+        <a data-toggle="modal" data-target="#company-modal" type="button" class="btn btn-primary btn-sm">
+          <i class="fa fa-plus"></i> Create</a>
+      </div>
+    </div>
+    <div class="main-content padding-20px-tb plr-15">
+      <div *ngIf="companyList">
+        <data-table pageSize='10' sortField='name' sortOrder='1' [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
+          <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+            <thead>
+              <tr class="font-weight-bold">
+                <th>Company Name</th>
+                <th>Company Address </th>
+                <th>Company Email</th>
+                <th>Company Phone No.</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let company of companyList;">
+                <td>
+                  <a [routerLink]="['/settings/companies', company.id]">{{company.company_name}}</a>
+                </td>
+                <td>{{company.head_office_address}}</td>
+                <td>{{company.company_email}}</td>
+                <td>{{company.company_phone}}</td>
+                <td>
+                  <a data-toggle="modal" data-target="#company-modal" (click)="editCompany(company, template)" class="pointer">Edit</a> |
+                  <a (click)="openDeleteModal(company, template)" class="pointer">Delete</a>
+                </td>
+              </tr>
+              <tr *ngIf="isSearchResultAvail==2">
+                <td colspan="4" align="center">
+                    <b>Result is not available</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </data-table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="company-modal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closePopup" type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Create Company</h4>
+      </div>
+      <div class="modal-body">
+        <add-company (refreshList)="refreshList($event)" [data]="companyDetails"></add-company>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #template>
+  <div class="modal-body text-center">
+    <p class="text"><b>Do you want to delete {{deleteName.toUpperCase()}} company?</b></p>
+    <button type="button" class="btn btn-primary" (click)="confirm()">Yes</button>
+    <button type="button" class="btn btn-default" (click)="decline()">No</button>
+  </div>
+</ng-template>

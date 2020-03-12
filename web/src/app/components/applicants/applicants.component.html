@@ -1,0 +1,75 @@
+<section class="content content-wrapper">
+    <div class="box box-info">
+        <div class="box-header">
+            <i class="fa fa-inbox"></i>
+            <h3 class="box-title"> Applicants</h3>
+            <div class="pull-right box-tools">
+                <div class="btn-group form-group margin-right-10px" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-primary btn-sm" (click)="goToCreate()">
+                        <i class="fa fa-plus"></i> Create</button>
+                    <button type="button" class="btn btn-primary btn-sm" (click)="uploadResume()">
+                        <i class="fa fa-upload"></i> Upload</button>
+                </div>
+            </div>
+        </div>
+        <div class="main-content padding-20px-tb plr-15">
+            <div class="no-print" *ngIf="jobId && job">
+                <div class="callout callout-warning">
+                    <h4><i class="fa fa-briefcase"></i> {{job.title}}</h4>
+                    Add profiles to this job
+                </div>
+            </div>
+            <data-table pageSize='10' sortField='firstName' sortOrder='1' [totalItems]='totalRecords'
+                [tableName]='dataTableName' (onFilterChange)="onFilterChange($event)">
+                <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+                    <thead>
+                        <tr class="font-weight-bold">
+                            <th *ngIf="jobId && job" class="col-sm-1">Add</th>
+                            <th sort-field="first_name" class="col-sm-2">Name</th>
+                            <th sort-field="last_name" class="col-sm-2">Email</th>
+                            <th class="col-sm-2">Contact No.</th>
+                            <th class="col-sm-1">Experience</th>
+                            <th class="col-sm-4"> Skills</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="ApplicantList && ApplicantList.length > 0">
+                        <tr *ngFor="let candidate of ApplicantList;">
+                            <td *ngIf="jobId && job">
+                                <input type="checkbox" (change)="addApplicantToJob(candidate._id)" />
+                            </td>
+                            <td>
+                                <a class="c-pointer" (click)="openCandidate(candidate._id)">{{candidate.firstName}}
+                                    {{candidate.middleName}}
+                                    {{candidate.lastName}}</a>
+                                <!-- <a class="pointer" (click)="name_clicked(candidate.id)">{{candidate.personal.first_name}} {{candidate.personal.last_name}}</a>
+                                <a *ngIf="candidate._source.personal" [routerLink]="['/jobs','applicant',candidate._id]">{{candidate._source.personal.first_name}} {{candidate._source.personal.middle_name}} {{candidate._source.personal.last_name}}</a> -->
+                            </td>
+                            <td>
+                                <div>{{candidate.email}}</div>
+                            </td>
+                            <td>
+                                <div *ngIf="candidate.phones && candidate.phones.length">
+                                    <span *ngFor="let phone of candidate.phones; let i = index;">
+                                        {{phone}}<span *ngIf="i < candidate.phones.length - 1">, </span>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                {{candidate.totalExperience}}
+                            </td>
+                            <td *ngIf="candidate.skills != null">
+                                <div class="skills">
+                                    <span *ngFor="let skill of candidate.skills; let i = index;">
+                                        {{skill.name}}<span *ngIf="i < candidate.skills.length - 1">, </span>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </data-table>
+        </div>
+    </div>
+</section>
+
+<applicant-info id="applicant-info" [applicant]="applicant"></applicant-info>

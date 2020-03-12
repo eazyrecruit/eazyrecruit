@@ -1,0 +1,38 @@
+<div class="album py-3 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">Jobs</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="input-group mb-5">
+                    <input type="text" class="form-control" placeholder="Search job" aria-label="Search jobs"
+                        aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <% for(var jobIndex=0; jobIndex < jobs.length; jobIndex++) {%>
+            <div class="col-md-4" style="margin-bottom:10px;">
+                <div class="card">
+                    <img src="/images/freshers.jpg" width="100%"></img>
+                    <div class="card-body">
+                        <h5 class="card-title"><%= jobs[jobIndex].title %></h5>
+                        <p class="card-text"><%- jobs[jobIndex].description %></p>
+                        <a href="<%= 'jobs/'+jobs[jobIndex].guid %> " class="btn btn-primary">More</a>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>

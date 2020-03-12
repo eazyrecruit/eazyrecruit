@@ -1,0 +1,101 @@
+<div class="mt-60">
+  <section class="content">
+    <div class="box box-info">
+      <div class="box-header">
+        <div class="row">
+          <div class="col-sm-8" *ngIf="resume_html">
+            <div class="well document">
+              <div class="box">
+                <div class="box-body">
+                  <div [innerHTML]="resume_html | sanitizeHtml">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <form #form="ngForm" (ngSubmit)="onSubmit('')">
+              <div class="row">
+                <div class="col-sm-3">
+                  <div class="profile_image-wrapper">
+                    <img class="profile-user-img img-responsive img-circle" src="assets/img/amir.png"
+                      alt="User profile picture">
+                  </div>
+                </div>
+                <div class="col-sm-9 text-left padding-left-5px" *ngIf="applicant">
+                  <h3 class="profile-username mb-5 mt-0 text-18">
+                    <a routerLink="/applicant/{{applicant._id}}">
+                      {{getFullName(applicant.firstName, applicant.middleName, applicant.lastName)}}
+                    </a>
+                  </h3>
+                  <p class="text-12 font-weight-500 mb-5">{{applicant.email}}</p>
+                  <p class="text-12 font-weight-500 mb-5">{{applicant.phones}}</p>
+                  <p class="text-12 font-weight-500 mb-5"><i class="fa fa-calendar"></i>
+                    {{interview.start | date: 'medium'}}</p>
+                <p class="text-12 font-weight-500 mb-5"><span class="label label-danger">{{interview.result}}</span></p>
+                </div>
+                <!-- working on it -->
+              </div>
+              <hr>
+              <div class="row" *ngIf="interview && results">
+                <div class="col-sm-12">
+                  <dl *ngFor="let criteria of results; let i = index">
+                    <dt>
+                      {{criteria?.criteria?.name}}
+                      <a *ngIf="interview.result && interview.result != 'SELECTED' && interview.result != 'REJECTED' " (click)="removeCriteria(i)" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
+                    </dt>
+                    <dd>
+                      <rating class="card-body" name="{{i}}" [(ngModel)]="criteria.score"
+                        [customTemplate]="rating" [max]="10"></rating>
+                    </dd>
+                  </dl>
+                  <div class="input-group input-group-sm" *ngIf="interview.result && interview.result != 'SELECTED' && interview.result != 'REJECTED' ">
+                    <input type="text" class="form-control" name="criteria-add" [(ngModel)]="newCriteria"
+                      placeholder="Criteria">
+                    <span class="input-group-btn">
+                      <button type="button" (click)="addCriteria()" class="btn btn-info btn-flat"><i
+                          class="fa fa-plus"></i>&nbsp;</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-10" *ngIf="interview">
+                <div class="form-group col-sm-12">
+                  <label>Comment</label>
+                  <textarea rows="4" name="taComment" [(ngModel)]="interview.comment" class="form-control"></textarea>
+                </div>
+              </div>
+              <hr>
+              <div class="row" *ngIf="interview && interview.result && interview.result != 'SELECTED' && interview.result != 'REJECTED' ">
+                <div class="form-group col-sm-12">
+                  <div class="btn-group pull-right">
+                    <button type="button" class="btn btn-info">Action</button>
+                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                      <span class="caret"></span>
+                      <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a (click)="onSubmit('SELECTED')"><span class="badge bg-green"><i
+                              class="fa fa-check"></i></span> Select</a></li>
+                      <li><a (click)="onSubmit('REJECTED')"><span class="badge bg-red"><i
+                              class="fa fa-times"></i></span> Reject</a></li>
+                      <li><a (click)="onSubmit('HOLD')"><span class="badge bg-yellow"><i
+                              class="fa fa-warning"></i></span> Hold</a></li>
+                    </ul>
+                  </div>
+                  <!-- <button type="submit" style="margin-right: 10px;" class="btn btn-success">Selected</button>
+                  <button type="submit" class="btn btn-danger">Reject</button> -->
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<ng-template #rating let-i="index" let-v="value">
+  <button style="margin-right:5px;" class="btn btn-xs btn-rating btn-{{i < v ? 'warning' : 'default'}}">
+    {{i < v ? '&#9733;' : '&#9734;'}}
+  </button>
+</ng-template>

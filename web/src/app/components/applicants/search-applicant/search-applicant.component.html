@@ -1,0 +1,191 @@
+<section>
+  <toaster-container [toasterconfig]="config"></toaster-container>
+</section>
+<section class="content content-wrapper">
+  <div class="box box-info content-move">
+    <div class="box-header">
+      <h3 class="box-title"> Applicants</h3>
+      <button class="pull-right btn btn-primary btn-sm" data-toggle="modal" data-target="#search-modal">Search Applicant</button>
+      <button class="pull-right btn btn-primary btn-sm margin-right-10px" (click)="goToCreate()">Create Applicant</button>
+    </div>
+    <div class="main-content padding-20px-tb plr-15">
+      <div class="card-over-wrapper">
+        <div class="box-cardWrapper">
+          <form [formGroup]="applicantForm" (ngSubmit)="submitData(applicantForm.value)">
+            <data-table pageSize='10' sortField='first_name' [showSearchFeild]='false' sortOrder='1'
+              [totalItems]='totalRecords' (onFilterChange)="getResult($event)">
+              <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+                <thead>
+                  <tr class="font-weight-bold">
+                    <th class="col-sm-1" *ngIf="showCheckBox">Acton</th>
+                    <th class="col-sm-2">Name</th>
+                    <th class="col-sm-1">Contact No.</th>
+                    <th class="col-sm-2">Email</th>
+                    <th class="col-sm-1">Experience</th>
+                    <th class="col-sm-2">Current CTC</th>
+                    <th class="col-sm-2">Expected CTC</th>
+                    <th class="col-sm-2">Skills</th>
+                    <th class="col-sm-2">Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr formArrayName="items" *ngFor="let applicant of searchResult; let i = index;">
+                    <td [formGroupName]="i" *ngIf="showCheckBox">
+                      <input type="checkbox" (change)="onCheck($event)" formControlName="selectedResult" />
+                    </td>
+                    <td>
+                      <a class="pointer" routerLink="../../jobs/applicant/{{applicant._id}}">
+                        <span
+                          *ngIf="applicant.personal.first_name || applicant.personal.middle_name || applicant.personal.last_name">
+                          {{applicant.personal.first_name}} {{applicant.personal.middle_name}}
+                          {{applicant.personal.last_name}}
+                        </span>
+                        <span *ngIf="!applicant.personal.first_name">
+                          NOT AVAILABLE
+                        </span>
+                      </a>
+                    </td>
+                    <td>
+                      <span *ngIf="applicant.personal.mobile_number">{{applicant.personal.mobile_number}}</span>
+                      <span *ngIf="!applicant.personal.mobile_number">N/A</span>
+                    </td>
+                    <td>
+                      <span *ngIf="applicant.personal.email">{{applicant.personal.email}}</span>
+                      <span *ngIf="!applicant.personal.email">N/A</span>
+                    </td>
+                    <td>
+                      <span *ngIf="applicant.experiences.length > 0">
+                        <span *ngFor="let experience of applicant.experiences">
+                          <span *ngIf="experience.duration">
+                            {{experience.duration}}
+                            {{experience.duration ? experience.duration > 1 ? "years" : "year" : ''}}
+                          </span>
+                          <span *ngIf="!experience.duration">N/A</span>
+                        </span>
+                      </span>
+                      <span *ngIf="applicant.experiences.length === 0">N/A</span>
+                    </td>
+                    <td>
+                      <span *ngIf="applicant.experiences.length > 0">
+                        <span
+                          *ngIf="applicant.experiences[0].current_Ctc">{{applicant.experiences[0].current_Ctc}}</span>
+                        <span *ngIf="!applicant.experiences[0].current_Ctc">N/A</span>
+                      </span>
+                      <span *ngIf="applicant.experiences.length === 0">N/A</span>
+                    </td>
+                    <td>
+                      <span *ngIf="applicant.experiences.length > 0">
+                        <span
+                          *ngIf="applicant.experiences[0].expected_Ctc">{{applicant.experiences[0].expected_Ctc}}</span>
+                        <span *ngIf="!applicant.experiences[0].expected_Ctc">N/A</span>
+                      </span>
+                      <span *ngIf="applicant.experiences.length === 0">N/A</span>
+                    </td>
+                    <td>
+                      <span *ngIf="applicant.skills && applicant.skills.skill.length > 0">
+                        <span *ngFor="let skill of applicant.skills.skill; let i = index;">
+                          <span *ngIf="i < 5">{{skill}}, </span>
+                        </span>
+                      </span>
+                      <span *ngIf="!applicant.skills">N/A</span>
+                    </td>
+                    <td>
+                      <span *ngIf="applicant.addresses.length > 0">
+                        <span *ngFor="let addreess of applicant.addresses">
+                          <span *ngIf="addreess.city">{{addreess.city}}, {{addreess.state}}</span>
+                        </span>
+                      </span>
+                      <span *ngIf="!applicant.addresses.city">N/A</span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="!isSearchResult">
+                    <td colspan="9" align="center">
+                      <b>Result is not available</b>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </data-table>
+            <button *ngIf="showCheckBox" [disabled]="!isCheckBoxCheked || isLoading"
+              class="btn btn-primary mt-10 mb-10 border-radius-30" type="submit">Save
+              <span *ngIf="isLoading"><i class="fa fa-spinner fa-spin"></i></span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="modal fade" id="search-modal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" id="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Search Applicant</h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="searchDetails" novalidate (ngSubmit)="search()">
+          <div class="row">
+            <div class="form-group col-md-6 form-group-advance-search">
+              <label for="name">Name</label>
+              <input type="text" placeholder="Name" class="form-control" formControlName="name">
+            </div>
+            <div class="form-group col-md-6 form-group-advance-search">
+              <label for="name">email</label>
+              <input type="text" placeholder="Email" class="form-control" formControlName="email">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-6 form-group-advance-search">
+              <label for="name">Skills</label>
+              <input type="text" placeholder="Skills" class="form-control" formControlName="skills">
+            </div>
+            <div class="form-group col-md-6 form-group-advance-search">
+              <label for="name">Location</label>
+              <input type="text" placeholder="location" class="form-control" formControlName="location">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-3 form-group-advance-search taggingBox">
+              <label for="contact">Min Experience</label>
+              <small class="text-danger" *ngIf="searchDetails.controls['minExperience'].hasError('experienceValid')">
+                Please enter min experience in numbers
+              </small>
+              <input type="text" placeholder="Experience" class="form-control" formControlName="minExperience">
+            </div>
+            <div class="form-group col-md-3 form-group-advance-search taggingBox">
+              <label for="contact">Max Experience</label>
+              <small class="text-danger" *ngIf="searchDetails.controls['maxExperience'].hasError('experienceValid')">
+                Please enter min experience in numbers
+              </small>
+              <input type="text" placeholder="Experience" class="form-control" formControlName="maxExperience">
+            </div>
+            <div class="form-group col-md-3 form-group-advance-search taggingBox">
+              <label for="contact">Current CTC</label>
+              <small class="text-danger" *ngIf="searchDetails.controls['currentPackage'].hasError('ctcValid')">
+                Please enter ctc in numbers
+              </small>
+              <input type="text" placeholder="Current CTC" class="form-control" formControlName="currentPackage">
+            </div>
+            <div class="form-group col-md-3 form-group-advance-search taggingBox">
+              <label for="contact">Expected CTC</label>
+              <small class="text-danger" *ngIf="searchDetails.controls['expectedPackage'].hasError('ctcValid')">
+                Please enter ctc in numbers
+              </small>
+              <input type="text" placeholder="Expected CTC" class="form-control" formControlName="expectedPackage">
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="form-group col-md-3 form-group-advance-search align-btn-right">
+              <button type="submit" class="btn btn-primary mt-10 mb-10 border-radius-30">Search
+                <i class="fa fa-arrow-circle-right"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
