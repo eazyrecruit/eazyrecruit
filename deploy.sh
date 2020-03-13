@@ -1,6 +1,13 @@
 #!/bin/bash
 
 setup(){
+    if [ ! -d elastic_search_data ]; then
+      mkdir elastic_search_data
+    fi
+
+    if [ ! -d elastic_search_db ]; then
+      mkdir elastic_search_db
+    fi
     # sudo docker-compose build
     sudo docker-compose up -d mongodb ez_elastic
 
