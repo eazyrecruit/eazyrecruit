@@ -108,11 +108,11 @@
 
               <div class="form-group col-md-6">
                 <label for="contact">Contact No.</label>
-                <input type="text" class="form-control" formControlName="phoneNo" required>
-                <small class="text-danger" *ngIf="adminDetails.controls['phoneNo'].hasError('required') && adminDetails.controls['phoneNo'].touched">
+                <input type="text" class="form-control" formControlName="phone" required>
+                <small class="text-danger" *ngIf="adminDetails.controls['phone'].hasError('required') && adminDetails.controls['phone'].touched">
                   Please enter Contact No.
                 </small>
-                <small class="text-danger" *ngIf="adminDetails.controls['phoneNo'].hasError('mobileValid')">
+                <small class="text-danger" *ngIf="adminDetails.controls['phone'].hasError('mobileValid')">
                   Please enter correct contact no.
                 </small>
               </div>

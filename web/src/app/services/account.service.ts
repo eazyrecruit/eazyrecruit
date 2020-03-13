@@ -48,8 +48,8 @@ export class AccountService {
         return this.http.post(this.constService.baseUrl + 'user/', userdetail);
     }
 
-    update(userData) {
-        return this.http.put(this.constService.baseUrl + 'user/', userData);
+    update(userData, id) {
+        return this.http.put(`${this.constService.baseUrl}user/${id}`, userData);
     }
 
     delete(id) {
