@@ -1,7 +1,9 @@
 var Skills = require('../models/skills');
 
 module.exports.searchSkills =  async (req) => {
-    return await Skills.find({ "name": { "$regex": req.params.text, "$options": "i" } }).limit(20);
+    let skip = 0, limit = 10;
+    if (req.query.limit) limit = parseInt(req.query.limit);
+    return await Skills.find({ "name": { "$regex": req.query.search, "$options": "i" }, is_deleted: false }).skip(skip).limit(limit).exec();
 }
 
 module.exports.getAllByIds = async (skillIds) => {

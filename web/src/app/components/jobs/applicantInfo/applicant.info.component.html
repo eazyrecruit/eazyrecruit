@@ -179,7 +179,7 @@
                         *ngIf="rejectionDetails.controls['comment'].hasError('required') && rejectionDetails.controls['comment'].touched">
                         Please enter comment
                       </small>
-                      <textarea rows="6" type="text" placeholder="Please enter Comment Here." id="txtDescription"
+                      <textarea rows="6" type="text" placeholder="Please enter Comment Here." id="txtDescriptionAp"
                         class="form-control" formControlName="comment"></textarea>
                     </div>
                     <button type="submit" [disabled]="applicant?.disableReject"

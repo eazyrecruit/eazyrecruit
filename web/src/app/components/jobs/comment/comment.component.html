@@ -18,7 +18,7 @@
       <small class="text-danger required" *ngIf="commentDetails.controls['comment'].hasError('required') && commentDetails.controls['comment'].touched">
         Please enter comment
       </small>
-      <textarea rows="6" type="text" placeholder="Please enter Comment Here." id="txtDescription" class="form-control" formControlName="comment"></textarea>
+      <textarea rows="6" type="text" placeholder="Please enter Comment Here." id="txtDescriptionComment" class="form-control" formControlName="comment"></textarea>
     </div>
     <button type="submit" [disabled]="isSubmitting" class="btn btn-success form-control">
       Comment <i *ngIf="isSubmitting" class="fa fa-spinner fa-spin"></i>
