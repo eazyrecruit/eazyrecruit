@@ -6,6 +6,9 @@ var Schema = mongoose.Schema;
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
+  firstName: { type: String },
+  middleName: { type: String },
+  lastName: { type: String },
   roles: [{
     type: Schema.Types.ObjectId,
     ref: 'UserRoles'

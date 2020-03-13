@@ -39,7 +39,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let user of users; let i = index;">
-              <td>{{user.first_name}} {{user.last_name}}</td>
+              <td>{{user.firstName}} {{user.lastName}}</td>
               <td>{{user.email}}</td>
               <td>{{user.phone}}</td>
               <td>{{getRoleName(user.role_id)}}</td>

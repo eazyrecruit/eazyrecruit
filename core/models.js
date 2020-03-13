@@ -44,10 +44,11 @@ module.exports.initialize = async () => {
     var company = new Companies();
     company.name = 'Eazy Recruit';
     company.website = 'eazyrecruit.in';
-    company.email = 'info.eazyrecruit.in';
+    company.email = 'info@eazyrecruit.in';
     company.address_line_1 = '1st floor, malwa tower';
     company.phone = '9876543210';
-    console.log('*** Test Conpany Creation***')
+    company.groupName = ['imap','smtp','google'];
+    console.log('*** Test Company Creation***')
     await company.save();
   }
 

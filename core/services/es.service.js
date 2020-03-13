@@ -76,6 +76,7 @@ exports.searchJobs = async (req) => {
         }
         if (query) {
             Jobs.search(query, {
+                from: 0, size: 10000,
                 sort: [{
                     "created_at": {
                         "order": "desc"
