@@ -11,6 +11,9 @@ import config
 import uuid
 from models.jobstatusmodel import JobStatusModel
 from models.settingsmodel import SettingsModel
+from parsers import resumeparser as ResumeParser
+import textract
+from parsers import resumeanalyse as ResumeAnalyse
 
 def parse():
     jobstatusmodel = JobStatusModel()
@@ -44,14 +47,33 @@ def getRecentMails(last_mail_id = 0):
         # extract
         items = items[0].split()  # getting the mails id
         mails = []
+        print(last_mail_id)
+        last_mail_id = 0
         while last_mail_id < len(items):
             # fetching the mail, "`(RFC822)`" means "get the whole stuff", but you can ask for headers only, etc
             resp, data = m.fetch(items[last_mail_id], "(RFC822)")
             email_body = data[0][1].decode('utf-8')  # getting the mail content
             received_email = readMail(email_body)
+            if received_email is not None:
+                clean_resume_data = None
+                clean_rm_subject = None
+                clean_rm_body = None
+                received_email["id"] = last_mail_id
+                mails.append(received_email)
+                # parsing email contents
+                if received_email['attachments']:
+                    for countAttachment in range(len(received_email['attachments'])):
+                        resume_string = textract.process(received_email['attachments'][countAttachment]['tempFile'])
+                        resume_string = str(resume_string, 'utf-8')
+                        clean_resume_data=ResumeParser.clean_resume(resume_string)
+                        if received_email['subject']:
+                            rm_subject = received_email['subject']
+                            clean_rm_subject=ResumeParser.clean_resume(rm_subject)
+                        if received_email['body']:
+                            rm_body = received_email['body']
+                            clean_rm_body=ResumeParser.clean_resume(rm_body)
+                        ResumeAnalyse.analyse_resume(clean_resume_data, clean_rm_body, clean_rm_subject)
             last_mail_id += 1
-            received_email["id"] = last_mail_id
-            mails.append(received_email)
         return mails, last_mail_id
     else:
         return None, None
