@@ -100,10 +100,11 @@ export class ViewComponent implements OnInit {
   populateForm(details) {
     if (details) {
       this.adminDetails = this.fbForm.group({
-        firstName: [details.first_name, [<any>Validators.required], this.validationService.nameValid],
-        lastName: [details.last_name, [<any>Validators.required], this.validationService.nameValid],
-        email: [details.user ? details.user.email : '', [<any>Validators.required], this.validationService.emailValid],
-        phoneNo: [details.phone, [<any>Validators.required], this.validationService.mobileValid],
+        firstName: [details.firstName, [<any>Validators.required], this.validationService.nameValid],
+        lastName: [details.lastName, [<any>Validators.required], this.validationService.nameValid],
+        email: [details.email, [<any>Validators.required], this.validationService.emailValid],
+        phone: [details.phone, [<any>Validators.required], this.validationService.mobileValid],
+        is_deleted: false,
         roleId: [null, []],
       });
       this.adminDetails.controls['roleId'].setValue(details.user ? details.user.role_id : '0', { onlySelf: true });
@@ -113,7 +114,8 @@ export class ViewComponent implements OnInit {
         firstName: [null, [<any>Validators.required], this.validationService.nameValid],
         lastName: [null, [<any>Validators.required], this.validationService.nameValid],
         email: [null, [<any>Validators.required], this.validationService.emailValid],
-        phoneNo: [null, [<any>Validators.required], this.validationService.mobileValid],
+        phone: [null, [<any>Validators.required], this.validationService.mobileValid],
+        is_deleted: false,
         roleId: [null, []],
       });
     }
@@ -167,7 +169,7 @@ export class ViewComponent implements OnInit {
     } else if (this.adminDetails.valid && this.adminDetails.controls['roleId'].value != null) {
       this.isDetailsUploading = true;
       adminFormDetail.id = id;
-      this.accountService.update(adminFormDetail).subscribe(result => {
+      this.accountService.update(adminFormDetail, id).subscribe(result => {
         if (result['success']['data']) {
           this.adminDetails.reset();
           const close = document.getElementById('close');
@@ -188,8 +190,8 @@ export class ViewComponent implements OnInit {
 
   openDeleteModal(user, template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template, { class: 'modal-sm' });
-    this.userId = user.user_id;
-    this.deleteName = `${user.first_name}  ${user.last_name}`;
+    this.userId = user._id;
+    this.deleteName = `${user.firstName}  ${user.lastName}`;
   }
 
   setUserId(user) {
@@ -198,7 +200,7 @@ export class ViewComponent implements OnInit {
       this.adminDetails.reset();
     } else {
       this.userDialogTitle = 'Edit';
-      this.userId = user.user_id;
+      this.userId = user._id;
     }
     this.populateForm(user);
   }

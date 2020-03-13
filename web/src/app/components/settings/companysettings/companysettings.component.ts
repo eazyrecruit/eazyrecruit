@@ -43,8 +43,8 @@ export class CompanysettingsComponent implements OnInit {
           name: result['success']['data'][0].name,
           website: result['success']['data'][0].website,
           address_line_1: result['success']['data'][0].address_line_1,
-          address_line_2: result['success']['data'][0].address_line_2,
-          address_line_3: result['success']['data'][0].address_line_3,
+          address_line_2: result['success']['data'][0].address_line_2 || '',
+          address_line_3: result['success']['data'][0].address_line_3 || '',
           email: result['success']['data'][0].email,
           phone: result['success']['data'][0].phone
         })

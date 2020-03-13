@@ -1,5 +1,5 @@
-let Company = require('../models/company_model');
-let CompanySettings = require('../models/companySettingsModel');
+let Company = require('../models/company');
+let CompanySettings = require('../models/companySettings');
 
 exports.getCompany = function(req, next){
     Company.find({}, (error, company) => {
@@ -21,7 +21,7 @@ exports.getSettings = function(req, next){
     })
 };
 
-exports.updateSettings = (req, next) => {
+exports.updateSettings = async (req, next) => {
     let settings = req.body;
     var index;
     var data = [];
@@ -29,23 +29,45 @@ exports.updateSettings = (req, next) => {
     var formValues = [];
     formKeys = Object.keys(settings);
     formValues = Object.values(settings);
-    for (index = 0; index < formKeys.length; index++) {
-        var settingKey = formKeys[index];
-        CompanySettings.findOneAndUpdate({companyId : req.query.id, groupName : req.query.group, key: settingKey}, 
-            {
+    var dbCompanySettings = await CompanySettings.find({companyId : req.query.id, groupName : req.query.group});
+    if (dbCompanySettings.length <= 0) {
+        for (index = 0; index < formKeys.length; index++) {
+            CompanySettings.create({
+                companyId : req.query.id, 
+                groupName : req.query.group, 
+                key: formKeys[index],
                 value: formValues[index]
-            }, 
-            function (err, result) {
-                if (err) {
-                    next(err, null);
-                } else {
-                    data.push(result);
-                    index--;
-                    if (data && index == 0) {
-                        next(null, data)
+                }, 
+                function (err, result) {
+                    if (err) {
+                        next(err, null);
+                    } else {
+                        data.push(result);
+                        index--;
+                        if (data && index == 0) {
+                            next(null, data)
+                        }
                     }
-                }
-        });
+            });
+        }
+    } else {
+        for (index = 0; index < formKeys.length; index++) {
+            CompanySettings.findOneAndUpdate({companyId : req.query.id, groupName : req.query.group, key: formKeys[index]}, 
+                {
+                    value: formValues[index]
+                }, 
+                function (err, result) {
+                    if (err) {
+                        next(err, null);
+                    } else {
+                        data.push(result);
+                        index--;
+                        if (data && index == 0) {
+                            next(null, data)
+                        }
+                    }
+            });
+        }
     }
 }
 

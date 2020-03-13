@@ -58,7 +58,7 @@ module.exports.setup = (app) => {
   app.use('/api/interview', require('./controllers/interview.ctrl').interview);
   app.use('/api/reports', require('./controllers/report.ctrl').report);
   // Extended Services
-  app.use('/api/skill', require('./controllers/skill.ctrl').skillRoutes);
+  app.use('/api/skills', require('./controllers/skill.ctrl').skillRoutes);
   app.use('/api/location', require('./controllers/location.ctrl').locationRoutes);
   app.use('/api/company', require('./controllers/company.ctrl').company);
   // Resume

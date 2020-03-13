@@ -15,11 +15,11 @@ export class SkillsService {
   // }
 
   getSkills(filter) {
-    return this.http.get(`${this.constService.baseUrl}skill/search/${filter}`);
+    return this.http.get(`${this.constService.baseUrl}skills?limit=${filter.pageSize}&offset=${filter.offset}&search=${filter.searchText}`);
   }
 
-  getSkill() {
-    return this.http.get(this.constService.baseUrl + 'skill/');
+  getSkill(filter) {
+    return this.http.get(`${this.constService.baseUrl}skill?limit=${filter.limit}&offset=${filter.offset}`);
   }
 
   saveSkills(skills) {
