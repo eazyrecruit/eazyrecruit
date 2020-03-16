@@ -11,6 +11,7 @@ import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BsModalRef } from 'ngx-bootstrap';
 import { ApplicantService } from '../../../services/applicant.service';
+import { AccountService } from '../../../services/account.service';
 
 @Component({
   selector: 'app-create-applicant',
@@ -28,9 +29,11 @@ export class CreateApplicantComponent implements OnInit {
 
   closePopup: Subject<any>;
   applicantForm: FormGroup;
+  referrers: any;
 
   constructor(
     private bsModelRef: BsModalRef,
+    private accountService: AccountService,
     private fbForm: FormBuilder,
     private validationService: ValidationService,
     private skillService: SkillsService,
@@ -44,6 +47,7 @@ export class CreateApplicantComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getAllUsers();
     this.closePopup = new Subject<any>();
   }
 
@@ -65,7 +69,7 @@ export class CreateApplicantComponent implements OnInit {
       lastName: [null, [], this.validationService.nameValid],
       email: [null, [<any>Validators.required], this.validationService.emailValid],
       phone: [null, [], this.validationService.mobileValid],
-      referredBy: [null, [], this.validationService.nameValid],
+      referredBy: [null],
       noticePeriod: [null],
       noticePeriodNegotiable: [null],
       skills: [null, []],
@@ -77,6 +81,15 @@ export class CreateApplicantComponent implements OnInit {
       preferredLocation: [null, []]
     });
 
+  }
+
+  getAllUsers() {
+    this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '' }).subscribe(result => {
+      if (result['success']['data'].length) {
+        this.referrers = result['success']['data'];
+        // this.interviewForm.get('interviewerId').setValue(this.event.extendedProps.interviewer);
+      }
+    });
   }
 
   onFileChange(event) {

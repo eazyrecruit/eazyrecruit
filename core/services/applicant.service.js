@@ -43,6 +43,7 @@ exports.save = async (req) => {
                 modelApplicant.noticePeriod = req.body.noticePeriod || '';
                 modelApplicant.totalExperience = req.body.experience || '';
                 modelApplicant.availability = req.body.availability || '';
+                modelApplicant.referredBy = req.body.referredBy || '';
                 if(req.body.firstName){
                     modelApplicant.firstName = req.body.firstName ? req.body.firstName : '';
                     modelApplicant.middleName = req.body.middleName ? req.body.middleName : '';
