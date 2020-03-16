@@ -403,4 +403,12 @@ export class PipelineComponent implements OnInit {
       SiteJS.stopLoader();
     }
   }
+
+  onUpdate($event) {
+    for (let i = 0; i < this.job.applicants.length; i++) {
+      if ($event._id == this.job.applicants[i].applicant._id) {
+        this.job.applicants[i].applicant = $event;
+      }
+    }
+  }
 }

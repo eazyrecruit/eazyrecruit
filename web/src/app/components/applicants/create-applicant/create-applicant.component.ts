@@ -66,6 +66,24 @@ export class CreateApplicantComponent implements OnInit {
 
   populate(applicant) {
     if (applicant) {
+      if (applicant.skills && applicant.skills.length) {
+        for (let skill = 0; skill < applicant.skills.length; skill++) {
+          applicant.skills[skill].value = applicant.skills[skill]._id;
+          applicant.skills[skill].display = applicant.skills[skill].name;
+        }  
+      }
+      if (applicant.preferredLocations && applicant.preferredLocations.length) {
+        for (let prefLocation = 0; prefLocation < applicant.preferredLocations.length; prefLocation++) {
+          applicant.preferredLocations[prefLocation].value = applicant.preferredLocations[prefLocation]._id;
+          applicant.preferredLocations[prefLocation].display = applicant.preferredLocations[prefLocation].city;
+        }
+      }
+      if (applicant.location) {
+        applicant.location.value = applicant.location._id;
+        applicant.location.display = applicant.location.city;
+        applicant.location = [applicant.location];
+      }
+
       this.applicantForm = this.fbForm.group({
         resume: [null],
         dob: [applicant.dob ? new Date(applicant.dob) : null],
