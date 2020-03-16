@@ -43,7 +43,7 @@ exports.save = async (req) => {
                 modelApplicant.noticePeriod = req.body.noticePeriod || '';
                 modelApplicant.totalExperience = req.body.experience || '';
                 modelApplicant.availability = req.body.availability || '';
-                modelApplicant.referredBy = req.body.referredBy || '';
+                modelApplicant.referredBy = req.body.referredBy || null;
                 if(req.body.firstName){
                     modelApplicant.firstName = req.body.firstName ? req.body.firstName : '';
                     modelApplicant.middleName = req.body.middleName ? req.body.middleName : '';
@@ -82,7 +82,12 @@ exports.save = async (req) => {
                 // Create/Update skills
                 if (req.body.skills) {
                     //var skills = JSON.parse(req.body.skills);
-                    var skills = req.body.skills;
+                    var skills;
+                    if (Array.isArray(req.body.skills)) {
+                        skills = req.body.skills;
+                    } else {
+                        skills = JSON.parse(req.body.skills);
+                    }
                     if (skills && skills.length > 0) {
                         modelApplicant.skills = [];
                         for(var iSkill = 0; iSkill < skills.length; iSkill ++) {
