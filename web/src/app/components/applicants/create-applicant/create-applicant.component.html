@@ -90,12 +90,12 @@
     <div class="row">
       <div class="form-group col-md-4">
         <label for="contact">Availability</label>
-        <select class="form-control" formControlName="availability">
-          <option value="null" selected disabled>Select time</option>
-          <option value="Immediate">Immediate</option>
-          <option value="One month">One month</option>
-          <option value="Two months">Two months</option>
-          <option value="Two months">More than months</option>
+        <select class="form-control" formControlName="availability" (change)="validateAvailability($event)">
+          <option value="" selected disabled>Select time</option>
+          <option value="0">Immediate</option>
+          <option value="1">One month</option>
+          <option value="2">Two months</option>
+          <option value="3">More than two months</option>
         </select>
         <!-- <select class="form-control" formControlName="availability" [(ngModel)]="availability">
           <option>Select Time</option>

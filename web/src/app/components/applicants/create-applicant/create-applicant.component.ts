@@ -27,6 +27,9 @@ export class CreateApplicantComponent implements OnInit {
   @Input()
   pipelineId: any;
 
+  @Input()
+  applicant: any;
+
   closePopup: Subject<any>;
   applicantForm: FormGroup;
   referrers: any;
@@ -49,10 +52,12 @@ export class CreateApplicantComponent implements OnInit {
   ngOnInit() {
     this.getAllUsers();
     this.closePopup = new Subject<any>();
+    this.populate(this.applicant);
   }
 
   public asyncSkills = (text: string): Observable<any> => {
-    return this.skillService.getSkills(text).pipe(map((data: any) => data.success.data));
+    let filter = { pageSize: 10, offset: 0, searchText: text };
+    return this.skillService.getSkills(filter).pipe(map((result: any) => result.success.data.skills ));
   };
 
   public asyncLocations = (text: string): Observable<any> => {
@@ -60,26 +65,49 @@ export class CreateApplicantComponent implements OnInit {
   };
 
   populate(applicant) {
-    this.applicantForm = this.fbForm.group({
-      resume: [null],
-      dob: [null],
-      source: [null],
-      firstName: [null, [<any>Validators.required], this.validationService.nameValid],
-      middleName: [null, [], this.validationService.nameValid],
-      lastName: [null, [], this.validationService.nameValid],
-      email: [null, [<any>Validators.required], this.validationService.emailValid],
-      phone: [null, [], this.validationService.mobileValid],
-      referredBy: [null],
-      noticePeriod: [null],
-      noticePeriodNegotiable: [null],
-      skills: [null, []],
-      experience: [null, [], this.validationService.experienceValid],
-      currentCtc: [null, [], this.validationService.ctcValid],
-      expectedCtc: [null, [], this.validationService.ctcValid],
-      availability: [null],
-      currentLocation: [null, []],
-      preferredLocation: [null, []]
-    });
+    if (applicant) {
+      this.applicantForm = this.fbForm.group({
+        resume: [null],
+        dob: [applicant.dob ? new Date(applicant.dob) : null],
+        source: [applicant.source],
+        firstName: [applicant.firstName, [<any>Validators.required], this.validationService.nameValid],
+        middleName: [applicant.middleName, [], this.validationService.nameValid],
+        lastName: [applicant.lastName, [], this.validationService.nameValid],
+        email: [applicant.email, [<any>Validators.required], this.validationService.emailValid],
+        phone: [applicant.phone, [], this.validationService.mobileValid],
+        referredBy: [applicant.referredBy, [], this.validationService.nameValid],
+        noticePeriod: [applicant.noticePeriod],
+        noticePeriodNegotiable: [applicant.noticePeriodNegotiable],
+        skills: [applicant.skills, []],
+        experience: [applicant.totalExperience, [], this.validationService.experienceValid],
+        currentCtc: [applicant.currentCtc, [], this.validationService.ctcValid],
+        expectedCtc: [applicant.expectedCtc, [], this.validationService.ctcValid],
+        availability: [applicant.availability],
+        currentLocation: [applicant.location, []],
+        preferredLocation: [applicant.preferredLocations, []]
+      });
+    } else {
+      this.applicantForm = this.fbForm.group({
+        resume: [null],
+        dob: [null],
+        source: [null],
+        firstName: [null, [<any>Validators.required], this.validationService.nameValid],
+        middleName: [null, [], this.validationService.nameValid],
+        lastName: [null, [], this.validationService.nameValid],
+        email: [null, [<any>Validators.required], this.validationService.emailValid],
+        phone: [null, [], this.validationService.mobileValid],
+        referredBy: [null, [], this.validationService.nameValid],
+        noticePeriod: [null],
+        noticePeriodNegotiable: [null],
+        skills: [null, []],
+        experience: [null, [], this.validationService.experienceValid],
+        currentCtc: [null, [], this.validationService.ctcValid],
+        expectedCtc: [null, [], this.validationService.ctcValid],
+        availability: [null],
+        currentLocation: [null, []],
+        preferredLocation: [null, []]
+      });
+    }
 
   }
 
@@ -180,6 +208,12 @@ export class CreateApplicantComponent implements OnInit {
           this.bsModelRef.hide();
         }
       });
+    }
+  }
+
+  validateAvailability(event: any) {
+    if (!(parseInt(event.target.value) >= 0)) {
+      console.log('add error message here!');
     }
   }
 }
