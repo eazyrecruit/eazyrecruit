@@ -79,7 +79,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
       if (applicant.firstName) {
         applicant.fullName = this.getFullName.bind(applicant);
       } else {
-        this.fullName = 'Not Available';
+        this.fullName = this.getFullName.bind(applicant);
       }
         this.applicant = applicant;
     } else {
@@ -150,8 +150,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     });
     this.modalRef.content.closePopup.subscribe(result => {
         if (result) {
-            this.applicant = result['data'];
-            this.applicant.fullName = this.getFullName.bind(this.applicant);
+            this.getApplicantById(result['data']._id);
             this.onUpdate.emit(this.applicant);
         }
     });
@@ -186,4 +185,12 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     }
   }
 
+  getApplicantById(id: string) {
+    this.applicantInfoService.getApplicantById(id).subscribe(result => {
+        if (result) {
+            this.applicant = result['success']['data'];
+            this.applicant.fullName = this.getFullName.bind(this.applicant);
+        }
+    });
+  }
 }
