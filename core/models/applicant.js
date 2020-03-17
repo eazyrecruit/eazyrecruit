@@ -61,7 +61,7 @@ var applicantSchema = new Schema({
     },
     referredBy: {
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Users'
     },
     source: String,
     is_deleted: Boolean,

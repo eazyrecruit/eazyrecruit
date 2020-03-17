@@ -41,6 +41,7 @@ exports.save = async (req) => {
                 modelApplicant.currentCtc = req.body.currentCtc || '';
                 modelApplicant.expectedCtc = req.body.expectedCtc || '';
                 modelApplicant.noticePeriod = req.body.noticePeriod || '';
+                modelApplicant.noticePeriodNegotiable = req.body.noticePeriodNegotiable || '';
                 modelApplicant.totalExperience = req.body.experience || '';
                 modelApplicant.availability = req.body.availability || '';
                 modelApplicant.referredBy = req.body.referredBy || null;
@@ -81,8 +82,7 @@ exports.save = async (req) => {
 
                 // Create/Update skills
                 if (req.body.skills) {
-                    //var skills = JSON.parse(req.body.skills);
-                    var skills;
+                    let skills;
                     if (Array.isArray(req.body.skills)) {
                         skills = req.body.skills;
                     } else {
@@ -252,7 +252,9 @@ exports.save = async (req) => {
 
 exports.getById = async (_id) => {
     return (await Applicants.findById(_id).populate('location')
-    .populate('preferredLocations').populate({path: 'skills', match: { is_deleted: { $ne: true} }}));
+    .populate('preferredLocations')
+    .populate({path: 'skills', match: { is_deleted: { $ne: true} }})
+    .populate('referredBy'));
 }
 
 exports.getjobsByApplicantId = async (_id) => {
