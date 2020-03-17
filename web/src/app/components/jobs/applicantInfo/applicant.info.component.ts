@@ -10,6 +10,7 @@ import { InterviewService } from '../../../services/interview.service';
 import { SchedulerComponent } from '../../interview/scheduler/scheduler.component';
 import { AccountService } from '../../../services/account.service';
 import { ActivatedRoute, Params } from '@angular/router';
+import { CreateApplicantComponent } from '../../applicants/create-applicant/create-applicant.component';
 
 declare global {
     interface Window { editApplicantPopup: any; }
@@ -41,6 +42,9 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
 
     @Output()
     onReject: EventEmitter<any> = new EventEmitter();
+
+    @Output()
+    onUpdate: EventEmitter<any> = new EventEmitter();
 
     constructor(
         private route: ActivatedRoute,
@@ -248,5 +252,19 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         if (middleName && middleName != "null") name = name + " " + middleName;
         if (lastName && lastName != "null") name = name + " " + lastName;
         return name;
+    }
+
+    updateApplicant() {
+        this.modalRef = this.modalService.show(CreateApplicantComponent, { 
+            class: 'modal-lg', 
+            initialState: { applicant: this.applicant } 
+        });
+        this.modalRef.content.closePopup.subscribe(result => {
+            if (result) {
+                this.applicant = result['data'];
+                this.applicant.fullName = this.getFullName.bind(this.applicant);
+                this.onUpdate.emit(this.applicant);
+            }
+        });
     }
 }

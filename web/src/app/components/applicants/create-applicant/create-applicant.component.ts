@@ -11,6 +11,7 @@ import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BsModalRef } from 'ngx-bootstrap';
 import { ApplicantService } from '../../../services/applicant.service';
+import { AccountService } from '../../../services/account.service';
 
 @Component({
   selector: 'app-create-applicant',
@@ -26,11 +27,16 @@ export class CreateApplicantComponent implements OnInit {
   @Input()
   pipelineId: any;
 
+  @Input()
+  applicant: any;
+
   closePopup: Subject<any>;
   applicantForm: FormGroup;
+  referrers: any;
 
   constructor(
     private bsModelRef: BsModalRef,
+    private accountService: AccountService,
     private fbForm: FormBuilder,
     private validationService: ValidationService,
     private skillService: SkillsService,
@@ -44,11 +50,14 @@ export class CreateApplicantComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getAllUsers();
     this.closePopup = new Subject<any>();
+    this.populate(this.applicant);
   }
 
   public asyncSkills = (text: string): Observable<any> => {
-    return this.skillService.getSkills(text).pipe(map((data: any) => data.success.data));
+    let filter = { pageSize: 10, offset: 0, searchText: text };
+    return this.skillService.getSkills(filter).pipe(map((result: any) => result.success.data.skills ));
   };
 
   public asyncLocations = (text: string): Observable<any> => {
@@ -56,27 +65,76 @@ export class CreateApplicantComponent implements OnInit {
   };
 
   populate(applicant) {
-    this.applicantForm = this.fbForm.group({
-      resume: [null],
-      dob: [null],
-      source: [null],
-      firstName: [null, [<any>Validators.required], this.validationService.nameValid],
-      middleName: [null, [], this.validationService.nameValid],
-      lastName: [null, [], this.validationService.nameValid],
-      email: [null, [<any>Validators.required], this.validationService.emailValid],
-      phone: [null, [], this.validationService.mobileValid],
-      referredBy: [null, [], this.validationService.nameValid],
-      noticePeriod: [null],
-      noticePeriodNegotiable: [null],
-      skills: [null, []],
-      experience: [null, [], this.validationService.experienceValid],
-      currentCtc: [null, [], this.validationService.ctcValid],
-      expectedCtc: [null, [], this.validationService.ctcValid],
-      availability: [null],
-      currentLocation: [null, []],
-      preferredLocation: [null, []]
-    });
+    if (applicant) {
+      if (applicant.skills && applicant.skills.length) {
+        for (let skill = 0; skill < applicant.skills.length; skill++) {
+          applicant.skills[skill].value = applicant.skills[skill]._id;
+          applicant.skills[skill].display = applicant.skills[skill].name;
+        }  
+      }
+      if (applicant.preferredLocations && applicant.preferredLocations.length) {
+        for (let prefLocation = 0; prefLocation < applicant.preferredLocations.length; prefLocation++) {
+          applicant.preferredLocations[prefLocation].value = applicant.preferredLocations[prefLocation]._id;
+          applicant.preferredLocations[prefLocation].display = applicant.preferredLocations[prefLocation].city;
+        }
+      }
+      if (applicant.location) {
+        applicant.location.value = applicant.location._id;
+        applicant.location.display = applicant.location.city;
+        applicant.location = [applicant.location];
+      }
 
+      this.applicantForm = this.fbForm.group({
+        resume: [null],
+        dob: [applicant.dob ? new Date(applicant.dob) : null],
+        source: [applicant.source],
+        firstName: [applicant.firstName, [<any>Validators.required], this.validationService.nameValid],
+        middleName: [applicant.middleName || '', [], this.validationService.nameValid],
+        lastName: [applicant.lastName, [], this.validationService.nameValid],
+        email: [applicant.email, [<any>Validators.required], this.validationService.emailValid],
+        phone: [applicant.phones.toString(), [], this.validationService.mobileValid],
+        referredBy: [applicant.referredBy ? applicant.referredBy._id : ''],
+        noticePeriod: [applicant.noticePeriod],
+        noticePeriodNegotiable: [applicant.noticePeriodNegotiable],
+        skills: [applicant.skills, []],
+        experience: [applicant.totalExperience, [], this.validationService.experienceValid],
+        currentCtc: [applicant.currentCtc, [], this.validationService.ctcValid],
+        expectedCtc: [applicant.expectedCtc, [], this.validationService.ctcValid],
+        availability: [applicant.availability],
+        currentLocation: [applicant.location, []],
+        preferredLocation: [applicant.preferredLocations, []]
+      });
+    } else {
+      this.applicantForm = this.fbForm.group({
+        resume: [null],
+        dob: [null],
+        source: [null],
+        firstName: [null, [<any>Validators.required], this.validationService.nameValid],
+        middleName: [null, [], this.validationService.nameValid],
+        lastName: [null, [], this.validationService.nameValid],
+        email: [null, [<any>Validators.required], this.validationService.emailValid],
+        phone: [null, [], this.validationService.mobileValid],
+        referredBy: [null],
+        noticePeriod: [null],
+        noticePeriodNegotiable: [null],
+        skills: [null, []],
+        experience: [null, [], this.validationService.experienceValid],
+        currentCtc: [null, [], this.validationService.ctcValid],
+        expectedCtc: [null, [], this.validationService.ctcValid],
+        availability: [null],
+        currentLocation: [null, []],
+        preferredLocation: [null, []]
+      });
+    }
+
+  }
+
+  getAllUsers() {
+    this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '' }).subscribe(result => {
+      if (result['success']['data'].length) {
+        this.referrers = result['success']['data'];
+      }
+    });
   }
 
   onFileChange(event) {
@@ -167,6 +225,12 @@ export class CreateApplicantComponent implements OnInit {
           this.bsModelRef.hide();
         }
       });
+    }
+  }
+
+  validateAvailability(event: any) {
+    if (!(parseInt(event.target.value) >= 0)) {
+      console.log('add error message here!');
     }
   }
 }

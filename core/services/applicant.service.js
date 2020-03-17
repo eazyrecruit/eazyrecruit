@@ -33,16 +33,18 @@ exports.save = async (req) => {
                     modelApplicant = new Applicants();
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
-                    modelApplicant.email = email;
                 }
+                modelApplicant.email = email;
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
                 modelApplicant.source = req.body.source ? req.body.source : '';
                 modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : '';
                 modelApplicant.currentCtc = req.body.currentCtc || '';
                 modelApplicant.expectedCtc = req.body.expectedCtc || '';
                 modelApplicant.noticePeriod = req.body.noticePeriod || '';
+                modelApplicant.noticePeriodNegotiable = req.body.noticePeriodNegotiable || '';
                 modelApplicant.totalExperience = req.body.experience || '';
                 modelApplicant.availability = req.body.availability || '';
+                modelApplicant.referredBy = req.body.referredBy || null;
                 if(req.body.firstName){
                     modelApplicant.firstName = req.body.firstName ? req.body.firstName : '';
                     modelApplicant.middleName = req.body.middleName ? req.body.middleName : '';
@@ -75,15 +77,22 @@ exports.save = async (req) => {
                         modelResume.modified_at = new Date();
                         modelResume = await modelResume.save();
                         modelApplicant.resume = modelResume._id;
+                    } else {
+                        modelApplicant.resume = null;
                     }
                 }
 
                 // Create/Update skills
                 if (req.body.skills) {
-                    //var skills = JSON.parse(req.body.skills);
-                    var skills = req.body.skills;
+                    let skills;
+                    if (Array.isArray(req.body.skills)) {
+                        skills = req.body.skills;
+                    } else {
+                        skills = JSON.parse(req.body.skills);
+                    }
                     if (skills && skills.length > 0) {
                         modelApplicant.skills = [];
+                        modelApplicant.skills.length = 0;
                         for(var iSkill = 0; iSkill < skills.length; iSkill ++) {
                             modelSkills = await Skills.findOne({ _id: skills[iSkill].id });
                             if (modelSkills == null) {
@@ -106,7 +115,7 @@ exports.save = async (req) => {
                 if (req.body.currentLocation) {
                     var current = JSON.parse(req.body.currentLocation);
                     if (current && current.length > 0) {
-                        modelCurrentLocation = await Locations.findOne({ _id: current.id })
+                        modelCurrentLocation = await Locations.findOne({ _id: current[0].id })
                         if (modelCurrentLocation == null) {
                             modelCurrentLocation = new Locations();
                             modelCurrentLocation.country = current.country || '';
@@ -121,6 +130,8 @@ exports.save = async (req) => {
                         }
                         modelApplicant.location = modelCurrentLocation;
                     }
+                } else {
+                    modelApplicant.location = null;
                 }
 
                 var modelpreferredLocation = null;
@@ -142,7 +153,7 @@ exports.save = async (req) => {
                                 modelpreferredLocation.modified_at = new Date();
                                 modelpreferredLocation = await modelpreferredLocation.save();
                             }
-                            modelApplicant.preferredLocations.push(modelpreferredLocation);
+                            modelApplicant.preferredLocations.push(modelpreferredLocation._id);
                         }
                     }
                 }
@@ -246,11 +257,13 @@ exports.save = async (req) => {
 
 exports.getById = async (_id) => {
     return (await Applicants.findById(_id).populate('location')
-    .populate('preferredLocations').populate({path: 'skills', match: { is_deleted: { $ne: true} }}));
+    .populate('preferredLocations')
+    .populate({path: 'skills', match: { is_deleted: { $ne: true} }})
+    .populate('referredBy'));
 }
 
 exports.getjobsByApplicantId = async (_id) => {
-    return await JobApplicant.find({ applicant: _id }).populate('job');
+    return await JobApplicant.find({ applicant: _id, is_deleted: { $ne: true } }).populate('job');
 }
 
 exports.delete = async (_id) => {

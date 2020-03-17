@@ -240,6 +240,7 @@ router.put("/comment", async (req, res) => {
     }
 });
 
+// this api is no longer use
 // router.get("/jobApplied", (req, res) => {
 //     applicantService.getAppliedJob(req, (err, data) => {
 //         responseService.response(req, err, 'Jobs Applied by Applicant', data, res);
@@ -259,15 +260,17 @@ router.post("/reject", (req, res) => {
 });
 
 
-router.get("/id/:mongoId", async (req, res) => {
-    try {
-        var applicant = await applicantService.getByMongoid(req.params.mongoId);
-        responseService.response(req, null, "Applicant", applicant, res);
-    } catch (err) {
-        responseService.response(req, err, "Applicant", null, res);
-    }
-});
+// this api is no longer use
+// router.get("/id/:mongoId", async (req, res) => {
+//     try {
+//         var applicant = await applicantService.getByMongoid(req.params.mongoId);
+//         responseService.response(req, null, "Applicant", applicant, res);
+//     } catch (err) {
+//         responseService.response(req, err, "Applicant", null, res);
+//     }
+// });
 
+// this api is no longer use 
 router.get("/info/:id",
     async (req, res, next) => {
         try {
