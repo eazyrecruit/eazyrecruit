@@ -245,23 +245,14 @@
         <div class="main-content padding-20px-tb plr-15">
             <h4 class="text-dark-blue">Applied Jobs</h4>
             <hr>
-            <div class="job-box" *ngFor="let job of appliedJobs">
-              <h5> Title - {{job.job_post.title}}</h5>
-              <hr>
-              <ng-container *ngIf="job.jobStatus && job.jobStatus.length > 0">
-                <!-- <div>
-                  Applicant Job Status History
-                </div> -->
-                <div class="row">
-                  <div class="col-md-2" *ngFor="let status of job.jobStatus">
-                    <div class="status-box">
-                      <div>{{status.modified_at}}</div>
-                      <div>{{status.name}}</div>
-                    </div>
-                  </div>
+            <div class="row job-box" *ngIf="applicant && applicant.jobs && applicant.jobs.length">
+              <div class="col-md-2" *ngFor="let jobApplicant of applicant.jobs">
+                <div class="status-box" *ngIf="jobApplicant.job && jobApplicant.job.title">
+                  <div>Title: {{jobApplicant.job.title}}</div>
+                  <div>{{jobApplicant.job.modified_at | date}}</div>
                 </div>
-              </ng-container>
-              <div *ngFor="let commentObj of job.applicant_comments">
+              </div>
+              <!-- <div *ngFor="let commentObj of job.applicant_comments">
                 <div class="comment-box">
                   <p>{{commentObj.comment}}</p>
                   <div class="row">
@@ -273,7 +264,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
         </div>
       </div>

@@ -263,7 +263,7 @@ exports.getById = async (_id) => {
 }
 
 exports.getjobsByApplicantId = async (_id) => {
-    return await JobApplicant.find({ applicant: _id, is_deleted: { $ne: true} }).populate('job');
+    return await JobApplicant.find({ applicant: _id }).populate({ path: 'job', match: { is_deleted: { $ne: true }}});
 }
 
 exports.delete = async (_id) => {
