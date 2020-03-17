@@ -8,6 +8,7 @@ import { ValidationService } from '../../../services/validation.service';
 import { SearchService } from '../../../services/search.service';
 import { saveAs } from 'file-saver';
 
+declare var SiteJS: any;
 
 @Component({
   selector: 'app-applicantpage',
@@ -61,36 +62,22 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
 
   getApplicantData(applicant: any) {
     if (applicant) {
-      if (applicant.personal.first_name) {
-        this.fullName = this.setFullName(
-          applicant.personal.first_name ? applicant.personal.first_name : '',
-          applicant.personal.middle_name ? applicant.personal.middle_name : '',
-          applicant.personal.last_name ? applicant.personal.last_name : ''
-        );
+      if (applicant.firstName) {
+        applicant.fullName = this.getFullName.bind(applicant);
       } else {
         this.fullName = 'Not Available';
       }
         this.applicant = applicant;
-        this.applicant._id = applicant.personal.profile_id;
-        this.personalInfo = applicant.personal;
-        this.addressesInfo = applicant.addresses ? applicant.addresses : [];
-        this.experiencesInfo = applicant.experiences ? applicant.experiences : [];
-        this.skills = applicant.skills ? applicant.skills.skill : [];
-        this.appliedJobs = applicant.appliedJobs ? applicant.appliedJobs : [],
-        this.applicant.resume = applicant.resume_id;
-        // this.applicantComments = applicant.comments ? applicant.comments : [];
-        this.getApplicantJobStatus(this.applicant._id);
     } else {
-      console.log('Error in fetching applicant!');
+      SiteJS.stopLoader();
     }
   }
 
-  setFullName(first, middle, last) {
-    if (middle) {
-      return first + ' ' + middle + ' ' + last;
-    } else {
-      return first + ' ' + last;
-    }
+  getFullName(firstName, middleName, lastName) {
+    var name = firstName;
+    if (middleName && middleName != "null") name = name + " " + middleName;
+    if (lastName && lastName != "null") name = name + " " + lastName;
+    return name;
   }
 
   uploadResume() {

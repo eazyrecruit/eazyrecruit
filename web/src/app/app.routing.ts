@@ -64,7 +64,6 @@ import { GoogleComponent } from './components/settings/google/google.component';
               { path: '', component: JobsComponent },
               { path: 'create', component: JobComponent },
               { path: 'pipeline/:jobId', component: PipelineComponent },
-              { path: 'applicant/:id', resolve: { applicant: ApplicantResolver }, component: ApplicantpageComponent }          // migth be we remove this
             ]
           },
           {
@@ -75,7 +74,8 @@ import { GoogleComponent } from './components/settings/google/google.component';
               { path: 'applicant/:applicantId', component: PipelineComponent },
               { path: 'add/job/:jobId/:pipelineId', component:  ApplicantsComponent},
               //{ path: 'search', component:  SearchApplicantComponent},
-              { path: 'create', component: CreateApplicantComponent }
+              { path: 'create', component: CreateApplicantComponent },
+              { path: ':id', resolve: { applicant: ApplicantResolver }, component: ApplicantpageComponent }
             ]
           },
           {
