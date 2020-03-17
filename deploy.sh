@@ -1,5 +1,17 @@
 #!/bin/bash
 
+db_up(){
+  sudo docker-compose up -d mongodb ez_elastic
+}
+
+ez_docker_up(){
+    sudo docker-compose up --build -d ez_web_build 
+    sleep 1
+    sudo docker cp ez_web_build:/usr/src/core/admin ./core
+    sleep 1
+    sudo docker-compose up --build -d nginx ez_engine ez_web
+}
+
 setup(){
     if [ ! -d elastic_search_data ]; then
       mkdir elastic_search_data
@@ -8,8 +20,8 @@ setup(){
     if [ ! -d elastic_search_db ]; then
       mkdir elastic_search_db
     fi
-    # sudo docker-compose build
-    sudo docker-compose up -d mongodb ez_elastic
+
+    db_up
 
     echo "########## Wait few min, Setting MongoDb and Elastic Search Dockers #########################"
     mongodb_status_check=`sudo docker logs ez_mongodb | grep "MongoDB init process complete;"`
@@ -24,12 +36,8 @@ setup(){
 
     echo "########## Wait few sec, Setting core and engine services #######################"
     sleep 10
-    sudo docker-compose up -d ez_web_build 
-    sleep 1
-    sudo docker cp ez_web_build:/usr/src/eazyrecruit-core/admin ./core
-    sleep 1
-    sudo docker-compose up -d nginx ez_engine ez_web
 
+    ez_docker_up
 
     admin_user_create_check=`sudo docker logs ez_web | grep "Admin Password:"`
     #echo $admin_user_create_check
@@ -54,24 +62,29 @@ setup(){
 
 restart(){
   sudo docker-compose down
-  sudo docker-compose up -d
+  
+  sleep 1
+  db_up
+
+  sleep 1
+  ez_docker_up
 }
 
 destroy(){
   sudo docker-compose down
   if [ -d elastic_search_data ]; then
     cp -r elastic_search_data /tmp/eazyrecruit/
-    rm -r elastic_search_data
+    sudo rm -r elastic_search_data
   fi
 
   if [ -d elastic_search_db ]; then
     cp -r elastic_search_db /tmp/eazyrecruit/
-    rm -r elastic_search_db
+    sudo rm -r elastic_search_db
   fi
-  rm .adminpass
+  sudo rm .adminpass
+  sudo rm -r ./core/admin
 
 }
-
 
 if [ "$1" == "restart" ]; then
   restart
