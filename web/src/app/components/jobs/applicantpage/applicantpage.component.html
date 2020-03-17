@@ -245,7 +245,7 @@
         <div class="main-content padding-20px-tb plr-15">
             <h4 class="text-dark-blue">Applied Jobs</h4>
             <hr>
-            <div class="row job-box" *ngIf="applicant && applicant.jobs && applicant.jobs.length">
+            <div class="row" *ngIf="applicant && applicant.jobs && applicant.jobs.length">
               <div class="col-md-2" *ngFor="let jobApplicant of applicant.jobs">
                 <div class="status-box" *ngIf="jobApplicant.job && jobApplicant.job.title">
                   <div>Title: {{jobApplicant.job.title}}</div>
