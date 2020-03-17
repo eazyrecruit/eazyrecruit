@@ -349,9 +349,10 @@ export class JobComponent implements OnInit {
   }
 
   public asyncSkills = (text: string): Observable<any> => {
-    return this.skillService.getSkills(text).pipe(map((data: any) => data.success.data));
+    let filter = { pageSize: 10, offset: 0, searchText: text };
+    return this.skillService.getSkills(filter).pipe(map((result: any) => result.success.data.skills ));
   };
-
+  
   public asyncLocations = (text: string): Observable<any> => {
     return this.locationService.getLocations(text).pipe(map((data: any) => data.success.data));
   };

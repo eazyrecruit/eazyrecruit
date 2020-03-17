@@ -8,7 +8,7 @@
               <h1 class="mt-0 text-navy">{{applicant.fullName(applicant?.firstName, applicant?.middleName, applicant?.lastName)}}</h1>
             </div>
             <div class="col-md-6">
-              <i class="fa fa-pencil editApplcant" data-toggle="modal" data-target="#myModal" (click)="editApplicant(applicant, myModal)"></i>
+              <i class="fa fa-pencil editApplcant" (click)="updateApplicant()"></i>
             </div>
           </div>
           <div class="col-md-12">
@@ -58,7 +58,7 @@
                 <tr>
                   <td class="font-weight-600"> Availability :</td>
                   <td>
-                    {{applicant?.availability}}
+                    {{availability[applicant?.availability]}}
                   </td>
                 </tr>
                 <tr>
@@ -77,7 +77,7 @@
                 </tr>
                 <tr>
                   <td class="font-weight-600">DOB :</td>
-                  <td> {{applicant?.dob}}</td>
+                  <td> {{applicant?.dob | date}}</td>
                 </tr>
                 <tr>
                   <td class="font-weight-600">
@@ -280,17 +280,3 @@
     </div>
   </div>
 </section>
-
-<div class="modal fade" id="myModal" role="dialog">
-  <div class="modal-dialog window-popup">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button id="closeButton" type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Edit Applicant Details</h4>
-      </div>
-      <div class="modal-body content-move " style="height: 100vh; overflow-y: scroll;">
-        <!-- <app-create-applicant [data]="applicantDetails"></app-create-applicant> -->
-      </div>
-    </div>
-  </div>
-</div>

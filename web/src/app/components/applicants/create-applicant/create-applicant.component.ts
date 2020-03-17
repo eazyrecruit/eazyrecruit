@@ -89,11 +89,11 @@ export class CreateApplicantComponent implements OnInit {
         dob: [applicant.dob ? new Date(applicant.dob) : null],
         source: [applicant.source],
         firstName: [applicant.firstName, [<any>Validators.required], this.validationService.nameValid],
-        middleName: [applicant.middleName, [], this.validationService.nameValid],
+        middleName: [applicant.middleName || '', [], this.validationService.nameValid],
         lastName: [applicant.lastName, [], this.validationService.nameValid],
         email: [applicant.email, [<any>Validators.required], this.validationService.emailValid],
-        phone: [applicant.phone, [], this.validationService.mobileValid],
-        referredBy: [applicant.referredBy, [], this.validationService.nameValid],
+        phone: [applicant.phones.toString(), [], this.validationService.mobileValid],
+        referredBy: [applicant.referredBy ? applicant.referredBy._id : ''],
         noticePeriod: [applicant.noticePeriod],
         noticePeriodNegotiable: [applicant.noticePeriodNegotiable],
         skills: [applicant.skills, []],
@@ -114,7 +114,7 @@ export class CreateApplicantComponent implements OnInit {
         lastName: [null, [], this.validationService.nameValid],
         email: [null, [<any>Validators.required], this.validationService.emailValid],
         phone: [null, [], this.validationService.mobileValid],
-        referredBy: [null, [], this.validationService.nameValid],
+        referredBy: [null],
         noticePeriod: [null],
         noticePeriodNegotiable: [null],
         skills: [null, []],
@@ -133,7 +133,6 @@ export class CreateApplicantComponent implements OnInit {
     this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '' }).subscribe(result => {
       if (result['success']['data'].length) {
         this.referrers = result['success']['data'];
-        // this.interviewForm.get('interviewerId').setValue(this.event.extendedProps.interviewer);
       }
     });
   }

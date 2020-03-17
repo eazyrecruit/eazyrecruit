@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, OnDestroy, ViewChild, TemplateRef, Output, EventEmitter } from '@angular/core';
 import { ApplicantDataService } from '../../../services/applicant-data.service';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -7,6 +7,8 @@ import { ApplicantInfoService } from '../applicantInfo/applicant-info.service';
 import { ValidationService } from '../../../services/validation.service';
 import { SearchService } from '../../../services/search.service';
 import { saveAs } from 'file-saver';
+import { CreateApplicantComponent } from '../../applicants/create-applicant/create-applicant.component';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 
 declare var SiteJS: any;
 
@@ -37,7 +39,11 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
   pdf_url: string;
   applicantDetails: any;
   contractInfo: any;
+  modalRef: BsModalRef;
+  availability: any[];
 
+  @Output()
+    onUpdate: EventEmitter<any> = new EventEmitter();
 
   constructor(
     private applicantDataService: ApplicantDataService,
@@ -45,7 +51,8 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     private uploadService: UploadService,
     private fb: FormBuilder,
     private validationService: ValidationService,
-    private applicantInfoService: ApplicantInfoService
+    private applicantInfoService: ApplicantInfoService,
+    private modalService: BsModalService
   ) {
     this.resumeForm = this.fb.group({
       resume: [null, [<any>Validators.required]]
@@ -54,6 +61,12 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getApplicantData(this.activatedRoute.snapshot.data['applicant'].success.data);
+    this.availability = [
+      'Immediate',
+      'One Month',
+      'Two Months',
+      'More Than Two Months'
+    ]
   }
 
   ngOnDestroy() {
@@ -112,24 +125,36 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
 
   onFileChange(event) {
     if (event.length > 0) {
+      const reader = new FileReader();
       if (event[0].type.includes('pdf') || event[0].type.includes('msword') ||
         event[0].type.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) {
         this.errInvalidFile = false;
-        this.resume = event[0];
+        // this.resume = event[0];
+        reader.onload = () => {
+          this.resumeForm.get(['resume']).setValue(event[0]);
+        }
+        reader.readAsDataURL(event[0]);
       } else {
         this.errInvalidFile = true;
       }
-      this.resumeForm.get(['resume']).setValue(event[0].name);
-
     } else {
-      this.resumeForm.get(['resume']).setValue(null);
+      this.resumeForm.get(['resume']).setValue('');
     }
   }
 
-  editApplicant(applicant, template: TemplateRef<any>) {
-    window.editApplicantPopup = document.getElementById('closeButton');
-    this.applicantDetails = applicant;
-  }
+  updateApplicant() {
+    this.modalRef = this.modalService.show(CreateApplicantComponent, { 
+        class: 'modal-lg', 
+        initialState: { applicant: this.applicant } 
+    });
+    this.modalRef.content.closePopup.subscribe(result => {
+        if (result) {
+            this.applicant = result['data'];
+            this.applicant.fullName = this.getFullName.bind(this.applicant);
+            this.onUpdate.emit(this.applicant);
+        }
+    });
+}
 
   getApplicantJobStatus(id) {
     this.applicantInfoService.getAllJobHistory(id).subscribe(result => {

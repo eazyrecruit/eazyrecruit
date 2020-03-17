@@ -105,11 +105,11 @@
 
               <div id="job-applied" class="tab-pane fade in">
                 <strong><i class="fas fa-user-graduate"></i> Contract</strong>
-                <ul class="bg-box list-style-none padding-six" *ngIf="applicant?.personal">
-                  <li>Refered By : <span>{{applicant?.personal?.refered_by}}</span></li>
-                  <li>Notice Period : <span>{{applicant?.personal?.notice_period}}</span></li>
+                <ul class="bg-box list-style-none padding-six" *ngIf="applicant">
+                  <li>Referred By : <span *ngIf="applicant?.referredBy">{{applicant?.referredBy.firstName}}{{applicant?.referredBy.lastName}}{{'<' + applicant?.referredBy.email + '>'}}</span></li>
+                  <li>Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
                   <li>Notice Period(negotiable) :
-                    <span>{{applicant?.personal?.notice_period_negotiable}}</span></li>
+                    <span>{{applicant?.noticePeriodNegotiable}}</span></li>
                 </ul>
                 <hr>
                 <strong class="display-block mb-10">Jobs Applied</strong>

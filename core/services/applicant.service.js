@@ -77,6 +77,8 @@ exports.save = async (req) => {
                         modelResume.modified_at = new Date();
                         modelResume = await modelResume.save();
                         modelApplicant.resume = modelResume._id;
+                    } else {
+                        modelApplicant.resume = null;
                     }
                 }
 
@@ -128,6 +130,8 @@ exports.save = async (req) => {
                         }
                         modelApplicant.location = modelCurrentLocation;
                     }
+                } else {
+                    modelApplicant.location = null;
                 }
 
                 var modelpreferredLocation = null;
@@ -149,7 +153,7 @@ exports.save = async (req) => {
                                 modelpreferredLocation.modified_at = new Date();
                                 modelpreferredLocation = await modelpreferredLocation.save();
                             }
-                            modelApplicant.preferredLocations.push(modelpreferredLocation);
+                            modelApplicant.preferredLocations.push(modelpreferredLocation._id);
                         }
                     }
                 }
@@ -259,7 +263,7 @@ exports.getById = async (_id) => {
 }
 
 exports.getjobsByApplicantId = async (_id) => {
-    return await JobApplicant.find({ applicant: _id }).populate('job');
+    return await JobApplicant.find({ applicant: _id, is_deleted: { $ne: true} }).populate('job');
 }
 
 exports.delete = async (_id) => {

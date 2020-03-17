@@ -80,10 +80,6 @@
           <option value="" disabled selected>Select Referrer</option>
           <option *ngFor="let referrer of referrers;" value="{{referrer._id}}"> {{referrer.firstName}} {{referrer.lastName}}{{'<' + referrer.email + '>'}}</option>
         </select>
-        <!-- <input type="text" placeholder="Refered By" class="form-control" formControlName="referredBy"> -->
-        <!-- <small class="text-danger" *ngIf="applicantForm.controls['referredBy'].hasError('nameValid')">
-          Please enter correct name
-        </small> -->
       </div>
     </div>
 
@@ -97,14 +93,6 @@
           <option value="2">Two months</option>
           <option value="3">More than two months</option>
         </select>
-        <!-- <select class="form-control" formControlName="availability" [(ngModel)]="availability">
-          <option>Select Time</option>
-          <option *ngFor="let avail of availArray;" value="{{avail.id}}_{{avail.name}}">{{avail.name}}</option>
-        </select> -->
-        <!-- <small class="text-danger"
-          *ngIf="applicantForm.controls['availability'].hasError('required') && applicantForm.controls['availability'].touched">
-          Please Select time.
-        </small> -->
       </div>
 
       <div class="form-group col-md-4">
