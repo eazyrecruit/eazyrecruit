@@ -54,6 +54,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getApplicantData(this.activatedRoute.snapshot.data['applicant'].success.data);
+    this.getJobsByApplicantId();
   }
 
   ngOnDestroy() {
@@ -148,6 +149,16 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
         console.log('error', result);
       }
     });
+  }
+
+  getJobsByApplicantId() {
+    if (this.applicant && this.applicant._id) {
+      this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
+          if (result) {
+              this.applicant.jobs = result['success']['data'];
+          }
+      });
+    }
   }
 
 }
