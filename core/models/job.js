@@ -59,7 +59,8 @@ var jobSchema = new Schema({
 
 }, {
     versionKey: false,
-    usePushEach: true
+    usePushEach: true,
+    strict: false
 });
 
 jobSchema.plugin(mexp, {

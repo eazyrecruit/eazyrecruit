@@ -344,6 +344,16 @@ router.get("/job/:applicantId",  async (req, res) => {
     }
 });
 
+// getCommentsByJob
+router.get("/:applicant/:job",  async (req, res) => {
+    try {
+        let result = await applicantService.getCommentsByJob(req.params.applicant, req.params.job);
+        responseService.response(req, null, 'get applicant applied job', result, res);
+    } catch(error) {
+        responseService.response(req, error, 'get applicant applied job', null, res);
+    }
+});
+
 router.delete("/jobpost/applicant/remove", (req, res) => {
     applicantService.removeFromJobPost(req, (error, data) => {
         responseService.response(req, error, 'remove applicant from job', data, res);

@@ -276,24 +276,31 @@ exports.addComment = async (req) => {
     let comment = {
         comment: req.body.comment,
         applicant: req.body.applicant,
+        job: req.body.job,
         is_deleted: false,
         created_at: Date.now(),
         created_by: req.user.id,
         modified_at: Date.now(),
-        modified_by: req.user.id} 
-        return await ApplicantComments.create(comment);
+        modified_by: req.user.id
+    } 
+    return await ApplicantComments.create(comment);
 }
 
 exports.updateCommentsById = async (req) => {
     let comment = {
         comment: req.body.comment,
         modified_at: Date.now(),
-        modified_by: req.user.id} 
-        return await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
+        modified_by: req.user.id
+    } 
+    return await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
 }
 
 exports.getComments = async (req) => {
     return await ApplicantComments.find({ applicant: req.params.id , is_deleted: false});
+}
+
+exports.getCommentsByJob = async (applicantId, jobId) => {
+    return await ApplicantComments.find({ job: jobId, is_deleted: false });
 }
 
 exports.getApplicantHistory = async (applicantId, ) => {
