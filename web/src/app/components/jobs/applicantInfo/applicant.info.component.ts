@@ -43,6 +43,9 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     @Output()
     onReject: EventEmitter<any> = new EventEmitter();
 
+    @Output()
+    onUpdate: EventEmitter<any> = new EventEmitter();
+
     constructor(
         private route: ActivatedRoute,
         private uploadService: UploadService,
@@ -251,14 +254,15 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         return name;
     }
 
-    updateApplicant(applicantId) {
+    updateApplicant() {
         this.modalRef = this.modalService.show(CreateApplicantComponent, { 
             class: 'modal-lg', 
             initialState: { applicant: this.applicant } 
         });
         this.modalRef.content.closePopup.subscribe(result => {
             if (result) {
-                console.log('updated applicant', result);
+                this.getApplicantById(result['data']._id);
+                this.onUpdate.emit(this.applicant);
             }
         });
     }

@@ -126,29 +126,11 @@ export class SkillComponent implements OnInit {
     this.filter.offset = (filter.pageIndex - 1) * filter.pageSize;
     this.filter.searchText = filter.searchText;
     this.filter.pageSize = filter.pageSize;
-
-    // this.skillsService.getSkill().subscribe(result => {
-    //   if (result['success']) {
-    //     if (result['success']['data'].length) {
-    //       this.skills = result['success']['data'];
-    //       this.totalRecords = result['success']['data'].length;
-    //       this.serialNo = (filter.pageIndex - 1) * filter.pageSize;
-    //       this.isSearchResultAvail = 1;
-    //     } else {
-    //       this.skills.length = 0;
-    //       this.isSearchResultAvail = 2;
-    //       this.totalRecords = 0;
-    //     }
-    //   } else {
-    //     this.isSearchResultAvail = 2;
-    //     this.totalRecords = 0;
-    //   }
-    // });
     this.skillsService.getSkills(this.filter).subscribe(result => {
       if (result['success']) {
-        if (result['success']['data'].length) {
-          this.skills = result['success']['data'];
-          this.totalRecords = result['success']['data'].length;
+        if (result['success']['data'] && result['success']['data']['count']) {
+          this.skills = result['success']['data']['skills'];
+          this.totalRecords = result['success']['data']['count'];
           this.serialNo = (filter.pageIndex - 1) * filter.pageSize;
           this.isSearchResultAvail = 1;
         } else {

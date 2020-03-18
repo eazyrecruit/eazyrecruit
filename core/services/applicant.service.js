@@ -33,8 +33,8 @@ exports.save = async (req) => {
                     modelApplicant = new Applicants();
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
-                    modelApplicant.email = email;
                 }
+                modelApplicant.email = email;
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
                 modelApplicant.source = req.body.source ? req.body.source : '';
                 modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : '';
@@ -77,6 +77,8 @@ exports.save = async (req) => {
                         modelResume.modified_at = new Date();
                         modelResume = await modelResume.save();
                         modelApplicant.resume = modelResume._id;
+                    } else {
+                        modelApplicant.resume = null;
                     }
                 }
 
@@ -90,6 +92,7 @@ exports.save = async (req) => {
                     }
                     if (skills && skills.length > 0) {
                         modelApplicant.skills = [];
+                        modelApplicant.skills.length = 0;
                         for(var iSkill = 0; iSkill < skills.length; iSkill ++) {
                             modelSkills = await Skills.findOne({ _id: skills[iSkill].id });
                             if (modelSkills == null) {
@@ -112,7 +115,7 @@ exports.save = async (req) => {
                 if (req.body.currentLocation) {
                     var current = JSON.parse(req.body.currentLocation);
                     if (current && current.length > 0) {
-                        modelCurrentLocation = await Locations.findOne({ _id: current.id })
+                        modelCurrentLocation = await Locations.findOne({ _id: current[0].id })
                         if (modelCurrentLocation == null) {
                             modelCurrentLocation = new Locations();
                             modelCurrentLocation.country = current.country || '';
@@ -127,6 +130,8 @@ exports.save = async (req) => {
                         }
                         modelApplicant.location = modelCurrentLocation;
                     }
+                } else {
+                    modelApplicant.location = null;
                 }
 
                 var modelpreferredLocation = null;
@@ -148,7 +153,7 @@ exports.save = async (req) => {
                                 modelpreferredLocation.modified_at = new Date();
                                 modelpreferredLocation = await modelpreferredLocation.save();
                             }
-                            modelApplicant.preferredLocations.push(modelpreferredLocation);
+                            modelApplicant.preferredLocations.push(modelpreferredLocation._id);
                         }
                     }
                 }
@@ -258,7 +263,7 @@ exports.getById = async (_id) => {
 }
 
 exports.getjobsByApplicantId = async (_id) => {
-    return await JobApplicant.find({ applicant: _id }).populate({ path: 'job', match: { is_deleted: { $ne: true }}});
+    return await JobApplicant.find({ applicant: _id, is_deleted: { $ne: true } }).populate({ path: 'job', select: 'title' }).populate({ path: 'pipeline', select: 'name' });
 }
 
 exports.delete = async (_id) => {
@@ -300,7 +305,7 @@ exports.getComments = async (req) => {
 }
 
 exports.getCommentsByJob = async (applicantId, jobId) => {
-    return await ApplicantComments.find({ job: jobId, is_deleted: false });
+    return await ApplicantComments.find({ job: jobId, is_deleted: false }).populate({ path: 'modified_by', select: 'email firstName lastName'});
 }
 
 exports.getApplicantHistory = async (applicantId, ) => {
