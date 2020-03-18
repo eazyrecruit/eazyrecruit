@@ -18,6 +18,9 @@ export class CommentComponent implements OnInit, OnChanges {
   @Input()
   applicant?: any;
 
+  @Input()
+  job?: any;
+
   constructor(private applicantService: ApplicantService,
     private fbForm: FormBuilder, private validationService: ValidationService) {
       this.commentDetails = this.fbForm.group({
@@ -64,6 +67,9 @@ export class CommentComponent implements OnInit, OnChanges {
         const obj: any = {};
         obj.applicant = this.applicant._id;
         obj.comment = commentForm.comment;
+        if (this.job) {
+          obj.job = this.job;
+        }
         this.addComment(obj);
       }
     }

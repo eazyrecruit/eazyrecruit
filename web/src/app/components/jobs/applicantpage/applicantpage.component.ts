@@ -161,4 +161,17 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     }
   }
 
+  getCommentsByJobId(jobId: any, index) {
+    this.applicantInfoService.getJobAndComments(this.applicant._id, jobId).subscribe(result => {
+      if (result) {
+        if (this.applicant.jobs[index].comments && this.applicant.jobs[index].comments.length) {
+          // this.applicant.jobs[index].comments.push(result['success']['data']);
+          this.applicant.jobs[index].comments = result['success']['data'];
+        } else {
+          this.applicant.jobs[index].comments = result['success']['data'];
+        }
+      }
+  });
+  }
+
 }

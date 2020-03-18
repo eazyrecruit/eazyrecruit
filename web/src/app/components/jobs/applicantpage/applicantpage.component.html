@@ -246,25 +246,25 @@
             <h4 class="text-dark-blue">Applied Jobs</h4>
             <hr>
             <div class="row job-box" *ngIf="applicant && applicant.jobs && applicant.jobs.length">
-              <div class="col-md-2" *ngFor="let jobApplicant of applicant.jobs">
+              <div class="col-md-2" *ngFor="let jobApplicant of applicant.jobs; let i = index;">
                 <div class="status-box" *ngIf="jobApplicant.job && jobApplicant.job.title">
-                  <div>Title: {{jobApplicant.job.title}}</div>
+                  <div><span (click)="getCommentsByJobId(jobApplicant.job, i)">Title: {{jobApplicant.job.title}}</span></div>
                   <div>{{jobApplicant.job.modified_at | date}}</div>
                 </div>
-              </div>
-              <!-- <div *ngFor="let commentObj of job.applicant_comments">
-                <div class="comment-box">
-                  <p>{{commentObj.comment}}</p>
-                  <div class="row">
-                    <div class="col-md-6" align="left">
-                        {{commentObj.user.user_detail.first_name}} {{commentObj.user.user_detail.middle_name}} {{commentObj.user.user_detail.last_name}}
-                    </div>
-                    <div class="col-md-6" align="right">
-                        {{commentObj.created_at | amTimeAgo}}
+                <div *ngFor="let commentObj of job.comments">
+                  <div class="comment-box">
+                    <p>{{commentObj.comment}}</p>
+                    <div class="row">
+                      <div class="col-md-6" align="left">
+                          {{commentObj.applicant.firstName}} {{commentObj.applicant.middleName}} {{commentObj.applicant.lastName}}
+                      </div>
+                      <div class="col-md-6" align="right">
+                          {{commentObj.created_at | date}}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div> -->
+              </div>
             </div>
         </div>
       </div>

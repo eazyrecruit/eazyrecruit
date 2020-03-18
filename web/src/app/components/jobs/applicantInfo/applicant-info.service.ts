@@ -49,4 +49,8 @@ export class ApplicantInfoService {
   getJobsByApplicantId(applicantId) {
     return this.http.get(`${this.constService.baseUrl}applicant/job/${applicantId}`);
   }
+
+  getJobAndComments(applicantId, jobId) {
+    return this.http.get(`${this.constService.baseUrl}applicant/${applicantId}/${jobId}`);
+  }
 }
