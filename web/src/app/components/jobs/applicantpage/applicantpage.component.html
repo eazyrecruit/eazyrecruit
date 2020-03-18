@@ -128,28 +128,6 @@
     </div>
   </div>
 
-  <!-- <div class="row">
-    <div class="col-md-12">
-      <div class="box box-info">
-        <div class="main-content padding-20px-tb plr-15">
-          <div *ngIf="applicant">
-            <h4 class="text-dark-blue">Address information</h4>
-            <table class="table bg-dark-black mt-30 border-light" *ngFor="let addressInfo of addressesInfo">
-              <tr>
-                <td class="font-weight-600"> City :</td>
-                <td>{{addressInfo.city ? addressInfo.city : 'Not Available'}}</td>
-              </tr>
-              <tr>
-                <td class="font-weight-600"> State :</td>
-                <td>{{addressInfo.state ? addressInfo.state : 'Not Available'}}</td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
   <div class="row">
     <div class="col-md-12">
       <div class="box box-info">
@@ -245,26 +223,29 @@
         <div class="main-content padding-20px-tb plr-15">
             <h4 class="text-dark-blue">Applied Jobs</h4>
             <hr>
-            <div class="row" *ngIf="applicant && applicant.jobs && applicant.jobs.length">
-              <div class="col-md-2" *ngFor="let jobApplicant of applicant.jobs">
-                <div class="status-box" *ngIf="jobApplicant.job && jobApplicant.job.title">
+            <div class="row" *ngIf="applicant && applicant.jobs && applicant.jobs.length;">
+              <div class="col-sm-2 col-md-2 col-lg-2" *ngFor="let jobApplicant of applicant.jobs">
+                <div class="status-box c-pointer" *ngIf="jobApplicant.job && jobApplicant.job.title" (click)="getCommentsByJobId(jobApplicant.job._id)">
                   <div>Title: {{jobApplicant.job.title}}</div>
-                  <div>{{jobApplicant.job.modified_at | date}}</div>
+                  <div>Status: {{jobApplicant.pipeline.name}}</div>
                 </div>
               </div>
-              <!-- <div *ngFor="let commentObj of job.applicant_comments">
+            </div>
+            <div class="row" *ngIf="comments.length">
+              <div class="col-sm-12 col-md-12 col-lg-12" *ngFor="let commentObj of comments">
                 <div class="comment-box">
                   <p>{{commentObj.comment}}</p>
                   <div class="row">
                     <div class="col-md-6" align="left">
-                        {{commentObj.user.user_detail.first_name}} {{commentObj.user.user_detail.middle_name}} {{commentObj.user.user_detail.last_name}}
+                        <span *ngIf="commentObj.modified_by.firstName">{{commentObj.modified_by.firstName}} {{commentObj.modified_by.lastName}}</span>
+                        <span *ngIf="!commentObj.modified_by.firstName">{{commentObj.modified_by.email}}</span>
                     </div>
                     <div class="col-md-6" align="right">
-                        {{commentObj.created_at | amTimeAgo}}
+                        {{commentObj.modified_at | date}}
                     </div>
                   </div>
                 </div>
-              </div> -->
+              </div>
             </div>
         </div>
       </div>

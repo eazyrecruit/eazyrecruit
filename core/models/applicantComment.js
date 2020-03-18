@@ -7,6 +7,10 @@ var applicantCommentSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Applicants'
     },
+    job: {
+        type: Schema.Types.ObjectId,
+        ref: 'Jobs'
+    },
     is_deleted: Boolean,
     created_by: {
         type: Schema.Types.ObjectId,

@@ -41,6 +41,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
   contractInfo: any;
   modalRef: BsModalRef;
   availability: any[];
+  comments: any [];
 
   @Output()
     onUpdate: EventEmitter<any> = new EventEmitter();
@@ -68,6 +69,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
       'More Than Two Months'
     ]
     this.getJobsByApplicantId();
+    this.comments = [];
   }
 
   ngOnDestroy() {
@@ -79,7 +81,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
       if (applicant.firstName) {
         applicant.fullName = this.getFullName.bind(applicant);
       } else {
-        this.fullName = 'Not Available';
+        this.fullName = this.getFullName.bind(applicant);
       }
         this.applicant = applicant;
     } else {
@@ -150,8 +152,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     });
     this.modalRef.content.closePopup.subscribe(result => {
         if (result) {
-            this.applicant = result['data'];
-            this.applicant.fullName = this.getFullName.bind(this.applicant);
+            this.getApplicantById(result['data']._id);
             this.onUpdate.emit(this.applicant);
         }
     });
@@ -186,4 +187,20 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     }
   }
 
+  getCommentsByJobId(jobId: any) {
+    this.applicantInfoService.getJobAndComments(this.applicant._id, jobId).subscribe(result => {
+      if (result) {
+        this.comments = result['success']['data'];
+      }
+    });
+  }
+
+  getApplicantById(id: string) {
+    this.applicantInfoService.getApplicantById(id).subscribe(result => {
+        if (result) {
+            this.applicant = result['success']['data'];
+            this.applicant.fullName = this.getFullName.bind(this.applicant);
+        }
+    });
+  }
 }
