@@ -224,8 +224,8 @@
             <h4 class="text-dark-blue">Applied Jobs</h4>
             <hr>
             <div class="row" *ngIf="applicant && applicant.jobs && applicant.jobs.length;">
-              <div class="col-sm-2 col-md-2 col-lg-2" *ngFor="let jobApplicant of applicant.jobs">
-                <div class="status-box c-pointer" *ngIf="jobApplicant.job && jobApplicant.job.title" (click)="getCommentsByJobId(jobApplicant.job._id)">
+              <div class="col-sm-2 col-md-2 col-lg-2" *ngFor="let jobApplicant of applicant.jobs; let i = index;">
+                <div class="c-pointer {{jobApplicant.background}}" *ngIf="jobApplicant.job && jobApplicant.job.title" (click)="getCommentsByJobId(jobApplicant.job._id, i)">
                   <div>Title: {{jobApplicant.job.title}}</div>
                   <div>Status: {{jobApplicant.pipeline.name}}</div>
                 </div>

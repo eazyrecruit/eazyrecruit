@@ -182,14 +182,16 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
       this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
           if (result) {
               this.applicant.jobs = result['success']['data'];
+              this.setBackgroundColor(null);
           }
       });
     }
   }
 
-  getCommentsByJobId(jobId: any) {
+  getCommentsByJobId(jobId: any, index) {
     this.applicantInfoService.getJobAndComments(this.applicant._id, jobId).subscribe(result => {
-      if (result) {
+      if (result && result['success'] && result['success']['data']) {
+        this.setBackgroundColor(index);
         this.comments = result['success']['data'];
       }
     });
@@ -202,5 +204,15 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
             this.applicant.fullName = this.getFullName.bind(this.applicant);
         }
     });
+  }
+
+  setBackgroundColor(index) {
+    for(let i = 0; i < this.applicant.jobs.length; i++) {
+      if (index === i) {
+        this.applicant.jobs[index].background = "status-box-selected";
+      } else {
+        this.applicant.jobs[i].background = "status-box";
+      }
+    }
   }
 }
