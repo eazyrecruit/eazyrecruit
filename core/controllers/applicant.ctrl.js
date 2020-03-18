@@ -345,7 +345,7 @@ router.get("/job/:applicantId",  async (req, res) => {
 });
 
 // getCommentsByJob
-router.get("/:applicant/:job",  async (req, res) => {
+router.get("/comment/:applicant/:job",  async (req, res) => {
     try {
         let result = await applicantService.getCommentsByJob(req.params.applicant, req.params.job);
         responseService.response(req, null, 'get applicant applied job', result, res);
