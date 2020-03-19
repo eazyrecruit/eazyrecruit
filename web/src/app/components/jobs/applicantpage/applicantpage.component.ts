@@ -41,7 +41,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
   contractInfo: any;
   modalRef: BsModalRef;
   availability: any[];
-  comments: any [];
+  comments: any;
 
   @Output()
     onUpdate: EventEmitter<any> = new EventEmitter();
@@ -69,7 +69,6 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
       'More Than Two Months'
     ]
     this.getJobsByApplicantId();
-    this.comments = [];
   }
 
   ngOnDestroy() {

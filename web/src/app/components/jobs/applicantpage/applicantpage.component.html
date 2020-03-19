@@ -231,7 +231,7 @@
                 </div>
               </div>
             </div>
-            <div class="row" *ngIf="comments.length">
+            <div class="row" *ngIf="comments && comments.length; else noComments">
               <div class="col-sm-12 col-md-12 col-lg-12" *ngFor="let commentObj of comments">
                 <div class="comment-box">
                   <p>{{commentObj.comment}}</p>
@@ -247,6 +247,13 @@
                 </div>
               </div>
             </div>
+            <ng-template #noComments>
+              <div class="row" *ngIf="comments">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                  <div class="comment-box" align="center">No comments found.</div>
+                </div>
+              </div>
+            </ng-template>
         </div>
       </div>
     </div>
