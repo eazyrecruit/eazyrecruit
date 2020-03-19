@@ -21,17 +21,16 @@ export class CommentComponent implements OnInit, OnChanges {
   @Input()
   job?: any;
 
-  constructor(private applicantService: ApplicantService,
-    private fbForm: FormBuilder, private validationService: ValidationService) {
+  constructor(
+    private applicantService: ApplicantService,
+    private fbForm: FormBuilder,
+    private validationService: ValidationService) {
       this.commentDetails = this.fbForm.group({
         comment: [null, [<any>Validators.required]]
       });
   }
 
   ngOnInit() {
-    if (this.applicant && this.applicant._id) {
-      this.getComments(this.applicant._id);
-    }
   }
 
   ngOnChanges() {
@@ -49,7 +48,7 @@ export class CommentComponent implements OnInit, OnChanges {
 
   getComments(id: any) {
     this.applicantService.getComments(id).subscribe(result => {
-      if (result['success']) {
+      if (result['success'] && result['success']['data']) {
         this.commentList = result['success']['data'];
       }
     });

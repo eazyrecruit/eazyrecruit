@@ -36,6 +36,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     modalRef: BsModalRef;
     scheduledInterviews: Array<any>;
     interviewers: Array<any>;
+    showComments: boolean = false;
 
     @Input()
     applicant?: any;
@@ -265,5 +266,9 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
                 this.onUpdate.emit(this.applicant);
             }
         });
+    }
+
+    getComments() {
+        this.showComments = true;
     }
 }
