@@ -9,7 +9,7 @@
             <li class="closed-panel" id="closed-panel"><a><i class="fa fa-close"></i></a></li>
             <li><a data-toggle="tab" title="Details" href="#basic"><i class="fa fa-home"></i></a></li>
             <li><a data-toggle="tab" title="Interview" href="#interview" (click)="getScheduledInterviews()"><i class="fa fa-calendar"></i></a></li>
-            <li><a data-toggle="tab" title="Comments" href="#comments"><i class="fa fa-comments"></i></a></li>
+            <li><a data-toggle="tab" title="Comments" href="#comments" (click)="getComments()"><i class="fa fa-comments"></i></a></li>
             <li><a data-toggle="tab" title="Job" href="#job-applied" (click)="getJobsByApplicantId()"><i class="fa fa-briefcase"></i></a></li>
             <li><a data-toggle="tab" title="Education" href="#education"><i class="fa fa-book"></i></a></li>
             <li><a data-toggle="tab" title="Experience" href="#experience"><i class="fa fa-user"></i></a></li>
@@ -82,7 +82,7 @@
               </div>
 
               <div id="comments" class="tab-pane fade in">
-                <app-comment [applicant]="applicant" [job]="jobId"> </app-comment>
+                <app-comment *ngIf="applicant && showComments" [applicant]="applicant" [job]="jobId"></app-comment>
               </div>
 
               <div id="interview" class="tab-pane fade in">
