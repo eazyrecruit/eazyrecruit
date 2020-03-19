@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var resumeService = require('../services/resume.service');
 var responseService = require('../services/response.service');
+var multer = require('multer');
 
 router.get("/:id",
     async (req, res, next) => {
@@ -36,5 +37,20 @@ router.get("/:id",
         }
     }
 )
+
+var resume = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+router.put("/:id", resume.any(), async (req, res) => {
+    try {
+        let resume = await resumeService.updateByApplicantId(req);
+        if (resume) {
+            responseService.successResponse(resume, 'update resume', res);
+        } else {
+            responseService.errorResponse({ status: 500, message: 'unable to update resume' }, 'update resume error', res);
+        }
+        
+    } catch (error) {
+        responseService.errorResponse(error, 'update resume error', res);
+    }
+});
 
 module.exports.resume = router;
