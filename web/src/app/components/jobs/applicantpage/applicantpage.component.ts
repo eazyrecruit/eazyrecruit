@@ -97,30 +97,17 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
 
   uploadResume() {
     const formData = new FormData();
-    formData.append('resumeData', this.resume);
-    formData.append('applicantId', this.applicant.personal.profile_id);
+    formData.append('resumeData', this.resumeForm.get(['resume']).value);
     if (!this.resumeForm.valid) {
       this.validationService.validateAllFormFields(this.resumeForm);
     }
     if (this.resumeForm.valid) {
-      this.isResumeUploading = true;
-      this.isUploadDisabled = true;
-      this.uploadService.uploadResume(formData).subscribe(result => {
-        if (result['success']) {
-          this.resumeId = result['success']['data']._id;
-          this.applicant.resume_id = this.resumeId;
-          this.resumeForm.get(['resume']).setValue(null);
-          // update user profile to have resume id
-          this.uploadService.updateResumeReference(this.resumeId, this.applicant.personal.profile_id).subscribe(resumeResult => {
-            if (resumeResult['success']) {
-              alert('Resume uploaded');
-              this.resumeForm.reset();
-            }
-          });
-
+      this.uploadService.updateResume(formData, this.applicant._id).subscribe(result => {
+        if (result && result['success'] && result['success']['data']) {
+          this.applicant.resume = result['success']['data']._id;
         }
-        this.isResumeUploading = false;
-        this.isUploadDisabled = false;
+      }, (error) => {
+        SiteJS.stopLoader();
       });
     }
   }
@@ -131,7 +118,6 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
       if (event[0].type.includes('pdf') || event[0].type.includes('msword') ||
         event[0].type.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) {
         this.errInvalidFile = false;
-        // this.resume = event[0];
         reader.onload = () => {
           this.resumeForm.get(['resume']).setValue(event[0]);
         }
