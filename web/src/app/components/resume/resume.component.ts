@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, Input } from '@angular/core';
+import { Component, ViewChild, TemplateRef, Input, OnChanges } from '@angular/core';
 import { ApplicantDataService } from '../../services/applicant-data.service';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -14,7 +14,7 @@ import { ValidationService } from '../../services/validation.service';
   styleUrls: ['./resume.component.css'],
   providers: [SearchService, UploadService,ValidationService]
 })
-export class ResumeComponent implements OnInit {
+export class ResumeComponent implements OnChanges {
 
   @ViewChild('template')
   template: TemplateRef<any>;
@@ -51,7 +51,10 @@ export class ResumeComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnChanges() {
+    if (typeof this.applicant.resume === 'string' && this.applicant.resume.length) {
+      this.getResume(this.applicant.resume);
+    }
   }
 
   getResume(_resumeId) {

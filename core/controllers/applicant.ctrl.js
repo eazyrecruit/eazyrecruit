@@ -333,7 +333,7 @@ router.get("/resume", (req, res, next) => {
                 .done();
         }
     });
-})
+});
 
 router.get("/job/:applicantId",  async (req, res) => {
     try {

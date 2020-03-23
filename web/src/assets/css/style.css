@@ -893,6 +893,13 @@ tag-input {
     text-align: center;
 }
 
+.status-box-selected {
+    background-color: #b9bec4;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
 /* loader */
 .loader {
     border: 6px solid #dddddd;

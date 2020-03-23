@@ -7,6 +7,7 @@
 // var applicantJobPostService = require('./applicantJobPosts.service');
 // var Profiles = require('../models/userProfiles');
 var Resume = require('../models/applicantResume');
+var Applicants = require('../models/applicant');
 // var models = require('../sequelize');
 var fs = require('fs');
 // var path = require('path');
@@ -119,6 +120,27 @@ exports.downloadResume = (req, res, next) => {
 exports.getResumeById = (resume_id) => {
     return Resume.findById(resume_id);
 }
+
+exports.updateByApplicantId = async (req) => {
+    let applicant = await Applicants.findById(req.params.id);
+    let modelResume = await Resume.findById(applicant.resume);
+    if (modelResume == null) {
+        modelResume = new Resume();
+        modelResume.is_deleted = false;
+        modelResume.created_by = req.user.id;
+        modelResume.created_at = new Date();
+    }
+    modelResume.resume = req.files[0].buffer.toString('base64')
+    modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
+    modelResume.fileType = req.files[0].mimetype;
+    modelResume.modified_by = req.user.id;
+    modelResume.modified_at = new Date();
+    modelResume = await modelResume.save();
+    applicant.resume = modelResume._id;
+    await applicant.save();
+    return modelResume;
+}
+
 exports.uploadResume = (req, next) => {
     let resume = new Resume();
     if (req.body.resume || req.files) {

@@ -36,6 +36,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     modalRef: BsModalRef;
     scheduledInterviews: Array<any>;
     interviewers: Array<any>;
+    showComments: boolean = false;
 
     @Input()
     applicant?: any;
@@ -229,7 +230,6 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     getApplicantById(id: string) {
         this.applicantInfoService.getApplicantById(id).subscribe(result => {
             if (result) {
-                // console.log('applicant result ===>>> ', result['success']['data']);
                 this.applicant = result['success']['data'];
                 this.applicant.fullName = this.getFullName.bind(this.applicant);
             }
@@ -240,7 +240,6 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         if (this.applicant && this.applicant._id) {
             this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
                 if (result) {
-                    // console.log('applicant job result ===>>> ', result['success']['data']);
                     this.applicant.jobs = result['success']['data'];
                 }
             });
@@ -265,5 +264,9 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
                 this.onUpdate.emit(this.applicant);
             }
         });
+    }
+
+    getComments() {
+        this.showComments = true;
     }
 }

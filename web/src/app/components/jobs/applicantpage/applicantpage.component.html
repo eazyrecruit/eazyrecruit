@@ -64,7 +64,7 @@
                 <tr>
                   <td class="font-weight-600"> Current Location :</td>
                   <td>
-                    <span *ngIf="applicant.location.state">{{applicant.location.city}},&nbsp;{{applicant.location.state}}</span>
+                    <span *ngIf="applicant.location">{{applicant.location.city}},&nbsp;{{applicant.location.state}}</span>
                   </td>
                 </tr>
                 <tr>
@@ -224,14 +224,14 @@
             <h4 class="text-dark-blue">Applied Jobs</h4>
             <hr>
             <div class="row" *ngIf="applicant && applicant.jobs && applicant.jobs.length;">
-              <div class="col-sm-2 col-md-2 col-lg-2" *ngFor="let jobApplicant of applicant.jobs">
-                <div class="status-box c-pointer" *ngIf="jobApplicant.job && jobApplicant.job.title" (click)="getCommentsByJobId(jobApplicant.job._id)">
+              <div class="col-sm-2 col-md-2 col-lg-2" *ngFor="let jobApplicant of applicant.jobs; let i = index;">
+                <div class="c-pointer {{jobApplicant.background}}" *ngIf="jobApplicant.job && jobApplicant.job.title" (click)="getCommentsByJobId(jobApplicant.job._id, i)">
                   <div>Title: {{jobApplicant.job.title}}</div>
                   <div>Status: {{jobApplicant.pipeline.name}}</div>
                 </div>
               </div>
             </div>
-            <div class="row" *ngIf="comments.length">
+            <div class="row" *ngIf="comments && comments.length; else noComments">
               <div class="col-sm-12 col-md-12 col-lg-12" *ngFor="let commentObj of comments">
                 <div class="comment-box">
                   <p>{{commentObj.comment}}</p>
@@ -247,6 +247,13 @@
                 </div>
               </div>
             </div>
+            <ng-template #noComments>
+              <div class="row" *ngIf="comments">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                  <div class="comment-box" align="center">No comments found.</div>
+                </div>
+              </div>
+            </ng-template>
         </div>
       </div>
     </div>

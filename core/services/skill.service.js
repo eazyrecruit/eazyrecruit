@@ -10,5 +10,5 @@ module.exports.searchSkills =  async (req) => {
 }
 
 module.exports.getAllByIds = async (skillIds) => {
-    return await Skills.find({ '_id': { '$in': skillIds } }).lean().exec();
+    return await Skills.find({ '_id': { '$in': skillIds }, 'is_deleted': false }).lean().exec();
 }

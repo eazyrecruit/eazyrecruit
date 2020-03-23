@@ -94,13 +94,8 @@ export class ApplicantsComponent implements OnInit {
   }
 
   openCandidate(applicantId: any) {
-    this.applicantDataService.getApplicantCompleteData(applicantId).subscribe(result => {
-      if (result['success'] && result['success']['data']) {
-        this.applicant = { _id: applicantId };
-        this.applicant.fullName = this.getFullName.bind(this.applicant);
-        SiteJS.slideOpen('applicant-info');
-      }
-    });
+    this.applicant = { _id: applicantId };
+    SiteJS.slideOpen('applicant-info');
   }
 
   getFullName(firstName, middleName, lastName) {

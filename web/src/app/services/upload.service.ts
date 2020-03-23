@@ -61,7 +61,7 @@ export class UploadService {
   updateResume(resume, id)  {
     const headers = new HttpHeaders();
     headers.set('Content-Type', 'multipart/form-data');
-    const url = this.constService.baseUrl + 'jobapply/resume?id=' + id;
+    const url = `${this.constService.baseUrl}resume/${id}`;
     return this.http.put(url, resume, { headers: headers });
   }
 
