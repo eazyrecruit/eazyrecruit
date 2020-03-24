@@ -26,16 +26,14 @@ export class ResumeComponent implements OnChanges {
   resume_html: any;
   modalRef: BsModalRef;
   applicant_Id: any;
-  applicantResume: any;
   resumeData: any;
 
   @Input()
   set applicant(_applicant) {
     this.applicant_Id = _applicant._id;
-    this.applicantResume = _applicant;
 
     // console.log(_applicant);
-    if (_applicant.resume) {
+    if (_applicant && typeof _applicant.resume === 'string' && _applicant.resume.length) {
       this.getResume(_applicant.resume);
     } else {
       this.resume = '';
@@ -56,9 +54,6 @@ export class ResumeComponent implements OnChanges {
   }
 
   ngOnChanges() {
-    if (this.applicantResume && typeof this.applicantResume.resume === 'string' && this.applicantResume.resume.length) {
-      this.getResume(this.applicantResume.resume);
-    }
   }
 
   getResume(_resumeId) {
