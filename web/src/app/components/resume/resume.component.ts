@@ -1,4 +1,4 @@
-import { Component, ViewChild, TemplateRef, Input, OnChanges } from '@angular/core';
+import { Component, ViewChild, TemplateRef, Input, OnChanges, DoCheck } from '@angular/core';
 import { ApplicantDataService } from '../../services/applicant-data.service';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -14,7 +14,7 @@ import { ValidationService } from '../../services/validation.service';
   styleUrls: ['./resume.component.css'],
   providers: [SearchService, UploadService,ValidationService]
 })
-export class ResumeComponent implements OnChanges {
+export class ResumeComponent implements DoCheck {
 
   @ViewChild('template')
   template: TemplateRef<any>;
@@ -27,14 +27,20 @@ export class ResumeComponent implements OnChanges {
   modalRef: BsModalRef;
   applicant_Id: any;
   resumeData: any;
+  version: any;
+  updatedApplicant: any;
 
   @Input()
   set applicant(_applicant) {
     this.applicant_Id = _applicant._id;
+    this.updatedApplicant = _applicant;
+    this.version = _applicant.version;
 
     // console.log(_applicant);
-    if (_applicant.resume) {
+    if (_applicant && typeof _applicant.resume === 'string' && _applicant.resume.length) {
       this.getResume(_applicant.resume);
+    } else {
+      this.resume = '';
     }
   }
 
@@ -50,10 +56,10 @@ export class ResumeComponent implements OnChanges {
       resume: [null, [<any>Validators.required]]
     });
   }
-
-  ngOnChanges() {
-    if (typeof this.applicant.resume === 'string' && this.applicant.resume.length) {
-      this.getResume(this.applicant.resume);
+  ngDoCheck(): void {
+    if (this.updatedApplicant && this.updatedApplicant.version > this.version) {
+      this.version = this.updatedApplicant.version;
+      this.getResume(this.updatedApplicant.resume);
     }
   }
 

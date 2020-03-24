@@ -83,6 +83,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
         this.fullName = this.getFullName.bind(applicant);
       }
         this.applicant = applicant;
+        this.applicant.version = 1;
     } else {
       SiteJS.stopLoader();
     }
@@ -104,6 +105,8 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     if (this.resumeForm.valid) {
       this.uploadService.updateResume(formData, this.applicant._id).subscribe(result => {
         if (result && result['success'] && result['success']['data']) {
+          this.resumeForm.get(['resume']).reset();
+          this.applicant.version++;
           this.applicant.resume = result['success']['data']._id;
         }
       }, (error) => {

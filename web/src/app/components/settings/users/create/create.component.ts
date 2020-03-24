@@ -26,9 +26,9 @@ export class CreateComponent implements OnInit {
 
       this.adminDetails = this.fbForm.group({
         firstName: [null, [<any>Validators.required], this.validationService.nameValid],
-        lastName: [null, [<any>Validators.required], this.validationService.nameValid],
+        lastName: [null, [], this.validationService.nameValid],
         email: [null, [<any>Validators.required], this.validationService.emailValid],
-        phoneNo: [null, [<any>Validators.required], this.validationService.mobileValid],
+        phoneNo: [null, [], this.validationService.mobileValid],
         roleId: [null, []],
       });
     }
