@@ -160,7 +160,7 @@
         <div class="main-content padding-20px-tb plr-15">
           <div>
             <h4 class="text-dark-blue">Skills</h4>
-            <table class="table bg-dark-black mt-30 border-light" *ngIf="applicant.skills.length > 0">
+            <table class="table bg-dark-black mt-30 border-light" *ngIf="applicant && applicant.skills.length > 0">
               <tr>
                 <td>
                   <span class="pads-small" *ngFor="let skill of applicant.skills">

@@ -33,6 +33,7 @@ export class CreateApplicantComponent implements OnInit {
   closePopup: Subject<any>;
   applicantForm: FormGroup;
   referrers: any;
+  resume: any;
 
   constructor(
     private bsModelRef: BsModalRef,
@@ -143,14 +144,17 @@ export class CreateApplicantComponent implements OnInit {
       if (event[0].type.includes('pdf') || event[0].type.includes('msword') ||
         event[0].type.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) {
         reader.onload = () => {
-          this.applicantForm.get(['resume']).setValue(event[0]);
+          this.resume = event[0];
+          // this.applicantForm.get(['resume']).setValue(event[0]);          
         }
         reader.readAsDataURL(event[0]);
       } else {
         this.applicantForm.get(['resume']).setValue('');
+        this.resume = null;
       }
     } else {
       this.applicantForm.get(['resume']).setValue('');
+      this.resume = null;
     }
   }
 
@@ -210,6 +214,10 @@ export class CreateApplicantComponent implements OnInit {
             zip: applicantForm.preferredLocation[index].zip });
         }
         formData.set('preferredLocation', JSON.stringify(preferred));
+      }
+
+      if (this.resume) {
+        formData.set('resume', this.resume);
       }
 
       if (this.pipelineId) {

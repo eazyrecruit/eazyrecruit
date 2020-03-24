@@ -1,4 +1,4 @@
-import { Component, ViewChild, TemplateRef, Input, OnChanges } from '@angular/core';
+import { Component, ViewChild, TemplateRef, Input, OnChanges, DoCheck } from '@angular/core';
 import { ApplicantDataService } from '../../services/applicant-data.service';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -26,15 +26,19 @@ export class ResumeComponent implements OnChanges {
   resume_html: any;
   modalRef: BsModalRef;
   applicant_Id: any;
+  applicantResume: any;
   resumeData: any;
 
   @Input()
   set applicant(_applicant) {
     this.applicant_Id = _applicant._id;
+    this.applicantResume = _applicant;
 
     // console.log(_applicant);
     if (_applicant.resume) {
       this.getResume(_applicant.resume);
+    } else {
+      this.resume = '';
     }
   }
 
@@ -52,8 +56,8 @@ export class ResumeComponent implements OnChanges {
   }
 
   ngOnChanges() {
-    if (typeof this.applicant.resume === 'string' && this.applicant.resume.length) {
-      this.getResume(this.applicant.resume);
+    if (this.applicantResume && typeof this.applicantResume.resume === 'string' && this.applicantResume.resume.length) {
+      this.getResume(this.applicantResume.resume);
     }
   }
 
