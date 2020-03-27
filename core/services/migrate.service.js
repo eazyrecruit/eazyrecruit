@@ -5,7 +5,7 @@ const Location = require('../models/location');
 const Job = require('../models/job');
 const Pipeline = require('../models/jobPipeline');
 
-exports.restoreUser() = (data) => {
+exports.restoreUser = async (data) => {
     let users = [];
     data.forEach(obj => {
         let user = new User();
@@ -33,7 +33,7 @@ exports.restoreUser() = (data) => {
     return result;  
 }
 
-exports.restoreState = (data) => {
+exports.restoreState = async (data) => {
     let states = [];
     data.forEach(obj => {
         let location = new Location();
@@ -42,19 +42,19 @@ exports.restoreState = (data) => {
         location.state = obj.state;
         location.is_deleted = false;
         location.created_by = "5e6b047ddc8153001188bfcb";
-        location.created_at = new Date();
+        location.created_at = new Date(obj.created_at);
         location.modified_by = "5e6b047ddc8153001188bfcb";
-        location.modified_at = new Date();
+        location.modified_at = new Date(obj.modified_by);
         states.push(location);
     });
     let result = await Location.create(states);
 }
 
-exports.restoreJob = (data) => {
+exports.restoreJob = async (data) => {
     let jobs = [];
     // get ids of pipeline
-    let pipelines = pipeline(data.pipelines);
     data.forEach(obj => {
+        let pipelines = await pipeline(data.pipelines);
         let job = new Job();
         job.title = obj.title;
         job.guid = obj.guid;
@@ -76,27 +76,27 @@ exports.restoreJob = (data) => {
         job.metaImageAltText = "",
         job.metaTitle = obj.title,
         job.tags = [],
-        job.is_deleted = false,
+        job.is_deleted = obj.is_deleted,
         job.created_by = "5e6b047ddc8153001188bfcb",
-        job.created_at = new Date(),
+        job.created_at = new Date(obj.created_at),
         job.modified_by = "5e6b047ddc8153001188bfcb",
-        job.modified_at = new Date()
+        job.modified_at = new Date(obj.modified_at)
         jobs.push(job);
     });
     let result = await Job.create(jobs);
 }
 
-let pipeline = (data) => {
+let pipeline = async (data) => {
     let pipelines = [];
     data.forEach(obj => {
         let pipeline = new Pipeline();
         pipeline.name = obj.name;
         pipeline.position = obj.position;
-        pipeline.is_deleted = false;
+        pipeline.is_deleted = obj.is_deleted;
         pipeline.created_by = "5e6b047ddc8153001188bfcb";
-        pipeline.created_at = new Date();
+        pipeline.created_at = new Date(obj.created_at);
         pipeline.modified_by = "5e6b047ddc8153001188bfcb";
-        pipeline.modified_at = new Date();
+        pipeline.modified_at = new Date(obj.modified_at);
         pipelines.push(pipeline);
     });
     let result = await Pipeline.create(pipelines);
