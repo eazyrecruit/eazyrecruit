@@ -11,7 +11,7 @@ var jobSchema = new Schema({
     active: Boolean,
     description: String,
     responsibilities: String,
-    ctc: Number,
+    ctc: String,
     minExperience: Number,
     maxExperience: Number,
     mode: String,

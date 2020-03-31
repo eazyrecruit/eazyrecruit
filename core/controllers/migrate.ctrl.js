@@ -38,4 +38,40 @@ router.post('/applicant', async (req, res) => {
     }
 });
 
+router.post('/resume', async (req, res) => {
+    try {
+        let result = await migrateService.restoreResume(req.body);
+        res.send(result);
+    } catch (error) {
+        res.send(error);    
+    }
+});
+
+router.post('/jobapplicant', async (req, res) => {
+    try {
+        let result = await migrateService.restoreJobApplicant(req.body);
+        res.send(result);
+    } catch (error) {
+        res.send(error);    
+    }
+});
+
+router.post('/comment', async (req, res) => {
+    try {
+        let result = await migrateService.restoreComments(req.body);
+        res,send(result);
+    } catch (error) {
+        res.send(error);
+    }
+});
+
+router.post('/history', async (req, res) => {
+    try {
+        let result = await migrateService.restoreHistory(req.body);
+        res.send(result);
+    } catch (error) {
+        res.send(error);
+    }
+});
+
 module.exports.migrate = router;
