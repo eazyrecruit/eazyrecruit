@@ -190,19 +190,28 @@ exports.restoreApplicant = async (data) => {
 }
 
 exports.restoreResume = async (data) => {
+    let array = [];
     for (let i = 0; i < data.length; i++) {
-        modelResume = await ApplicantResumes.findById(modelApplicant.resume);
-        modelResume = new Resume();
-        modelResume.created_by = req.user.id;
-        modelResume.created_at = new Date();
-        modelResume.resume = req.files[0].buffer.toString('base64')
-        modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
-        modelResume.fileType = req.files[0].mimetype;
-        modelResume.modified_by = req.user.id;
-        modelResume.modified_at = new Date();
-        modelResume = await modelResume.save();
-        modelApplicant.resume = modelResume._id;
+        let obj = data[i];
+        let applicant = null;
+        let modelResume = new Resume();
+            modelResume.created_by = '5e6b047ddc8153001188bfcb';
+            modelResume.created_at = new Date();
+            modelResume.resume = obj.resume,
+            modelResume.fileName = obj.fileName;
+            modelResume.fileType = obj.fileType;
+            modelResume.modified_by = '5e6b047ddc8153001188bfcb';
+            modelResume.modified_at = new Date();
+            modelResume = await modelResume.save();
+
+        if (obj.profile_id && obj.profile_id.personal && obj.profile_id.personal.email) {
+            applicant = await Applicant.findOne({ email: obj.profile_id.personal.email });
+            applicant.resume = modelResume._id;
+            applicant.save();
+        }
+        array.push(applicant);
     }
+    return array;
 }
 
 exports.restoreJobApplicant = async (data) => {
