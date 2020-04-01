@@ -65,6 +65,7 @@ module.exports.setup = (app) => {
   app.use('/api/resume', require('./controllers/resume.ctrl').resume);
   // Views
   app.use('/jobs', require('./views/index').pages);
+  app.use('/api/migration', require('./controllers/migrate.ctrl').migrate);
 };
 
 var secretRecruitCallBack = function (req, payload, done) {

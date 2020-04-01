@@ -1,7 +1,7 @@
 module.exports = {
   secret: 'ilovescotchyscotch',
   website: 'https://dev.eazyrecruit.in',
-  allowedOrigins: ['https://dev.eazyrecruit.in','http://localhost:4200'],
+  allowedOrigins: ['https://dev.eazyrecruit.in','http://localhost:4200, http://localhost:8081/api, https://dev-api.eazyrecruit.in', '*'],
   server: {
     cert: './cer.pem',
     key: './key.pem',
