@@ -231,13 +231,15 @@ exports.addApplicant = async (req) => {
 }
 
 exports.editApplicant = async (req) => {
-    let applicant = await JobApplicants.findOneAndUpdate({applicant: req.body.applicant}, {
-        pipeline : req.body.pipeline,
-        modefied_by : req.user.id,
-        modefied_at : Date.now(),
-        is_deleted : false
-    }, {new : true});
+
+    let applicant = await JobApplicants.findOne({ _id: req.body.id, applicant: req.body.applicant, is_deleted: false}); 
     if (applicant) {
+        applicant.pipeline = req.body.pipeline,
+        applicant.modefied_by = req.user.id,
+        applicant.modefied_at = Date.now(),
+        applicant.is_deleted = false
+        applicant.save();
+
         await histroyService.create({ 
             applicant: req.body.applicant, 
             pipeline: req.body.pipeline,
