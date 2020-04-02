@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
 
   oauthLogin(app) {
     SiteJS.oauthpopup(
-      "/assets/auth.html?socialApp=" + app, () => {
+      "/admin/assets/auth.html?socialApp=" + app, () => {
         if(this.authGuardService.canActivate()) {
           this.router.navigate(['jobs']);
         }
