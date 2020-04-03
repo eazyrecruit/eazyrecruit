@@ -95,6 +95,7 @@ export class PipelineComponent implements OnInit {
     applicant.applicant = obj.dragData.applicant;
     applicant.pipeline = obj.dragData.pipeline;
     applicant.job = obj.dragData.job;
+    applicant.id = obj.dragData.id;
     this.pipelineService.updateApplicantStatus(applicant).subscribe(result => {
       if (result['success']['data']) {
         this.ngOnInit();
@@ -388,7 +389,8 @@ export class PipelineComponent implements OnInit {
         dragData: {
           pipeline: applicant.moveToPipeline,
           applicant: applicant.applicant._id,
-          job: applicant.job
+          job: applicant.job,
+          id: applicant._id  // job pipelineId
         }
       };
       this.changeStatus(obj);
