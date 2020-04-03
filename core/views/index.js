@@ -5,6 +5,7 @@ var router = express.Router();
 var jobService = require('../services/job.service');
 var applicantService = require("../services/applicant.service");
 var User = require('../models/user');
+var multer = require('multer');
 
 router.get("", async (req, res) => {
     try {
@@ -33,6 +34,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+var resume = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
 router.post("/apply/:id", 
 [
     // password must be at least 5 chars long
@@ -46,9 +48,10 @@ router.post("/apply/:id",
     // password must be at least 5 chars long
     check('availability').not().isEmpty()
 ], 
+resume.any(),
 async (req, res) => {
     // Finds the validation errors in this request and wraps them in an object with handy functions
-    const errors = validationResult(req);
+    const errors = validationResult(req.body);
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
