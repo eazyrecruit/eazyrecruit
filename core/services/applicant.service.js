@@ -206,29 +206,33 @@ exports.save = async (req) => {
                 modelApplicant = await modelApplicant.save();
                 
                 // if jobid and pipelinid available then add applicant to that job
-                let jobPipeline;
+                let jobPipeline = null;
                 let modelJobApplicant = new JobApplicant();
-                if (req.body.pipelineId) {
+                if (req.body.jobId) {
                     let modelJob = await Jobs.findById(req.body.jobId).populate('pipeline');
-                    jobPipeline = await JobPipeline.findById({ _id: req.body.pipelineId, is_deleted: { $ne: true } });
-                    
-                    if (jobPipeline) {                        
-                        modelJobApplicant.pipeline = req.body.pipelineId;
-                        modelJobApplicant.applicant = modelApplicant._id;
-                        modelJobApplicant.is_deleted = false;
-                        modelJobApplicant.created_at = new Date();
-                        modelJobApplicant.created_by = req.user.id;
-                        modelJobApplicant.modified_at = new Date();
-                        modelJobApplicant.modified_by = req.user.id;
-                        modelJobApplicant = await modelJobApplicant.save();
-                        // Link with Job
-                        if (modelJob.applicants == null) {
-                            modelJob.applicants = [];
-                        }
-                        modelJob.applicants.push(modelJobApplicant._id);
-                        modelJob = await modelJob.save();
-                        modelJobApplicant.applicant = modelApplicant;
+                    if (req.body.pipelineId) {
+                        jobPipeline = await JobPipeline.findById({ _id: req.body.pipelineId, is_deleted: { $ne: true } });
+                    } else {
+                        jobPipeline = modelJob.pipelines ? modelJob.pipelines[0] : null;
                     }
+                    if (jobPipeline == null) {
+                        modelJobApplicant = new JobApplicant();
+                    }
+                    modelJobApplicant.pipeline = jobPipeline;
+                    modelJobApplicant.applicant = modelApplicant._id;
+                    modelJobApplicant.is_deleted = false;
+                    modelJobApplicant.created_at = new Date();
+                    modelJobApplicant.created_by = req.user.id;
+                    modelJobApplicant.modified_at = new Date();
+                    modelJobApplicant.modified_by = req.user.id;
+                    modelJobApplicant = await modelJobApplicant.save();
+                    // Link with Job
+                    if (modelJob.applicants == null) {
+                        modelJob.applicants = [];
+                    }
+                    modelJob.applicants.push(modelJobApplicant._id);
+                    modelJob = await modelJob.save();
+                    modelJobApplicant.applicant = modelApplicant;
                 }
 
                 // Update HR and candidate

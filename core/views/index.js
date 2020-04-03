@@ -1,7 +1,11 @@
 var express = require('express');
-//const { check, validationResult } = require('express-validator');
+const check = require('express-validator/check').check;
+const validationResult = require('express-validator/check').validationResult;
 var router = express.Router();
 var jobService = require('../services/job.service');
+var applicantService = require("../services/applicant.service");
+var User = require('../models/user');
+var multer = require('multer');
 
 router.get("", async (req, res) => {
     try {
@@ -30,30 +34,43 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+var resume = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
 router.post("/apply/:id", 
-// [
-//     // password must be at least 5 chars long
-//     check('name').not().isEmpty(),
-//     // username must be an email
-//     check('email').not().isEmpty().isEmail().normalizeEmail(),
-//     // password must be at least 5 chars long
-//     check('phoneNo').not().isEmpty().isLength({ min: 10 }),
-//     // password must be at least 5 chars long
-//     check('resume').not().isEmpty(),
-//     // password must be at least 5 chars long
-//     check('availability').not().isEmpty()
-// ], 
-(req, res) => {
+[
+    // password must be at least 5 chars long
+    check('name').not().isEmpty(),
+    // username must be an email
+    check('email').not().isEmpty().isEmail().normalizeEmail(),
+    // password must be at least 5 chars long
+    check('phone').not().isEmpty().isLength({ min: 10 }),
+    // password must be at least 5 chars long
+    check('resume').not().isEmpty(),
+    // password must be at least 5 chars long
+    check('availability').not().isEmpty()
+], 
+resume.any(),
+async (req, res) => {
     // Finds the validation errors in this request and wraps them in an object with handy functions
-    const errors = validationResult(req);
+    const errors = validationResult(req.body);
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
 
-    console.log(req.body);
-    //if (err) res.render('pages/error');
-    //else res.render('pages/thanks', { job: data });
-    res.render('pages/thanks');
+    try {
+        console.log(req.body);
+        let admin = await User.findOne({ email: 'admin@eazyrecruit.in' }, { select: 'email' });
+        if (admin) {
+            req.user = {
+                id: admin.id
+            }
+        }
+        let result = await applicantService.save(req);
+        //if (err) res.render('pages/error');
+        //else res.render('pages/thanks', { job: data });
+        res.render('pages/thanks');        
+    } catch (error) {
+        res.render('pages/thanks');
+    }
 });
 
 module.exports.pages = router;
