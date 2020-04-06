@@ -37,7 +37,7 @@ module.exports = {
   googleAuth: {
     'clientID': '69938045268-m33a1kasl2peiqj9117kd2osr63en7qf.apps.googleusercontent.com',
     'clientSecret': 'r7vAl-nI-dOX8J2ABUHAl51V',
-    'callbackURL': '/assets/auth-callback.html'
+    'callbackURL': '/admin/assets/auth-callback.html'
   },
   mongo: {
     host: 'mongodb://eazyrecruit:8EjqJAidtp@192.168.1.46/eazyrecruitprod'

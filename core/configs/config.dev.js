@@ -9,7 +9,7 @@ module.exports = {
     honorCipherOrder: true,
     secureProtocol: 'TLSv1_2_method'
   },
-  website: 'http://localhost:4200',
+  website: 'http://dev.eazyrecruit.in',
   emailConfig: {
     host: 'email-smtp.eu-west-1.amazonaws.com',
     port: 587,
@@ -35,7 +35,7 @@ module.exports = {
   googleAuth: {
     'clientID': '69938045268-m33a1kasl2peiqj9117kd2osr63en7qf.apps.googleusercontent.com',
     'clientSecret': 'r7vAl-nI-dOX8J2ABUHAl51V',
-    'callbackURL': '/assets/auth-callback.html'
+    'callbackURL': '/admin//assets/auth-callback.html'
   },
   redis: {
     host: "redis://eazyrecruit-redis:6379"
