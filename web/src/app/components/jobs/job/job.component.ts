@@ -250,13 +250,28 @@ export class JobComponent implements OnInit {
       this.jobDetails.controls["ctc"].setValue(job.ctc);
       this.jobDetails.controls["type"].setValue(job.type);
       this.jobDetails.controls["expiryDate"].setValue(job.expiryDate);
-      this.jobDetails.controls["skills"].setValue(job.skills);
-      this.jobDetails.controls["locations"].setValue(job.locations);
+      this.jobDetails.controls["skills"].setValue(this.addDisplayName(job.skills));
+      this.jobDetails.controls["locations"].setValue(this.addDisplayName(job.locations));
       this.jobDetails.controls["description"].setValue(job.description);
       this.jobDetails.controls["responsibilities"].setValue(job.responsibilities);
       this.jobDetails.controls["metaImage"].setValue(job.metaImage);
       this.jobDetails.controls["metaImageAltText"].setValue(job.metaImageAltText);
       this.jobDetails.controls["metaTitle"].setValue(job.metaTitle);
+    }
+  }
+
+  addDisplayName(array: any) {
+    if (array && array.length) {
+      array.forEach(obj => {
+        if (obj.hasOwnProperty('city')) {
+          obj['display'] = obj['city'];
+        } else {
+          obj['display'] = obj['name'];
+        }
+      });
+      return array;
+    } else {
+      return [];
     }
   }
 
