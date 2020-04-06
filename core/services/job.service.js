@@ -40,6 +40,7 @@ exports.save = async (req) => {
         modelJob.type = req.body.type ? req.body.type : null;
         modelJob.mode = req.body.mode ? req.body.mode : null;
         if (req.body.locations) {
+            modelJob.locations = [];
             for (var iLoc = 0; iLoc < req.body.locations.length; iLoc++) {
                 modelJob.locations.push(req.body.locations[iLoc]._id);
             }
@@ -50,6 +51,7 @@ exports.save = async (req) => {
             }
         }
         if (req.body.skills) {
+            modelJob.skills = [];
             for (var iSkill = 0; iSkill < req.body.skills.length; iSkill++) {
                 modelJob.skills.push(req.body.skills[iSkill]._id);
             }
