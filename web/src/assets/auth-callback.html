@@ -10,7 +10,7 @@
                     type: 'GET',
                     url: getApiUrl() + '/account/google/callback?code=' + code,
                     success: function (data) {
-                        if(data.success){
+                        if (data.success) {
                             window.localStorage.setItem('Authorization', data.success.data.token);
                             window.localStorage.setItem('auth_data', JSON.stringify(data.success));
                             window.localStorage.setItem('userId', data.success.data.id);
