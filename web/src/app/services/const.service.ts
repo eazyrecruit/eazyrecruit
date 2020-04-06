@@ -4,11 +4,11 @@ export class ConstService {
     pyUrl: string;
     constructor() {
         if (window.location.hostname === 'dev.eazyrecruit.in') {
-            this.baseUrl = 'https://dev-api.eazyrecruit.in/api/';
-            this.publicUrl = 'https://dev.eazyrecruit.in/jobs/';
-            this.pyUrl = 'https://devengine.eazyrecruit.in/';
+            this.baseUrl = '/api/';
+            this.publicUrl = '/jobs/';
+            this.pyUrl = '/api/engine/';
         } else if (window.location.hostname === 'web.eazyrecruit.in') {
-            this.baseUrl = 'https://app.eazyrecruit.in/api/';
+            this.publicUrl = '/jobs/';
             this.baseUrl = '/api/';
             this.pyUrl = '/api/engine/';
         } else {
