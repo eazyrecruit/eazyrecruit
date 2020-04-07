@@ -22,8 +22,8 @@ services:
         build:
             context: ./core
             dockerfile: dockerfile
-        expose:
-            - "8082"
+        # ports:
+        #     - "8082:8082"
         environment:
             - NODE_ENV=dev
         depends_on:
@@ -43,10 +43,24 @@ services:
         expose:
             - "8000"
         depends_on:
-            - mongodb
+            - ez_mongodb
             - ez_elastic
-            
-    
+   
+    ez_worker:
+        container_name: ez_worker
+        build:
+            context: ./engine
+            dockerfile: celery.dockerfile
+        environment:
+            - CORE_SERVICE_PATH=http://ez_web:8082
+            - DJANGO_DEVELOPMENT=dev
+            - MONGO_DB=admin
+            - MONGO_URL=mongodb://eazyrecruit:klkjhgbvfcf@ez_mongodb/admin
+            - REDIS_URL=redis://:klkjhgbvfcf@ez_redis:6379/0
+        depends_on:
+            - ez_redis
+            - ez_mongodb
+        
     ez_elastic:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
         container_name: ez_elastic
@@ -54,13 +68,13 @@ services:
             - discovery.type=single-node
         volumes:
             - ./elastic_search_data:/usr/share/elasticsearch/data
-        ports:
-            - 9500:9300
-            - 9400:9200
+        # ports:
+        #     - 9500:9300
+        #     - 9400:9200
         depends_on:
-            - mongodb
+            - ez_mongodb
 
-    mongodb:
+    ez_mongodb:
         image: mongo:latest
         container_name: ez_mongodb
         environment:
@@ -71,5 +85,16 @@ services:
             - ./elastic_search_db:/data/db
         ports:
             - 27019:27017
+
+    ez_redis:
+        image: bitnami/redis:latest
+        environment:
+            - REDIS_PASSWORD=klkjhgbvfcf
+            - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+        # ports:
+        #     - 6379:6379
+        volumes:
+            - './redis_data:/bitnami/redis/data'
+            
     
     

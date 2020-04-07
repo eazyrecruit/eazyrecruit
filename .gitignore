@@ -6,3 +6,9 @@ elastic_search_data
 elastic_search_db
 core/admin
 .DS_Store
+engine/.vscode/settings.json
+redis_data
+engine/__pycache__/
+engine/data/skills/__pycache__/
+engine/*/__pycache__/
+engine/celerybeat-schedule.db

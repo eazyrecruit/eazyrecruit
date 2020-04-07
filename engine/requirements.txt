@@ -39,6 +39,7 @@ msgpack-python==0.5.6
 murmurhash==0.28.0
 mysql-connector==2.1.7
 nltk==3.3
+pandas==0.25.3
 pathlib==1.0.1
 pdfminer.six==20170720
 plac==0.9.6

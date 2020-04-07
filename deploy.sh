@@ -1,7 +1,7 @@
 #!/bin/bash
 
 db_up(){
-  sudo docker-compose up -d mongodb ez_elastic
+  sudo docker-compose up -d ez_mongodb ez_redis ez_elastic
 }
 
 ez_docker_up(){
@@ -10,6 +10,8 @@ ez_docker_up(){
     sudo docker cp ez_web_build:/usr/src/core/admin ./core
     sleep 1
     sudo docker-compose up --build -d nginx ez_engine ez_web
+    sleep 1
+    sudo docker-compose up --build -d ez_worker
 }
 
 setup(){

@@ -23,7 +23,7 @@ def emailparser_task():
     listFiles = MailParser.parse()
     if listFiles and len(listFiles) > 0:
         for index in range(len(listFiles)):
-                resumeparser_task.delay(listFiles[index]['tempFile'], listFiles[index]['fileName'], '', 'email')
+            resumeparser_task.delay(listFiles[index]['tempFile'], listFiles[index]['fileName'], '', 'email')
 
 @app.task(name="dbreparser")
 def dbreparser_task():
@@ -89,4 +89,4 @@ def resumeparser_task(tempFile, fileName, resumeId, source):
 #owncloudparser_task.delay()
 # odoodata_task.delay()
 #skillsScraper.dump_skill_list("./data/skills/linkedinskill.list")
-#resumeparser_task("./dump/cb41e2b94a4f48f9ad1a1572e8a990a3.pdf", "Manish Kumar Resume.docx", "askjdh1231k2l3j", "")
+#resumeparser_task("./dump/d20374726a2546db87a0b45dd0684fd1.pdf", "AbhishekSharmaResume.pdf", '', 'email')
