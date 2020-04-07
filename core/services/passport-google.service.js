@@ -16,7 +16,7 @@ exports.setup = function () {
                 try {
                     User.findOne({ email: profile.emails[0].value }).then(user => {
                         if (!user) {
-                            return done(null, false, { msg: error });
+                            return done(null, false, { msg: 'Invalid credential' });
                         } else {
                             return done(null, {id: user._id, displayName: user.name, email: user.email, roles: user.roles });
                         }

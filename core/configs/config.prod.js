@@ -2,7 +2,7 @@ module.exports = {
   secret: 'bettertohavedeepknowledge',
   // website: 'https://portalapi.eazyrecruit.in',
   // website: 'http://192.168.1.157:9072',    //backend end
-  website: 'https://app.eazyrecruit.in',    //backend end
+  // website: 'https://app.eazyrecruit.in',    //backend end
   allowedOrigins: ['http://192.168.1.157:9073', 'https://web.eazyrecruit.in'],  //front end
   // allowedOrigins: ['https://portal.eazyrecruit.in'],
   server: {
@@ -29,14 +29,19 @@ module.exports = {
     expireTime: 60 * 60 * 24, // for admin we will use 24hr
     audience: 'eazyRecruitUsers',
     // issuer: 'http://192.168.1.157:9073'
-    issuer: 'https://app.eazyrecruit.in'
+    issuer: 'https://web.eazyrecruit.in'
   },
   chipmunc: {
     url: 'http://192.168.1.157:9031/api/'
   },
+  // googleAuth: {
+  //   'clientID': '69938045268-m33a1kasl2peiqj9117kd2osr63en7qf.apps.googleusercontent.com',
+  //   'clientSecret': 'r7vAl-nI-dOX8J2ABUHAl51V',
+  //   'callbackURL': '/admin/assets/auth-callback.html'
+  // },
   googleAuth: {
-    'clientID': '69938045268-m33a1kasl2peiqj9117kd2osr63en7qf.apps.googleusercontent.com',
-    'clientSecret': 'r7vAl-nI-dOX8J2ABUHAl51V',
+    'clientID': '760504546841-0plne4g72ekra4847vvb22tilolj8oc8.apps.googleusercontent.com',
+    'clientSecret': 'HgU2-NmRMW6Q77fh2KJeSYg2',
     'callbackURL': '/admin/assets/auth-callback.html'
   },
   mongo: {

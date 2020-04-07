@@ -1,7 +1,7 @@
 module.exports = {
   secret: 'ilovescotchyscotch',
-  website: 'https://dev.eazyrecruit.in',
-  allowedOrigins: ['https://dev.eazyrecruit.in','http://localhost:4200, http://localhost:8081/api, https://dev-api.eazyrecruit.in', '*'],
+  // website: 'https://dev.eazyrecruit.in',
+  allowedOrigins: ['https://dev.eazyrecruit.in','http://localhost:8082', 'http://localhost:8081/api', '*'],
   server: {
     cert: './cer.pem',
     key: './key.pem',
@@ -9,7 +9,7 @@ module.exports = {
     honorCipherOrder: true,
     secureProtocol: 'TLSv1_2_method'
   },
-  website: 'http://dev.eazyrecruit.in',
+  website: 'https://dev.eazyrecruit.in',
   emailConfig: {
     host: 'email-smtp.eu-west-1.amazonaws.com',
     port: 587,
@@ -24,7 +24,7 @@ module.exports = {
     secret: 'SHDJHDSDSD&(**DSUDSY^D&^USDHSODISOIY&D*SYDDH',
     expireTime: 60 * 60 * 24, // for admin we will use 24hr
     audience: 'EazyRecruitUsers', 
-    issuer: 'https://dev-api.eazyrecruit.in'
+    issuer: 'https://dev.eazyrecruit.in'
   },
   mongo: {
     host:'mongodb://eazyrecruit:klkjhgbvfcf@ez_mongodb/admin'
@@ -32,10 +32,15 @@ module.exports = {
   chipmunc: {
     url: 'http://192.168.1.157:9031/api/'
   },
+  // googleAuth: {
+  //   'clientID': '69938045268-m33a1kasl2peiqj9117kd2osr63en7qf.apps.googleusercontent.com',
+  //   'clientSecret': 'r7vAl-nI-dOX8J2ABUHAl51V',
+  //   'callbackURL': '/admin/assets/auth-callback.html'
+  // },
   googleAuth: {
-    'clientID': '69938045268-m33a1kasl2peiqj9117kd2osr63en7qf.apps.googleusercontent.com',
-    'clientSecret': 'r7vAl-nI-dOX8J2ABUHAl51V',
-    'callbackURL': '/admin//assets/auth-callback.html'
+    'clientID': '760504546841-0plne4g72ekra4847vvb22tilolj8oc8.apps.googleusercontent.com',
+    'clientSecret': 'HgU2-NmRMW6Q77fh2KJeSYg2',
+    'callbackURL': '/admin/assets/auth-callback.html'
   },
   redis: {
     host: "redis://eazyrecruit-redis:6379"
