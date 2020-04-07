@@ -1,5 +1,6 @@
 let Company = require('../models/company');
 let CompanySettings = require('../models/companySettings');
+let encryptService = require('../services/encryption.service');
 
 exports.getCompany = function(req, next){
     Company.find({}, (error, company) => {
@@ -16,6 +17,11 @@ exports.getSettings = function(req, next){
         if(error) {
             next(error, null);
         } else {
+            if (data && data.length) {
+                for (let i = 0; i < data.length; i++) {
+                    console.log(data[i]);
+                }                
+            }
             next(null, data);
         }
     })
@@ -36,7 +42,7 @@ exports.updateSettings = async (req, next) => {
                 companyId : req.query.id, 
                 groupName : req.query.group, 
                 key: formKeys[index],
-                value: formValues[index]
+                value: encryptService.encrypt(formValues[index])
                 }, 
                 function (err, result) {
                     if (err) {

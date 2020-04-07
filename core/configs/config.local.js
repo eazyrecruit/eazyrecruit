@@ -28,13 +28,13 @@ module.exports = {
     issuer: 'https://dev-api.eazyrecruit.in'
   },
   googleAuth: {
-    'clientID': '69938045268-m33a1kasl2peiqj9117kd2osr63en7qf.apps.googleusercontent.com',
-    'clientSecret': 'r7vAl-nI-dOX8J2ABUHAl51V',
+    'clientID': '760504546841-0plne4g72ekra4847vvb22tilolj8oc8.apps.googleusercontent.com',
+    'clientSecret': 'HgU2-NmRMW6Q77fh2KJeSYg2',
     'callbackURL': '/admin/assets/auth-callback.html'
   },
   mongo: {
-    host: 'mongodb://eazyrecruit:klkjhgbvfcf@192.168.1.168:27019/admin'
-    // host: 'mongodb://localhost:27017/eazyrecruit'
+    // host: 'mongodb://eazyrecruit:klkjhgbvfcf@192.168.1.168:27019/admin'
+    host: 'mongodb://localhost:27017/eazyrecruit'
   },
   redis: {
     host: "redis://localhost:6379"
@@ -42,5 +42,9 @@ module.exports = {
   elasticSearch: {
     // host: "http://192.168.1.157:9200",
     host: "http://192.168.1.168:9400"
+  },
+  encrypt: {
+    iv: 'cattmbworqqehaoq',
+    key: 'axiwhdscmzundjrlxwmjxoofvpquspku'
   }
 };
