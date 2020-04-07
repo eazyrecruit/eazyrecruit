@@ -52,5 +52,9 @@ module.exports = {
   },
   elasticSearch: {
     host: "http://eazyrecruit-elasticsearch:9200"
+  },
+  encrypt: {
+    iv: 'cattmbworqqehaoq',
+    key: 'axiwhdscmzundjrlxwmjxoofvpquspku'
   }
 };
