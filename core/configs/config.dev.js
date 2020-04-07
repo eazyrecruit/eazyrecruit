@@ -47,5 +47,9 @@ module.exports = {
   },
   elasticSearch: {
     host:"ez_elastic:9200"
+  },
+  encrypt: {
+    iv: 'cattmbworqqehaoq',
+    key: 'axiwhdscmzundjrlxwmjxoofvpquspku'
   }
 };
