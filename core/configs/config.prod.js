@@ -1,7 +1,7 @@
 module.exports = {
   secret: 'bettertohavedeepknowledge',
   // website: 'https://portalapi.eazyrecruit.in',
-  // website: 'http://192.168.1.157:9072',    //backend end
+  // website: 'http://192.168.1.157:9072',    //backend end 
   // website: 'https://app.eazyrecruit.in',    //backend end
   allowedOrigins: ['http://192.168.1.157:9073', 'https://web.eazyrecruit.in'],  //front end
   // allowedOrigins: ['https://portal.eazyrecruit.in'],
