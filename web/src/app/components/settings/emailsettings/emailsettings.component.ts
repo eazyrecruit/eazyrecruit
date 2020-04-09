@@ -1,4 +1,4 @@
-import { Component, OnInit,  } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef,  } from '@angular/core';
 import { FormGroup, FormBuilder, Validators} from '@angular/forms';
 import { CompanyService } from '../../../services/company.service';
 import { ValidationService } from '../../../services/validation.service';
@@ -15,7 +15,9 @@ export class EmailsettingsComponent implements OnInit {
   outbound: boolean;
   inboundForm: FormGroup;
   outboundForm: FormGroup;
+  templateForm: FormGroup;
   company: any;
+  htmlPreview: String;
 
   constructor(private companyService: CompanyService,
     private validationService: ValidationService,
@@ -38,10 +40,19 @@ export class EmailsettingsComponent implements OnInit {
         password: [null],
         port: [null]
       });
+      this.templateForm = this.fbForm.group({
+        content: [null, [<any>Validators.required]],
+      });
     }
 
   ngOnInit() {
     this.setForms();
+  }
+
+  @ViewChild('iframe') iframe: ElementRef
+
+  ngAfterViewInit() {
+   this.iframe.nativeElement.setAttribute('src', this.htmlPreview);
   }
 
   inboundEdit() {
@@ -60,6 +71,16 @@ export class EmailsettingsComponent implements OnInit {
             this.outboundForm.get(setting.key).setValue(setting.value);
           });
         })
+  }
+
+  templateEdit() {
+    this.companyService.getSettings(this.company._id, 'template').subscribe(result =>{
+      var settings = result['success']['data'];
+      settings.forEach(setting => {
+        this.htmlPreview = setting.value;
+        this.templateForm.get(setting.key).setValue(setting.value);
+      });
+    })
   }
 
   editInbound(form) {
@@ -86,15 +107,29 @@ export class EmailsettingsComponent implements OnInit {
     }
   }
 
+  editTemplate(form) {
+    if (!this.outboundForm.valid) {
+      this.validationService.validateAllFormFields(this.templateForm);
+    } else {
+      this.companyService.editSettings(form, this.company._id, 'template').subscribe(result => {
+        if (result['success']) {
+          this.templateEdit();
+        }
+      });
+    }
+  }
+
   setForms() {
     this.companyService.getCompany().subscribe(company => {
       if (company['success']['data']) {
         this.company = company['success']['data'][0];
         this.inboundEdit();
         this.outboundEdit();
+        this.templateEdit();
       } else {
         this.inboundForm.reset();
         this.outboundForm.reset();
+        this.templateForm.reset();
       }
     })
   }
