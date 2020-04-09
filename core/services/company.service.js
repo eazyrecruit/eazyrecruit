@@ -18,7 +18,6 @@ exports.getSettings = async (req) => {
         if(companySettings && companySettings.length) {
             for (let i = 0; i < companySettings.length; i++) {
                 companySettings[i].value = encryptService.decrypt(companySettings[i].value)
-                console.log('value: ', companySettings[i].value);
             }
         }
         return companySettings;

@@ -21,22 +21,22 @@ exports.register = (req, next) => {
 };
 
 exports.getUser = (req, next) => {
-    models.User.findAll({ where: { is_deleted: false }, include: [{model: models.UserDetail}]}).then(user => {
-        next(null, user[0]);
+    User.find({is_deleted: false}).then(user => {
+        next(null, user);
     }).catch(err=>{
         next(err, null)
     });
 };
 
 exports.resetPassword = (req, next) => {
-    models.User.findOne({ where: { email: req.body.email, is_deleted: false }, include: [{model: models.UserDetail}] }).then(async (user) => {
-        if (user && user.user_detail) {
+    User.findOne({ email: req.body.email, is_deleted: false }).then(async (user) => {
+        if (user) {
             try {
                 var email = {};
                 let otp = uuidv4();
                 user.otp = otp;
                 let result = await user.save();
-                email.name = user.user_detail.first_name ? `${user.user_detail.first_name} ${user.user_detail.last_name}` : req.body.email;
+                email.name = user.firstName ? `${user.firstName} ${user.lastName}` : req.body.email;
                 email.receiverAddress = user.email;
                 email.subject = 'Reset Password';
                 email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/resetpassword/${otp}">Reset Password</a>`;

@@ -1,7 +1,11 @@
 var nodemailer = require('nodemailer');
 var config = require('../config').config();
+var companyService = require('../services/company.service');
 
-exports.sendEmail = function (emailObj, next) {
+exports.sendEmail = async function (emailObj, next) {
+    // get email configuration by company
+    let emailConfig = await getEmailConfig();
+
     // create reusable transporter object
     if (config.emailConfig.test === true) {
         emailObj.toEmail = config.emailConfig.testRecepient;
@@ -9,12 +13,12 @@ exports.sendEmail = function (emailObj, next) {
     var transporter = nodemailer.createTransport({
         service: 'SMTP',
         auth: {
-            user: config.emailConfig.user,
-            pass: config.emailConfig.pass,
+            user: emailConfig.user,
+            pass: emailConfig.password,
         },
         secureConnection: true, // use SSL
-        port: config.emailConfig.port, // port for secure SMTP
-        host: config.emailConfig.host, // Amazon email SMTP hostname
+        port: emailConfig.port, // port for secure SMTP
+        host: emailConfig.host, // Amazon email SMTP hostname
     });
 
     // setup email data with unicode symbols
@@ -40,7 +44,7 @@ exports.sendEmail = function (emailObj, next) {
 }
 
 
-exports.getEmailBody = function (title, body, signature) {
+let getEmailBody = function (title, body, signature) {
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -139,4 +143,38 @@ exports.getEmailContent = function (heading, url) {
         <h1 style="font-weight: 400; margin-top: 0;">${heading}</h1>
         <p>To verify account and generate new password.<a href="${url}">click here</a> </p>
     `
+}
+
+let getCompany = async (req) => {
+    return new Promise((resolve, reject) => {
+        try {
+            companyService.getCompany(req, (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+let getEmailConfig = async () => {
+    let company = [];
+    let settings = [];
+    company = await getCompany({});
+    let req = {
+        query: { id: company[0].id, group: 'smtp' }
+    }
+    settings = await companyService.getSettings(req);
+    let emailConfig = {};
+    for (let i =0; i < settings.length; i++) {        
+        Object.defineProperty(emailConfig, settings[i].key, {
+            value: settings[i].value,
+            writable: true
+        });
+    }
+    return emailConfig;
 }
