@@ -2,7 +2,6 @@
 import requests
 import config
 import json
-import config
 
 class EazyrecruitAPI:
 
@@ -41,13 +40,16 @@ class EazyrecruitAPI:
 
 
     def uploadResumeWithData(self, attachment, data, url, token):
+        print("44","uploading file")
         try:
             bodyData = json.dumps(data)
             headers = {'Authorization': "Bearer "+token}
             multipart_form_data = {'resumeData': (
                 attachment.split('/')[-1], open(attachment, 'rb'))}
             payload = {'body': json.dumps(data)}
+            print(self.baseurl + url)
             response = requests.post(self.baseurl + url, files=multipart_form_data, data=payload, headers=headers)
+            print("52",response )
             if (response.status_code == 200):
                 return response.json()
             else:

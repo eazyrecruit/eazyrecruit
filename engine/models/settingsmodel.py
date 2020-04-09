@@ -1,5 +1,5 @@
 from models.basemodel import BaseModel
-
+from helpers.utilities import decrypt_node_encoded_data
 class SettingsModel(BaseModel):
 
     def __init__(self):
@@ -14,7 +14,7 @@ class SettingsModel(BaseModel):
         if settings:
             companySettings = {}
             for setting in settings:
-                companySettings[setting['key']] = setting['value']
+                companySettings[setting['key']] = decrypt_node_encoded_data(setting['value'])
             return companySettings
         else:
             return null

@@ -43,7 +43,7 @@ module.exports = {
     'callbackURL': '/admin/assets/auth-callback.html'
   },
   redis: {
-    host: "redis://eazyrecruit-redis:6379"
+    host: "redis://:klkjhgbvfcf@ez_redis:6379/0"
   },
   elasticSearch: {
     host:"ez_elastic:9200"
