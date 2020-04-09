@@ -55,7 +55,9 @@ def resumeparser_task(tempFile, fileName, resumeId, source):
         resume_text, data = ResumeParser.parse(tempFile)
         if data:
             data['resume'] = {'file': fileName, 'id': resumeId}
-            eazyrecruitAPI.uploadResumeWithData( tempFile, data, "/candidate/received/"+source, "")
+            #this token is valid for 10 years from 8 Apr, 2020
+            token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlOGM0NTcxYmNhNjZkZWMxMmUwOTliMyIsImVtYWlsIjoidmlja3lAYWtlby5ubyIsInJvbGVzIjpbXSwiaWF0IjoxNTg2MzM5MDQyLCJleHAiOjE5MDE2OTkwNDIsImF1ZCI6IkVhenlSZWNydWl0VXNlcnMiLCJpc3MiOiJodHRwczovL2Rldi1hcGkuZWF6eXJlY3J1aXQuaW4ifQ.J1RhGZwarEhhFreOc91NK9Ag9Gfa3GCc8YLfH15Frls"
+            eazyrecruitAPI.uploadResumeWithData( tempFile, data, "/applicant", token)
     except Exception as xf:
         print(xf)
     finally:
@@ -83,10 +85,17 @@ def resumeparser_task(tempFile, fileName, resumeId, source):
 
 #{'success': {'data': 'success'}}
 #data.get('resumes', None)[0]['content']
-#emailparser_task()
+#emailparser_task.delay()
 #dbreparser_task()
 #dbparser_task("5e3fbe262d6dff65a35408be")
 #owncloudparser_task.delay()
 # odoodata_task.delay()
 #skillsScraper.dump_skill_list("./data/skills/linkedinskill.list")
 #resumeparser_task("./dump/d20374726a2546db87a0b45dd0684fd1.pdf", "AbhishekSharmaResume.pdf", '', 'email')
+
+app.conf.beat_schedule = {
+    "check-mail-every-hour": {
+        "task": "tasks.emailparser_task",
+        "schedule": 3600
+    }
+}

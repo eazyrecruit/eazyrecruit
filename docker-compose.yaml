@@ -33,7 +33,7 @@ services:
 
     ez_engine:
         container_name: ez_engine
-        image: ez-engine:latest
+        #image: ez-engine:latest
         build:
             context: ./engine
             dockerfile: dockerfile
@@ -52,11 +52,13 @@ services:
             context: ./engine
             dockerfile: celery.dockerfile
         environment:
-            - CORE_SERVICE_PATH=http://ez_web:8082
+            - CORE_SERVICE_PATH=http://ez_web:8082/api
             - DJANGO_DEVELOPMENT=dev
             - MONGO_DB=admin
             - MONGO_URL=mongodb://eazyrecruit:klkjhgbvfcf@ez_mongodb/admin
             - REDIS_URL=redis://:klkjhgbvfcf@ez_redis:6379/0
+            - NODE_DECRYPTION_IV=cattmbworqqehaoq
+            - NODE_DECRYPTION_KEY=axiwhdscmzundjrlxwmjxoofvpquspku
         depends_on:
             - ez_redis
             - ez_mongodb
@@ -88,6 +90,7 @@ services:
 
     ez_redis:
         image: bitnami/redis:latest
+        container_name: ez_redis
         environment:
             - REDIS_PASSWORD=klkjhgbvfcf
             - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL

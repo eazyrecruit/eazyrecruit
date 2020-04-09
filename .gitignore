@@ -9,6 +9,10 @@ core/admin
 engine/.vscode/settings.json
 redis_data
 engine/__pycache__/
-engine/data/skills/__pycache__/
-engine/*/__pycache__/
+engine/data/skills/__pycache__
 engine/celerybeat-schedule.db
+engine/parsers/__pycache__/*
+engine/models/__pycache__
+engine/helpers/__pycache__/*
+
+engine/config/__pycache__/*
