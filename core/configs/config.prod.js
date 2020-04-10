@@ -19,8 +19,8 @@ module.exports = {
     // port: 587,
     // user: 'AKIAIY6YZ475BD7DAERQ',
     // pass: 'ArkJvRnnlKOXWtWJDg/tfKLax97/PvLeZLAWdGd7/Z4V',
-    fromEmail: 'Akeo India<noreply@akeo.in>',
-    fromDisplayname: 'Akeo India<noreply@akeo.in>',
+    // fromEmail: 'Akeo India<noreply@akeo.in>',
+    // fromDisplayname: 'Akeo India<noreply@akeo.in>',
     test: true,
     testRecepient: 'ashish@akeo.no'
   },

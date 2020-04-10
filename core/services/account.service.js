@@ -34,8 +34,8 @@ exports.resetPassword = (req, next) => {
             try {
                 var email = {};
                 let otp = uuidv4();
-                user.otp = otp;
-                let result = await user.save();
+                user.passwordResetToken = otp;
+                await user.save();
                 email.name = user.firstName ? `${user.firstName} ${user.lastName}` : req.body.email;
                 email.receiverAddress = user.email;
                 email.subject = 'Reset Password';
@@ -58,3 +58,26 @@ exports.resetPassword = (req, next) => {
         next(err, null);
     });
 };
+
+exports.getUserByOtp = (req, next) => {
+    User.findOne({ passwordResetToken: req.params.otp, is_deleted: false }).then(user => {
+        next(null, user);
+    }).catch(err => {
+        next(err, null);
+    });
+}
+
+exports.changePassword = async (req, next) => {
+    try {
+        User.findOneAndUpdate({ passwordResetToken: req.body.otp, is_deleted: false }, 
+            { $set: { password: bcryptNodejs.hashSync(req.body.newPassword), passwordResetToken: null } }, {new: true}, (err, doc) => {
+            if (err) {
+                next(err, null);
+            } else {
+                next(null, doc);
+            }
+        });
+    } catch (error) {
+        next(null, error);
+    }
+}
