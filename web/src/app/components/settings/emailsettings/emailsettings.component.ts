@@ -40,9 +40,7 @@ export class EmailsettingsComponent implements OnInit {
         password: [null],
         port: [null],
         fromEmail: [null, [<any>Validators.required]],
-        fromDisplayname: [null],
-        test: [null],
-        testRecepient: [null]
+        fromDisplayname: [null]
       });
       this.templateForm = this.fbForm.group({
         content: [null, [<any>Validators.required]],

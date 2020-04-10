@@ -81,11 +81,11 @@ export class AccountService {
     }
 
     verifyOtp(otp) {
-        return this.http.get(this.constService.baseUrl + 'user/otpverification/' + otp);
+        return this.http.get(this.constService.baseUrl + 'account/verify/' + otp);
     }
 
     resetPassword(password) {
-        return this.http.post(this.constService.baseUrl + 'user/resetpassword/', password);
+        return this.http.post(this.constService.baseUrl + 'account/resetpassword/', password);
     }
 
     forgetPassword(email) {

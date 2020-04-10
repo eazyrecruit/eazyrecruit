@@ -178,27 +178,6 @@
             </small>
           </div>
 
-          <div style="margin: 6px;">
-            <label for="test">Test*</label>
-            <select class="form-control" formControlName="test" required>
-              <option value="true">
-                Yes
-              </option>
-              <option value="false" selected>
-                No
-              </option>
-            </select>
-          </div>
-
-          <div style="margin: 6px;">
-            <label for="testRecepient">Test Receiver*</label>
-            <input type="text" placeholder="Test Receiver" class="form-control" formControlName="testRecepient" required>
-            <small class="text-danger"
-              *ngIf="outboundForm.controls['testRecepient'].hasError('required') && outboundForm.controls['testRecepient'].touched">
-              Please enter test Receiver Mail
-            </small>
-          </div>
-
           <div class="col-sm-6" style="margin: 6px;">
             <button type="submit" class="btn btn-success">Submit
               <i class="fa fa-arrow-circle-right"></i>
