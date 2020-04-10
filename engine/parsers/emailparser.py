@@ -18,6 +18,7 @@ from parsers import resumeanalyse as ResumeAnalyse
 def parse():
     jobstatusmodel = JobStatusModel()
     last_mail_id = jobstatusmodel.get_latest('email')
+    print("last_mail_id", last_mail_id)
     if last_mail_id:
         mails, last_mail_id = getRecentMails(last_mail_id)
         resumes = []
@@ -28,10 +29,11 @@ def parse():
         jobstatusmodel.save_latest('email',last_mail_id)
         return resumes
     else:
-        return none
+        return None
 
 def getRecentMails(last_mail_id = 0):
     # connecting to the gmail imap server
+    
     settingsModel = SettingsModel()
     imapSettings = settingsModel.getImapSettings()
     if imapSettings:
@@ -47,33 +49,18 @@ def getRecentMails(last_mail_id = 0):
         # extract
         items = items[0].split()  # getting the mails id
         mails = []
-        print(last_mail_id)
-        last_mail_id = 0
+        # last_mail_id = 0
         while last_mail_id < len(items):
             # fetching the mail, "`(RFC822)`" means "get the whole stuff", but you can ask for headers only, etc
             resp, data = m.fetch(items[last_mail_id], "(RFC822)")
             email_body = data[0][1].decode('utf-8')  # getting the mail content
             received_email = readMail(email_body)
-            if received_email is not None:
-                clean_resume_data = None
-                clean_rm_subject = None
-                clean_rm_body = None
-                received_email["id"] = last_mail_id
-                mails.append(received_email)
-                # parsing email contents
-                if received_email['attachments']:
-                    for countAttachment in range(len(received_email['attachments'])):
-                        resume_string = textract.process(received_email['attachments'][countAttachment]['tempFile'])
-                        resume_string = str(resume_string, 'utf-8')
-                        clean_resume_data=ResumeParser.clean_resume(resume_string)
-                        if received_email['subject']:
-                            rm_subject = received_email['subject']
-                            clean_rm_subject=ResumeParser.clean_resume(rm_subject)
-                        if received_email['body']:
-                            rm_body = received_email['body']
-                            clean_rm_body=ResumeParser.clean_resume(rm_body)
-                        ResumeAnalyse.analyse_resume(clean_resume_data, clean_rm_body, clean_rm_subject)
+            
             last_mail_id += 1
+            if not received_email:
+                received_email={}
+            received_email["id"] = last_mail_id
+            mails.append(received_email)
         return mails, last_mail_id
     else:
         return None, None
@@ -113,28 +100,46 @@ def readMail(email_body):
     return received_email
 
 def is_resume(mail):
-    #subject contains resume
-    if mail.get('subject', None) is not None:
-        word_tokens = word_tokenize(str(mail['subject']))
-        for word_token in word_tokens:
-            if word_token.lower() in ['resume','application','attached','cv', 'profile']:
-                return True
-            elif word_token.lower() in ['newsletter']:
-                return False
+    if mail is not None:
+        clean_resume_data = None
+        clean_rm_subject = None
+        clean_rm_body = None
+        # parsing email contents
+        if 'attachments' in mail:
+            for countAttachment in range(len(mail['attachments'])):
+                resume_string = textract.process(mail['attachments'][countAttachment]['tempFile'])
+                resume_string = str(resume_string, 'utf-8')
+                clean_resume_data=ResumeParser.clean_resume(resume_string)
+                if mail['subject']:
+                    rm_subject = mail['subject']
+                    clean_rm_subject=ResumeParser.clean_resume(rm_subject)
+                if mail['body']:
+                    rm_body = mail['body']
+                    clean_rm_body=ResumeParser.clean_resume(rm_body)
+                return ResumeAnalyse.analyse_resume(clean_resume_data, clean_rm_body, clean_rm_subject)
                 
-    #body contains resume
-    if mail.get('body', None) is not None:
-        word_tokens = word_tokenize(str(mail['body']))
-        for word_token in word_tokens:
-            if word_token.lower() in ['resume','attached', 'cv', 'profile']:
-                return True
-            elif word_token.lower() in ['newsletter']:
-                return False
+    #subject contains resume
+    # if mail.get('subject', None) is not None:
+    #     word_tokens = word_tokenize(str(mail['subject']))
+    #     for word_token in word_tokens:
+    #         if word_token.lower() in ['resume','application','attached','cv', 'profile']:
+    #             return True
+    #         elif word_token.lower() in ['newsletter']:
+    #             return False
+                
+    # #body contains resume
+    # if mail.get('body', None) is not None:
+    #     word_tokens = word_tokenize(str(mail['body']))
+    #     for word_token in word_tokens:
+    #         if word_token.lower() in ['resume','attached', 'cv', 'profile']:
+    #             return True
+    #         elif word_token.lower() in ['newsletter']:
+    #             return False
     
-    if mail["attachments"] and len(mail["attachments"] > 0):
-        return True
+    # if mail["attachments"] and len(mail["attachments"] > 0):
+    #     return True
 
-    return False
+    # return False
     # if str(mail['subject']).find('resume') >= 0 or mail['subject'].find('attached') >= 0:
     #     return True
     # if mail['body'] and (str(mail['body']).find('resume') >= 0 or str(mail['body']).find('attached') >= 0):
