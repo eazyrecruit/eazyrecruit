@@ -41,7 +41,7 @@ exports.updateSettings = async (req, next) => {
                 companyId : req.query.id, 
                 groupName : req.query.group, 
                 key: formKeys[index],
-                value: await encryptService.encrypt(formValues[index].toString())
+                value: encryptService.encrypt(formValues[index].toString())
                 });
             if (companySetting) {
                 data.push(companySetting);
@@ -51,7 +51,7 @@ exports.updateSettings = async (req, next) => {
     } else {
         for (index = 0; index < formKeys.length; index++) {
             let companySettings = await CompanySettings.findOneAndUpdate({companyId : req.query.id, groupName : req.query.group, key: formKeys[index]},
-                { value: await encryptService.encrypt(formValues[index].toString())});
+                { value: encryptService.encrypt(formValues[index].toString())});
             if (companySettings) {
                 data.push(companySettings);
             }
