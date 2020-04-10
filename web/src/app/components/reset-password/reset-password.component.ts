@@ -34,7 +34,7 @@ export class ResetPasswordComponent implements OnInit {
 
     this.accountService.verifyOtp(otp).subscribe(result => {
       if (result['success']['data']) {
-        this.otp = result['success']['data'].otp;
+        this.otp = result['success']['data'].passwordResetToken;
       }
     });
   }

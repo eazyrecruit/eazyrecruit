@@ -16,16 +16,23 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/settings/", (req, res) => {
-    companyService.getSettings(req, (err, data) => {
-        responseService.response(req, err, 2, data, res);
-    });
+router.get("/settings/", async (req, res) => {
+    try {
+        let result = await companyService.getSettings(req);
+        responseService.response(req, null, 2, result, res);        
+    } catch (error) {
+        responseService.response(req, error, 2, null, res);
+    }
+
 });
 
-router.put("/settings/", (req, res) => {
-    companyService.updateSettings(req, (err, data) => {
-        responseService.response(res, err, 2, data, res);
-    });
+router.put("/settings/", async (req, res) => {
+    try {
+        let result = await companyService.updateSettings(req);
+        responseService.response(req, null, 'settings', result, res);   
+    } catch (error) {
+        responseService.response(req, error, 'settings', null, res);
+    }
 });
 
 router.delete("/settings/", (req, res) => {
