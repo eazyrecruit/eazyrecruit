@@ -38,7 +38,11 @@ export class EmailsettingsComponent implements OnInit {
         host: [null, [<any>Validators.required]],
         user: [null],
         password: [null],
-        port: [null]
+        port: [null],
+        fromEmail: [null, [<any>Validators.required]],
+        fromDisplayname: [null],
+        test: [null],
+        testRecepient: [null]
       });
       this.templateForm = this.fbForm.group({
         content: [null, [<any>Validators.required]],
