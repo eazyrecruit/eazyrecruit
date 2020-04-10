@@ -18,7 +18,7 @@ module.exports = {
     fromEmail: 'Akeo India<noreply@akeo.in>',
     fromDisplayname: 'Akeo India<noreply@akeo.in>',
     test: true,
-    testRecepient: 'ashish@akeo.no'
+    testRecepient: 'deepak@akeo.no'
   },
   jwt: {
     secret: 'SHDJHDSDSD&(**DSUDSY^D&^USDHSODISOIY&D*SYDDH',
