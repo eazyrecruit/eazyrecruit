@@ -21,7 +21,7 @@ const User = require('./models/user');
 module.exports.setup = (app) => {
   var unprotected = [
     pathToRegexp('/api/account/*'),
-    pathToRegexp('/api/user/otpverification/*'),
+    pathToRegexp('/api/applicant/*'),
     pathToRegexp('/api/user/resetpassword'),
     pathToRegexp('/api/candidate/received/email'),
     pathToRegexp('/jobs/*')

@@ -33,6 +33,21 @@ router.post("/forget", (req, res) => {
   });
 });
 
+router.post("/resetpassword", (req, res) => {
+  accountService.changePassword(req, (err, data) => {
+    responseService.response(req, err, 'change password', data, res);
+  });
+});
+
+router.get("/verify/:otp", (req, res) => {
+  accountService.getUserByOtp(req, (err, data) => {
+      if (err) {
+          responseService.response(req, err, 'otp validation', 'otp validation failed', res);
+      } else {
+          responseService.response(req, err, 'otp validation', data, res); 
+      }
+  });
+});
 
 // Google routes
 router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}), (req, res) => {});

@@ -12,19 +12,18 @@ exports.getCompany = function(req, next){
     })
 };
 
-exports.getSettings = function(req, next){
-    CompanySettings.find({companyId : req.query.id} && {groupName : req.query.group}, (error, data) => {
-        if(error) {
-            next(error, null);
-        } else {
-            if (data && data.length) {
-                for (let i = 0; i < data.length; i++) {
-                    console.log(data[i]);
-                }                
+exports.getSettings = async (req) => {
+    try {
+        let companySettings = await CompanySettings.find({companyId : req.query.id} && {groupName : req.query.group});
+        if(companySettings && companySettings.length) {
+            for (let i = 0; i < companySettings.length; i++) {
+                companySettings[i].value = encryptService.decrypt(companySettings[i].value)
             }
-            next(null, data);
         }
-    })
+        return companySettings;
+    } catch (error) {
+        return error;
+    }
 };
 
 exports.updateSettings = async (req, next) => {
@@ -38,42 +37,26 @@ exports.updateSettings = async (req, next) => {
     var dbCompanySettings = await CompanySettings.find({companyId : req.query.id, groupName : req.query.group});
     if (dbCompanySettings.length <= 0) {
         for (index = 0; index < formKeys.length; index++) {
-            CompanySettings.create({
+            let companySetting = await CompanySettings.create({
                 companyId : req.query.id, 
                 groupName : req.query.group, 
                 key: formKeys[index],
-                value: encryptService.encrypt(formValues[index])
-                }, 
-                function (err, result) {
-                    if (err) {
-                        next(err, null);
-                    } else {
-                        data.push(result);
-                        index--;
-                        if (data && index == 0) {
-                            next(null, data)
-                        }
-                    }
-            });
+                value: encryptService.encrypt(formValues[index].toString())
+                });
+            if (companySetting) {
+                data.push(companySetting);
+            }
         }
+        return data;
     } else {
         for (index = 0; index < formKeys.length; index++) {
-            CompanySettings.findOneAndUpdate({companyId : req.query.id, groupName : req.query.group, key: formKeys[index]}, 
-                {
-                    value: formValues[index]
-                }, 
-                function (err, result) {
-                    if (err) {
-                        next(err, null);
-                    } else {
-                        data.push(result);
-                        index--;
-                        if (data && index == 0) {
-                            next(null, data)
-                        }
-                    }
-            });
+            let companySettings = await CompanySettings.findOneAndUpdate({companyId : req.query.id, groupName : req.query.group, key: formKeys[index]},
+                { value: encryptService.encrypt(formValues[index].toString())});
+            if (companySettings) {
+                data.push(companySettings);
+            }
         }
+        return data;
     }
 }
 

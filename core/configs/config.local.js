@@ -12,14 +12,14 @@ module.exports = {
   },
   website: 'http://localhost:8082',
   emailConfig: {
-    host: 'email-smtp.eu-west-1.amazonaws.com',
-    port: 587,
-    user: 'AKIAIY6YZ475BD7DAERQ',
-    pass: 'ArkJvRnnlKOXWtWJDg/tfKLax97/PvLeZLAWdGd7/Z4V',
-    fromEmail: 'Akeo India<noreply@akeo.in>',
-    fromDisplayname: 'Akeo India<noreply@akeo.in>',
+    // host: 'email-smtp.eu-west-1.amazonaws.com',
+    // port: 587,
+    // user: 'AKIAIY6YZ475BD7DAERQ',
+    // pass: 'ArkJvRnnlKOXWtWJDg/tfKLax97/PvLeZLAWdGd7/Z4V',
+    // fromEmail: 'Akeo India<noreply@akeo.in>',
+    // fromDisplayname: 'Akeo India<noreply@akeo.in>',
     test: true,
-    testRecepient: 'ashish@akeo.no'
+    testRecepient: 'vicky@akeo.no'
   },
   jwt: {
     secret: 'SHDJHDSDSD&(**DSUDSY^D&^USDHSODISOIY&D*SYDDH',
@@ -33,8 +33,8 @@ module.exports = {
     'callbackURL': '/admin/assets/auth-callback.html'
   },
   mongo: {
-    host: 'mongodb://eazyrecruit:klkjhgbvfcf@192.168.1.168:27019/admin'
-    // host: 'mongodb://localhost:27017/eazyrecruit'
+    // host: 'mongodb://eazyrecruit:klkjhgbvfcf@192.168.1.168:27019/admin'
+    host: 'mongodb://localhost:27017/eazyrecruit'
   },
   redis: {
     host: "redis://localhost:6379"
