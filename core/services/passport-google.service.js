@@ -2,12 +2,14 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var passport = require("passport");
 var config = require('../config').config();
 const User = require('../models/user');
+var companyService = require('../services/company.service');
 
 
-exports.setup = function () {
+exports.setup = async function () {
+    let googleConfig = await getGoogleConfig('google');
     passport.use(new GoogleStrategy({
-        clientID: config.googleAuth.clientID,
-        clientSecret: config.googleAuth.clientSecret,
+        clientID: googleConfig.clientId,
+        clientSecret: googleConfig.clientSecret,
         callbackURL: config.website + config.googleAuth.callbackURL,
         passReqToCallback: true // allows us to pass back the entire request to the callback
     },
@@ -44,3 +46,23 @@ exports.authenticate = function (req, res, next) {
         }
     })(req, next);
 };
+
+
+//this function will move into compnay settings
+let getGoogleConfig = async (group) => {
+    let company = [];
+    let settings = [];
+    company = await companyService.getCompany({});
+    let req = {
+        query: { id: company[0].id, group }
+    }
+    settings = await companyService.getSettings(req);
+    let emailConfig = {};
+    for (let i =0; i < settings.length; i++) {        
+        Object.defineProperty(emailConfig, settings[i].key, {
+            value: settings[i].value,
+            writable: true
+        });
+    }
+    return emailConfig;
+}

@@ -2,14 +2,8 @@ let Company = require('../models/company');
 let CompanySettings = require('../models/companySettings');
 let encryptService = require('../services/encryption.service');
 
-exports.getCompany = function(req, next){
-    Company.find({}, (error, company) => {
-        if(error) {
-            next(error, null);
-        } else {
-            next(null, company);
-        }
-    })
+exports.getCompany = async (req) => {
+    return await Company.find({});
 };
 
 exports.getSettings = async (req) => {
