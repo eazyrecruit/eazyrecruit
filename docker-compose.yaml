@@ -84,7 +84,7 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=eazyrecruit
             - MONGO_INITDB_ROOT_PASSWORD=klkjhgbvfcf
         volumes:
-            - ./elastic_search_db:/data/db
+            - ./mongo_db:/data/db
         ports:
             - 27019:27017
 
