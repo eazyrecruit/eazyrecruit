@@ -7,7 +7,7 @@ exports.sendEmail = async function (emailObj, next) {
     let emailConfig = await getEmailConfig('smtp');
 
     // create reusable transporter object
-    if (config.emailConfig.test === "true") {
+    if (config.emailConfig.test === true) {
         emailObj.toEmail = config.emailConfig.testRecepient;
     }
     var transporter = nodemailer.createTransport({
@@ -60,26 +60,26 @@ exports.getEmailContent = function (heading, url) {
     `
 }
 
-let getCompany = async (req) => {
-    return new Promise((resolve, reject) => {
-        try {
-            companyService.getCompany(req, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }    
-            });
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
+// let getCompany = async (req) => {
+//     return new Promise((resolve, reject) => {
+//         try {
+//             companyService.getCompany(req, (err, data) => {
+//                 if (err) {
+//                     reject(err);
+//                 } else {
+//                     resolve(data);
+//                 }    
+//             });
+//         } catch (error) {
+//             reject(error);
+//         }
+//     });
+// }
 
 let getEmailConfig = async (group) => {
     let company = [];
     let settings = [];
-    company = await getCompany({});
+    company = await companyService.getCompany({});
     let req = {
         query: { id: company[0].id, group }
     }

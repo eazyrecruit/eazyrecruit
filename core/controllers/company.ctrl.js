@@ -10,10 +10,14 @@ router.post("/", (req, res) => {
     });
 });
 
-router.get("/", (req, res) => {
-    companyService.getCompany(req, (err, data) => {
+router.get("/", async (req, res) => {
+    try {
+        let company = await companyService.getCompany(req);
+        responseService.response(req, null, 'get company', company, res);  
+    } catch (error) {
         responseService.response(req, err, 2, data, res);
-    });
+    }
+
 });
 
 router.get("/settings/", async (req, res) => {
