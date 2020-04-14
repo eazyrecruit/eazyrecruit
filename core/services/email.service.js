@@ -7,7 +7,7 @@ exports.sendEmail = async function (emailObj, next) {
     let emailConfig = await getEmailConfig('smtp');
 
     // create reusable transporter object
-    if (config.emailConfig.test === "true") {
+    if (config.emailConfig.test === true) {
         emailObj.toEmail = config.emailConfig.testRecepient;
     }
     var transporter = nodemailer.createTransport({
