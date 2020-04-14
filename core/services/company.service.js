@@ -36,13 +36,13 @@ exports.updateSettings = async (req, next) => {
                 groupName : req.query.group, 
                 key: formKeys[index],
                 value: encryptService.encrypt(formValues[index].toString())
-                });
-            if (req.query.group === 'google') {
-                google.setup();
-            }    
+                });    
             if (companySetting) {
                 data.push(companySetting);
             }
+        }
+        if (req.query.group === 'google') {
+            google.setup();
         }
         return data;
     } else {
@@ -52,6 +52,9 @@ exports.updateSettings = async (req, next) => {
             if (companySettings) {
                 data.push(companySettings);
             }
+        }
+        if (req.query.group === 'google') {
+            google.setup();
         }
         return data;
     }

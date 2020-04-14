@@ -31,28 +31,49 @@ exports.getUser = (req, next) => {
 exports.resetPassword = (req, next) => {
     User.findOne({ email: req.body.email, is_deleted: false }).then(async (user) => {
         if (user) {
-            try {
-                var email = {};
-                let otp = uuidv4();
-                user.passwordResetToken = otp;
-                await user.save();
-                email.name = user.firstName ? `${user.firstName} ${user.lastName}` : req.body.email;
-                email.receiverAddress = user.email;
-                email.subject = 'Reset Password';
-                email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
-                emailService.sendEmail(email, (err, data) => {
-                    if (err) {
-                        next(err, null);
-                    } else {
-                        next(null, `${data} to ${email.receiverAddress}`);
+            if (user.google == true) {
+                try {
+                    var email = {};
+                    let otp = uuidv4();
+                    user.passwordResetToken = otp;
+                    await user.save();
+                    email.name = user.firstName ? `${user.firstName} ${user.lastName}` : req.body.email;
+                    email.receiverAddress = user.email;
+                    email.subject = 'Reset Password';
+                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
+                    emailService.sendEmail(email, (err, data) => {
+                        if (err) {
+                            let err = {
+                                status: 500,
+                                message: 'internal server error'
+                            }
+                            console.log('forget password : ', error);
+                            next(err, null);
+                        } else {
+                            next(null, `An email has been sent to ${email.receiverAddress} for reset your password.`);
+                        }
+                    });
+                } catch (error) {
+                    let err = {
+                        status: 500,
+                        message: 'internal server error'
                     }
-                });
-            } catch (error) {
-                next(error, null);
-            }
-            
+                    console.log('forget password : ', error);
+                    next(err, null);
+                }
+            } else {
+                let err = {
+                    status: 400,
+                    message: 'Google login found, password can not be reset'
+                }
+                next(err, null);
+            }            
         } else {
-            next('User does not exist!', null);
+            let err = {
+                status: 400,
+                message: 'User does not exist'
+            }
+            next(err, null);
         }
     }).catch(err => {
         next(err, null);
