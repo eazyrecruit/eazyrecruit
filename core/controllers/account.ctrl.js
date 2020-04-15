@@ -29,7 +29,11 @@ router.post("/register", function (req, res) {
 
 router.post("/forget", (req, res) => {
   accountService.resetPassword(req, (err, user) => {
-    responseService.response(req, err, 'Forget Password', user, res);
+    if (err) {
+      responseService.errorResponse(err, 'Forget Password', res);
+    } else {
+      responseService.successResponse(user, 'Forget Password', res);
+    }
   });
 });
 

@@ -4,6 +4,7 @@ import { Router, Params, ActivatedRoute } from '@angular/router';
 import { ValidationService } from '../../services/validation.service';
 import { AccountService } from '../../services/account.service';
 
+declare var SiteJS: any;
 @Component({
   selector: 'app-forget-password',
   templateUrl: './forget-password.component.html',
@@ -42,8 +43,12 @@ export class ForgetPasswordComponent implements OnInit {
           this.router.navigate(['login']);
         } else {
           this.errorMessage = result['error']['message'];
+          SiteJS.stopLoader();
         }
-      }, (err) => { });
+      }, (err) => {
+        this.errorMessage = err.error.error.message
+        SiteJS.stopLoader();
+      });
     }
   }
 
