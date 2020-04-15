@@ -9,7 +9,7 @@ var emailService = require('../services/email.service');
 let interviewCriteria = require('../models/interviewCriteria');
 
 exports.createAndInvite = async (req) => {
-    req.body.interview = await interviews.create(
+    req.body.interview.interview = await interviews.create(
         {
             uid: uuidv1(),
             sequence: 1,
@@ -31,9 +31,9 @@ exports.createAndInvite = async (req) => {
             modified_at: Date.now()
         });
     // Invite Participants
-    // await inviteCandidate(req, 'Interview scheduled');
-    // await inviteInterviewer(req, 'Interview scheduled');
-    // await inviteOrganizer(req, 'Interview scheduled');
+    await inviteCandidate(req, 'Interview scheduled');
+    await inviteInterviewer(req, 'Interview scheduled');
+    await inviteOrganizer(req, 'Interview scheduled');
     // Return Interview Details
     return req.body.interview;
 }
@@ -59,9 +59,9 @@ exports.rescheduleAndInvite = async (req) => {
             modified_at: Date.now()
         }, {new: true});
     // Invite Participants
-    // await inviteCandidate(req, 'Interview rescheduled');
-    // await inviteInterviewer(req, 'Interview rescheduled');
-    // await inviteOrganizer(req, 'Interview rescheduled');
+    await inviteCandidate(req, 'Interview rescheduled');
+    await inviteInterviewer(req, 'Interview rescheduled');
+    await inviteOrganizer(req, 'Interview rescheduled');
     // Return Interview Details
     return req.body.interview;
 }

@@ -31,4 +31,18 @@ router.get('/roles', async (req, res) => {
     }
 });
 
+router.post('/', async (req, res) => {
+    try {
+        let users = await userService.register(req);
+        responseService.successResponse(users, 'create users', res);
+    } catch (err) {
+        let error = {
+            status: 500,
+            message: 'internal server error',
+        }
+        console.log('get users - error : ', err);
+        responseService.errorResponse(error, 'create users', res);
+    }
+});
+
 module.exports.user = router;

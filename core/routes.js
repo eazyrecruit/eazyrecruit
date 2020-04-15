@@ -21,7 +21,8 @@ const User = require('./models/user');
 module.exports.setup = (app) => {
   var unprotected = [
     pathToRegexp('/api/account/*'),
-    pathToRegexp('/api/applicant/*'),
+    //yash need save api to be open
+    // pathToRegexp('/api/applicant/*'),
     pathToRegexp('/api/user/resetpassword'),
     pathToRegexp('/api/candidate/received/email'),
     pathToRegexp('/jobs/*')
