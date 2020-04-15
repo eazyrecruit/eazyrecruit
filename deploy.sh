@@ -19,8 +19,8 @@ setup(){
       mkdir elastic_search_data
     fi
 
-    if [ ! -d elastic_search_db ]; then
-      mkdir elastic_search_db
+    if [ ! -d mongo_db ]; then
+      mkdir mongo_db
     fi
 
     db_up
@@ -74,16 +74,17 @@ restart(){
 
 destroy(){
   sudo docker-compose down
-  if [ -d elastic_search_data ]; then
-    cp -r elastic_search_data /tmp/eazyrecruit/
-    sudo rm -r elastic_search_data
-  fi
+  # if [ -d elastic_search_data ]; then
+  #   cp -r elastic_search_data /tmp/eazyrecruit/
+  #   sudo rm -r elastic_search_data
+  # fi
 
-  if [ -d elastic_search_db ]; then
-    cp -r elastic_search_db /tmp/eazyrecruit/
-    sudo rm -r elastic_search_db
-  fi
-  sudo rm .adminpass
+  # if [ -d mongo_db ]; then
+  #   cp -r elastic_search_db /tmp/eazyrecruit/
+  #   sudo rm -r mongo_db
+  # fi
+
+  # sudo rm .adminpass
   sudo rm -r ./core/admin
 
 }

@@ -7,7 +7,7 @@ class SettingsModel(BaseModel):
             
     def getImapSettings(self):
         db = super().EazyrecruitDB()
-        imapSettings = db.companysettings.find({'group':'imap'})
+        imapSettings = db.companysettings.find({'groupName':'imap'})
         return self.getSettings(imapSettings)
 
     def getSettings(self, settings):

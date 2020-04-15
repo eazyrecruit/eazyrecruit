@@ -16,3 +16,4 @@ engine/models/__pycache__
 engine/helpers/__pycache__/*
 
 engine/config/__pycache__/*
+mongo_db/

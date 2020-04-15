@@ -17,30 +17,52 @@ from parsers import resumeanalyse as ResumeAnalyse
 
 def parse():
     jobstatusmodel = JobStatusModel()
-    last_mail_id = jobstatusmodel.get_latest('email')
-    print("last_mail_id", last_mail_id)
-    if last_mail_id:
-        mails, last_mail_id = getRecentMails(last_mail_id)
-        resumes = []
-        if mails and len(mails) > 0:
-            for mail in mails:
-                if is_resume(mail):
-                    resumes.extend(mail["attachments"])
-        jobstatusmodel.save_latest('email',last_mail_id)
-        return resumes
-    else:
-        return None
-
-def getRecentMails(last_mail_id = 0):
-    # connecting to the gmail imap server
-    
     settingsModel = SettingsModel()
     imapSettings = settingsModel.getImapSettings()
+
     if imapSettings:
-        m = imaplib.IMAP4_SSL(imapSettings['server'])
-        m.login(imapSettings['username'], imapSettings['password'])
-        # get all emails
-        m.select('inbox')
+        print("user", imapSettings['user'])
+        last_mail_id = jobstatusmodel.get_latest('email', imapSettings['user'])
+        print("last_mail_id", last_mail_id)
+        if last_mail_id:
+            mails, last_mail_id = getRecentMails(imapSettings, last_mail_id)
+            resumes = []
+            if mails and len(mails) > 0:
+                for mail in mails:
+                    if is_resume(mail):
+                        resumes.extend(mail["attachments"])
+            if last_mail_id:       
+                jobstatusmodel.save_latest('email', imapSettings['user'], last_mail_id)
+            return resumes
+        else:
+            return None
+    else:
+        print('No IMAP settings was found, It will try again after some time')
+        return None
+
+def getRecentMails(imapSettings, last_mail_id = 0):
+    # connecting to the gmail imap server
+    # settingsModel = SettingsModel()
+    # imapSettings = settingsModel.getImapSettings()
+    # print("password", imapSettings['password'])
+    
+    if imapSettings:
+        print("host", imapSettings['host'])
+        if 'port' in imapSettings:
+            print("port", imapSettings['port'])
+            m = imaplib.IMAP4_SSL(imapSettings['host'], imapSettings['port'])
+        else:
+            m = imaplib.IMAP4_SSL(imapSettings['host'])
+
+        m.login(imapSettings['user'], imapSettings['password'])
+
+        if 'folder' in imapSettings:
+            print("folder", imapSettings['folder'])
+            m.select(imapSettings['folder'])
+        else:
+            m.select(imapSettings['inbox'])
+
+      
         # you could filter using the IMAP rules here (check http://www.example-code.com/csharp/imap-search-critera.asp)
         resp, items = m.search(None, "ALL") # search and return uids instead
         # no new email

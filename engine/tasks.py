@@ -16,7 +16,7 @@ app = Celery('tasks', broker=config.get_config()['redis_host'])
 
 @app.on_after_configure.connect
 def emailparser_job(sender, **kwargs):
-    sender.add_periodic_task(20.0, emailparser_task.s(), name='add every 20')
+    sender.add_periodic_task(600.0, emailparser_task.s(), name='add every 2400')
 
 @app.task(name="emailparser")
 def emailparser_task():
@@ -93,9 +93,9 @@ def resumeparser_task(tempFile, fileName, resumeId, source):
 #skillsScraper.dump_skill_list("./data/skills/linkedinskill.list")
 #resumeparser_task("./dump/d20374726a2546db87a0b45dd0684fd1.pdf", "AbhishekSharmaResume.pdf", '', 'email')
 
-app.conf.beat_schedule = {
-    "check-mail-every-hour": {
-        "task": "tasks.emailparser_task",
-        "schedule": 3600
-    }
-}
+# app.conf.beat_schedule = {
+#     "check-mail-every-hour": {
+#         "task": "tasks.emailparser_task",
+#         "schedule": 3600
+#     }
+# }
