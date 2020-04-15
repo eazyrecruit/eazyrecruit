@@ -28,20 +28,20 @@ exports.register = async (req) => {
                     userModel.email = req.body.email;
                     userModel.firstName = req.body.firstName;
                     userModel.lastName = req.body.lastName;
-                    roles = req.body.roleId,
-                    phone = [req.body.phone],
-                    passwordResetToken = otp,
-                    passwordResetExpires = new Date(),
-                    emailVerificationToken = '',
-                    emailVerified = false,
-                    google = false,
-                    tokens = [],
-                    picture = '',
-                    is_deleted = false,
-                    created_by = req.user.id,
-                    created_at = new Date(),
-                    modified_by = req.user.id,
-                    modified_at = new Date();
+                    userModel.roles = req.body.roleId,
+                    userModel.phone = [req.body.phone],
+                    userModel.passwordResetToken = otp,
+                    userModel.passwordResetExpires = new Date(),
+                    userModel.emailVerificationToken = '',
+                    userModel.emailVerified = false,
+                    userModel.google = false,
+                    userModel.tokens = [],
+                    userModel.picture = '',
+                    userModel.is_deleted = false,
+                    userModel.created_by = req.user.id,
+                    userModel.created_at = new Date(),
+                    userModel.modified_by = req.user.id,
+                    userModel.modified_at = new Date();
                     await userModel.save();
         
                     //send email
