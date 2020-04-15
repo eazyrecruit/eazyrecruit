@@ -49,7 +49,6 @@ module.exports.setup = (app) => {
   app.use('/api/location', require('./services/crud.service')(LocationModel, 'CRUDQ'));
   app.use('/api/skill', require('./services/crud.service')(SkillsModel, 'CRUDQ'));
   app.use('/api/user/getroles', require('./services/crud.service')(UserRoleModel, 'CRUDQ'));
-  app.use('/api/user', require('./services/crud.service')(User, 'CRUDQ'));
   // Custom Implementation
   app.use('/api/account', require('./controllers/account.ctrl').account);
   app.use('/api/applicant', require('./controllers/applicant.ctrl').applicant);
@@ -66,6 +65,7 @@ module.exports.setup = (app) => {
   // Views
   app.use('/jobs', require('./views/index').pages);
   app.use('/api/migration', require('./controllers/migrate.ctrl').migrate);
+  app.use('/api/user', require('./controllers/user.ctrl').user);
 };
 
 var secretRecruitCallBack = function (req, payload, done) {
