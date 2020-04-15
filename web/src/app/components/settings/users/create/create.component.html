@@ -76,7 +76,7 @@
             <label for="name">User Role</label>
             <select placeholder="Company" class="form-control" formControlName="roleId" (change)="onRoleChnage($event)">
               <option value="0" selected>Select Role</option>
-              <option *ngFor="let role of roles;" value="{{role.id}}"> {{role.name}}</option>
+              <option *ngFor="let role of roles;" value="role.id"> {{role.name}}</option>
             </select>
             <small class="text-danger" *ngIf="isRoleSelect">
               Please select User Role
