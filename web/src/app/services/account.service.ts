@@ -57,7 +57,7 @@ export class AccountService {
     }
 
     getRoles() {
-        return this.http.get(this.constService.baseUrl + 'user/getroles');
+        return this.http.get(this.constService.baseUrl + 'user/roles');
     }
 
     getUsers() {

@@ -31,7 +31,7 @@ exports.getUser = (req, next) => {
 exports.resetPassword = (req, next) => {
     User.findOne({ email: req.body.email, is_deleted: false }).then(async (user) => {
         if (user) {
-            if (user.google && user.google != true) {
+            if (user.google != true) {
                 try {
                     var email = {};
                     let otp = uuidv4();

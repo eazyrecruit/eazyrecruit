@@ -5,10 +5,10 @@ export class ConstService {
     constructor() {
         if (window.location.hostname === 'dev.eazyrecruit.in') {
             this.baseUrl = '/api/';
-            this.publicUrl = '/jobs/';
+            this.publicUrl = 'https://dev.eazyrecruit.in/jobs/';
             this.pyUrl = '/api/engine/';
         } else if (window.location.hostname === 'web.eazyrecruit.in') {
-            this.publicUrl = '/jobs/';
+            this.publicUrl = 'https://web.eazyrecruit.in/jobs/';
             this.baseUrl = '/api/';
             this.pyUrl = '/api/engine/';
         } else {

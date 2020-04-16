@@ -23,6 +23,7 @@ export class ViewComponent implements OnInit {
   isDetailsUploading = false;
   isSubmitDisabled = false;
   roles = [];
+  selectedrole = [];
   isSearchResultAvail: any = 0;
   userId: any;
   userDialogTitle: string;
@@ -56,7 +57,7 @@ export class ViewComponent implements OnInit {
       sortOrder: '1',
       offset: 0
     };
-
+    this.isRoleSelect = false;
     // this.onFilterChange(this.filter);
 
     this.accountService.getRoles().subscribe(result => {
@@ -122,9 +123,10 @@ export class ViewComponent implements OnInit {
   }
 
   onRoleChnage(event) {
-    const value = parseInt(event.target.value);
-    if (value > 0) {
-      this.isRoleSelect = false;
+    const value = event.target.value;
+    if (value) {
+      this.selectedrole.length = 0;
+      this.selectedrole.push(value);
     } else {
       this.isRoleSelect = true;
     }
@@ -135,6 +137,7 @@ export class ViewComponent implements OnInit {
       this.validationService.validateAllFormFields(this.adminDetails);
     } else if (this.adminDetails.valid && this.adminDetails.controls['roleId'].value != null) {
       this.isDetailsUploading = true;
+      adminFormDetail.roleId = this.selectedrole;
       this.accountService.createUser(adminFormDetail).subscribe(result => {
         if (result['success']['data']) {
           this.adminDetails.reset();

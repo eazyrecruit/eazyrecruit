@@ -48,6 +48,7 @@ export class CreateComponent implements OnInit {
       this.validationService.validateAllFormFields(this.adminDetails);
     } else if (this.adminDetails.valid) {
       this.isDetailsUploading = true;
+      adminFormDetail.roleId = this.roles;
       this.accountService.createUser(adminFormDetail).subscribe(result => {
         if (result['success']['data']) {
           this.adminDetails.reset();
@@ -61,7 +62,8 @@ export class CreateComponent implements OnInit {
 
 onRoleChnage(event) {
     const value = event.target.value;
-    if (+value > 0) {
+    if (value) {
+      this.roles.push(value);
       this.isRoleSelect = false;
     } else {
       this.isRoleSelect = true;
