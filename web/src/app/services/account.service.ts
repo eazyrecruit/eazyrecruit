@@ -69,7 +69,7 @@ export class AccountService {
     }
 
     getAllUsers(filter) {
-        return this.http.get(this.constService.baseUrl + 'user/', filter);
+        return this.http.get(`${this.constService.baseUrl}user?limit=${filter.pageSize}&offset=${filter.offset}&search=${filter.searchText}`);
     }
 
     logout() {
@@ -141,6 +141,8 @@ export class AuthInterceptor implements HttpInterceptor {
                 if (err.status === 401 || err.status === 403) {
                     this.authStorage.setAuthorizationHeader(null);
                     this.router.navigate(['login']);
+                    SiteJS.stopLoader();
+                } else {
                     SiteJS.stopLoader();
                 }
               }

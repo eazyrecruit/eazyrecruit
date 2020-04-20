@@ -24,9 +24,10 @@ exports.syncApplicants = async () => {
 
 exports.searchApplicants = async (req) => {
     return new Promise(function (resolve, reject) {
-        var from = req.body.offset > 0 ? req.body.offset - 1 : 0;
-        var size = req.body.pageSize;
-        var query;
+        let query;
+        let from = 0, size = 10;
+        if (req.query.limit) size = parseInt(req.query.limit);
+        if (req.query.offset) from = parseInt(req.query.offset);
         if (req.body.searchText) {
             query = {
                 "bool": {

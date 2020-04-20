@@ -14,7 +14,7 @@ var redisClient = require('../services/redis.service');
 var logTypes = require('../helpers/logType');
 var resumeService = require('../services/resume.service');
 
-router.post("/search", async (req, res) => {
+router.get("/search", async (req, res) => {
     try {
         var results = await esService.searchApplicants(req);
         if (results.hits && results.hits.total.value > 0) {

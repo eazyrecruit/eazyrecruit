@@ -43,7 +43,7 @@ export class ValidationService {
 
   jobTitleValid(control: FormControl): Promise<any> | Observable<any> {
     const promise = new Promise<any>((resolve, reject) => {
-      if (control.value && !control.value.match(new RegExp(/^[0-9a-zA-Z-\s]*$/))) {
+      if (control.value && !control.value.match(new RegExp(/^[0-9a-zA-Z-\s_\-\/]*$/))) {
         resolve({ 'jobTitleValid': true });
       } else {
         resolve(null);

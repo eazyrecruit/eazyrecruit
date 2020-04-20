@@ -9,8 +9,13 @@ exports.getRoles = async () => {
     return await Role.find({ is_deleted: false });
 };
 
-exports.getUsers = async () => {
-    return await User.find({ is_deleted: false }).populate('roles');
+exports.getUsers = async (req) => {
+    let skip = 0, limit = 10;
+    if (req.query.limit) limit = parseInt(req.query.limit);
+    if (req.query.offset) skip = parseInt(req.query.offset);
+    let count = await User.count({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false });
+    let users = await User.find({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false }).populate('roles').skip(skip).limit(limit).exec();
+    return { count, users };
 };
 
 exports.register = async (req) => {
@@ -61,18 +66,6 @@ exports.register = async (req) => {
                         console.log('user registration email error : ', error);
                         reject(err); 
                     }
-                    // emailService.sendEmail(email, (err, data) => {
-                    //     if (err) {
-                    //         let err = {
-                    //             status: 500,
-                    //             message: 'internal server error'
-                    //         }
-                    //         console.log('user registration email error : ', error);
-                    //         return err;
-                    //     } else {
-                    //         return `An email has been sent to ${email.receiverAddress} for user registration.`;
-                    //     }
-                    // });
                 } catch (error) {
                     let err = {
                         status: 500,

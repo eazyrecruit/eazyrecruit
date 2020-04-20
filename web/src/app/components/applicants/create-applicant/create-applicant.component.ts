@@ -132,8 +132,8 @@ export class CreateApplicantComponent implements OnInit {
 
   getAllUsers() {
     this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '' }).subscribe(result => {
-      if (result['success']['data'].length) {
-        this.referrers = result['success']['data'];
+      if (result['success'] && result['success']['data'] && result['success']['data']['users']) {
+        this.referrers = result['success']['data']['users'];
       }
     });
   }

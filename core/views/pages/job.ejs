@@ -17,9 +17,30 @@
                     <div class="card-body">
                         <h5 class="card-title"><%= job.title %></h5>
                         <ul class="normal-job-dis card-text">
-                            <li><i class="ti-location-pin"></i> Jaipur Rajsthan, 32006</li>
-                            <li><i class="ti-bag"></i> <%= job.experiance %> Year experiance</li>
-                            <li><i class="ti-timer"></i> <%= job.employment_type %></li>
+                            <li>
+                                <i class="ti-location-pin"></i>
+                                <%  if (job.locations && job.locations.length) { %>
+                                    <% for(let i = 0; i < job.locations.length; i++) { %>
+                                        <%= job.locations[i].city %>, <%= job.locations[i].state %>
+                                <%  } %>
+                                <% } else { %>
+                                    N/A
+                                <%  } %>
+                            </li>
+                            <li><i class="ti-bag"></i>
+                                <% if (job.experiance) { %>
+                                    <%= job.experiance %> Year experiance
+                                <% } else { %>
+                                    N/A
+                                <% } %>
+                            </li>
+                            <li><i class="ti-timer"></i> 
+                                <% if (job.type) { %>
+                                    <%= job.type %>
+                                <% } else { %>
+                                    N/A
+                                <% } %>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -31,15 +52,15 @@
                         <table class="table bg-dark-black mt-30 border-light">
                             <tr>
                                 <td class="font-weight-bold">Required Experiance</td>
-                                <td><%= job.experiance %></td>
+                                <td><%= job.experiance ? job.experiance : 'N/A' %></td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold">Job Description</td>
-                                <td><%- job.description %></td>
+                                <td><%= job.description ? job.description : 'N/A' %></td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold">Job Responsibility</td>
-                                <td><%- job.responsibilities %></td>
+                                <td><%= job.responsibilities ? job.responsibilities : 'N/A' %></td>
                             </tr>
                         </table>
                         <a class="btn btn-primary" href="/jobs/apply/<%= job.guid%>"><i class="ti-bag"></i> Apply</a>

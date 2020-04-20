@@ -5,7 +5,7 @@ var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
  
 var jobSchema = new Schema({
-
+    // experiance is missing here
     title: String,
     guid: String,
     active: Boolean,
@@ -39,7 +39,10 @@ var jobSchema = new Schema({
 
     expiryDate: Date,
     is_published: Boolean,
-    metaImage: String,
+    metaImage: {
+        type: Schema.Types.ObjectId,
+        ref: 'JobMetaImages'
+    },
     metaImageAltText: String,
     metaTitle: String,
     tags: Array,
