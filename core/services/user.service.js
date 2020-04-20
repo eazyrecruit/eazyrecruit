@@ -9,8 +9,13 @@ exports.getRoles = async () => {
     return await Role.find({ is_deleted: false });
 };
 
-exports.getUsers = async () => {
-    return await User.find({ is_deleted: false }).populate('roles');
+exports.getUsers = async (req) => {
+    let skip = 0, limit = 10;
+    if (req.query.limit) limit = parseInt(req.query.limit);
+    if (req.query.offset) skip = parseInt(req.query.offset);
+    let count = await User.count({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false });
+    let users = await User.find({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false }).populate('roles').skip(skip).limit(limit).exec();
+    return { count, users };
 };
 
 exports.register = async (req) => {

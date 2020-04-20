@@ -5,7 +5,7 @@ let router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        let users = await userService.getUsers();
+        let users = await userService.getUsers(req);
         responseService.successResponse(users, 'get users', res);
     } catch (err) {
         let error = {

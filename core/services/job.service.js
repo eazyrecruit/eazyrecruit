@@ -41,6 +41,7 @@ exports.save = async (req) => {
         modelJob.mode = req.body.mode ? req.body.mode : null;
         if (req.body.locations) {
             modelJob.locations = [];
+            req.body.locations = JSON.parse(req.body.locations);
             for (var iLoc = 0; iLoc < req.body.locations.length; iLoc++) {
                 modelJob.locations.push(req.body.locations[iLoc]._id);
             }
@@ -52,6 +53,7 @@ exports.save = async (req) => {
         }
         if (req.body.skills) {
             modelJob.skills = [];
+            req.body.skills = JSON.parse(req.body.skills);
             for (var iSkill = 0; iSkill < req.body.skills.length; iSkill++) {
                 modelJob.skills.push(req.body.skills[iSkill]._id);
             }
@@ -79,8 +81,8 @@ exports.save = async (req) => {
     }
 }
 
-exports.getPublishedJobs = async () => {
-    return await Jobs.find({}).populate("locations").populate("skills")
+exports.getPublishedJobs = async (query) => {
+    return await Jobs.find(query).populate("locations").populate("skills")
         .populate("tags").populate("categories");
 };
 

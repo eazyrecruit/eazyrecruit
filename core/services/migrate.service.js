@@ -315,3 +315,7 @@ exports.restoreHistory = async (data) => {
     }
     return histories;
 }
+
+exports.emailByJob = async (id) => {
+    return await Job.findOne({ _id: id  }).populate({ path: 'applicants', model: JobApplicant, populate: { path: 'applicant', model: Applicant } });
+}

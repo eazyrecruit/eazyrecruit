@@ -74,4 +74,13 @@ router.post('/history', async (req, res) => {
     }
 });
 
+router.get('/applicantbyjob', async (req, res) => {
+    try {
+        let result = await migrateService.emailByJob(req.query.id);
+        res.send(result);
+    } catch (error) {
+        res.send(error);
+    }
+});
+
 module.exports.migrate = router;

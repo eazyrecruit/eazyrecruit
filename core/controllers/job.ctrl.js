@@ -5,7 +5,7 @@ var esSearch = require('../services/es.service');
 var skillService = require('../services/skill.service');
 var locationService = require('../services/location.service');
 var responseService = require('../services/response.service');
-var validationService = require('../services/validation.service');
+var multer = require('multer');
 
 router.get("/applicants/pipelines/:id", async(req, res) => {
     try {
@@ -55,7 +55,8 @@ router.get("/", async (req, res) => {
 });
 
 // create new records in database
-router.post("/", async (req, res) => {
+var metaImage = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+router.post("/", metaImage.any(), async (req, res) => {
     try {
         var job = await jobService.save(req);
         responseService.response(req, null, 'Job SAVE', job, res);

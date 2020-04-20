@@ -9,7 +9,16 @@ var multer = require('multer');
 
 router.get("", async (req, res) => {
     try {
-        var jobs = await jobService.getPublishedJobs();
+        var jobs = await jobService.getPublishedJobs({});
+        res.render('pages/jobs', { jobs: jobs });
+    } catch (err) {
+        res.render('pages/error')
+    }
+});
+
+router.post("", async (req, res) => {
+    try {
+        var jobs = await jobService.getPublishedJobs({ title: new RegExp(`^.*${req.body.search}.*$`, 'i') });
         res.render('pages/jobs', { jobs: jobs });
     } catch (err) {
         res.render('pages/error')

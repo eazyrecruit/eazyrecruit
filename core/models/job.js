@@ -5,7 +5,7 @@ var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
  
 var jobSchema = new Schema({
-
+    // experiance is missing here
     title: String,
     guid: String,
     active: Boolean,
