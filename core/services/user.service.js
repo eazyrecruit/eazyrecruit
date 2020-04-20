@@ -66,18 +66,6 @@ exports.register = async (req) => {
                         console.log('user registration email error : ', error);
                         reject(err); 
                     }
-                    // emailService.sendEmail(email, (err, data) => {
-                    //     if (err) {
-                    //         let err = {
-                    //             status: 500,
-                    //             message: 'internal server error'
-                    //         }
-                    //         console.log('user registration email error : ', error);
-                    //         return err;
-                    //     } else {
-                    //         return `An email has been sent to ${email.receiverAddress} for user registration.`;
-                    //     }
-                    // });
                 } catch (error) {
                     let err = {
                         status: 500,

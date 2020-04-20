@@ -39,7 +39,10 @@ var jobSchema = new Schema({
 
     expiryDate: Date,
     is_published: Boolean,
-    metaImage: String,
+    metaImage: {
+        type: Schema.Types.ObjectId,
+        ref: 'JobMetaImages'
+    },
     metaImageAltText: String,
     metaTitle: String,
     tags: Array,

@@ -1,6 +1,7 @@
 var Jobs = require('../models/job');
 var JobPipelines = require('../models/jobPipeline');
 var JobApplicants = require('../models/jobApplicant');
+var JobMetaImage = require('../models/jobMetaImage');
 const uuidv4 = require('uuid/v4');
 var histroyService = require('../services/history.service');
 
@@ -60,7 +61,30 @@ exports.save = async (req) => {
         }
         modelJob.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
         modelJob.is_published = req.body.published ? req.body.published : true;
-        modelJob.metaImage = req.body.metaImage ? req.body.metaImage : null;
+        
+        // Create/Update resume 
+        if (req.body.metaImage && req.body.metaImage.id && req.body.metaImage.id.length > 0) {
+            modelJob.metaImage = req.body.metaImage.id;
+        } else {
+            if (req.files && req.files.length > 0) {
+                modelMetaImage = await JobMetaImage.findById(modelJob.metaImage);
+                if (modelMetaImage == null) {
+                    modelMetaImage = new JobMetaImage();
+                    modelMetaImage.created_by = req.user.id;
+                    modelMetaImage.created_at = new Date();
+                }
+                modelMetaImage.metaImage = req.files[0].buffer.toString('base64')
+                modelMetaImage.fileName = req.body.metaImage && req.body.metaImage.file ? req.body.metaImage.file : req.files[0].originalname;
+                modelMetaImage.fileType = req.files[0].mimetype;
+                modelMetaImage.modified_by = req.user.id;
+                modelMetaImage.modified_at = new Date();
+                modelMetaImage = await modelMetaImage.save();
+                modelJob.metaImage = modelMetaImage._id;
+            } else {
+                modelJob.metaImage = null;
+            }
+}
+
         modelJob.metaImageAltText = req.body.metaImageAltText ? req.body.metaImageAltText : null;
         modelJob.metaTitle = req.body.metaTitle ? req.body.metaTitle : null;
         if (req.body.tags) {
