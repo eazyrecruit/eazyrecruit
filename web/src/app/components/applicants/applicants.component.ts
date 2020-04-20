@@ -94,7 +94,7 @@ export class ApplicantsComponent implements OnInit {
   }
 
   openCandidate(applicantId: any) {
-    this.applicant = { _id: applicantId };
+    this.applicant = { _id: applicantId, isApplicantList: true };
     SiteJS.slideOpen('applicant-info');
   }
 
