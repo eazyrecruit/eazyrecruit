@@ -18,7 +18,7 @@ export class SearchService {
     return this.http.post(this.constService.baseUrl + 'applicant/', filter);
   }
   getData(filter) {
-    return this.http.post(this.constService.baseUrl + 'applicant/search', filter);
+    return this.http.get(`${this.constService.baseUrl}applicant/search?limit=${filter.pageSize}&offset=${filter.offset}&search=${filter.searchText}`);
   }
   getHeaders() {
     const token = this.sharedService.getAuthToken();

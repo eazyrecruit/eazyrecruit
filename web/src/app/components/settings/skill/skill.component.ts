@@ -126,6 +126,7 @@ export class SkillComponent implements OnInit {
     this.filter.offset = (filter.pageIndex - 1) * filter.pageSize;
     this.filter.searchText = filter.searchText;
     this.filter.pageSize = filter.pageSize;
+    this.filter.pageIndex = filter.pageIndex;
     this.skillsService.getSkills(this.filter).subscribe(result => {
       if (result['success']) {
         if (result['success']['data'] && result['success']['data']['count']) {
@@ -142,6 +143,8 @@ export class SkillComponent implements OnInit {
         this.isSearchResultAvail = 2;
         this.totalRecords = 0;
       }
+    }, (error) => {
+      console.log('skill error : ', error);
     });
   }
 

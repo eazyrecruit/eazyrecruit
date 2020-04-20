@@ -92,10 +92,7 @@ export class DatatableComponent implements AfterViewInit {
     }
 
     filterChanged(refilter) {
-        if (refilter) {
-            this.filter.pageIndex = 1;
-            this.CurrentPage = 1;
-        } else {
+        if (refilter == false) {
             this.filter.pageIndex = this.CurrentPage;
         }
         this.onFilterChange.emit(this.filter);

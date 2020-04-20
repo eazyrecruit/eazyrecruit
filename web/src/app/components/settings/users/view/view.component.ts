@@ -76,17 +76,24 @@ export class ViewComponent implements OnInit {
     this.filter.searchText = filter.searchText;
     this.filter.pageSize = filter.pageSize;
 
-    this.accountService.getAllUsers(filter).subscribe(result => {
-      if (result['success']['data'].length) {
-        this.users = result['success']['data'];
-        this.totalRecords = result['success']['data'].length;
-        this.serialNo = (filter.pageIndex - 1) * filter.pageSize;
-        this.isSearchResultAvail = 1;
+    this.accountService.getAllUsers(this.filter).subscribe(result => {
+      if (result['success']) {
+        if (result['success']['data'] && result['success']['data']['count']) {
+          this.users = result['success']['data']['users'];
+          this.totalRecords = result['success']['data']['count'];
+          this.serialNo = (filter.pageIndex - 1) * filter.pageSize;
+          this.isSearchResultAvail = 1;
+        } else {
+          this.users.length = 0;
+          this.isSearchResultAvail = 2;
+          this.totalRecords = 0;
+        }
       } else {
-        this.users.length = 0;
         this.isSearchResultAvail = 2;
         this.totalRecords = 0;
       }
+    }, (error) => {
+      console.log('user error : ', error);
     });
   }
 

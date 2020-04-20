@@ -3,7 +3,7 @@
   <h4 class="modal-title">Job</h4>
 </div>
 <div class="modal-body content-move">
-  <form [formGroup]="jobDetails" novalidate (ngSubmit)="jobDetail(jobDetails.value)">
+  <form [formGroup]="jobDetails" novalidate (ngSubmit)="createJob(jobDetails.value)">
     <div class="row">
       <div class="col-sm-9">
         <div class="form-group">
@@ -43,11 +43,11 @@
       </div>
       <div class="col-sm-3">
         <div class="form-group">
-          <label for="ctc" class="required">Anual CTC</label>
-          <input type="text" placeholder="Anual CTC" class="form-control" formControlName="ctc" required>
+          <label for="ctc" class="required">Annual CTC</label>
+          <input type="text" placeholder="Annual CTC" class="form-control" formControlName="ctc" required>
           <small class="text-danger"
             *ngIf="jobDetails.controls['ctc'].hasError('required') && jobDetails.controls['ctc'].touched">
-            Please enter Anual CTC
+            Please enter Annual CTC
           </small>
           <small class="text-danger" *ngIf="jobDetails.controls['ctc'].hasError('jobExperience')">
             Please enter correct CTC
@@ -170,7 +170,7 @@
     <div class="row" *ngIf="publish">
       <div class="form-group col-md-3">
         <label for="metaImage" class="not-required">Meta Image</label>
-        <input type="file" class="form-control" formControlName="metaImage" multiple="" accept=".jpg, .jpeg">
+        <input type="file" class="form-control" formControlName="metaImage" #file (change)="onFileChange(file.files)" multiple="" accept=".jpg, .jpeg">
         <small class="text-danger" *ngIf="errInvalidFile">
           Please upload only jpg/jpeg image
         </small>
