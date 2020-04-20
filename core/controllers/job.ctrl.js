@@ -59,9 +59,14 @@ var metaImage = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10
 router.post("/", metaImage.any(), async (req, res) => {
     try {
         var job = await jobService.save(req);
-        responseService.response(req, null, 'Job SAVE', job, res);
+        responseService.successResponse(req, null, 'Job SAVE', job, res);
     } catch (err) {
-        responseService.response(req, err, 'Job SAVE', null, res);
+        let error = {
+            status: 500,
+            message: "internal server error"
+        }
+        console.log('save job error : ', err);
+        responseService.errorResponse(error, 'Job SAVE', res);
     }
 });
 

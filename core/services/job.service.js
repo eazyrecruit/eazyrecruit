@@ -83,7 +83,7 @@ exports.save = async (req) => {
             } else {
                 modelJob.metaImage = null;
             }
-}
+        }
 
         modelJob.metaImageAltText = req.body.metaImageAltText ? req.body.metaImageAltText : null;
         modelJob.metaTitle = req.body.metaTitle ? req.body.metaTitle : null;
