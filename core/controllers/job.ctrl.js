@@ -110,10 +110,13 @@ router.delete("/:id", (req, res) => {
     });
 });
 
-router.delete("/applicant/:id", (req, res) => {
-    jobService.removeApplicant(req, function (err, data) {
-        responseService.response(req, err, 'delete job', data, res);
-    });
+router.delete("/applicant/:id", async (req, res) => {
+    try {
+        let result = await jobService.removeApplicant(req);
+        responseService.successResponse(result, 'remove applicant', res);   
+    } catch (error) {
+        responseService.errorResponse(error, 'remove applicnat', res);
+    }
 });
 
 // return job which is not deleted according to id

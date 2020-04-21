@@ -270,7 +270,7 @@ exports.editApplicant = async (req) => {
         applicant.modefied_by = req.user.id,
         applicant.modefied_at = Date.now(),
         applicant.is_deleted = false
-        applicant.save();
+        await applicant.save();
 
         await histroyService.create({ 
             applicant: req.body.applicant, 
@@ -286,28 +286,41 @@ exports.editApplicant = async (req) => {
 }
 
 exports.removeApplicant = async (req) => {
-    if (req.params.id) {
-        let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
-        if (jobApplicant) {
-            let interview = await Interview.findOne({ jobId: jobApplicant.job, jobApplicant: jobApplicant.applicant });
-            if (interview) {
-                try {
-                    interview.is_deleted =  true;
-                    interview.modified_at = new Date();
-                    interview.modified_by = req.user.id;
-                    await interview.save();    
-                    return jobApplicant;
-                } catch (error) {
-                    console.log('remove interview : ', error);
-                    return { status: 207, message: "applicant removed successfully, interview remove error" }
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (req.params.id) {
+                let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
+                if (jobApplicant) {
+                    let interview = await Interview.findOne({ jobId: jobApplicant.job, jobApplicant: jobApplicant.applicant });
+                    if (interview) {
+                        try {
+                            interview.is_deleted =  true;
+                            interview.modified_at = new Date();
+                            interview.modified_by = req.user.id;
+                            interview.save((err, data) => {
+                                if (err) {
+                                    reject({ status: 207, message: "applicant removed successfully, interview remove error" });
+                                } else {
+                                    console.log(data);
+                                    resolve(jobApplicant);
+                                }
+                            });
+                        } catch (error) {
+                            console.log('remove interview : ', error);
+                            reject({ status: 207, message: "applicant removed successfully, interview remove error" });
+                        }
+                    } else {
+                        resolve(jobApplicant);
+                    }
+                } else {
+                    reject({ status: 400, message: "invalid id" });    
                 }
             } else {
-                return jobApplicant;
-            }
-        } else {
-            return { status: 400, message: "invalid id" };    
+                reject({ status: 400, message: "id required" });
+            }            
+        } catch (error) {
+            console.log('remove applicanr error : ', error);
+            reject({ status: 500, message: "internal server error" });
         }
-    } else {
-        return { status: 400, message: "id required" };
-    }
+    });
 }
