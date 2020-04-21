@@ -265,7 +265,9 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         this.modalRef.content.closePopup.subscribe(result => {
             if (result) {
                 this.getApplicantById(result['data']._id);
-                this.onUpdate.emit(this.applicant);
+                // this.onUpdate.emit(this.applicant);   // old
+                result['data'].fullName = this.getFullName.bind(this.applicant);
+                this.onUpdate.emit(result['data']);   // new testing 
             }
         });
     }
