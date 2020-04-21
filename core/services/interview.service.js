@@ -40,7 +40,7 @@ exports.createAndInvite = async (req) => {
 
 exports.rescheduleAndInvite = async (req) => {
     let interview = await interviews.findById({ _id: req.body.id });
-    req.body.interview = await interviews.findByIdAndUpdate({ _id: req.body.id },
+    req.body.interview = await interviews.findByIdAndUpdate({ _id: req.body.id, is_deleted: { $ne: true } },
         {
             sequence: req.body.sequence + 1,
             status: "CONFIRMED",
@@ -81,17 +81,17 @@ exports.getAllBetweenDates = async (req) => {
 }
 
 exports.getAllByCandidate = async (req) => {
-    return await interviews.find({ jobApplicant: req.params.candidateId }).sort([['start', -1]]);
+    return await interviews.find({ jobApplicant: req.params.candidateId, is_deleted: { $ne: true } }).sort([['start', -1]]);
 }
 
 exports.getAllByInterview = async (req) => {
     return await interviews.aggregate([
-        { $match: { _id: ObjectId(req.params.interviewId) } },
+        { $match: { _id: ObjectId(req.params.interviewId), is_deleted: { $ne: true } } },
         { $lookup: { from: 'interviewresults', localField: '_id', foreignField: 'interview_id', as: 'interviewResults' } }]);
 }
 
 exports.comment = async (req) => {
-    return await interviews.findByIdAndUpdate({ _id: req.body._id }, {
+    return await interviews.findByIdAndUpdate({ _id: req.body._id, is_deleted: { $ne: true } }, {
         comment : req.body.comment,
         result : req.body.result
     }, {new : true});
