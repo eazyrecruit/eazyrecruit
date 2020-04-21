@@ -195,4 +195,12 @@ export class ApplicantsComponent implements OnInit {
       }
     });
   }
+
+  onUpdate($event) {
+    for (let i = 0; i < this.ApplicantList.length; i++) {
+      if ($event._id == this.ApplicantList[i]._id) {
+        this.ApplicantList[i] = $event;
+      }
+    }
+  }
 }
