@@ -276,7 +276,7 @@ exports.delete = async (_id) => {
         modelApplicant.is_deleted = true;
         modelApplicant.modified_by = req.user.id;
         modelApplicant = new Date();
-        return await modelJob.save
+        return await modelApplicant.save();
     }
     throw 'invalid id';
 };

@@ -14,8 +14,8 @@ exports.createAndInvite = async (req) => {
             uid: uuidv1(),
             sequence: 1,
             status: "CONFIRMED",
-            start: new Date(req.body.interview.start),
-            end: new Date(req.body.interview.end),
+            start: new Date(new Date(req.body.interview.start).toUTCString()),
+            end: new Date(new Date(req.body.interview.end).toUTCString()),
             note: req.body.interview.note,
             round: req.body.interview.round,
             jobId: req.body.interview.job.id,
@@ -44,8 +44,8 @@ exports.rescheduleAndInvite = async (req) => {
         {
             sequence: req.body.sequence + 1,
             status: "CONFIRMED",
-            start: new Date(req.body.interview.start),
-            end: new Date(req.body.interview.end),
+            start: new Date(new Date(req.body.interview.start).toUTCString()),
+            end: new Date(new Date(req.body.interview.end).toUTCString()),
             note: req.body.interview.note,
             round: req.body.interview.round,
             jobId: req.body.interview.job.id,
@@ -69,6 +69,7 @@ exports.rescheduleAndInvite = async (req) => {
 exports.getAllBetweenDates = async (req) => {
     return await interviews.find(
         {
+            is_deleted: { $ne: true },
             start: {
                 $gte: new Date(new Date(parseInt(req.params.start)).toISOString()),
                 $lt: new Date(new Date(parseInt(req.params.end)).toISOString())
@@ -167,7 +168,7 @@ async function inviteCandidate(req) {
         <p>Dear ${req.body.interview.candidate.name},</p>
         <p>You are invited to attend an interview for the following profile.</p>
         <p>Profile: <b>${req.body.interview.job.name}<b><br/>
-        Interview date: <b>${req.body.interview.start}<b><br/>
+        Interview date: <b>${new Date(req.body.interview.start).toLocaleString()}<b><br/>
         </p>
         <p>Best regards,<br>
         Team Eazyrecruit</p>
@@ -177,7 +178,7 @@ async function inviteCandidate(req) {
 async function inviteInterviewer(req, title) {
     return await createInvitation(req, title,
         `
-        <p>Dear ${req.body.interview.interviewer.name},</p>
+        <p>Dear ${req.body.interview.interviewer.name },</p>
         <p>${req.body.interview.organizer.name} invited you to interview ${req.body.interview.candidate.name} for the profile ${req.body.interview.job.name}.
         Please click on below link to access more details about the interview.</p>
         <p><a href="https://web.easyrecruit.in/interview/${req.body.interview.interview._id.toString()}">https://web.easyrecruit.in/interview/${req.body.interview.interview.id}</p>
