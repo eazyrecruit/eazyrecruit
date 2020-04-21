@@ -295,8 +295,10 @@ exports.removeApplicant = async (req) => {
                     interview.is_deleted =  true;
                     interview.modified_at = new Date();
                     interview.modified_by = req.user.id;
-                    await interview.save();    
-                    return jobApplicant;
+                    let interviewResult = await interview.save();    
+                    if (interviewResult) {
+                        return jobApplicant;
+                    }
                 } catch (error) {
                     console.log('remove interview : ', error);
                     return { status: 207, message: "applicant removed successfully, interview remove error" }
