@@ -2,6 +2,7 @@ var Jobs = require('../models/job');
 var JobPipelines = require('../models/jobPipeline');
 var JobApplicants = require('../models/jobApplicant');
 var JobMetaImage = require('../models/jobMetaImage');
+var Interview = require('../models/interview');
 const uuidv4 = require('uuid/v4');
 var histroyService = require('../services/history.service');
 
@@ -228,7 +229,7 @@ exports.addApplicant = async (req) => {
         let applicant = await JobApplicants.findOne({ applicant: req.body.applicantId, job: req.body.jobId, is_deleted: { $ne: true } });
         if (!applicant) {
             // Create Job Applicant
-            var jobApplicant = new JobApplicants();
+            let jobApplicant = new JobApplicants();
             jobApplicant.applicant = req.body.applicantId;
             jobApplicant.pipeline = req.body.pipelineId;
             jobApplicant.job = req.body.jobId;
@@ -239,10 +240,13 @@ exports.addApplicant = async (req) => {
             jobApplicant.is_deleted = false;
             jobApplicant = await jobApplicant.save();
             // Link with Job
-            if(modelJob.applicants == null){
+            if(modelJob.applicants == null) {
                 modelJob.applicants = [];
             }
             modelJob.applicants.push(jobApplicant._id);
+            if (!modelJob.hasOwnProperty("metaImage")) {
+                modelJob.metaImage = null;
+            }
             modelJob = await modelJob.save();
             await histroyService.create({ 
                 applicant: req.body.applicantId, 
@@ -283,9 +287,23 @@ exports.editApplicant = async (req) => {
 
 exports.removeApplicant = async (req) => {
     if (req.params.id) {
-        let applicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
-        if (applicant) {
-            return applicant;
+        let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
+        if (jobApplicant) {
+            let interview = await Interview.findOne({ jobId: jobApplicant.job, jobApplicant: jobApplicant.applicant });
+            if (interview) {
+                try {
+                    interview.is_deleted =  true;
+                    interview.modified_at = new Date();
+                    interview.modified_by = req.user.id;
+                    await interview.save();    
+                    return jobApplicant;
+                } catch (error) {
+                    console.log('remove interview : ', error);
+                    return { status: 207, message: "applicant removed successfully, interview remove error" }
+                }
+            } else {
+                return jobApplicant;
+            }
         } else {
             return { status: 400, message: "invalid id" };    
         }

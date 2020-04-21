@@ -83,7 +83,7 @@ exports.restoreJob = async (data) => {
         job.applicants = [];
         job.pipelines = pipelines;
         job.is_published = true;
-        job.metaImage = "";
+        job.metaImage = null;
         job.metaImageAltText = "";
         job.metaTitle = obj.title;
         job.tags = [];
@@ -234,6 +234,7 @@ exports.restoreJobApplicant = async (data) => {
             let modelJobApplicant = new JobApplicant();
             modelJobApplicant.pipeline = jobPipeline;
             modelJobApplicant.applicant = applicant._id;
+            modelJobApplicant.job = job._id;
             modelJobApplicant.is_deleted = false;
             modelJobApplicant.created_at = new Date();
             modelJobApplicant.created_by = '5e6b047ddc8153001188bfcb';
