@@ -1,0 +1,41 @@
+<div class="row" >
+  <div class="col-sm-12">
+    <div class="box box-info">
+      <div class="box-header">
+        <h4>Interviews</h4>
+      </div>
+      <div class="box body">
+        <div class="flex">
+          <div class="flex-item">
+            <div style="display: block; height: 650px">
+              <ul>
+                <li *ngFor="let interview of interviews">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                      Applicant <a class="c-pointer" (click)="openInterviewPage(interview._id)">{{interview.jobApplicant.firstName }}{{interview.jobApplicant.middleName}}{{ interview.jobApplicant.lastName}}</a>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                      Start {{interview.start}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                      End {{interview.end}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                      Channel {{interview.channel}}
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

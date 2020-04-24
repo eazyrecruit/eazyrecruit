@@ -17,16 +17,20 @@ exports.setup = async function () {
             function (req, token, refreshToken, profile, done) {
                 process.nextTick(function () {
                     try {
-                        User.findOne({ email: profile.emails[0].value }).then(user => {
+                        User.findOne({ email: profile.emails[0].value }).populate('roles').exec((err, user) => {
+                            if (err) { return done(err); }
                             if (!user) {
-                                return done(null, false, { msg: 'Invalid credential' });
+                              return done(null, false, { status: 401, message: 'inavalid user' });
                             } else {
-                                return done(null, {id: user._id, displayName: user.name, email: user.email, roles: user.roles });
+                                let roles = [];
+                                if (user.roles && user.roles.length) {
+                                    for (let i = 0; i < user.roles.length; i++) {
+                                        roles.push(user.roles[i].name);
+                                    }
+                                }
+                                return done(null, {id: user._id, displayName: user.name, email: user.email, roles });
                             }
-                        }).catch(err => {
-                            return done(null, false, { msg: err });
-                        });
-    
+                          });
                     } catch (error) {
                         return done(error, null);
                     }

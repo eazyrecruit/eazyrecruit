@@ -224,8 +224,8 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
 
     getAllUsers() {
         this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '' }).subscribe(result => {
-            if (result['success']['data'].length) {
-                this.interviewers = result['success']['data'];
+            if (result['success']['data']) {
+                this.interviewers = result['success']['data']['users'];
             }
         });
 

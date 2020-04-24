@@ -10,7 +10,7 @@ exports.setup = function () {
   },
     function (req, username, password, done) {
       try {
-        User.findOne({ email: username.toLowerCase() }, (err, user) => {
+        User.findOne({ email: username.toLowerCase() }).populate('roles').exec((err, user) => {
           if (err) { return done(err); }
           if (!user) {
             return done(null, false, { status: 401, message: 'Invalid email or password.' });
@@ -20,7 +20,13 @@ exports.setup = function () {
           }
           user.comparePassword(password, (isMatch) => {
             if (isMatch) {
-              return done(null, {id: user._id, displayName: user.name, email: user.email, roles: user.roles });
+              let roles = [];
+              if (user.roles && user.roles.length) {
+                  for (let i = 0; i < user.roles.length; i++) {
+                      roles.push(user.roles[i].name);
+                  }
+              }
+              return done(null, {id: user._id, displayName: user.name, email: user.email, roles });
             }
             return done(null, false, { status: 401, message: 'Invalid email or password.' });
           });

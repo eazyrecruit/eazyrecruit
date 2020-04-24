@@ -291,6 +291,7 @@ exports.removeApplicant = async (req) => {
             if (req.params.id) {
                 let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
                 if (jobApplicant) {
+                    let job = await Jobs.findByIdAndUpdate(jobApplicant.job, { $pull: { applicants: [jobApplicant.applicant] }}, { new: true });
                     let interview = await Interview.findOne({ jobId: jobApplicant.job, jobApplicant: jobApplicant.applicant });
                     if (interview) {
                         try {
