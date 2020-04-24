@@ -10,8 +10,8 @@ exports.getRoles = async () => {
 };
 
 exports.getUsers = async (req) => {
-    let skip = 0, limit = 10;
-    if (req.query.limit) limit = parseInt(req.query.limit);
+    let skip = 0, limit = 100;
+    if (req.query.limit) limit = parseInt(limit);
     if (req.query.offset) skip = parseInt(req.query.offset);
     let count = await User.count({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false });
     let users = await User.find({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false }).populate('roles').skip(skip).limit(limit).exec();

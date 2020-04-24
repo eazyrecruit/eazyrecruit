@@ -70,14 +70,16 @@ exports.getAllBetweenDates = async (req) => {
     return await interviews.find(
         {
             is_deleted: { $ne: true },
+            interviewer: req.user.id,
             start: {
                 $gte: new Date(new Date(parseInt(req.params.start)).toISOString()),
                 $lt: new Date(new Date(parseInt(req.params.end)).toISOString())
             }
         }).populate({
-              path: 'jobApplicant',
-              model: 'Applicants'
-    });
+            path: 'jobApplicant',
+            model: 'Applicants',
+        }
+    );
 }
 
 exports.getAllByCandidate = async (req) => {
