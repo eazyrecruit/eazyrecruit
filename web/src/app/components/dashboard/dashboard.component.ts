@@ -7,6 +7,7 @@ import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import { ReportService } from '../../services/report.service';
 import { Router } from '@angular/router';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,16 +32,19 @@ export class DashboardComponent implements OnInit {
   public lineChartColors: Color[] = [ { borderColor: 'red' }, ]
 
   interviews: any;
+  role: any;
 
   constructor(
     private interviewService: InterviewService,
     private modalService: BsModalService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private accountService: AccountService
   ) { }
 
   ngOnInit() {
     this.options = { editable: true };
     this.loadResumeByDay();
+    this.role = this.accountService.getRole();
   }
 
   loadCalendar(start, end) {

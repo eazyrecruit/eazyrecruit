@@ -37,6 +37,16 @@ export class AccountService {
         }
     }
 
+    getRole() {
+        const payload = this.helper.decodeToken(this.authStorage.getAuthData().data.token);
+        if (payload) {
+            console.log('role == : ', payload.roles[0]);
+            return payload.roles.length ?  payload.roles[0] : null;
+        } else {
+            return null;
+        }
+    }
+
     previlege() {
         const authData = this.helper.decodeToken(this.authStorage.getAuthData().data.token);
         return authData.id;
