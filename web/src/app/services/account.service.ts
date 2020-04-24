@@ -19,15 +19,21 @@ export class AccountService {
     isAuthorized() {
         const authData = this.authStorage.getAuthData();
         let isexpire = true;
-
+        let authorization: any;
         if (authData && authData.data) {
             isexpire = this.helper.isTokenExpired(authData.data.token);
         }
 
         if (isexpire) {
-            return false;
+            return { isAuthorized: false, role: null };
         } else {
-            return true;
+            const tokenPayload = this.helper.decodeToken(authData.data.token);
+            if (tokenPayload.roles[0] == 'admin' || tokenPayload.roles[0] == 'user') {
+                authorization = { isAuthorized: true, role: tokenPayload.roles[0] };
+            } else {
+                authorization = { isAuthorized: false, role: tokenPayload.roles[0] };
+            }
+            return authorization;
         }
     }
 
@@ -97,24 +103,45 @@ export class AccountService {
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(private router: Router, private accountService: AccountService) { }
-    // canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    //     // logged in so return true
-    //     if (this.AccountService.isAuthorized()) {
-    //         return true;
-    //     }
-    //     // not logged in so redirect to login page with the return url
-    //     this.router.navigate(['/login']);
-    //     return false;
-    // }
     canActivate() {
         // logged in so return true
-        if (this.accountService.isAuthorized()) {
+        let user = this.accountService.isAuthorized();
+        if (user && user.isAuthorized) {
             return true;
         }
         // not logged in so redirect to login page with the return url
         this.router.navigate(['/login']);
         return false;
     }
+}
+
+@Injectable()
+export class RoleGuardService implements CanActivate {
+    authStorage = new AuthStorage();
+    helper = new JwtHelperService();
+    constructor(private accountService: AccountService, private router: Router) {}
+    canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+        // this will be passed from the route config
+        // on the data property
+        // const expectedRole = route.data.expectedRole;
+        const authData = this.authStorage.getAuthData();
+        
+        if (!this.accountService.isAuthorized()) {
+            this.router.navigate(['/login']);
+            return false;
+        } else {
+            // decode the token to get its payload
+            const tokenPayload = this.helper.decodeToken(authData.data.token);
+            // const expectedRole = route.data.expectedRole.find(role => role === tokenPayload.roles[0] );
+            // console.log('expectedRole : ', expectedRole);
+            if (next.data.expectedRole.indexOf(tokenPayload.roles[0]) === -1) {
+                this.router.navigate(['/login']);
+                return false;
+            }
+            return true;
+        }
+    }
+    
 }
 
 @Injectable()
@@ -148,16 +175,6 @@ export class AuthInterceptor implements HttpInterceptor {
               }
             })
         );
-        // return next.handle(authReq).do(event => {
-        //     /* If something needs to be handled when response returned */
-        // }).catch((e) => {
-        //     if (e.status === 401 || e.status === 403) {
-        //         SiteJS.notifyDanger('You are not allowed');
-        //         this.authStorage.setAuthorizationHeader(null);
-        //         this.router.navigate(['/login']);
-        //     }
-        //     return Observable.throw(new Error(`${e.status} ${e.statusText}`));
-        // }).finally(() => { /* Loader will be hidden here*/ });
     }
 }
 

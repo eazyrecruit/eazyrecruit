@@ -6,6 +6,7 @@ import { SchedulerComponent } from '../interview/scheduler/scheduler.component';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import { ReportService } from '../../services/report.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,6 +30,8 @@ export class DashboardComponent implements OnInit {
   public lineChartType = 'line';
   public lineChartColors: Color[] = [ { borderColor: 'red' }, ]
 
+  interviews: any;
+
   constructor(
     private interviewService: InterviewService,
     private modalService: BsModalService,
@@ -43,6 +46,7 @@ export class DashboardComponent implements OnInit {
   loadCalendar(start, end) {
     this.interviewService.getEventBetweenDates(start,end).subscribe(res => {
       if (res['success']) {
+        this.interviews = res['success'].data;
         let allevents = this.fullCalendarElement.calendar.getEvents();
         allevents.forEach(el => { el.remove(); }); 
         res['success'].data.forEach(interview => {

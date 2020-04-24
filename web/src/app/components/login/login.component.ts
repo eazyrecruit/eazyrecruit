@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AccountService, AuthGuard } from '../../services/account.service';
-import { Router } from '@angular/router';
+import { AccountService, AuthGuard, RoleGuardService } from '../../services/account.service';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ValidationService } from '../../services/validation.service';
 
 @Component({
@@ -17,7 +17,8 @@ export class LoginComponent implements OnInit {
   constructor(private accountService: AccountService,
     private router: Router,
     private fbuilder: FormBuilder,
-    private validationService: ValidationService, private authGuardService:AuthGuard) {
+    private validationService: ValidationService, 
+    private authGuardService:AuthGuard) {
 
     this.loginForm = fbuilder.group({
       userName: [null, [<any>Validators.required], this.validationService.emailValid],
@@ -26,8 +27,15 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    if(this.authGuardService.canActivate()) {
-      this.router.navigate(['jobs']);
+    let user = this.accountService.isAuthorized();
+    if(user && user.isAuthorized) {
+      if (user.role == 'admin') {
+        this.router.navigate(['/jobs']);
+      } else {
+        this.router.navigate(['/home']);
+      }
+    } else {
+      this.router.navigate(['/login']);
     }
   }
 
@@ -55,10 +63,16 @@ export class LoginComponent implements OnInit {
   oauthLogin(app) {
     SiteJS.oauthpopup(
       "/admin/assets/auth.html?socialApp=" + app, () => {
-        if(this.authGuardService.canActivate()) {
-          this.router.navigate(['jobs']);
+        let user = this.accountService.isAuthorized();
+        if(user && user.isAuthorized) {
+          if (user.role == 'admin') {
+            this.router.navigate(['/jobs']);
+          } else {
+            this.router.navigate(['/user']);
+          } 
+        } else {
+          this.router.navigate(['/login']);
         }
-          
       }
     );
   }
