@@ -1,7 +1,7 @@
 let mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const ISODate = mongoose.Types.ISODate;
-let interviews = require('../models/interview')
+let Interview = require('../models/interview')
 let interviewResults = mongoose.model('InterviewResults');
 const ics = require('ics')
 const uuidv1 = require('uuid/v1');
@@ -9,7 +9,7 @@ var emailService = require('../services/email.service');
 let interviewCriteria = require('../models/interviewCriteria');
 
 exports.createAndInvite = async (req) => {
-    req.body.interview.interview = await interviews.create(
+    req.body.interview.interview = await Interview.create(
         {
             uid: uuidv1(),
             sequence: 1,
@@ -39,8 +39,8 @@ exports.createAndInvite = async (req) => {
 }
 
 exports.rescheduleAndInvite = async (req) => {
-    let interview = await interviews.findById({ _id: req.body.id });
-    req.body.interview = await interviews.findByIdAndUpdate({ _id: req.body.id, is_deleted: { $ne: true } },
+    let interview = await Interview.findById({ _id: req.body.id });
+    req.body.interview = await Interview.findByIdAndUpdate({ _id: req.body.id, is_deleted: { $ne: true } },
         {
             sequence: req.body.sequence + 1,
             status: "CONFIRMED",
@@ -67,7 +67,7 @@ exports.rescheduleAndInvite = async (req) => {
 }
 
 exports.getAllBetweenDates = async (req) => {
-    return await interviews.find(
+    return await Interview.find(
         {
             is_deleted: { $ne: true },
             interviewer: req.user.id,
@@ -83,17 +83,17 @@ exports.getAllBetweenDates = async (req) => {
 }
 
 exports.getAllByCandidate = async (req) => {
-    return await interviews.find({ jobApplicant: req.params.candidateId, is_deleted: { $ne: true } }).sort([['start', -1]]);
+    return await Interview.find({ jobApplicant: req.params.candidateId, is_deleted: { $ne: true } }).sort([['start', -1]]);
 }
 
 exports.getAllByInterview = async (req) => {
-    return await interviews.aggregate([
+    return await Interview.aggregate([
         { $match: { _id: ObjectId(req.params.interviewId), is_deleted: { $ne: true } } },
         { $lookup: { from: 'interviewresults', localField: '_id', foreignField: 'interview_id', as: 'interviewResults' } }]);
 }
 
 exports.comment = async (req) => {
-    return await interviews.findByIdAndUpdate({ _id: req.body._id, is_deleted: { $ne: true } }, {
+    return await Interview.findByIdAndUpdate({ _id: req.body._id, is_deleted: { $ne: true } }, {
         comment : req.body.comment,
         result : req.body.result
     }, {new : true});
@@ -165,6 +165,9 @@ exports.addCriteria = async (req) => {
 }
 
 exports.getInterviews = async (req) => {
+    let limit = 10, offset = 0;
+    if (req.query.limit) limit = parseInt(req.query.limit);
+    if (req.query.offset) offset = parseInt(req.query.offset);
     let query = {
         is_deleted: { $ne: true }
     };
@@ -174,10 +177,16 @@ exports.getInterviews = async (req) => {
             interviewer: req.user.id
         }
     }
-    return await interviews.find(query).populate({
+    let count = await Interview.count(query);
+    let interviews = await Interview.find(query).populate([{
         path: 'jobApplicant',
-        model: 'Applicants',
-    });
+        model: 'Applicants'
+    },{
+        path: 'jobId',
+        model: 'Jobs',
+        select: ['title']
+    }]).skip(offset).limit(limit).exec();
+    return { count, interviews };
 }
 
 async function inviteCandidate(req) {
