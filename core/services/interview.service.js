@@ -164,6 +164,22 @@ exports.addCriteria = async (req) => {
     }
 }
 
+exports.getInterviews = async (req) => {
+    let query = {
+        is_deleted: { $ne: true }
+    };
+    if (req.user.roles.indexOf('admin') === -1) {
+        query = {
+            is_deleted: { $ne: true },
+            interviewer: req.user.id
+        }
+    }
+    return await interviews.find(query).populate({
+        path: 'jobApplicant',
+        model: 'Applicants',
+    });
+}
+
 async function inviteCandidate(req) {
     return await createInvitation(req, 'Interview scheduled',
         `
