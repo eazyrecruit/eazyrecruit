@@ -45,12 +45,12 @@ export class DashboardComponent implements OnInit {
     this.options = { editable: true };
     this.loadResumeByDay();
     this.role = this.accountService.getRole();
+    this.getAllInterviews();
   }
 
   loadCalendar(start, end) {
     this.interviewService.getEventBetweenDates(start,end).subscribe(res => {
       if (res['success']) {
-        this.interviews = res['success'].data;
         let allevents = this.fullCalendarElement.calendar.getEvents();
         allevents.forEach(el => { el.remove(); }); 
         res['success'].data.forEach(interview => {
@@ -154,4 +154,13 @@ export class DashboardComponent implements OnInit {
           label: { enabled: false, fontColor: 'orange', content: 'LineAnno' }}]},
     maintainAspectRatio: false
   };
+
+  getAllInterviews() {
+    this.interviewService.getAllInterviews().subscribe(result => {
+      console.log('getAllInterviews : ', result);
+      this.interviews = result['success'].data;
+    }, error => {
+      console.log('getAllInterviews : ', error);
+    });
+  }
 }

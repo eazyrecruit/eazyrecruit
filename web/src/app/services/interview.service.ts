@@ -62,4 +62,8 @@ export class InterviewService {
   addCriteria(criteria) {
     return this.http.post(`${this.constService.baseUrl}interview/criteria`, criteria);
   }
+
+  getAllInterviews() {
+    return this.http.get(`${this.constService.baseUrl}interview`);
+  }
 }

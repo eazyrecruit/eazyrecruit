@@ -44,6 +44,7 @@ router.get("/", async (req, res) => {
                 results.hits.hits[iHit]._source.skills = await skillService.getAllByIds(results.hits.hits[iHit]._source.skills);
                 results.hits.hits[iHit]._source.locations = await locationService.getAllByIds(results.hits.hits[iHit]._source.locations);
                 jobs.push(results.hits.hits[iHit]._source);
+                console.log('iHit : ', iHit);
             }
             responseService.response(req, null, 'Jobs GET', jobs, res);
         } else {
