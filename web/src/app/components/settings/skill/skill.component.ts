@@ -144,7 +144,9 @@ export class SkillComponent implements OnInit {
         this.totalRecords = 0;
       }
     }, (error) => {
-      console.log('skill error : ', error);
+      this.skills.length = 0;
+      this.isSearchResultAvail = 2;
+      this.totalRecords = 0;
     });
   }
 

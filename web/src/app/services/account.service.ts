@@ -40,7 +40,6 @@ export class AccountService {
     getRole() {
         const payload = this.helper.decodeToken(this.authStorage.getAuthData().data.token);
         if (payload) {
-            console.log('role == : ', payload.roles[0]);
             return payload.roles.length ?  payload.roles[0] : null;
         } else {
             return null;
@@ -85,7 +84,7 @@ export class AccountService {
     }
 
     getAllUsers(filter) {
-        return this.http.get(`${this.constService.baseUrl}user?limit=${filter.pageSize}&offset=${filter.offset}&search=${filter.searchText}`);
+        return this.http.get(`${this.constService.baseUrl}user?limit=${filter.pageSize}&offset=${filter.offset}&search=${filter.searchText}&all=${filter.all}`);
     }
 
     logout() {
@@ -131,19 +130,13 @@ export class RoleGuardService implements CanActivate {
     helper = new JwtHelperService();
     constructor(private accountService: AccountService, private router: Router) {}
     canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        // this will be passed from the route config
-        // on the data property
-        // const expectedRole = route.data.expectedRole;
         const authData = this.authStorage.getAuthData();
-        
         if (!this.accountService.isAuthorized()) {
             this.router.navigate(['/login']);
             return false;
         } else {
             // decode the token to get its payload
             const tokenPayload = this.helper.decodeToken(authData.data.token);
-            // const expectedRole = route.data.expectedRole.find(role => role === tokenPayload.roles[0] );
-            // console.log('expectedRole : ', expectedRole);
             if (next.data.expectedRole.indexOf(tokenPayload.roles[0]) === -1) {
                 this.router.navigate(['/login']);
                 return false;

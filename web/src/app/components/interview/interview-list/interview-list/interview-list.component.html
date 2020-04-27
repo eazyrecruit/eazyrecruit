@@ -1,41 +1,53 @@
-<div class="row" >
-  <div class="col-sm-12">
-    <div class="box box-info">
-      <div class="box-header">
-        <h4>Interviews</h4>
-      </div>
-      <div class="box body">
-        <div class="flex">
-          <div class="flex-item">
-            <div style="display: block; height: 650px">
-              <ul>
-                <li *ngFor="let interview of interviews">
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                      Applicant <a class="c-pointer" (click)="openInterviewPage(interview._id)">{{interview.jobApplicant.firstName }}{{interview.jobApplicant.middleName}}{{ interview.jobApplicant.lastName}}</a>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                      Start {{interview.start}}
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                      End {{interview.end}}
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                      Channel {{interview.channel}}
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+<section class="content">
+  <div class="box box-info">
+    <div class="box-header">
+      <i class="fa fa-inbox"></i>
+      <h3 class="box-title"> Interviews</h3>
+    </div>
+    <div class="main-content padding-20px-tb plr-15">
+      <data-table pageSize='10' sortField='name' sortOrder='1' [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
+          <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+              <thead>
+                  <tr class="font-weight-bold">
+                      <th class="col-sm-4">Applicant Name</th>
+                      <th class="col-sm-2">Job Title</th>
+                      <th class="col-sm-2">Start Time</th>
+                      <th class="col-sm-2">Round</th>
+                      <th class="col-sm-2">Channel</th>
+                      <th class="col-sm-2">Result</th>
+                    </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let interview of interviews; let i = index;">
+                    <td >
+                      <a class="c-pointer" (click)="openInterviewPage(interview._id)">
+                        {{getFullName(interview.jobApplicant.firstName, interview.jobApplicant.middleName, interview.jobApplicant.lastName)}}
+                      </a>
+                    </td>
+                    <td>
+                      {{interview.jobId.title}}
+                    </td>
+                    <td>
+                      {{getLocalDate(interview.start)}}
+                    </td>
+                    <td>
+                      {{interview.channel}}
+                    </td>
+                    <td>
+                      {{interview.round}}
+                    </td>
+                    <td>
+                      {{interview.result}}
+                    </td>
+                  </tr>
+                  <tr *ngIf="totalRecords==0">
+                    <td colspan="6" align="center">
+                        <b>No interviews found</b>
+                    </td>
+                  </tr>
+              </tbody>
+          </table>
+      </data-table>
     </div>
   </div>
-</div>
+</section>

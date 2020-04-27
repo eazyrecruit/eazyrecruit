@@ -93,7 +93,9 @@ export class ViewComponent implements OnInit {
         this.totalRecords = 0;
       }
     }, (error) => {
-      console.log('user error : ', error);
+      this.users.length = 0;
+      this.isSearchResultAvail = 2;
+      this.totalRecords = 0;
     });
   }
 

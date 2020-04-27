@@ -221,7 +221,6 @@ export class ApplicantCardComponent implements OnInit {
 
     getFullName(firstName, middleName, lastName) {
         var name = firstName;
-        // console.log(firstName, middleName, lastName);
         if (middleName && middleName != "null") name = name + " " + middleName;
         if (lastName && lastName != "null") name = name + " " + lastName;
         return name;
