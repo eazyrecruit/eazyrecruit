@@ -49,7 +49,12 @@ export class LoginComponent implements OnInit {
       this.accountService.login(this.loginForm.value).subscribe(result => {
         if (result['success']) {
           this.accountService.setAuthorizationHeader(result['success']);
-          this.router.navigate(['jobs']);
+          let role = this.accountService.getRole();
+          if (role == 'admin') {
+            this.router.navigate(['/jobs']);
+          } else {
+            this.router.navigate(['/user']);
+          } 
         } else {
           this.errorMessage = result['error']['data'];
         }
