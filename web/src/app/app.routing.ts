@@ -40,6 +40,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ApplicantSettingsComponent } from './components/settings/applicants/applicant-settings.component';
 import { EmailsettingsComponent } from './components/settings/emailsettings/emailsettings.component';
 import { GoogleComponent } from './components/settings/google/google.component';
+import { InterviewListComponent } from './components/interview/interview-list/interview-list/interview-list.component';
 
 @NgModule({
   imports: [
@@ -89,6 +90,7 @@ import { GoogleComponent } from './components/settings/google/google.component';
               { path: 'google', component: GoogleComponent }
             ], canActivate: [RoleGuardService], data: { expectedRole: ['admin'] }
           },
+          { path: 'interviews', component: InterviewListComponent, data: { expectedRole: ['user', 'admin'] } },
           { path: 'interview/:interviewId', component: InterviewComponent, data: { expectedRole: ['user', 'admin'] } },
           { path: 'search', component: SearchComponent, canActivate: [RoleGuardService], data: { expectedRole: ['admin'] } },
           { path: 'createjob', component: JobComponent, canActivate: [RoleGuardService], data: { expectedRole: ['admin'] } },

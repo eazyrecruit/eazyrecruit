@@ -85,7 +85,7 @@ export class JobsComponent implements OnInit {
                 // this.dataShared.notificationChangeMessage({ name: 'success', type: 'Success', message: 'No active job found' })
             }
         }, (err) => {
-            console.log('error', err);
+            this.jobs = [];
         });
     }
 

@@ -63,7 +63,7 @@ export class InterviewService {
     return this.http.post(`${this.constService.baseUrl}interview/criteria`, criteria);
   }
 
-  getAllInterviews() {
-    return this.http.get(`${this.constService.baseUrl}interview`);
+  getAllInterviews(filter) {
+    return this.http.get(`${this.constService.baseUrl}interview?limit=${filter.pageSize}&offset=${filter.offset}&search=${filter.searchText}`);
   }
 }

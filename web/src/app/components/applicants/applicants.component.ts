@@ -188,7 +188,6 @@ export class ApplicantsComponent implements OnInit {
     this.modalRef = this.modalService.show(UploadResumeComponent);
     this.modalRef.content.onClose.subscribe(result => {
       if (result) {
-        console.log('new applicant : ', result);
         this.ApplicantList.unshift(result);
         this.totalRecords++; 
         //this.toasterService.pop('success', 'Success', 'Resume uploaded successfully.');

@@ -213,7 +213,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
             var ivrs = this.interviewers.filter(ivr => ivr._id == userId);
             if (ivrs && ivrs.length > 0) {
                 if (ivrs[0].firstName) {
-                    return this.applicant.fullName(ivrs[0].firstName, ivrs[0].middleName, ivrs[0].lastName)
+                    return this.applicant.fullName(ivrs[0].firstName, ivrs[0].lastName)
                 } else {
                     return this.applicant.fullName(ivrs[0].email, '', '');
                 }

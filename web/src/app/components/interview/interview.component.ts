@@ -41,14 +41,18 @@ export class InterviewComponent implements OnInit {
             if (result['success']['data']) {
               this.applicant = result['success']['data'];
               this.applicantDataService.getResume(this.applicant.resume).subscribe((result) => {
-                this.resume = result['success']['data'];
-                if ((this.resume.fileName).includes('.pdf')) {
-                  const blob = this.converBase64toBlob(this.resume.resume, 'application/pdf');
-                  const blobURL = window.URL.createObjectURL(blob);
-                  this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
-                } else {
-                  this.resume_html = this.resume.resume;
+                if (result['success'] && result['success']['data']) {
+                  this.resume = result['success']['data'];
+                  if ((this.resume.fileName).includes('.pdf')) {
+                    const blob = this.converBase64toBlob(this.resume.resume, 'application/pdf');
+                    const blobURL = window.URL.createObjectURL(blob);
+                    this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
+                  } else {
+                    this.resume_html = this.resume.resume;
+                  }
                 }
+              }, error => {
+                this.resume = null;
               });
             }
           });
@@ -96,7 +100,7 @@ export class InterviewComponent implements OnInit {
           this.newCriteria = '';
         }
       }, (error) => {
-        console.log('error : ', error);
+        this.results = [];
       });
     }
   }
@@ -133,7 +137,6 @@ export class InterviewComponent implements OnInit {
 
   getFullName(firstName, middleName, lastName) {
     var name = firstName;
-    // console.log(firstName, middleName, lastName);
     if (middleName && middleName != "null") name = name + " " + middleName;
     if (lastName && lastName != "null") name = name + " " + lastName;
     return name;
