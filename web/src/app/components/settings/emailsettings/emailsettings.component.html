@@ -10,101 +10,19 @@
           Inbound :
         </legend>
 
-        <form [formGroup]="inboundForm" novalidate (ngSubmit)="editInbound(inboundForm.value)">
-
-          <div style="margin: 6px;">
-            <label for="type">Type*</label>
-            <select class="form-control" formControlName="type" required>
-              <option value="imap" selected>
-                imap
-              </option>
-            </select>
+        <div class="row">
+          <div class="col-sm-12">
+            host 
           </div>
-
-          <div style="margin: 6px;">
-            <label for="host">Host*</label>
-            <input type="text" placeholder="Host" class="form-control" formControlName="host" required>
-            <small class="text-danger"
-              *ngIf="inboundForm.controls['host'].hasError('required') && inboundForm.controls['host'].touched">
-              Please enter Host
-            </small>
+          <div class="col-sm-12">
+            username 
           </div>
-
-          <div style="margin: 6px;">
-            <label for="user">User*</label>
-            <input type="text" placeholder="User" class="form-control" formControlName="user" required>
-            <small class="text-danger"
-              *ngIf="inboundForm.controls['user'].hasError('required') && inboundForm.controls['user'].touched">
-              Please enter User
-            </small>
-          </div>
-
-          <div style="margin: 6px;">
-            <label for="password">Password*</label>
-            <input type="password" placeholder="Password" class="form-control" formControlName="password" required>
-            <small class="text-danger"
-              *ngIf="inboundForm.controls['password'].hasError('required') && inboundForm.controls['password'].touched">
-              Please enter Password
-            </small>
-          </div>
-
-          <div class="col-sm-5" style="margin: 6px;">
-            <label for="ssl">SSL/STARTTLS*</label>
-            <select class="form-control" formControlName="ssl" required>
-              <option value="1">
-                Yes
-              </option>
-              <option value="0">
-                No
-              </option>
-            </select>
-            <small class="text-danger"
-              *ngIf="inboundForm.controls['ssl'].hasError('required') && inboundForm.controls['ssl'].touched">
-              Please select an option
-            </small>
-          </div>
-
-          <div class="col-sm-5" style="margin: 6px;">
-            <label for="port">Port*</label>
-            <input type="text" placeholder="Port" class="form-control" formControlName="port" required>
-            <small class="text-danger"
-              *ngIf="inboundForm.controls['port'].hasError('required') && inboundForm.controls['port'].touched">
-              Please enter Port
-            </small>
-          </div>
-          <br>
-          <div class="col-sm-5" style="margin: 6px;">
-            <label for="folder">Folder*</label>
-            <input type="text" placeholder="Folder" class="form-control" formControlName="folder" required>
-            <small class="text-danger"
-              *ngIf="inboundForm.controls['folder'].hasError('required') && inboundForm.controls['folder'].touched">
-              Please enter Folder
-            </small>
-          </div>
-
-          <div class="col-sm-5" style="margin: 6px;">
-            <label for="messages">Keep messages on server*</label>
-            <select class="form-control" formControlName="messages" required>
-              <option value="1">
-                Yes
-              </option>
-              <option value="0">
-                No
-              </option>
-            </select>
-            <small class="text-danger"
-              *ngIf="inboundForm.controls['messages'].hasError('required') && inboundForm.controls['messages'].touched">
-              Please select an option
-            </small>
-          </div>
-
-          <div class="col-sm-6" style="margin: 6px;">
-            <button type="submit" class="btn btn-success">Submit
+          <div class="col-sm-12">
+            <button type="button" class="btn btn-success" (click)="editInbound()">Edit Inbound Settings
               <i class="fa fa-arrow-circle-right"></i>
             </button>
           </div>
-
-        </form>
+        </div>
 
       </fieldset>
 
@@ -113,121 +31,36 @@
           Outbound :
         </legend>
 
-        <form [formGroup]="outboundForm" novalidate (ngSubmit)="editOutbound(outboundForm.value)">
-
-          <div style="margin: 6px;">
-            <label for="mailvia">Send mails via*</label>
-            <select class="form-control" formControlName="mailvia" required>
-              <option value="smtp" selected>
-                smtp
-              </option>
-            </select>
+        <div class="row">
+          <div class="col-sm-12">
+            host 
           </div>
-
-          <div style="margin: 6px;">
-            <label for="host">Host*</label>
-            <input type="text" placeholder="Host" class="form-control" formControlName="host" required>
-            <small class="text-danger"
-              *ngIf="outboundForm.controls['host'].hasError('required') && outboundForm.controls['host'].touched">
-              Please enter Host
-            </small>
+          <div class="col-sm-12">
+            username 
           </div>
-
-          <div style="margin: 6px;">
-            <label for="user">User*</label>
-            <input type="text" placeholder="User" class="form-control" formControlName="user" required>
-            <small class="text-danger"
-              *ngIf="outboundForm.controls['user'].hasError('required') && outboundForm.controls['user'].touched">
-              Please enter User
-            </small>
-          </div>
-
-          <div style="margin: 6px;">
-            <label for="password">Password*</label>
-            <input type="password" placeholder="Password" class="form-control" formControlName="password" required>
-            <small class="text-danger"
-              *ngIf="outboundForm.controls['password'].hasError('required') && outboundForm.controls['password'].touched">
-              Please enter Password
-            </small>
-          </div>
-
-          <div style="margin: 6px;">
-            <label for="port">Port*</label>
-            <input type="text" placeholder="Port" class="form-control" formControlName="port" required>
-            <small class="text-danger"
-              *ngIf="outboundForm.controls['port'].hasError('required') && outboundForm.controls['port'].touched">
-              Please enter Port
-            </small>
-          </div>
-
-          <div style="margin: 6px;">
-            <label for="fromEmail">Sender*</label>
-            <input type="text" placeholder="Sender Email" class="form-control" formControlName="fromEmail" required>
-            <small class="text-danger"
-              *ngIf="outboundForm.controls['fromEmail'].hasError('required') && outboundForm.controls['fromEmail'].touched">
-              Please enter Email
-            </small>
-          </div>
-
-          <div style="margin: 6px;">
-            <label for="fromDisplayname">Display Name*</label>
-            <input type="text" placeholder="Display Name" class="form-control" formControlName="fromDisplayname" required>
-            <small class="text-danger"
-              *ngIf="outboundForm.controls['fromDisplayname'].hasError('required') && outboundForm.controls['fromDisplayname'].touched">
-              Please enter Display name
-            </small>
-          </div>
-
-          <div class="col-sm-6" style="margin: 6px;">
-            <button type="submit" class="btn btn-success">Submit
+          <div class="col-sm-12">
+            <button type="button" class="btn btn-success" (click)="editOutbound()">Edit Outbound Settings
               <i class="fa fa-arrow-circle-right"></i>
             </button>
           </div>
-
-        </form>
+        </div>
 
       </fieldset>
     </div>
 
+    <br>
+    
     <div class="row">
       <fieldset class="col-sm-6">
         <legend>
           Template :
         </legend>
-
-        <form [formGroup]="templateForm" novalidate (ngSubmit)="editTemplate(templateForm.value)">
-
-          <div style="margin: 6px;">
-            <label for="content">HTML*</label>
-            <input type="text" placeholder="HTML" class="form-control" formControlName="content" required>
-            <small class="text-danger"
-              *ngIf="templateForm.controls['content'].hasError('required') && templateForm.controls['content'].touched">
-              Please enter html
-            </small>
-          </div>
-
-          <div class="col-sm-6" style="margin: 6px;">
-            <button type="submit" class="btn btn-success">Submit
-              <i class="fa fa-arrow-circle-right"></i>
-            </button>
-          </div>
-
-        </form>
-
-      </fieldset>
-
-      <fieldset class="col-sm-6">
-        <legend>
-          Preview :
-        </legend>
-        <div *ngIf="htmlPreview">
-          <div class="box">
-            <div class="box-body">
-              <div [innerHTML]="htmlPreview | sanitizeHtml">
-              </div>
-            </div>
-          </div>
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-success"  (click)="editTemplate()">Edit Template Settings
+            <i class="fa fa-arrow-circle-right"></i>
+          </button>
         </div>
+
       </fieldset>
     </div>
   </div>

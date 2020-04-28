@@ -1,0 +1,96 @@
+<div class="modal-header">
+  <button id="closeButton" type="button" class="close" (click)="bsModelRef.hide()" data-dismiss="modal">&times;</button>
+  <h4 class="modal-title">Outbound</h4>
+</div>
+<div class="modal-body content-move">
+  <form [formGroup]="outboundForm" novalidate (ngSubmit)="editOutbound(outboundForm.value)">
+
+    <div class="row">
+      <div class="col-sm-12">
+        <label for="mailvia">Send mails via*</label>
+        <select class="form-control" formControlName="mailvia" required>
+          <option value="smtp" selected>
+            smtp
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <label for="host">Host*</label>
+        <input type="text" placeholder="Host" class="form-control" formControlName="host" required>
+        <small class="text-danger"
+          *ngIf="outboundForm.controls['host'].hasError('required') && outboundForm.controls['host'].touched">
+          Please enter Host
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <label for="user">User*</label>
+        <input type="text" placeholder="User" class="form-control" formControlName="user" required>
+        <small class="text-danger"
+          *ngIf="outboundForm.controls['user'].hasError('required') && outboundForm.controls['user'].touched">
+          Please enter User
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <label for="password">Password*</label>
+        <input type="password" placeholder="Password" class="form-control" formControlName="password" required>
+        <small class="text-danger"
+          *ngIf="outboundForm.controls['password'].hasError('required') && outboundForm.controls['password'].touched">
+          Please enter Password
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <label for="port">Port*</label>
+        <input type="text" placeholder="Port" class="form-control" formControlName="port" required>
+        <small class="text-danger"
+          *ngIf="outboundForm.controls['port'].hasError('required') && outboundForm.controls['port'].touched">
+          Please enter Port
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <label for="fromEmail">Sender*</label>
+        <input type="text" placeholder="Sender Email" class="form-control" formControlName="fromEmail" required>
+        <small class="text-danger"
+          *ngIf="outboundForm.controls['fromEmail'].hasError('required') && outboundForm.controls['fromEmail'].touched">
+          Please enter Email
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <label for="fromDisplayname">Display Name*</label>
+        <input type="text" placeholder="Display Name" class="form-control" formControlName="fromDisplayname" required>
+        <small class="text-danger"
+          *ngIf="outboundForm.controls['fromDisplayname'].hasError('required') && outboundForm.controls['fromDisplayname'].touched">
+          Please enter Display name
+        </small>
+      </div>
+    </div>
+
+    <br>
+    
+    <div class="row">
+      <div class="col-sm-12">
+        <button type="submit" class="btn btn-success">Submit
+          <i class="fa fa-arrow-circle-right"></i>
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div> 

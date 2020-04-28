@@ -1,0 +1,47 @@
+<div class="modal-header">
+  <button id="closeButton" type="button" class="close" (click)="bsModelRef.hide()" data-dismiss="modal">&times;</button>
+  <h4 class="modal-title">Email Template</h4>
+</div>
+<div class="modal-body content-move">
+  <div class="row">
+    <fieldset class="col-sm-6">
+      <legend>
+        Template :
+      </legend>
+
+      <form [formGroup]="templateForm" novalidate (ngSubmit)="editTemplate(templateForm.value)">
+
+        <div style="margin: 6px;">
+          <label for="content">HTML*</label>
+          <input type="text" placeholder="HTML" class="form-control" formControlName="content" required>
+          <small class="text-danger"
+            *ngIf="templateForm.controls['content'].hasError('required') && templateForm.controls['content'].touched">
+            Please enter html
+          </small>
+        </div>
+
+        <div class="col-sm-6" style="margin: 6px;">
+          <button type="submit" class="btn btn-success">Submit
+            <i class="fa fa-arrow-circle-right"></i>
+          </button>
+        </div>
+
+      </form>
+
+    </fieldset>
+
+    <fieldset class="col-sm-6">
+      <legend>
+        Preview :
+      </legend>
+      <div *ngIf="htmlPreview">
+        <div class="box">
+          <div class="box-body">
+            <div [innerHTML]="htmlPreview | sanitizeHtml">
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+</div>  

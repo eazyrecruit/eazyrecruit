@@ -84,6 +84,9 @@ import { ApplicantSettingsComponent } from './components/settings/applicants/app
 import { EmailsettingsComponent } from './components/settings/emailsettings/emailsettings.component';
 import { GoogleComponent } from './components/settings/google/google.component';
 import { InterviewListComponent } from './components/interview/interview-list/interview-list/interview-list.component';
+import { InboundComponent } from './components/settings/emailsettings/inbound/inbound.component';
+import { OutboundComponent } from './components/settings/emailsettings/outbound/outbound.component';
+import { EmailTemplateComponent } from './components/settings/emailsettings/email-template/email-template.component';
 
 
 @NgModule({
@@ -141,7 +144,10 @@ import { InterviewListComponent } from './components/interview/interview-list/in
     ApplicantSettingsComponent,
     EmailsettingsComponent,
     GoogleComponent,
-    InterviewListComponent
+    InterviewListComponent,
+    InboundComponent,
+    OutboundComponent,
+    EmailTemplateComponent
   ],
   imports: [
     ToasterModule,
@@ -174,7 +180,14 @@ import { InterviewListComponent } from './components/interview/interview-list/in
     ChartsModule,
     QuillModule.forRoot()
   ],
-  entryComponents: [ApplicantpageComponent, SchedulerComponent, UploadResumeComponent],
+  entryComponents: [
+    ApplicantpageComponent,
+    SchedulerComponent,
+    UploadResumeComponent,
+    InboundComponent,
+    OutboundComponent,
+    EmailTemplateComponent
+  ],
   providers: [ConstService,
     SharedService,
     ApplicantResolver,
