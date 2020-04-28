@@ -61,20 +61,17 @@
     <div class="row">
       <fieldset class="col-sm-12">
         <legend>
-          Template :
+          Preview :
         </legend>
         <div class="row">
-          <fieldset class="col-sm-12" *ngIf="htmlPreview">
-            <legend>
-              Preview :
-            </legend>
+          <div class="col-sm-12" *ngIf="htmlPreview">
             <div class="box">
               <div class="box-body">
                 <div [innerHTML]="htmlPreview | sanitizeHtml">
                 </div>
               </div>
             </div>
-          </fieldset>
+          </div>
           <div class="col-sm-12">
             <button type="button" class="btn btn-success"  (click)="editTemplate()">Edit
               <i class="fa fa-arrow-circle-right"></i>
