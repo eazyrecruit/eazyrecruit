@@ -1,158 +1,142 @@
 <section>
   <toaster-container [toasterconfig]="config"></toaster-container>
 </section>
-<section class="content content-wrapper">
-  <!--<div class="content-header mt-60 mb-30 border-none">
-    <h1>
-      View User
-    </h1>
-    <ol class="breadcrumb">
-      <li>
-        <a routerLink="/">
-          <i class="fa fa-dashboard"></i> Dashboard</a>
-      </li>
-      <li class="active">View User</li>      
-    </ol>
-  </div>-->
-  <div class="box box-info">
-    <div class="box-header">
-      <i class="fa fa-inbox"></i>
-      <h3 class="box-title"> Users</h3>
-      <div class="pull-right box-tools">
-        <!-- <a [routerLink]="['/settings/users/create']" type="button" class="btn btn-primary btn-sm">
-          <i class="fa fa-plus"></i> Create</a> -->
-          <a data-toggle="modal" data-target="#user-modal" type="button" (click)="setUserId(null)" class="btn btn-primary btn-sm">
-              <i class="fa fa-plus"></i> Create</a>
-      </div>
-    </div>
-    <div class="main-content padding-20px-tb plr-15">
-      <data-table pageSize='10' sortField='firstName' sortOrder='1' [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
-        <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
-          <thead>
-            <tr class="font-weight-bold">
-              <th class="col-sm-2">Name</th>
-              <th class="col-sm-2">Email</th>
-              <th class="col-sm-2">Phone</th>
-              <th class="col-sm-2">Role</th>
-              <th class="col-sm-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let user of users; let i = index;">
-              <td>{{user.firstName}} {{user.lastName}}</td>
-              <td>{{user.email}}</td>
-              <td>{{user.phone}}</td>
-              <td>
-                <span *ngFor="let role of user.roles;">{{role.name}} </span>
-              </td>
-              <td>
-                <a data-toggle="modal" data-target="#user-modal" (click)="setUserId(user)" class="pointer">Edit</a> |
-                <a (click)="openDeleteModal(user, template)" class="pointer">Delete</a>
-              </td>
-            </tr>
-            <tr *ngIf="isSearchResultAvail==2">
-              <td colspan="5" align="center">
-                  <b>Result is not available</b>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </data-table>
+<div class="box box-info">
+  <div class="box-header">
+    <i class="fa fa-inbox"></i>
+    <h3 class="box-title"> Users</h3>
+    <div class="pull-right box-tools">
+        <a data-toggle="modal" data-target="#user-modal" type="button" (click)="setUserId(null)" class="btn btn-primary btn-sm">
+          <i class="fa fa-plus"></i> Create</a>
     </div>
   </div>
+  <div class="main-content padding-20px-tb plr-15">
+    <data-table pageSize='10' sortField='firstName' sortOrder='1' [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
+      <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+        <thead>
+          <tr class="font-weight-bold">
+            <th class="col-sm-2">Name</th>
+            <th class="col-sm-2">Email</th>
+            <th class="col-sm-2">Phone</th>
+            <th class="col-sm-2">Role</th>
+            <th class="col-sm-2">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users; let i = index;">
+            <td>{{user.firstName}} {{user.lastName}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.phone}}</td>
+            <td>
+              <span *ngFor="let role of user.roles;">{{role.name}} </span>
+            </td>
+            <td>
+              <a data-toggle="modal" data-target="#user-modal" (click)="setUserId(user)" class="pointer">Edit</a> |
+              <a (click)="openDeleteModal(user, template)" class="pointer">Delete</a>
+            </td>
+          </tr>
+          <tr *ngIf="isSearchResultAvail==2">
+            <td colspan="5" align="center">
+                <b>Result is not available</b>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </data-table>
+  </div>
+</div>
 
-  <div class="modal fade" id="user-modal" role="dialog">
-    <div class="modal-dialog">
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" id="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">{{userDialogTitle}} User</h4>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="adminDetails" novalidate (ngSubmit)="details(adminDetails.value)">
+<div class="modal fade" id="user-modal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" id="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{{userDialogTitle}} User</h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="adminDetails" novalidate (ngSubmit)="details(adminDetails.value)">
 
-            <div class="row">
-              <div class="form-group col-md-6">
-                <label for="name">First Name</label>
-                <input type="text" placeholder="First name" class="form-control" formControlName="firstName" required>
-                <small class="text-danger" *ngIf="adminDetails.controls['firstName'].hasError('required') && adminDetails.controls['firstName'].touched">
-                  Please enter First Name
-                </small>
-                <small class="text-danger" *ngIf="adminDetails.controls['firstName'].hasError('nameValid')">
-                  Please enter correct first name
-                </small>
-              </div>
-
-              <div class="form-group col-md-6">
-                <label for="name">Last Name</label>
-                <input type="text" placeholder="Last name" class="form-control" formControlName="lastName" required>
-                <small class="text-danger" *ngIf="adminDetails.controls['lastName'].hasError('required') && adminDetails.controls['lastName'].touched">
-                  Please enter Last Name
-                </small>
-                <small class="text-danger" *ngIf="adminDetails.controls['lastName'].hasError('nameValid')">
-                  Please enter correct last name
-                </small>
-              </div>
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="name">First Name</label>
+              <input type="text" placeholder="First name" class="form-control" formControlName="firstName" required>
+              <small class="text-danger" *ngIf="adminDetails.controls['firstName'].hasError('required') && adminDetails.controls['firstName'].touched">
+                Please enter First Name
+              </small>
+              <small class="text-danger" *ngIf="adminDetails.controls['firstName'].hasError('nameValid')">
+                Please enter correct first name
+              </small>
             </div>
 
-            <div class="row">
-              <div class="form-group col-md-6 taggingBox">
-                <label for="alterEgo">Email Address</label>
-                <input type="text" placeholder="Email address" class="form-control" formControlName="email" required>
-                <small class="text-danger" *ngIf="adminDetails.controls['email'].hasError('required') && adminDetails.controls['email'].touched">
-                  Please enter Email
-                </small>
-                <small class="text-danger" *ngIf="adminDetails.controls['email'].hasError('emailValid')">
-                  Please enter correct email
-                </small>
-              </div>
+            <div class="form-group col-md-6">
+              <label for="name">Last Name</label>
+              <input type="text" placeholder="Last name" class="form-control" formControlName="lastName" required>
+              <small class="text-danger" *ngIf="adminDetails.controls['lastName'].hasError('required') && adminDetails.controls['lastName'].touched">
+                Please enter Last Name
+              </small>
+              <small class="text-danger" *ngIf="adminDetails.controls['lastName'].hasError('nameValid')">
+                Please enter correct last name
+              </small>
+            </div>
+          </div>
 
-              <div class="form-group col-md-6">
-                <label for="contact">Contact No.</label>
-                <input type="text" class="form-control" formControlName="phone" required>
-                <small class="text-danger" *ngIf="adminDetails.controls['phone'].hasError('required') && adminDetails.controls['phone'].touched">
-                  Please enter Contact No.
-                </small>
-                <small class="text-danger" *ngIf="adminDetails.controls['phone'].hasError('mobileValid')">
-                  Please enter correct contact no.
-                </small>
-              </div>
+          <div class="row">
+            <div class="form-group col-md-6 taggingBox">
+              <label for="alterEgo">Email Address</label>
+              <input type="text" placeholder="Email address" class="form-control" formControlName="email" required>
+              <small class="text-danger" *ngIf="adminDetails.controls['email'].hasError('required') && adminDetails.controls['email'].touched">
+                Please enter Email
+              </small>
+              <small class="text-danger" *ngIf="adminDetails.controls['email'].hasError('emailValid')">
+                Please enter correct email
+              </small>
             </div>
 
-            <div class="row">
-              <div class="form-group col-md-12">
-                <label for="name">User Role</label>
-                <select placeholder="Company" class="form-control" formControlName="roleId" (change)="onRoleChnage($event)">
-                  <option value="0" selected>Select Role</option>
-                  <option *ngFor="let role of roles;" value="{{role._id}}"> {{role.name}}</option>
-                </select>
-                <small class="text-danger" *ngIf="isRoleSelect">
-                  Please select User Role
-                </small>
-              </div>
+            <div class="form-group col-md-6">
+              <label for="contact">Contact No.</label>
+              <input type="text" class="form-control" formControlName="phone" required>
+              <small class="text-danger" *ngIf="adminDetails.controls['phone'].hasError('required') && adminDetails.controls['phone'].touched">
+                Please enter Contact No.
+              </small>
+              <small class="text-danger" *ngIf="adminDetails.controls['phone'].hasError('mobileValid')">
+                Please enter correct contact no.
+              </small>
             </div>
+          </div>
 
-            <button [disabled]="isSubmitDisabled" type="submit" class="btn btn-primary mt-10 mb-10 border-radius-30">Submit
-              <span *ngIf="!isDetailsUploading">
-                <i class="fa fa-arrow-circle-right"></i>
-              </span>
-              <span *ngIf="isDetailsUploading">
-                <i class="fa fa-spinner fa-spin"></i>
-              </span>
-            </button>
+          <div class="row">
+            <div class="form-group col-md-12">
+              <label for="name">User Role</label>
+              <select placeholder="Company" class="form-control" formControlName="roleId" (change)="onRoleChnage($event)">
+                <option value="0" selected>Select Role</option>
+                <option *ngFor="let role of roles;" value="{{role._id}}"> {{role.name}}</option>
+              </select>
+              <small class="text-danger" *ngIf="isRoleSelect">
+                Please select User Role
+              </small>
+            </div>
+          </div>
 
-          </form>
-        </div>
+          <button [disabled]="isSubmitDisabled" type="submit" class="btn btn-primary mt-10 mb-10 border-radius-30">Submit
+            <span *ngIf="!isDetailsUploading">
+              <i class="fa fa-arrow-circle-right"></i>
+            </span>
+            <span *ngIf="isDetailsUploading">
+              <i class="fa fa-spinner fa-spin"></i>
+            </span>
+          </button>
+
+        </form>
       </div>
     </div>
   </div>
+</div>
 
-  <ng-template #template>
-    <div class="modal-body text-center">
-      <p class="text"><b>Do you want to delete user {{deleteName.toUpperCase()}}?</b></p>
-      <button type="button" class="btn btn-primary" (click)="confirm()">Yes</button>
-      <button type="button" class="btn btn-default" (click)="decline()">No</button>
-    </div>
-  </ng-template>
-</section>
+<ng-template #template>
+  <div class="modal-body text-center">
+    <p class="text"><b>Do you want to delete user {{deleteName.toUpperCase()}}?</b></p>
+    <button type="button" class="btn btn-primary" (click)="confirm()">Yes</button>
+    <button type="button" class="btn btn-default" (click)="decline()">No</button>
+  </div>
+</ng-template>
