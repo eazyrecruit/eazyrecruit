@@ -18,6 +18,7 @@ export class EmailsettingsComponent implements OnInit {
   inbound: boolean;
   outbound: boolean;
   company: any;
+  htmlPreview: String;
   modalRef: BsModalRef;
   inboundSettings: any;
   outboundSettings: any;
@@ -45,6 +46,11 @@ export class EmailsettingsComponent implements OnInit {
   templateEdit() {
     this.companyService.getSettings(this.company._id, 'template').subscribe(result =>{
       this.templateSettings = result['success']['data'];
+      this.templateSettings.forEach(element => {
+        if (element.key == 'content') {
+          this.htmlPreview = element.value;
+        }
+      });
     });
   }
 
@@ -79,7 +85,13 @@ export class EmailsettingsComponent implements OnInit {
     });
     this.modalRef.content.closePopup.subscribe(result => {
         if (result) {
-          this.outboundSettings = result;
+          this.templateSettings = result;
+          this.templateSettings.forEach(element => {
+            if (element.key == 'content') {
+              this.htmlPreview = element.value;
+            }
+          });
+          
         }
     });
   }

@@ -64,6 +64,19 @@
           Template :
         </legend>
         <div class="row">
+          <fieldset class="col-sm-12">
+            <legend>
+              Preview :
+            </legend>
+            <div *ngIf="htmlPreview">
+              <div class="box">
+                <div class="box-body">
+                  <div [innerHTML]="htmlPreview | sanitizeHtml">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
           <div class="col-sm-12">
             <button type="button" class="btn btn-success"  (click)="editTemplate()">Edit
               <i class="fa fa-arrow-circle-right"></i>
