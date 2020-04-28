@@ -13,7 +13,8 @@
 
         <div style="margin: 6px;">
           <label for="content">HTML*</label>
-          <input type="text" placeholder="HTML" class="form-control" formControlName="content" required>
+          <textarea rows="14" placeholder="HTML" class="form-control" formControlName="content" required>
+          </textarea>
           <small class="text-danger"
             *ngIf="templateForm.controls['content'].hasError('required') && templateForm.controls['content'].touched">
             Please enter html

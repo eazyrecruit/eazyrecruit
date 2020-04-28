@@ -51,7 +51,7 @@ export class OutboundComponent implements OnInit {
     if (!this.outboundForm.valid) {
       this.validationService.validateAllFormFields(this.outboundForm);
     } else {
-      this.companyService.editSettings(form, this.settings.company._id, form.mailvia).subscribe(result => {
+      this.companyService.editSettings(form, this.settings[0].companyId, form.mailvia).subscribe(result => {
         if (result['success']) {
           this.outboundEdit();
         }

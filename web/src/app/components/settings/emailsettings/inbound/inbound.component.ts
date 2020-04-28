@@ -53,7 +53,7 @@ export class InboundComponent implements OnInit {
     if (!this.inboundForm.valid) {
       this.validationService.validateAllFormFields(this.inboundForm);
     } else {
-      this.companyService.editSettings(form, this.settings.company._id, form.type).subscribe(result => {
+      this.companyService.editSettings(form, this.settings[0].companyId, form.type).subscribe(result => {
         if (result['success']) {
           //close model
           this.closePopup.next(result['success']);

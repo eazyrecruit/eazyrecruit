@@ -47,7 +47,7 @@ export class EmailTemplateComponent implements OnInit {
     if (!this.templateForm.valid) {
       this.validationService.validateAllFormFields(this.templateForm);
     } else {
-      this.companyService.editSettings(form, this.settings.company._id, 'template').subscribe(result => {
+      this.companyService.editSettings(form, this.settings[0].companyId, 'template').subscribe(result => {
         if (result['success']) {
           this.templateEdit();
         }
