@@ -52,8 +52,10 @@ export class OutboundComponent implements OnInit {
       this.validationService.validateAllFormFields(this.outboundForm);
     } else {
       this.companyService.editSettings(form, this.settings[0].companyId, form.mailvia).subscribe(result => {
-        if (result['success']) {
-          this.outboundEdit();
+        if (result['success'] && result['success']['data']) {
+          // emit updated data and close model
+          this.closePopup.next(result['success']['data']);
+          this.bsModelRef.hide();
         }
       });
     }

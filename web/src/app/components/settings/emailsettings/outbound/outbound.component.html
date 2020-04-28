@@ -5,7 +5,7 @@
 <div class="modal-body content-move">
   <form [formGroup]="outboundForm" novalidate (ngSubmit)="editOutbound(outboundForm.value)">
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="mailvia">Send mails via*</label>
         <select class="form-control" formControlName="mailvia" required>
@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="host">Host*</label>
         <input type="text" placeholder="Host" class="form-control" formControlName="host" required>
@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="user">User*</label>
         <input type="text" placeholder="User" class="form-control" formControlName="user" required>
@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="password">Password*</label>
         <input type="password" placeholder="Password" class="form-control" formControlName="password" required>
@@ -49,7 +49,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="port">Port*</label>
         <input type="text" placeholder="Port" class="form-control" formControlName="port" required>
@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="fromEmail">Sender*</label>
         <input type="text" placeholder="Sender Email" class="form-control" formControlName="fromEmail" required>
@@ -71,7 +71,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="fromDisplayname">Display Name*</label>
         <input type="text" placeholder="Display Name" class="form-control" formControlName="fromDisplayname" required>
@@ -83,8 +83,8 @@
     </div>
 
     <br>
-    
-    <div class="row">
+
+    <div class="row"  style="margin: 6px;">
       <div class="col-sm-12">
         <button type="submit" class="btn btn-success">Submit
           <i class="fa fa-arrow-circle-right"></i>

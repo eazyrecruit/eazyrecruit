@@ -48,8 +48,10 @@ export class EmailTemplateComponent implements OnInit {
       this.validationService.validateAllFormFields(this.templateForm);
     } else {
       this.companyService.editSettings(form, this.settings[0].companyId, 'template').subscribe(result => {
-        if (result['success']) {
-          this.templateEdit();
+        if (result['success'] && result['success']['data']) {
+          // emit updated data and close model
+          this.closePopup.next(result['success']['data']);
+          this.bsModelRef.hide();
         }
       });
     }

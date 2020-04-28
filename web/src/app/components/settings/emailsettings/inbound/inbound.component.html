@@ -5,7 +5,7 @@
 <div class="modal-body content-move">
   <form [formGroup]="inboundForm" novalidate (ngSubmit)="editInbound(inboundForm.value)">
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="type">Type*</label>
         <select class="form-control" formControlName="type" required>
@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="host">Host*</label>
         <input type="text" placeholder="Host" class="form-control" formControlName="host" required>
@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="user">User*</label>
         <input type="text" placeholder="User" class="form-control" formControlName="user" required>
@@ -38,7 +38,7 @@
       </div>
     </div>    
 
-    <div class="row">
+    <div class="row" style="margin: 6px;">
       <div class="col-sm-12">
         <label for="password">Password*</label>
         <input type="password" placeholder="Password" class="form-control" formControlName="password" required>
@@ -110,8 +110,8 @@
     </div>
 
     <br>
-    
-    <div class="row">
+
+    <div class="row"  style="margin: 6px;">
       <div class="col-sm-12">
         <button type="submit" class="btn btn-success">Submit
           <i class="fa fa-arrow-circle-right"></i>

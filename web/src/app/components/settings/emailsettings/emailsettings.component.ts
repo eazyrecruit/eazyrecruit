@@ -50,7 +50,7 @@ export class EmailsettingsComponent implements OnInit {
 
   editInbound() {
     this.modalRef = this.modalService.show(InboundComponent, { 
-      class: 'modal-lg', 
+      class: 'modal-md', 
       initialState: { settings: this.inboundSettings }
     });
     this.modalRef.content.closePopup.subscribe(result => {
@@ -62,7 +62,7 @@ export class EmailsettingsComponent implements OnInit {
 
   editOutbound() {
     this.modalRef = this.modalService.show(OutboundComponent, { 
-      class: 'modal-lg', 
+      class: 'modal-md', 
       initialState: { settings: this.outboundSettings }
     });
     this.modalRef.content.closePopup.subscribe(result => {
@@ -74,7 +74,7 @@ export class EmailsettingsComponent implements OnInit {
 
   editTemplate(form) {
     this.modalRef = this.modalService.show(EmailTemplateComponent, { 
-      class: 'modal-lg', 
+      class: 'modal-lg',
       initialState: { settings: this.templateSettings }
     });
     this.modalRef.content.closePopup.subscribe(result => {
