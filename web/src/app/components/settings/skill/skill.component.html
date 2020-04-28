@@ -1,43 +1,41 @@
-<section class="content">
-  <div class="box box-info">
-    <div class="box-header">
-      <i class="fa fa-inbox"></i>
-      <h3 class="box-title"> Skills</h3>
-      <div class="pull-right box-tools">
-        <a data-toggle="modal" data-target="#skill-modal" type="button" class="btn btn-primary btn-sm" (click)="setSkillId(null)">
-          <i class="fa fa-plus"></i> Create</a>
-      </div>
-    </div>
-    <div class="main-content padding-20px-tb plr-15">
-      <data-table pageSize='10' sortField='name' sortOrder='1' [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
-          <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
-              <thead>
-                  <tr class="font-weight-bold">
-                      <th class="col-sm-2">Sr. No.</th>
-                      <th class="col-sm-8">Skills Name</th>
-                      <th class="col-sm-2">Action</th>
-                    </tr>
-              </thead>
-              <tbody>
-                  <tr *ngFor="let skill of skills; let i = index;">
-                    <td >{{i + 1  + serialNo}}</td>
-                    <td >{{skill.name}}</td>
-                    <td>
-                      <a data-toggle="modal" data-target="#skill-modal" (click)="setSkillId(skill, template)" class="pointer">Edit</a> |
-                      <a (click)="openDeleteModal(skill, template)" class="pointer">Delete</a>
-                    </td>
-                  </tr>
-                  <tr *ngIf="isSearchResultAvail==2">
-                    <td colspan="3" align="center">
-                        <b>Result is not available</b>
-                    </td>
-                  </tr>
-              </tbody>
-          </table>
-      </data-table>
+<div class="box box-info">
+  <div class="box-header">
+    <i class="fa fa-inbox"></i>
+    <h3 class="box-title"> Skills</h3>
+    <div class="pull-right box-tools">
+      <a data-toggle="modal" data-target="#skill-modal" type="button" class="btn btn-primary btn-sm" (click)="setSkillId(null)">
+        <i class="fa fa-plus"></i> Create</a>
     </div>
   </div>
-</section>
+  <div class="main-content padding-20px-tb plr-15">
+    <data-table pageSize='10' sortField='name' sortOrder='1' [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
+        <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+            <thead>
+                <tr class="font-weight-bold">
+                    <th class="col-sm-2">Sr. No.</th>
+                    <th class="col-sm-8">Skills Name</th>
+                    <th class="col-sm-2">Action</th>
+                  </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let skill of skills; let i = index;">
+                  <td >{{i + 1  + serialNo}}</td>
+                  <td >{{skill.name}}</td>
+                  <td>
+                    <a data-toggle="modal" data-target="#skill-modal" (click)="setSkillId(skill, template)" class="pointer">Edit</a> |
+                    <a (click)="openDeleteModal(skill, template)" class="pointer">Delete</a>
+                  </td>
+                </tr>
+                <tr *ngIf="isSearchResultAvail==2">
+                  <td colspan="3" align="center">
+                      <b>Result is not available</b>
+                  </td>
+                </tr>
+            </tbody>
+        </table>
+    </data-table>
+  </div>
+</div>
 
 <div class="modal fade" id="skill-modal" role="dialog">
   <div class="modal-dialog">

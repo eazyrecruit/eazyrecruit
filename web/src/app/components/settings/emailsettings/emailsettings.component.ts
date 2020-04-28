@@ -2,6 +2,10 @@ import { Component, OnInit, ViewChild, ElementRef,  } from '@angular/core';
 import { FormGroup, FormBuilder, Validators} from '@angular/forms';
 import { CompanyService } from '../../../services/company.service';
 import { ValidationService } from '../../../services/validation.service';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { InboundComponent } from './inbound/inbound.component';
+import { OutboundComponent } from './outbound/outbound.component';
+import { EmailTemplateComponent } from './email-template/email-template.component';
 
 @Component({
   selector: 'app-emailsettings',
@@ -13,112 +17,83 @@ export class EmailsettingsComponent implements OnInit {
 
   inbound: boolean;
   outbound: boolean;
-  inboundForm: FormGroup;
-  outboundForm: FormGroup;
-  templateForm: FormGroup;
   company: any;
   htmlPreview: String;
+  modalRef: BsModalRef;
+  inboundSettings: any;
+  outboundSettings: any;
+  templateSettings: any;
 
   constructor(private companyService: CompanyService,
-    private validationService: ValidationService,
-    private fbForm: FormBuilder) 
-    { 
-      this.inboundForm = this.fbForm.group({
-        type: ["imap", [<any>Validators.required]],
-        host: [null, [<any>Validators.required]],
-        user: [null, [<any>Validators.required]],
-        password: [null, [<any>Validators.required]],
-        ssl: [null],
-        port: [null],
-        folder: [null],
-        messages: [null]
-      });
-      this.outboundForm = this.fbForm.group({
-        mailvia: ["smtp", [<any>Validators.required]],
-        host: [null, [<any>Validators.required]],
-        user: [null],
-        password: [null],
-        port: [null],
-        fromEmail: [null, [<any>Validators.required]],
-        fromDisplayname: [null]
-      });
-      this.templateForm = this.fbForm.group({
-        content: [null, [<any>Validators.required]],
-      });
-    }
+    private modalService: BsModalService) {}
 
   ngOnInit() {
     this.setForms();
   }
 
-  @ViewChild('iframe') iframe: ElementRef
-
-  ngAfterViewInit() {
-   this.iframe.nativeElement.setAttribute('src', this.htmlPreview);
-  }
-
   inboundEdit() {
-        this.companyService.getSettings(this.company._id, this.inboundForm.controls.type.value).subscribe(result =>{
-          var settings = result['success']['data'];
-          settings.forEach(setting => {
-            this.inboundForm.get(setting.key).setValue(setting.value);
-          });
-        })
+    this.companyService.getSettings(this.company._id, 'imap').subscribe(result =>{
+      this.inboundSettings = result['success']['data'];
+    });
   }
 
   outboundEdit() {
-        this.companyService.getSettings(this.company._id, this.outboundForm.controls.mailvia.value).subscribe(result =>{
-          var settings = result['success']['data'];
-          settings.forEach(setting => {
-            this.outboundForm.get(setting.key).setValue(setting.value);
-          });
-        })
+    this.companyService.getSettings(this.company._id, 'smtp').subscribe(result =>{
+      this.outboundSettings = result['success']['data'];
+    });
   }
 
   templateEdit() {
     this.companyService.getSettings(this.company._id, 'template').subscribe(result =>{
-      var settings = result['success']['data'];
-      settings.forEach(setting => {
-        this.htmlPreview = setting.value;
-        this.templateForm.get(setting.key).setValue(setting.value);
-      });
-    })
-  }
-
-  editInbound(form) {
-    if (!this.inboundForm.valid) {
-      this.validationService.validateAllFormFields(this.inboundForm);
-    } else {
-      this.companyService.editSettings(form, this.company._id, form.type).subscribe(result => {
-        if (result['success']) {
-          this.inboundEdit();
+      this.templateSettings = result['success']['data'];
+      this.templateSettings.forEach(element => {
+        if (element.key == 'content') {
+          this.htmlPreview = element.value;
         }
       });
-    }
+    });
   }
 
-  editOutbound(form) {
-    if (!this.outboundForm.valid) {
-      this.validationService.validateAllFormFields(this.outboundForm);
-    } else {
-      this.companyService.editSettings(form, this.company._id, form.mailvia).subscribe(result => {
-        if (result['success']) {
-          this.outboundEdit();
+  editInbound() {
+    this.modalRef = this.modalService.show(InboundComponent, { 
+      class: 'modal-md', 
+      initialState: { settings: this.inboundSettings }
+    });
+    this.modalRef.content.closePopup.subscribe(result => {
+        if (result) {
+          this.inboundSettings = result;
         }
-      });
-    }
+    });
+  }
+
+  editOutbound() {
+    this.modalRef = this.modalService.show(OutboundComponent, { 
+      class: 'modal-md', 
+      initialState: { settings: this.outboundSettings }
+    });
+    this.modalRef.content.closePopup.subscribe(result => {
+        if (result) {
+          this.outboundSettings = result;
+        }
+    });
   }
 
   editTemplate(form) {
-    if (!this.outboundForm.valid) {
-      this.validationService.validateAllFormFields(this.templateForm);
-    } else {
-      this.companyService.editSettings(form, this.company._id, 'template').subscribe(result => {
-        if (result['success']) {
-          this.templateEdit();
+    this.modalRef = this.modalService.show(EmailTemplateComponent, { 
+      class: 'modal-lg',
+      initialState: { settings: this.templateSettings }
+    });
+    this.modalRef.content.closePopup.subscribe(result => {
+        if (result) {
+          this.templateSettings = result;
+          this.templateSettings.forEach(element => {
+            if (element.key == 'content') {
+              this.htmlPreview = element.value;
+            }
+          });
+          
         }
-      });
-    }
+    });
   }
 
   setForms() {
@@ -128,10 +103,6 @@ export class EmailsettingsComponent implements OnInit {
         this.inboundEdit();
         this.outboundEdit();
         this.templateEdit();
-      } else {
-        this.inboundForm.reset();
-        this.outboundForm.reset();
-        this.templateForm.reset();
       }
     })
   }
