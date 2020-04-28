@@ -64,15 +64,13 @@
           Template :
         </legend>
         <div class="row">
-          <fieldset class="col-sm-12">
+          <fieldset class="col-sm-12" *ngIf="htmlPreview">
             <legend>
               Preview :
             </legend>
-            <div *ngIf="htmlPreview">
-              <div class="box">
-                <div class="box-body">
-                  <div [innerHTML]="htmlPreview | sanitizeHtml">
-                  </div>
+            <div class="box">
+              <div class="box-body">
+                <div [innerHTML]="htmlPreview | sanitizeHtml">
                 </div>
               </div>
             </div>
