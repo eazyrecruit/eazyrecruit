@@ -14,12 +14,12 @@ exports.getUsers = async (req) => {
     let count = 0; 
     let users;
     if (req.query.all == 'true') {
-        users = await User.find({ is_deleted: false });
+        users = await User.find({ is_deleted: false }, {password: 0, passwordResetToken: 0});
     } else {
         if (req.query.limit) limit = parseInt(req.query.limit);
         if (req.query.offset) skip = parseInt(req.query.offset);
         count = await User.count({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false });
-        users = await User.find({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false, select: ['-password, '] }).populate('roles').skip(skip).limit(limit).exec();
+        users = await User.find({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false }, { password: 0, passwordResetToken: 0 }).populate('roles').skip(skip).limit(limit).exec();
     }
     return { count, users };
 };

@@ -40,7 +40,7 @@ exports.createAndInvite = async (req) => {
 
 exports.rescheduleAndInvite = async (req) => {
     let interview = await Interview.findById({ _id: req.body.id });
-    req.body.interview = await Interview.findByIdAndUpdate({ _id: req.body.id, is_deleted: { $ne: true } },
+    req.body.interview.interview = await Interview.findByIdAndUpdate({ _id: req.body.id, is_deleted: { $ne: true } },
         {
             sequence: req.body.sequence + 1,
             status: "CONFIRMED",
@@ -57,7 +57,7 @@ exports.rescheduleAndInvite = async (req) => {
             is_deleted: false,
             modified_by: req.body.interview.modified_by.id,
             modified_at: Date.now()
-        }, {new: true});
+        }, {new: true});   
     // Invite Participants
     await inviteCandidate(req, 'Interview rescheduled');
     await inviteInterviewer(req, 'Interview rescheduled');
@@ -67,15 +67,18 @@ exports.rescheduleAndInvite = async (req) => {
 }
 
 exports.getAllBetweenDates = async (req) => {
-    return await Interview.find(
-        {
-            is_deleted: { $ne: true },
-            interviewer: req.user.id,
-            start: {
-                $gte: new Date(new Date(parseInt(req.params.start)).toISOString()),
-                $lt: new Date(new Date(parseInt(req.params.end)).toISOString())
-            }
-        }).populate({
+    let query = {
+        is_deleted: { $ne: true },
+        start: {
+            $gte: new Date(new Date(parseInt(req.params.start)).toISOString()),
+            $lt: new Date(new Date(parseInt(req.params.end)).toISOString())
+        }
+    };
+    if (req.user.roles.indexOf('admin') === -1) {
+        query.interviewer = req.user.id;
+    }
+    return await Interview.find(query
+        ).populate({
             path: 'jobApplicant',
             model: 'Applicants',
         }
