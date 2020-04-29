@@ -53,15 +53,16 @@
               <button type="submit" id="login" class="btn btn-primary btn-block border-radius-0">Sign In</button>
             </div>    
           </div>
-          <div class="row">
-              <div class="col-lg-12"><span class="err">{{errorMessage}}</span></div>
-          </div>
+          
         </form>
         <div class="row">
           <div class="col-sm-12 mt-10">
             <button class="col-sm-12 btn btn-danger btn-block border-radius-0" (click)="oauthLogin('google')">
               <i class="fa fa-google"></i> Google</button>
           </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12 text-danger"><span class="err">{{errorMessage}}</span></div>
         </div>
       </div>
     </div>

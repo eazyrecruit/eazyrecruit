@@ -27,7 +27,8 @@ export class InterviewListComponent implements OnInit, OnChanges {
       searchText: '',
       sortField: 'name',
       sortOrder: '1',
-      offset: 0
+      offset: 0,
+      type: 'PENDING'
     };
   }
 
@@ -40,6 +41,8 @@ export class InterviewListComponent implements OnInit, OnChanges {
     this.filter.searchText = filter.searchText;
     this.filter.pageSize = filter.pageSize;
     this.filter.pageIndex = filter.pageIndex;
+    this.filter.sortOrder = filter.sortOrder;
+    this.filter.type = filter.type ? filter.type : this.filter.type;
     this.getAllInterviews(this.filter);
   }
 
@@ -70,6 +73,17 @@ export class InterviewListComponent implements OnInit, OnChanges {
     if (middleName && middleName != "null") name = name + " " + middleName;
     if (lastName && lastName != "null") name = name + " " + lastName;
     return name;
-}
+  }
+
+  changeType(type: String) {
+    if (type && type === 'COMPLETED') {
+      this.filter.type = 'COMPLETED'
+      this.filter.sortOrder = -1;
+    } else {
+      this.filter.type = 'PENDING'
+      this.filter.sortOrder = 1;
+    }
+    this.getAllInterviews(this.filter);
+  }
 
 }

@@ -2,6 +2,7 @@ export class ConstService {
     baseUrl: string;
     publicUrl: string;
     pyUrl: string;
+    roles = [];
     constructor() {
         if (window.location.hostname === 'dev.eazyrecruit.in') {
             this.baseUrl = '/api/';
@@ -16,6 +17,6 @@ export class ConstService {
             this.baseUrl = '/api/';
             this.pyUrl = '/api/engine/';
         }
-
+        this.roles = ['admin', 'user', 'hr'];
     }
 }

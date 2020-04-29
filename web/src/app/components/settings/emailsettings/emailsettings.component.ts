@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef,  } from '@angular/core';
-import { FormGroup, FormBuilder, Validators} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { CompanyService } from '../../../services/company.service';
 import { ValidationService } from '../../../services/validation.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { InboundComponent } from './inbound/inbound.component';
 import { OutboundComponent } from './outbound/outbound.component';
 import { EmailTemplateComponent } from './email-template/email-template.component';
+import { ToasterService, ToasterConfig } from 'angular2-toaster';
 
 @Component({
   selector: 'app-emailsettings',
@@ -25,7 +25,16 @@ export class EmailsettingsComponent implements OnInit {
   templateSettings: any;
 
   constructor(private companyService: CompanyService,
-    private modalService: BsModalService) {}
+    private modalService: BsModalService,
+    private toasterService: ToasterService) {}
+
+  public config: ToasterConfig =  new ToasterConfig({
+    showCloseButton: true,
+    tapToDismiss: true,
+    timeout: 1000,
+    animation: 'fade',
+    positionClass: 'toast-top-right'
+  });
 
   ngOnInit() {
     this.setForms();
@@ -62,6 +71,7 @@ export class EmailsettingsComponent implements OnInit {
     this.modalRef.content.closePopup.subscribe(result => {
         if (result) {
           this.inboundSettings = result;
+          this.toasterService.pop('success', 'Settings updated', 'inbound email settings updated successfully');
         }
     });
   }
@@ -74,6 +84,7 @@ export class EmailsettingsComponent implements OnInit {
     this.modalRef.content.closePopup.subscribe(result => {
         if (result) {
           this.outboundSettings = result;
+          this.toasterService.pop('success', 'Settings updated', 'outbound email settings updated successfully');
         }
     });
   }
@@ -91,7 +102,7 @@ export class EmailsettingsComponent implements OnInit {
               this.htmlPreview = element.value;
             }
           });
-          
+          this.toasterService.pop('success', 'Settings updated', 'template email settings updated successfully');
         }
     });
   }

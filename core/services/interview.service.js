@@ -74,7 +74,7 @@ exports.getAllBetweenDates = async (req) => {
             $lt: new Date(new Date(parseInt(req.params.end)).toISOString())
         }
     };
-    if (req.user.roles.indexOf('admin') === -1) {
+    if (req.user.roles.indexOf('admin') === -1 && req.user.roles.indexOf('hr') === -1) {
         query.interviewer = req.user.id;
     }
     return await Interview.find(query
@@ -168,17 +168,25 @@ exports.addCriteria = async (req) => {
 }
 
 exports.getInterviews = async (req) => {
-    let limit = 10, offset = 0;
+    let limit = 10, offset = 0, sortOrder = -1;
+    let type = 'PENDING';
     if (req.query.limit) limit = parseInt(req.query.limit);
     if (req.query.offset) offset = parseInt(req.query.offset);
+    if (req.query.type) type = req.query.type;
+    if (req.query.sortOrder) sortOrder = parseInt(req.query.sortOrder);
     let query = {
         is_deleted: { $ne: true }
     };
-    if (req.user.roles.indexOf('admin') === -1) {
+    if (req.user.roles.indexOf('admin') === -1 && req.user.roles.indexOf('hr') === -1) {
         query = {
             is_deleted: { $ne: true },
             interviewer: req.user.id
         }
+    }
+    if (type.toUpperCase() === 'PENDING') {
+        query.result = type
+    } else {
+        query.result = { $ne: 'PENDING' }
     }
     let count = await Interview.count(query);
     let interviews = await Interview.find(query).populate([{
@@ -188,7 +196,7 @@ exports.getInterviews = async (req) => {
         path: 'jobId',
         model: 'Jobs',
         select: ['title']
-    }]).skip(offset).limit(limit).exec();
+    }]).sort([['start', sortOrder]]).skip(offset).limit(limit).exec();
     return { count, interviews };
 }
 

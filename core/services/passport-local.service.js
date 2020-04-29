@@ -25,8 +25,10 @@ exports.setup = function () {
                   for (let i = 0; i < user.roles.length; i++) {
                       roles.push(user.roles[i].name);
                   }
+                  return done(null, {id: user._id, displayName: user.name, email: user.email, roles });
+              } else {
+                return done(null, false, { status: 401, message: 'insufficient privileges' });
               }
-              return done(null, {id: user._id, displayName: user.name, email: user.email, roles });
             }
             return done(null, false, { status: 401, message: 'Invalid email or password.' });
           });
