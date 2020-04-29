@@ -13,10 +13,10 @@ var validationService = require('../services/validation.service');
 router.post("/login", function (req, res) {
   passportLocal.authenticate(req, res, function (err, data) {
    if (err) {
-     responseService.response(req, err,'Login', err.message, res);
+     responseService.errorResponse(err, 'Login', res);
      } else {
      data.token = jwt.generateToken(data);
-      responseService.response(req, err,'Login', data, res);
+      responseService.successResponse(data,'Login', res);
      }
    });
 });
@@ -58,10 +58,10 @@ router.get('/google', passport.authenticate('google', {scope: ['profile', 'email
 router.get("/google/callback", function (req, res) {
   passportGoogle.authenticate(req, res, function (err, data) {
     if (err) {
-      responseService.response(req, err.message,'Login' ,err.message, res);
+      responseService.errorResponse(err, 'Login', res);
     } else {
       data.token = jwt.generateToken(data);
-      responseService.response(req, err, 'Login' ,data, res);
+      responseService.successResponse(data, 'Login', res);
     }
   });
 });

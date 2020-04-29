@@ -1073,3 +1073,10 @@ tag-input {
 .skills {
     max-width: 200px;max-height: 60px;overflow: hidden;
 }
+
+.txt-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 900;
+}

@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     let user = this.accountService.isAuthorized();
     if(user && user.isAuthorized) {
-      if (user.role == 'admin') {
+      if (user.role == 'admin' || user.role == 'hr') {
         this.router.navigate(['/jobs']);
       } else {
         this.router.navigate(['/home']);
@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
         if (result['success']) {
           this.accountService.setAuthorizationHeader(result['success']);
           let role = this.accountService.getRole();
-          if (role == 'admin') {
+          if (role == 'admin' || role == 'hr') {
             this.router.navigate(['/jobs']);
           } else {
             this.router.navigate(['/user']);
@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit {
       "/admin/assets/auth.html?socialApp=" + app, () => {
         let user = this.accountService.isAuthorized();
         if(user && user.isAuthorized) {
-          if (user.role == 'admin') {
+          if (user.role == 'admin' || user.role == 'hr') {
             this.router.navigate(['/jobs']);
           } else {
             this.router.navigate(['/user']);

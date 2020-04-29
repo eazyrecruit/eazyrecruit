@@ -67,7 +67,7 @@
       </div>
     </div>
     <!-- sidebar menu: : style can be found in sidebar.less -->
-    <ul class="sidebar-menu tree" *ngIf="role == 'admin'" (click)="sidebarMenu();">
+    <ul class="sidebar-menu tree" *ngIf="role == 'admin' || role == 'hr'" (click)="sidebarMenu();">
       <li>
         <a routerLink="/dashboard">
           <i class="fa fa-home"></i>
@@ -98,7 +98,7 @@
           <span>Applicants</span>
         </a>
       </li> -->
-      <li >
+      <li *ngIf="role == 'admin'">
         <a routerLinkActive="active" routerLink="/settings">
           <i class="fa fa-gear"></i>
           <span>Settings</span>

@@ -74,7 +74,7 @@ exports.getAllBetweenDates = async (req) => {
             $lt: new Date(new Date(parseInt(req.params.end)).toISOString())
         }
     };
-    if (req.user.roles.indexOf('admin') === -1) {
+    if (req.user.roles.indexOf('admin') === -1 && req.user.roles.indexOf('hr') === -1) {
         query.interviewer = req.user.id;
     }
     return await Interview.find(query
@@ -177,7 +177,7 @@ exports.getInterviews = async (req) => {
     let query = {
         is_deleted: { $ne: true }
     };
-    if (req.user.roles.indexOf('admin') === -1) {
+    if (req.user.roles.indexOf('admin') === -1 && req.user.roles.indexOf('hr') === -1) {
         query = {
             is_deleted: { $ne: true },
             interviewer: req.user.id

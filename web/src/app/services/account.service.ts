@@ -28,7 +28,7 @@ export class AccountService {
             return { isAuthorized: false, role: null };
         } else {
             const tokenPayload = this.helper.decodeToken(authData.data.token);
-            if (tokenPayload.roles[0] == 'admin' || tokenPayload.roles[0] == 'user') {
+            if (this.constService.roles.indexOf(tokenPayload.roles[0] !== -1)) {
                 authorization = { isAuthorized: true, role: tokenPayload.roles[0] };
             } else {
                 authorization = { isAuthorized: false, role: tokenPayload.roles[0] };
