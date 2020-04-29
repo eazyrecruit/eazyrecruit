@@ -2,6 +2,7 @@ let Company = require('../models/company');
 let CompanySettings = require('../models/companySettings');
 let encryptService = require('../services/encryption.service');
 let google = require('../services/passport-google.service');
+
 exports.getCompany = async (req) => {
     return await Company.find({});
 };
