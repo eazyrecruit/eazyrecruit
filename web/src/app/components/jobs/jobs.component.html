@@ -38,7 +38,7 @@
                                         <!-- <a routerLink="/jobs/create"> -->
                                         <a><i class="fa fa-pencil"></i>Edit Job</a>
                                     </li>
-                                    <li class="dropdown-item" (click)="copyText(url+job.guid)">
+                                    <li class="dropdown-item" (click)="copyText(urljob.guid)">
                                         <a>
                                             <i class="ti-layers"></i> Copy Link</a>
                                     </li>
@@ -80,6 +80,16 @@
                     </div>
                     <!-- /.widget-user -->
                 </div>
+            </div>
+            <div class="row"> 
+                <div class="col-sm-6"> 
+                    <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing <strong>{{(filter.pageIndex - 1) * filter.pageSize + 1}}</strong>-<strong>{{filter.pageIndex * filter.pageSize > totalItems ? totalItems : filter.pageIndex * filter.pageSize}}</strong> of <strong>{{totalItems}}</strong></div> 
+                </div> 
+                <div class="col-sm-6 text-right"> 
+                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"> 
+                        <pagination [totalItems]="totalItems" [maxSize]="3" [itemsPerPage]="filter.pageSize"  [boundaryLinks]="true" (pageChanged)="CurrentPage = $event.page; filterChanged(false)" [(ngModel)]="CurrentPage" aria-label="Default pagination"></pagination>
+                    </div> 
+                </div> 
             </div>
         </div>
     </div>

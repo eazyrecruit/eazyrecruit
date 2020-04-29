@@ -44,14 +44,18 @@ router.get("/", async (req, res) => {
                 results.hits.hits[iHit]._source.skills = await skillService.getAllByIds(results.hits.hits[iHit]._source.skills);
                 results.hits.hits[iHit]._source.locations = await locationService.getAllByIds(results.hits.hits[iHit]._source.locations);
                 jobs.push(results.hits.hits[iHit]._source);
-                console.log('iHit : ', iHit);
             }
-            responseService.response(req, null, 'Jobs GET', jobs, res);
+            responseService.successResponse({ count: results.hits.total.value, jobs: jobs }, 'Jobs GET', res);
         } else {
-            responseService.response(req, null, 'Jobs GET', null, res);
+            responseService.successResponse({ count: results.hits.total.value, jobs: [] }, 'Jobs GET', res);
         }
     } catch (err) {
-        responseService.response(req, err, 'Jobs GET', null, res);
+        let error = {
+            status: 500,
+            message: "internal server error"
+        }
+        console.log('save job error : ', err);
+        responseService.errorResponse(error, 'Jobs GET', res);
     }
 });
 
