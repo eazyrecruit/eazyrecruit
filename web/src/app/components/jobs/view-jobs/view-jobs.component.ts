@@ -26,7 +26,7 @@ export class ViewJobsComponent implements OnInit {
   }
 
   showJobList(limit: any, offset: any) {
-    this.jobService.getJob().subscribe(result => {
+    this.jobService.getJob({pageSize: limit, offset: offset, searchText: ''}).subscribe(result => {
       if (result['success']) {
         this.jobs = result['success']['data'];
       }

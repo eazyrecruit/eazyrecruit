@@ -65,11 +65,14 @@ exports.searchApplicants = async (req) => {
 
 exports.searchJobs = async (req) => {
     return new Promise(function (resolve, reject) {
+        let offset = 0, limit = 10;
+        if (req.query.limit) limit = parseInt(req.query.limit);
+        if (req.query.offset) offset = parseInt(req.query.offset);
         if (req.query.title) {
             var query = {
                 "query_string" : {
                     "fields" : ["title"],
-                    "query" : "*" + req.query.title + "*"
+                    "query" : "*" + req.query.searchText + "*"
                 }
             }
         } else {
@@ -77,7 +80,7 @@ exports.searchJobs = async (req) => {
         }
         if (query) {
             Jobs.search(query, {
-                from: 0, size: 10000,
+                from: offset, size: limit,
                 sort: [{
                     "created_at": {
                         "order": "desc"

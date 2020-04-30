@@ -14,7 +14,7 @@
             Please enter Job Title
           </small>
           <small class="text-danger" *ngIf="jobDetails.controls['title'].hasError('jobTitleValid')">
-            Please enter correct job title
+            Please enter correct job title            
           </small>
         </div>
       </div>
@@ -43,7 +43,7 @@
       </div>
       <div class="col-sm-3">
         <div class="form-group">
-          <label for="ctc" class="required">Annual CTC</label>
+          <label for="ctc" class="required">Annual CTC (Lakh)</label>
           <input type="text" placeholder="Annual CTC" class="form-control" formControlName="ctc" required>
           <small class="text-danger"
             *ngIf="jobDetails.controls['ctc'].hasError('required') && jobDetails.controls['ctc'].touched">

@@ -24,6 +24,10 @@ export class JobsComponent implements OnInit {
     jobDetails: FormGroup;
     userList = [];
     modalRef: BsModalRef;
+    filter: any;
+
+    totalItems: number = 0;
+    CurrentPage: any = 1;
 
     constructor(private jobService: JobService,
         private sharedService: SharedService,
@@ -41,6 +45,14 @@ export class JobsComponent implements OnInit {
 
     ngOnInit() {
         // this.dataShared.currentMessage.subscribe(jobById => this.jobById = jobById);
+        this.filter = {
+            pageIndex: 1,
+            pageSize: 10,
+            searchText: 'title',
+            sortField: '',
+            sortOrder: '1',
+            offset: 0
+        };
         this.searchJob();
     }
 
@@ -78,11 +90,12 @@ export class JobsComponent implements OnInit {
     }
 
     searchJob(event: any = '') {
-        const value = event.target ? event.target.value : event;
-        this.jobService.getJob(value).subscribe(result => {
-            if (result['success']) {
-                this.jobs = result['success'].data;
+        this.filter.searchText = event.target ? event.target.value : event;
+        this.jobService.getJob(this.filter).subscribe(result => {
+            if (result['success'] && result['success']['data']) {
+                this.jobs = result['success']['data']['jobs'];
                 // this.dataShared.notificationChangeMessage({ name: 'success', type: 'Success', message: 'No active job found' })
+                this.totalItems = result['success']['data']['count'];
             }
         }, (err) => {
             this.jobs = [];
@@ -103,5 +116,13 @@ export class JobsComponent implements OnInit {
                 }
             }
         });
+    }
+
+    filterChanged(refilter) {
+        if (refilter == false) {
+            this.filter.pageIndex = this.CurrentPage;
+            this.filter.offset = (this.CurrentPage - 1) * this.filter.pageSize;
+            this.searchJob();
+        }
     }
 }
