@@ -75,7 +75,7 @@ export class ViewComponent implements OnInit {
     this.filter.offset = (filter.pageIndex - 1) * filter.pageSize;
     this.filter.searchText = filter.searchText;
     this.filter.pageSize = filter.pageSize;
-
+    this.filter.pageIndex = filter.pageIndex;
     this.accountService.getAllUsers(this.filter).subscribe(result => {
       if (result['success']) {
         if (result['success']['data'] && result['success']['data']['count']) {
@@ -109,15 +109,15 @@ export class ViewComponent implements OnInit {
 
   populateForm(details) {
     if (details) {
+      let roleId = details.roles.length ? details.roles[0]._id : null;
       this.adminDetails = this.fbForm.group({
         firstName: [details.firstName, [<any>Validators.required], this.validationService.nameValid],
         lastName: [details.lastName, [<any>Validators.required], this.validationService.nameValid],
         email: [details.email, [<any>Validators.required], this.validationService.emailValid],
         phone: [details.phone, [<any>Validators.required], this.validationService.mobileValid],
         is_deleted: false,
-        roleId: [null, []],
+        roleId: [roleId, []],
       });
-      this.adminDetails.controls['roleId'].setValue(details.user ? details.user.role_id : '0', { onlySelf: true });
       this.adminDetails.controls['email'].disable({ onlySelf: true });
     } else {
       this.adminDetails = this.fbForm.group({

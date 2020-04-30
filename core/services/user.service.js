@@ -86,3 +86,73 @@ exports.register = async (req) => {
         }        
     });
 };
+
+exports.update = async (req) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let userModel = await User.findById({ _id: req.params.id, is_deleted: false });
+            if (userModel) {
+                try {
+                    // update user
+                    userModel.name = `${req.body.firstName} ${req.body.lastName}`
+                    userModel.firstName = req.body.firstName;
+                    userModel.lastName = req.body.lastName;
+                    userModel.roles = req.body.roleId,
+                    userModel.phone = [req.body.phone],
+                    userModel.modified_by = req.user.id,
+                    userModel.modified_at = new Date();
+                    resolve(await userModel.save());
+                } catch (error) {
+                    let err = {
+                        status: 500,
+                        message: 'internal server error'
+                    }
+                    console.log('update user : ', error);
+                    reject(err);
+                }
+            } else {
+                let err = {
+                    status: 404,
+                    message: 'user not found'
+                }
+                console.log('update user : ', error);
+                reject(err);
+            }   
+        } catch (error) {
+            reject(error);
+        }        
+    });
+};
+
+exports.delete = async (req) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let userModel = await User.findById({ _id: req.params.id, is_deleted: false });
+            if (userModel) {
+                try {
+                    // delete user
+                    userModel.is_deleted = true,
+                    userModel.modified_by = req.user.id,
+                    userModel.modified_at = new Date();
+                    resolve(await userModel.save());
+                } catch (error) {
+                    let err = {
+                        status: 500,
+                        message: 'internal server error'
+                    }
+                    console.log('delete user : ', error);
+                    reject(err);
+                }
+            } else {
+                let err = {
+                    status: 404,
+                    message: 'user not found'
+                }
+                console.log('delete user : ', error);
+                reject(err);
+            }   
+        } catch (error) {
+            reject(error);
+        }        
+    });
+};
