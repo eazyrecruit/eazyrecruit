@@ -45,4 +45,32 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.put('/:id', async (req, res) => {
+    try {
+        let users = await userService.update(req);
+        responseService.successResponse(users, 'update users', res);
+    } catch (err) {
+        let error = {
+            status: 500,
+            message: 'internal server error',
+        }
+        console.log('update users - error : ', err);
+        responseService.errorResponse(error, 'update users', res);
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    try {
+        let users = await userService.delete(req);
+        responseService.successResponse(users, 'delete users', res);
+    } catch (err) {
+        let error = {
+            status: 500,
+            message: 'internal server error',
+        }
+        console.log('delete users - error : ', err);
+        responseService.errorResponse(error, 'delete users', res);
+    }
+});
+
 module.exports.user = router;
