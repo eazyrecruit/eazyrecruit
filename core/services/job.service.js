@@ -106,9 +106,11 @@ exports.save = async (req) => {
     }
 }
 
-exports.getPublishedJobs = async (query) => {
-    return await Jobs.find(query).populate("locations").populate("skills")
-        .populate("tags").populate("categories");
+exports.getPublishedJobs = async (query, limit, offset) => {
+    let count = await Jobs.find(query).count();
+    let jobs = await Jobs.find(query).populate("locations").populate("skills")
+    .populate("tags").populate("categories").limit(limit).skip(offset);
+    return { count, jobs };
 };
 
 exports.getByGuid = async (guid) => {

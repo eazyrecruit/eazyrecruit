@@ -13,7 +13,8 @@
     </div>
     </div>
     <div class="main-content padding-20px-tb plr-15">
-      <data-table pageSize='10' sortField='name' sortOrder='1' [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
+      <data-table pageSize='10' sortField='name' sortOrder='1' [showSearchFeild]='false' [totalItems]='totalRecords' 
+        (onFilterChange)="onFilterChange($event)">
           <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
               <thead>
                   <tr class="font-weight-bold">
@@ -36,7 +37,7 @@
                       {{interview.jobId.title}}
                     </td>
                     <td>
-                      {{getLocalDate(interview.start)}}
+                      {{interview.start | amDateFormat:'DD/MM/YYYY, hh:mmA'}}
                     </td>
                     <td>
                       {{interview.round}}

@@ -1,90 +1,76 @@
-<!doctype html>
-<html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta property="og:title" content=" <%= job.title %> " />
-    <meta property="og:description" content=" <%= job.description ? job.description : '' %> " />
-    <meta property="og:image" content="https://dev.eazyrecruit.in/images/freshers.jpg" />
-</head>
-
-<body>
-    <div class="album py-3 bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/jobs">Jobs</a></li>
-                            <li class="breadcrumb-item"><%= job.title %></li>
-                        </ol>
-                    </nav>
-                </div>
+<div class="album py-3 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/jobs">Jobs</a></li>
+                        <li class="breadcrumb-item"><%= job.title %></li>
+                    </ol>
+                </nav>
             </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <div class="card" style="width: 18rem;">
-                        <img src="/images/freshers.jpg" class="card-img-top" width="100%"></img>
-                        <div class="card-body">
-                            <h5 class="card-title"><%= job.title %></h5>
-                            <ul class="normal-job-dis card-text">
-                                <li>
-                                    <i class="ti-location-pin"></i>
-                                    <%  if (job.locations && job.locations.length) { %>
-                                    <% for(let i = 0; i < job.locations.length; i++) { %>
-                                    <%= job.locations[i].city %>, <%= job.locations[i].state %>
-                                    <%  } %>
-                                    <% } else { %>
-                                    N/A
-                                    <%  } %>
-                                </li>
-                                <li><i class="ti-bag"></i>
-                                    <% if (job.minExperience) { %>
-                                    <%= job.minExperience %> Year experiance
-                                    <% } else { %>
-                                    N/A
-                                    <% } %>
-                                </li>
-                                <li><i class="ti-timer"></i>
-                                    <% if (job.type) { %>
-                                    <%= job.type %>
-                                    <% } else { %>
-                                    N/A
-                                    <% } %>
-                                </li>
-                            </ul>
-                        </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="card" style="width: 18rem;">
+                    <img src="/images/freshers.jpg" class="card-img-top" width="100%"></img>
+                    <div class="card-body">
+                        <h5 class="card-title"><%= job.title %></h5>
+                        <ul class="normal-job-dis card-text">
+                            <li>
+                                <i class="ti-location-pin"></i>
+                                <%  if (job.locations && job.locations.length) { %>
+                                <% for(let i = 0; i < job.locations.length; i++) { %>
+                                <%= job.locations[i].city %>, <%= job.locations[i].state %>
+                                <%  } %>
+                                <% } else { %>
+                                N/A
+                                <%  } %>
+                            </li>
+                            <li><i class="ti-bag"></i>
+                                <% if (job.minExperience) { %>
+                                <%= job.minExperience %> Year experiance
+                                <% } else { %>
+                                N/A
+                                <% } %>
+                            </li>
+                            <li><i class="ti-timer"></i>
+                                <% if (job.type) { %>
+                                <%= job.type %>
+                                <% } else { %>
+                                N/A
+                                <% } %>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div class="col-sm-9">
-                    <div class="card ml-5">
-                        <div class="card-header"><i class="fa fa-address-book "></i> <%= job.title %></div>
-                        <div class="card-body">
-                            <table class="table bg-dark-black mt-30 border-light">
-                                <tr>
-                                    <td class="font-weight-bold">Required Experiance</td>
-                                    <td>
-                                        <span>Minimum : <%= job.minExperience ? job.minExperience : 'N/A' %></span>
-                                        <span>Maximum : <%= job.maxExperience ? job.maxExperience : 'N/A' %></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold">Job Description</td>
-                                    <td><%= job.description ? job.description : 'N/A' %></td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold">Job Responsibility</td>
-                                    <td><%= job.responsibilities ? job.responsibilities : 'N/A' %></td>
-                                </tr>
-                            </table>
-                            <a class="btn btn-primary" href="/jobs/apply/<%= job.guid%>"><i class="ti-bag"></i>
-                                Apply</a>
-                        </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="card ml-5">
+                    <div class="card-header"><i class="fa fa-address-book "></i> <%= job.title %></div>
+                    <div class="card-body">
+                        <table class="table bg-dark-black mt-30 border-light">
+                            <tr>
+                                <td class="font-weight-bold">Required Experiance</td>
+                                <td>
+                                    <span>Minimum : <%= job.minExperience ? job.minExperience : 'N/A' %></span>
+                                    <span>Maximum : <%= job.maxExperience ? job.maxExperience : 'N/A' %></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold">Job Description</td>
+                                <td><%= job.description ? job.description : 'N/A' %></td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold">Job Responsibility</td>
+                                <td><%= job.responsibilities ? job.responsibilities : 'N/A' %></td>
+                            </tr>
+                        </table>
+                        <a class="btn btn-primary" href="/jobs/apply/<%= job.guid%>"><i class="ti-bag"></i>
+                            Apply</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</body>
-
-</html>
+</div>
