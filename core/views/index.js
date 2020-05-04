@@ -32,9 +32,21 @@ router.get("", async (req, res) => {
 
 router.post("", async (req, res) => {
     try {
-        var jobs = await jobService.getPublishedJobs({ title: new RegExp(`^.*${req.body.search}.*$`, 'i') }, 10, 0);
-        // res.render('pages/jobs', { jobs: jobs });
-        res.render('pages/jobs', { count: jobs.count, jobs: jobs.jobs });
+        const pageIndex = +req.query.page || 1;
+        let totalItems = 0; 
+        let limit = 12;
+        let offset = (pageIndex - 1) * limit;
+        var jobs = await jobService.getPublishedJobs({ title: new RegExp(`^.*${req.body.search}.*$`, 'i') }, limit, offset);
+        res.render('pages/jobs', { 
+            count: jobs.count, 
+            jobs: jobs.jobs, 
+            currentPage: pageIndex,
+            hasNextPage: (limit * pageIndex) < totalItems,
+            hasPreviousPage: pageIndex > 1,
+            nextPage: pageIndex + 1,
+            previousPage: pageIndex - 1,
+            lastPage: Math.ceil(totalItems / limit) 
+        });
     } catch (err) {
         res.render('pages/error')
     }
