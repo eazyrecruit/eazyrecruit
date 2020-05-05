@@ -2,8 +2,10 @@ let Company = require('../models/company');
 let CompanySettings = require('../models/companySettings');
 let encryptService = require('../services/encryption.service');
 let google = require('../services/passport-google.service');
+let fs = require('fs')
+let utilService = require('../services/util.service');
 
-exports.getCompany = async (req) => {
+exports.getCompany = async () => {
     return await Company.find({});
 };
 
@@ -63,35 +65,44 @@ exports.updateSettings = async (req, next) => {
     }
 }
 
-exports.update = (req, next) => {
-    Company.findByIdAndUpdate(req.body.id, 
-        {
-            name: req.body.name,
-            website: req.body.website,
-            address_line_1: req.body.address_line_1,
-            address_line_2: req.body.address_line_2,
-            address_line_3: req.body.address_line_3,
-            email: req.body.email,
-            phone: req.body.phone,
-            is_deleted: false,
-            modified_at:  Date.now()
-        }, 
-        function (err, data) {
-            if (err) {
-                next(err, null);
-            } else { 
-                next(null, data);
-        }
-    });
+exports.update = async (req, next) => {
+    try {
+        let image = await utilService.readWriteFile(req, req.body.id);
+        Company.findByIdAndUpdate(req.body.id, 
+            {
+                name: req.body.name,
+                website: req.body.website,
+                address_line_1: req.body.address_line_1,
+                address_line_2: req.body.address_line_2,
+                address_line_3: req.body.address_line_3,
+                email: req.body.email,
+                phone: req.body.phone,
+                logo: image,
+                header_description: req.body.headerDescription,
+                is_deleted: false,
+                modified_at:  Date.now()
+            }, 
+            function (err, data) {
+                if (err) {
+                    next(err, null);
+                } else { 
+                    next(null, data);
+            }
+        });
+    } catch (error) {
+        next(error, null);
+    }
 }
 
-exports.save = function (req, next) {
+exports.save = async (req, next) => {
     
     if(req.body.hasOwnProperty("group"))
     {
         var groupNames = [];
         let groups = req.body.group;
         groupNames = Object.keys(groups);
+
+        let logoName = await utilService.readWriteFile(req, req.body.name);
         var company = new Company(
         {
             name: req.body.name,
@@ -102,6 +113,8 @@ exports.save = function (req, next) {
             email: req.body.email,
             phone: req.body.phone,
             is_deleted: false,
+            logo: logoName,
+            header_description: req.body.headerDescription,
             created_by: req.body.created_by,
             created_at:  Date.now(),
             modified_by: req.body.modified_by,
@@ -144,4 +157,13 @@ exports.delete = function (req, next) {
                 next(null, data);
         }
     });
+}
+
+function saveLogo(url) {
+    all= fs.createWriteStream("out."+imgtype);
+    for(i=0; i<end; i++){
+        var buffer = new Buffer( new Uint8Array(picarray[i]) );
+        all.write(buffer);
+    }
+    all.end();
 }

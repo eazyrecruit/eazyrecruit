@@ -69,7 +69,7 @@ export class JobsComponent implements OnInit {
 
     copyText(val: string) {
         let selBox = document.createElement('textarea');
-        selBox.value = val;
+        selBox.value = this.url + val;
         document.body.appendChild(selBox);
         selBox.focus();
         selBox.select();

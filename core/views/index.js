@@ -13,10 +13,10 @@ router.get("", async (req, res) => {
         let totalItems = 0; 
         let limit = 12;
         let offset = (pageIndex - 1) * limit;
-        let query = {};
+        let query = { is_published: true, active: true };
         if (req.query.search) {
-            query = { title: new RegExp(`^.*${req.query.search}.*$`, 'i') }
-            limit = 0;
+            // query = { title: new RegExp(`^.*${req.query.search}.*$`, 'i') };
+            query.title = new RegExp(`^.*${req.query.search}.*$`, 'i');
         }
 
         var result = await jobService.getPublishedJobs(query, limit, offset);

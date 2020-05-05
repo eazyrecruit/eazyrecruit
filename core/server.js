@@ -6,6 +6,7 @@ var app = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var partials = require('express-partials');
 var config = require('./config').config(); // get our config file
+var companyService = require('./services/company.service');
 // // Add headers
 app.use(function (req, res, next) {
   if (config.allowedOrigins.indexOf(req.headers.origin) > -1) {
@@ -24,6 +25,8 @@ app.use(function (req, res, next) {
   res.setHeader('X-XSS-Protection', '1; mode=block')
   // Pass to next layer of middleware
   console.log('req', req.originalUrl, 'method', req.method);
+  res.locals.protocol = req.protocol;
+  res.locals.baseURL = `${config.website}${req.originalUrl}`;
   // Go to next module
   next();
 });
@@ -42,11 +45,28 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 // Register models
 require('./models').setup();
 require('./models').initialize()
+
+// setting base url for job portal page
+
 // Register views
 app.set('view engine', 'ejs');
 app.use(partials());
-app.use(express.static('public'))
+app.use(express.static('public'));
+app.use(express.static('images'));
 app.use(expressValidator());
+
+app.locals.headerDescription = '';
+app.locals.logo = '';
+companyService.getCompany().then(company => {
+  if (company && company.length) {
+    app.locals.headerDescription = company[0].header_description
+    app.locals.logo = company[0].logo
+  }
+}).catch(error => {
+  console.log('error getting company details ', error);
+});
+
+
 // Register routes
 require('./routes').setup(app);
 // START THE SERVER
