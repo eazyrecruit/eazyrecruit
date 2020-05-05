@@ -3,8 +3,9 @@ let CompanySettings = require('../models/companySettings');
 let encryptService = require('../services/encryption.service');
 let google = require('../services/passport-google.service');
 let fs = require('fs')
+let utilService = require('../services/util.service');
 
-exports.getCompany = async (req) => {
+exports.getCompany = async () => {
     return await Company.find({});
 };
 
@@ -66,7 +67,7 @@ exports.updateSettings = async (req, next) => {
 
 exports.update = async (req, next) => {
     try {
-        let image = await readWriteFile(req);
+        let image = await utilService.readWriteFile(req, req.body.id);
         Company.findByIdAndUpdate(req.body.id, 
             {
                 name: req.body.name,
@@ -77,6 +78,7 @@ exports.update = async (req, next) => {
                 email: req.body.email,
                 phone: req.body.phone,
                 logo: image,
+                header_description: req.body.headerDescription,
                 is_deleted: false,
                 modified_at:  Date.now()
             }, 
@@ -92,13 +94,15 @@ exports.update = async (req, next) => {
     }
 }
 
-exports.save = function (req, next) {
+exports.save = async (req, next) => {
     
     if(req.body.hasOwnProperty("group"))
     {
         var groupNames = [];
         let groups = req.body.group;
         groupNames = Object.keys(groups);
+
+        let logoName = await utilService.readWriteFile(req, req.body.name);
         var company = new Company(
         {
             name: req.body.name,
@@ -109,6 +113,8 @@ exports.save = function (req, next) {
             email: req.body.email,
             phone: req.body.phone,
             is_deleted: false,
+            logo: logoName,
+            header_description: req.body.headerDescription,
             created_by: req.body.created_by,
             created_at:  Date.now(),
             modified_by: req.body.modified_by,
@@ -161,33 +167,3 @@ function saveLogo(url) {
     }
     all.end();
 }
-
-let readWriteFile = async (req) => {
-    var fs = require('fs');
-    return new Promise(async (resolve, reject) => {
-        try {
-            if (req.files.length) {
-                var data = new Buffer(req.files[0].buffer);
-                let name = `${req.body.id}.${req.files[0].mimetype.split('/')[1]}`;
-                if (!fs.existsSync("images")) {
-                    fs.mkdirSync("images");
-                }
-                fs.writeFile(`images/${name}`, data, 'binary', function (err) {
-                    if (err) {
-                        console.log("error writing image : ", err);
-                        reject(err);
-                    }
-                    else {
-                        console.log("The sheel file was written");
-                        resolve(name)
-                    }
-                });    
-            } else {
-                resolve(null);
-            }
-        } catch (error) {
-            console.log("error writing image : ", error);
-            reject(err);
-        }
-    });
-};

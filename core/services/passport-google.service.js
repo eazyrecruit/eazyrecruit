@@ -66,7 +66,7 @@ exports.authenticate = async function (req, res, next) {
 let getGoogleConfig = async (group) => {
     let company = [];
     let settings = [];
-    company = await companyService.getCompany({});
+    company = await companyService.getCompany();
     let req = {
         query: { id: company[0].id, group }
     }

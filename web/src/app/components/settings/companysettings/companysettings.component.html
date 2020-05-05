@@ -4,7 +4,7 @@
     <h3 class="box-title"> Company Details</h3>
   </div>
   <div class="box-body box-profile">
-    <img class="img-responsive" src="/{{company.logo}}" alt="Company Logo">
+    <img class="img-responsive" *ngIf="company && company.logo" src="/{{company.logo}}" alt="Company Logo">
   </div>
   <div class="box-body">
     <form [formGroup]="companyDetails" novalidate (ngSubmit)="edit(companyDetails.value)">
@@ -73,6 +73,14 @@
         </small>
         <small class="text-danger" *ngIf="companyDetails.controls['phone'].hasError('mobileValid')">
           Please enter correct contact no.
+        </small>
+      </div>
+
+      <div class="col-sm-6" style="margin: 8px;">
+        <label for="contact">Company Header Description</label>
+        <input type="text" placeholder="company header description" class="form-control" formControlName="headerDescription" required>
+        <small class="text-danger" *ngIf="companyDetails.controls['headerDescription'].hasError('required') && companyDetails.controls['headerDescription'].touched">
+          Please enter Contact No.
         </small>
       </div>
 <br><br>

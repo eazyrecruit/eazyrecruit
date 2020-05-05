@@ -10,7 +10,7 @@ var company= new Schema({
     email: {type: String},
     phone: {type: String},
     logo: { type: String },
-    extention: {type: String },
+    header_description: {type: String },
     is_deleted: {type: Boolean, default: false },
     created_by: {type: Number},
     created_at: { type: Date, default: Date.now },

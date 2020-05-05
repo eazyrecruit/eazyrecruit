@@ -24,7 +24,7 @@
             <% for(var jobIndex=0; jobIndex < jobs.length; jobIndex++) {%>
             <div class="col-md-4" style="margin-bottom:10px;">
                 <div class="card">
-                    <img src="/images/freshers.jpg" width="100%"></img>
+                    <img src="/<%= jobs[jobIndex].metaImage %>" width="100%"></img>
                     <div class="card-body">
                         <h5 class="card-title"><%= jobs[jobIndex].title %></h5>
                         <p class="card-text"><%- jobs[jobIndex].description %></p>

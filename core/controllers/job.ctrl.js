@@ -64,7 +64,7 @@ var metaImage = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10
 router.post("/", metaImage.any(), async (req, res) => {
     try {
         var job = await jobService.save(req);
-        responseService.successResponse(req, null, 'Job SAVE', job, res);
+        responseService.successResponse(job, 'Job SAVE', res);
     } catch (err) {
         let error = {
             status: 500,
@@ -102,10 +102,6 @@ router.put("/applicant", async (req, res) => {
     } catch (err) {
         responseService.response(req, err, 'Job Pipeline SAVE', null, res);
     }
-});
-
-// update records
-router.put("/", (req, res) => {
 });
 
 // update record to make it delete.

@@ -13,7 +13,7 @@ router.post("/", (req, res) => {
 
 router.get("/", async (req, res) => {
     try {
-        let company = await companyService.getCompany(req);
+        let company = await companyService.getCompany();
         responseService.response(req, null, 'get company', company, res);  
     } catch (error) {
         responseService.response(req, err, 2, data, res);

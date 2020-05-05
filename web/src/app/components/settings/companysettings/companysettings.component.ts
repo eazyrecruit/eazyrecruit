@@ -23,6 +23,7 @@ export class CompanysettingsComponent implements OnInit {
     {
       this.companyDetails = this.fbForm.group({
         logo: [null],
+        headerDescription: [null, <any>Validators.required],
         name: [null, [<any>Validators.required], this.validationService.nameValid],
         website: [null, <any>Validators.required],
         address_line_1: [null, [<any>Validators.required], this.validationService.nameValid],
@@ -42,7 +43,8 @@ export class CompanysettingsComponent implements OnInit {
       if (result['success']['data']) {
         this.company = result['success']['data'][0];
         this.companyDetails.setValue({
-          logo: [],
+          logo: [null],
+          headerDescription: result['success']['data'][0].header_description,
           name: result['success']['data'][0].name,
           website: result['success']['data'][0].website,
           address_line_1: result['success']['data'][0].address_line_1,
