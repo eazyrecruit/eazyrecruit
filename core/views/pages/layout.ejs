@@ -7,13 +7,30 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <% if (locals.job) {
+        let location = '';
+        if (job.locations && job.locations.length) {
+            for(let i = 0; i < job.locations.length; i++) {
+                location = job.locations[i].city + ', ' + job.locations[i].state;
+            } 
+        }
+        let skill = '';
+        if (job.skills && job.skills.length) {
+            let skills = [];
+            for(let i = 0; i < job.skills.length; i++) {
+                skills.push(job.skills[i].name);
+            }
+            skill = ' | ' + skills.join();
+        }
+        var description = location + ' | ' + (job.minExperience ? job.minExperience : '') +  skill;
+    } %>
     <link rel="stylesheet" href="/css/akeo.css">
     <meta property="og:title" content=" <%= locals.job ? job.metaTitle : '' %> " />
     <meta property="og:description" content=" <%= locals.job ? job.metaTitle : '' %> " />
-    <meta property="og:image" content="<%=baseURL%>/images/freshers.jpg"/>
+    <meta property="og:image" content="<%=baseURL%>/<%= job.metaImage %>"/>
     <meta property="twitter:card" content="summary_large_image"/>
     <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : '' %> " />
-    <meta property="twitter:description" content=" <%= locals.job ? job.metaTitle : '' %> " />
+    <meta property="twitter:description" content=" <%= description %> " />
     <meta property="twitter:image" content="<%=baseURL%>/images/freshers.jpg"/>    
 </head>
 <body>
