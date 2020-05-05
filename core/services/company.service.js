@@ -2,6 +2,7 @@ let Company = require('../models/company');
 let CompanySettings = require('../models/companySettings');
 let encryptService = require('../services/encryption.service');
 let google = require('../services/passport-google.service');
+let fs = require('fs')
 
 exports.getCompany = async (req) => {
     return await Company.find({});
@@ -63,26 +64,32 @@ exports.updateSettings = async (req, next) => {
     }
 }
 
-exports.update = (req, next) => {
-    Company.findByIdAndUpdate(req.body.id, 
-        {
-            name: req.body.name,
-            website: req.body.website,
-            address_line_1: req.body.address_line_1,
-            address_line_2: req.body.address_line_2,
-            address_line_3: req.body.address_line_3,
-            email: req.body.email,
-            phone: req.body.phone,
-            is_deleted: false,
-            modified_at:  Date.now()
-        }, 
-        function (err, data) {
-            if (err) {
-                next(err, null);
-            } else { 
-                next(null, data);
-        }
-    });
+exports.update = async (req, next) => {
+    try {
+        let image = await readWriteFile(req);
+        Company.findByIdAndUpdate(req.body.id, 
+            {
+                name: req.body.name,
+                website: req.body.website,
+                address_line_1: req.body.address_line_1,
+                address_line_2: req.body.address_line_2,
+                address_line_3: req.body.address_line_3,
+                email: req.body.email,
+                phone: req.body.phone,
+                logo: image,
+                is_deleted: false,
+                modified_at:  Date.now()
+            }, 
+            function (err, data) {
+                if (err) {
+                    next(err, null);
+                } else { 
+                    next(null, data);
+            }
+        });
+    } catch (error) {
+        next(error, null);
+    }
 }
 
 exports.save = function (req, next) {
@@ -145,3 +152,42 @@ exports.delete = function (req, next) {
         }
     });
 }
+
+function saveLogo(url) {
+    all= fs.createWriteStream("out."+imgtype);
+    for(i=0; i<end; i++){
+        var buffer = new Buffer( new Uint8Array(picarray[i]) );
+        all.write(buffer);
+    }
+    all.end();
+}
+
+let readWriteFile = async (req) => {
+    var fs = require('fs');
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (req.files.length) {
+                var data = new Buffer(req.files[0].buffer);
+                let name = `${req.body.id}.${req.files[0].mimetype.split('/')[1]}`;
+                if (!fs.existsSync("images")) {
+                    fs.mkdirSync("images");
+                }
+                fs.writeFile(`images/${name}`, data, 'binary', function (err) {
+                    if (err) {
+                        console.log("error writing image : ", err);
+                        reject(err);
+                    }
+                    else {
+                        console.log("The sheel file was written");
+                        resolve(name)
+                    }
+                });    
+            } else {
+                resolve(null);
+            }
+        } catch (error) {
+            console.log("error writing image : ", error);
+            reject(err);
+        }
+    });
+};

@@ -3,6 +3,7 @@ var router = express.Router();
 var responseService = require('../services/response.service');
 var companyService = require('../services/company.service');
 var validationService = require('../services/validation.service');
+var multer = require('multer');
 
 router.post("/", (req, res) => {
     companyService.save(req, (err, data) => {
@@ -45,7 +46,8 @@ router.delete("/settings/", (req, res) => {
     });
 });
 
-router.put("/", validationService.validateCompanyDetals, (req, res) => {
+var uploadService = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+router.put("/", uploadService.any(), validationService.validateCompanyDetals, (req, res) => {
     companyService.update(req, (err, data) => {
         responseService.response(res, err, 2, data, res);
     });

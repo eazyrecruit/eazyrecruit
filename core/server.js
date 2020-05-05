@@ -24,6 +24,8 @@ app.use(function (req, res, next) {
   res.setHeader('X-XSS-Protection', '1; mode=block')
   // Pass to next layer of middleware
   console.log('req', req.originalUrl, 'method', req.method);
+  res.locals.protocol = req.protocol;
+  res.locals.baseURL = `${config.website}${req.originalUrl}`;
   // Go to next module
   next();
 });
@@ -42,10 +44,14 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 // Register models
 require('./models').setup();
 require('./models').initialize()
+
+// setting base url for job portal page
+
 // Register views
 app.set('view engine', 'ejs');
 app.use(partials());
-app.use(express.static('public'))
+app.use(express.static('public'));
+app.use(express.static('images'));
 app.use(expressValidator());
 // Register routes
 require('./routes').setup(app);

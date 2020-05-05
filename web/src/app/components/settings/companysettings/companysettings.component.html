@@ -4,10 +4,18 @@
     <h3 class="box-title"> Company Details</h3>
   </div>
   <div class="box-body box-profile">
-    <img class="img-responsive" src="/admin/assets/img/logo.png" alt="Company Logo">
+    <img class="img-responsive" src="/{{company.logo}}" alt="Company Logo">
   </div>
   <div class="box-body">
     <form [formGroup]="companyDetails" novalidate (ngSubmit)="edit(companyDetails.value)">
+
+      <div class="col-sm-6" style="margin: 8px;">
+        <label for="logo">Logo</label>
+        <input type="file" class="form-control" formControlName="logo" #file (change)="onFileChange(file.files)" multiple="" accept=".png, .jpg, .jpeg">
+        <small class="text-danger" *ngIf="errInvalidFile">
+          Please upload only png/jpeg/jpg file
+        </small>
+      </div>
       
       <div class="col-sm-6" style="margin: 8px;">
         <label for="name">Company Name</label>

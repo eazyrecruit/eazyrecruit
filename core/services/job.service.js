@@ -109,14 +109,15 @@ exports.save = async (req) => {
 exports.getPublishedJobs = async (query, limit, offset) => {
     let count = 0;
     let jobs;
-    if (limit == 0) {
+    if (query.hasOwnProperty('title')) {
+        count = await Jobs.find(query).count();
         jobs = await Jobs.find(query).populate("locations").populate("skills")
-        .populate("tags").populate("categories");
-        count = jobs.length;
+        .populate("tags").populate("categories").sort({ modified_at: 'desc' });
+        
     } else {
         count = await Jobs.find(query).count()
         jobs = await Jobs.find(query).populate("locations").populate("skills")
-        .populate("tags").populate("categories").limit(limit).skip(offset);
+        .populate("tags").populate("categories").sort({ modified_at: 'desc' }).limit(limit).skip(offset);
     }
     return { count, jobs };
 };

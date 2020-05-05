@@ -14,6 +14,7 @@ export class CompanysettingsComponent implements OnInit {
   companyDetails: FormGroup;
   company: any;
   isSearchResultAvail: any = 0;
+  logo: any;
   
 
   constructor(private companyService: CompanyService, 
@@ -21,6 +22,7 @@ export class CompanysettingsComponent implements OnInit {
     private fbForm: FormBuilder)
     {
       this.companyDetails = this.fbForm.group({
+        logo: [null],
         name: [null, [<any>Validators.required], this.validationService.nameValid],
         website: [null, <any>Validators.required],
         address_line_1: [null, [<any>Validators.required], this.validationService.nameValid],
@@ -40,6 +42,7 @@ export class CompanysettingsComponent implements OnInit {
       if (result['success']['data']) {
         this.company = result['success']['data'][0];
         this.companyDetails.setValue({
+          logo: [],
           name: result['success']['data'][0].name,
           website: result['success']['data'][0].website,
           address_line_1: result['success']['data'][0].address_line_1,
@@ -55,16 +58,43 @@ export class CompanysettingsComponent implements OnInit {
     })
   }
 
-
   edit(companyForm) {
     if (!this.companyDetails.valid) {
       this.validationService.validateAllFormFields(this.companyDetails);
     }
-    companyForm.id = this.company._id;
-    this.companyService.editCompany(companyForm).subscribe(result => {
+    const formData = new FormData();
+    for ( var key in companyForm) {
+      if (companyForm[key] !== null) {
+        formData.append(key, companyForm[key]);
+      }
+    }
+    if (this.logo) {
+      formData.set('logo', this.logo);
+    }
+    formData.append("id", this.company._id);
+    this.companyService.editCompany(formData).subscribe(result => {
       if (result['success']) {
         this.getDetails();
       }
     });
+  }
+
+  onFileChange(event) {
+    const reader = new FileReader();
+    if (event && event.length) {
+      if (event[0].type.includes('jpg') || event[0].type.includes('jpeg') || event[0].type.includes('png')) {
+        reader.onload = () => {
+          this.logo = event[0];
+          // this.companyDetails.get(['logo']).setValue(event[0]);          
+        }
+        reader.readAsDataURL(event[0]);
+      } else {
+        this.companyDetails.get(['logo']).setValue('');
+        this.logo = null;
+      }
+    } else {
+      this.companyDetails.get(['logo']).setValue('');
+      this.logo = null;
+    }
   }
 }

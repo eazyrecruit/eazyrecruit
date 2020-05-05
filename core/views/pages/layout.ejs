@@ -10,7 +10,11 @@
     <link rel="stylesheet" href="/css/akeo.css">
     <meta property="og:title" content=" <%= locals.job ? job.metaTitle : '' %> " />
     <meta property="og:description" content=" <%= locals.job ? job.metaTitle : '' %> " />
-    <meta property="og:image" content="https://dev.eazyrecruit.in/images/freshers.jpg"/>
+    <meta property="og:image" content="<%=baseURL%>/images/freshers.jpg"/>
+    <meta property="twitter:card" content="summary_large_image"/>
+    <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : '' %> " />
+    <meta property="twitter:description" content=" <%= locals.job ? job.metaTitle : '' %> " />
+    <meta property="twitter:image" content="<%=baseURL%>/images/freshers.jpg"/>    
 </head>
 <body>
     <header>
