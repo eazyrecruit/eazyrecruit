@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/jssocials.css">
+    <link rel="stylesheet" href="/css/jssocials-theme-flat.css">
     <% if (locals.job) {
         let location = '';
         if (job.locations && job.locations.length) {
@@ -25,13 +27,13 @@
         var description = location + ' | ' + (job.minExperience ? job.minExperience : '') +  skill;
     } %>
     <link rel="stylesheet" href="/css/akeo.css">
-    <meta property="og:title" content=" <%= locals.job ? job.metaTitle : '' %> " />
-    <meta property="og:description" content=" <%= locals.job ? job.metaTitle : '' %> " />
-    <meta property="og:image" content="<%=baseURL%>/<%= locals.job ? job.metaImage : '' %>"/>
+    <meta property="og:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %> " />
+    <meta property="og:description" content=" <%= description %> " />
+    <meta property="og:image" content="<%=baseURL%>/<%= locals.job ? job.metaImage : '/images/default-job.jpg' %>"/>
     <meta property="twitter:card" content="summary_large_image"/>
-    <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : '' %> " />
+    <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %> " />
     <meta property="twitter:description" content=" <%= description %> " />
-    <meta property="twitter:image" content="<%=baseURL%>/<%= locals.job ? job.metaImage : '' %>"/>    
+    <meta property="twitter:image" content="<%= locals.baseURL %>/<%= locals.job ? job.metaImage : '/images/default-job.jpg' %>"/>    
 </head>
 <body>
     <header>
@@ -50,6 +52,25 @@
     <footer>
         <%- include('../partials/footer') %>
     </footer>
+    <script src="/js/jquery-3.5.1.js"></script>
+    <script src="/js/jssocials.js"></script>
+    <script>   
+            $("#share").jsSocials({
+            shares: ["twitter", "facebook", "linkedin"],
+            url: "<%= locals.baseURL %>",
+            text: "<%= locals.job ? job.metaTitle : '' %>",
+            showLabel: true,
+            showCount: true,
+            shareIn: "popup",
+            on: {
+                click: function(e) {
+                    console.log("share url : \"" + this.url + "\" at " + e.timeStamp);
+                },
+                mouseenter: function(e) {},
+                mouseleave: function(e) {}
+            }
+        });
+    </script>
 </body>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
     integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
