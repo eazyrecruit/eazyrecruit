@@ -1,6 +1,6 @@
 <header>
     <nav class="navbar container navbar-expand-lg">
-        <a class="navbar-brand" href="/jobs"><img src="/<%= locals.logo %>"
+        <a class="navbar-brand" href="/jobs"><img src="/<%= locals.company && locals.company.logo ? locals.company.logo : 'images/yourlogo.png' %>"
                 height="30px" alt="Akeo India" id="logo"></a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- <ul class="navbar-nav ml-auto">

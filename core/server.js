@@ -61,11 +61,11 @@ companyService.getCompany().then(company => {
   if (company && company.length) {
     app.locals.headerDescription = company[0].header_description
     app.locals.logo = company[0].logo
+    app.locals.company = company[0];
   }
 }).catch(error => {
   console.log('error getting company details ', error);
 });
-
 
 // Register routes
 require('./routes').setup(app);
