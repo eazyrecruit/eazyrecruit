@@ -27,11 +27,11 @@
     <link rel="stylesheet" href="/css/akeo.css">
     <meta property="og:title" content=" <%= locals.job ? job.metaTitle : '' %> " />
     <meta property="og:description" content=" <%= locals.job ? job.metaTitle : '' %> " />
-    <meta property="og:image" content="<%=baseURL%>/<%= job.metaImage %>"/>
+    <meta property="og:image" content="<%=baseURL%>/<%= locals.job ? job.metaImage : '' %>"/>
     <meta property="twitter:card" content="summary_large_image"/>
     <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : '' %> " />
     <meta property="twitter:description" content=" <%= description %> " />
-    <meta property="twitter:image" content="<%=baseURL%>/images/freshers.jpg"/>    
+    <meta property="twitter:image" content="<%=baseURL%>/<%= locals.job ? job.metaImage : '' %>"/>    
 </head>
 <body>
     <header>
