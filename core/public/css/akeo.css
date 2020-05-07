@@ -1,12 +1,26 @@
 .jumbotron{
     margin-bottom:0px;
     background-blend-mode:soft-light;
-    background-color: #2c3e50!important;
-    background-image: url(https://akeo.in/wp-content/uploads/2018/12/texture2.svg);
+    /* background-image: url(https://akeo.in/wp-content/uploads/2018/12/texture2.svg); */
     border-radius: 0 !important;
 }
 
-.jumbotron > .container > h3 {
-    color: #ffffff !important; 
+.jumbotron > .container > h3 { 
     text-align: left !important;
+}
+
+/* Use CSS properties for ellipsis */ 
+.truncate {
+    display:inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.custom-mg {
+    padding: 5%;
+}
+
+.ul-disc {
+    list-style-type: none;
 }

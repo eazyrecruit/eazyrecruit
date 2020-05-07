@@ -79,6 +79,8 @@ exports.update = async (req, next) => {
                 phone: req.body.phone,
                 logo: image,
                 header_description: req.body.headerDescription,
+                header_bg_color: req.body.headerBgColor, 
+                header_text_color: req.body.headerTextColor,
                 is_deleted: false,
                 modified_at:  Date.now()
             }, 
