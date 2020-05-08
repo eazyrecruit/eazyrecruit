@@ -65,6 +65,7 @@
     "ng2-pdf-viewer": "^3.0.8",
     "ngx-bootstrap": "^3.0.1",
     "ngx-chips": "^1.9.2",
+    "ngx-color-picker": "^9.1.0",
     "ngx-fullcalendar": "^5.0.0-alpha.0",
     "ngx-quill": "^8.0.0",
     "ngx-scrollbar": "^2.2.0-beta.0",

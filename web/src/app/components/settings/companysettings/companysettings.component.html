@@ -78,10 +78,30 @@
 
       <div class="col-sm-6" style="margin: 8px;">
         <label for="contact">Company Header Description</label>
-        <input type="text" placeholder="company header description" class="form-control" formControlName="headerDescription" required>
+        <input type="text" placeholder="company header description" class="form-control" formControlName="headerDescription">
         <small class="text-danger" *ngIf="companyDetails.controls['headerDescription'].hasError('required') && companyDetails.controls['headerDescription'].touched">
           Please enter Contact No.
         </small>
+      </div>
+
+      <div class="col-sm-6" style="margin: 8px;">
+        <label for="contact">Company Header Color</label>
+        <input type="text" formControlName="headerBgColor" 
+          (colorPickerChange)="onBgColorChange($event)"
+          [value]="headerBgColor"
+          class="form-control"
+          [style.background]="headerBgColor"
+        [(colorPicker)]="headerBgColor"/>
+      </div>
+
+      <div class="col-sm-6" style="margin: 8px;">
+        <label for="contact">Company Header Text Color</label>
+        <input type="text" formControlName="headerTextColor" 
+          (onTextColorChange)="onTextColorChange($event)"
+          [value]="headerTextColor"
+          class="form-control"
+          [style.background]="headerTextColor"
+        [(colorPicker)]="headerTextColor"/>
       </div>
 <br><br>
       <div class="col-sm-6" style="margin: 8px;">

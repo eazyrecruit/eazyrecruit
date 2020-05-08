@@ -40,10 +40,10 @@
         <%- include('../partials/header') %>
     </header>
     <main role="main">
-        <section class="jumbotron text-center">
+        <section class="jumbotron text-center" id="companyHeader">
             <div class="container text-center">
-                <h3>
-                    <%= locals.headerDescription %>
+                <h3 id="companyHeaderText">
+                    <%= locals.headerDescription ? locals.headerDescription : 'Company header description here.' %>
                 </h3>
             </div>
         </section>
@@ -55,12 +55,12 @@
     <script src="/js/jquery-3.5.1.js"></script>
     <script src="/js/jssocials.js"></script>
     <script>   
-            $("#share").jsSocials({
-            shares: ["twitter", "facebook", "linkedin"],
+            $("#shareIcons").jsSocials({
+            shares: ["facebook", "linkedin", "twitter"],
             url: "<%= locals.baseURL %>",
             text: "<%= locals.job ? job.metaTitle : '' %>",
-            showLabel: true,
-            showCount: true,
+            showLabel: false,
+            showCount: false,
             shareIn: "popup",
             on: {
                 click: function(e) {
@@ -70,6 +70,10 @@
                 mouseleave: function(e) {}
             }
         });
+    </script>
+    <script>
+        $("#companyHeader").css("background-color", "<%= company && company.header_bg_color ? company.header_bg_color : '#2c3e50' %>");
+        $("#companyHeaderText").css("color", "<%= company && company.header_text_color ? company.header_text_color : '#000000' %>");
     </script>
 </body>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"

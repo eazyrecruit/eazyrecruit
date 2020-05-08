@@ -26,9 +26,41 @@
                 <div class="card">
                     <img src="/<%= jobs[jobIndex].metaImage ? jobs[jobIndex].metaImage : 'images/default-job.jpg' %>" width="100%"></img>
                     <div class="card-body">
-                        <h5 class="card-title"><%= jobs[jobIndex].title %></h5>
-                        <p class="card-text"><%- jobs[jobIndex].description %></p>
-                        <a href="<%= 'jobs/'+jobs[jobIndex].guid %> " class="btn btn-primary">More</a>
+                        <h5 class="card-title"><%= jobs[jobIndex].title ? jobs[jobIndex].title : 'Title' %></h5>
+                        <% if (locals.jobs) {
+                            let location = '';
+                            if (jobs[jobIndex].locations && jobs[jobIndex].locations.length) {
+                                let jobLocation = jobs[jobIndex].locations;
+                                for(let i = 0; i < jobLocation.length; i++) {
+                                    location = jobLocation[i].city + ', ' + jobLocation[i].state;
+                                } 
+                            }
+                            let skill = '';
+                            if (jobs[jobIndex].skills && jobs[jobIndex].skills.length) {
+                                let skills = [];
+                                let jobSkills = jobs[jobIndex].skills;
+                                for(let i = 0; i < jobSkills.length; i++) {
+                                    skills.push(jobSkills[i].name);
+                                }
+                                skill = skills.join();
+                            }
+                            var description = [];
+                            if (location.length) {
+                                description.push(location);
+                            }
+                            if (jobs[jobIndex].minExperience && jobs[jobIndex].minExperience.length) {
+                                description.push(jobs[jobIndex].minExperience); 
+                            }
+                            if (skill.length) {
+                                description.push(skill);
+                            }
+                        } %>
+                        <div class="row custom-mg">
+                            <p class="truncate"><%= description.length ? description.join(' | ') : 'Description' %></p>
+                        </div>
+                        <div class="card-text">
+                            <a href="<%= 'jobs/'+jobs[jobIndex].guid %> " class="btn btn-primary">More</a>
+                        </div>
                     </div>
                 </div>
             </div>

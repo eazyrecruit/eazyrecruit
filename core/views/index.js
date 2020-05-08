@@ -6,6 +6,7 @@ var jobService = require('../services/job.service');
 var applicantService = require("../services/applicant.service");
 var User = require('../models/user');
 var multer = require('multer');
+var companyService = require('../services/company.service');
 
 router.get("", async (req, res) => {
     try {
@@ -19,9 +20,11 @@ router.get("", async (req, res) => {
             query.title = new RegExp(`^.*${req.query.search}.*$`, 'i');
         }
 
+        let company = await companyService.getCompany();
         var result = await jobService.getPublishedJobs(query, limit, offset);
         totalItems = result.count;
-        res.render('pages/jobs', { 
+        res.render('pages/jobs', {
+            company: company[0], 
             jobs: result.jobs,
             currentPage: pageIndex,
             hasNextPage: (limit * pageIndex) < totalItems,
@@ -59,8 +62,9 @@ router.get("", async (req, res) => {
 
 router.get("/apply/:id", async (req, res) => {
     try {
+        let company = await companyService.getCompany();
         var job = await jobService.getByGuid(req.params.id);
-        res.render('pages/apply', { job: job });
+        res.render('pages/apply', { job: job, company: company[0] });
     } catch (err) {
         res.render('pages/error')
     }
@@ -68,8 +72,9 @@ router.get("/apply/:id", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     try {
+        let company = await companyService.getCompany();
         var job = await jobService.getByGuid(req.params.id);
-        res.render('pages/job', { job: job });
+        res.render('pages/job', { job: job, company: company[0] });
     } catch (err) {
         res.render('pages/error')
     }
@@ -97,6 +102,7 @@ async (req, res) => {
         return res.status(422).json({ errors: errors.array() });
     }
 
+    let company = await companyService.getCompany();
     try {
         console.log(req.body);
         let admin = await User.findOne({ email: 'admin@eazyrecruit.in' }, { select: 'email' });
@@ -108,9 +114,10 @@ async (req, res) => {
         let result = await applicantService.save(req);
         //if (err) res.render('pages/error');
         //else res.render('pages/thanks', { job: data });
-        res.render('pages/thanks');        
+        
+        res.render('pages/thanks', { company: company[0] });        
     } catch (error) {
-        res.render('pages/thanks');
+        res.render('pages/thanks', { company: company[0] });
     }
 });
 

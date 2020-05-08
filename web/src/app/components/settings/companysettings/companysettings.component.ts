@@ -15,6 +15,8 @@ export class CompanysettingsComponent implements OnInit {
   company: any;
   isSearchResultAvail: any = 0;
   logo: any;
+  headerBgColor: any;
+  headerTextColor: any;
   
 
   constructor(private companyService: CompanyService, 
@@ -23,7 +25,9 @@ export class CompanysettingsComponent implements OnInit {
     {
       this.companyDetails = this.fbForm.group({
         logo: [null],
-        headerDescription: [null, <any>Validators.required],
+        headerDescription: [null],
+        headerBgColor: [''],
+        headerTextColor: [''],
         name: [null, [<any>Validators.required], this.validationService.nameValid],
         website: [null, <any>Validators.required],
         address_line_1: [null, [<any>Validators.required], this.validationService.nameValid],
@@ -44,7 +48,9 @@ export class CompanysettingsComponent implements OnInit {
         this.company = result['success']['data'][0];
         this.companyDetails.setValue({
           logo: [null],
-          headerDescription: result['success']['data'][0].header_description,
+          headerDescription: result['success']['data'][0].header_description || '',
+          headerBgColor: result['success']['data'][0].header_bg_color || '',
+          headerTextColor: result['success']['data'][0].header_text_color || '',
           name: result['success']['data'][0].name,
           website: result['success']['data'][0].website,
           address_line_1: result['success']['data'][0].address_line_1,
@@ -53,6 +59,8 @@ export class CompanysettingsComponent implements OnInit {
           email: result['success']['data'][0].email,
           phone: result['success']['data'][0].phone
         })
+        this.headerBgColor = result['success']['data'][0].header_bg_color;
+        this.headerTextColor = result['success']['data'][0].header_text_color;
         this.isSearchResultAvail = 1;
       } else {
         this.isSearchResultAvail = 2;
@@ -72,6 +80,12 @@ export class CompanysettingsComponent implements OnInit {
     }
     if (this.logo) {
       formData.set('logo', this.logo);
+    }
+    if (this.headerBgColor) {
+      formData.set('headerBgColor', this.headerBgColor);
+    }
+    if (this.headerTextColor) {
+      formData.set('headerTextColor', this.headerTextColor);
     }
     formData.append("id", this.company._id);
     this.companyService.editCompany(formData).subscribe(result => {
@@ -98,5 +112,13 @@ export class CompanysettingsComponent implements OnInit {
       this.companyDetails.get(['logo']).setValue('');
       this.logo = null;
     }
+  }
+
+  onBgColorChange(color) {
+    this.headerBgColor = color;
+  }
+
+  onTextColorChange(color: any) {
+    this.headerTextColor = color;
   }
 }

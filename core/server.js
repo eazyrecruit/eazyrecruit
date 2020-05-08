@@ -6,7 +6,6 @@ var app = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var partials = require('express-partials');
 var config = require('./config').config(); // get our config file
-var companyService = require('./services/company.service');
 // // Add headers
 app.use(function (req, res, next) {
   if (config.allowedOrigins.indexOf(req.headers.origin) > -1) {
@@ -54,18 +53,6 @@ app.use(partials());
 app.use(express.static('public'));
 app.use(express.static('images'));
 app.use(expressValidator());
-
-app.locals.headerDescription = '';
-app.locals.logo = '';
-companyService.getCompany().then(company => {
-  if (company && company.length) {
-    app.locals.headerDescription = company[0].header_description
-    app.locals.logo = company[0].logo
-    app.locals.company = company[0];
-  }
-}).catch(error => {
-  console.log('error getting company details ', error);
-});
 
 // Register routes
 require('./routes').setup(app);

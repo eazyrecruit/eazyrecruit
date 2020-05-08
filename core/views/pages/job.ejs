@@ -16,7 +16,7 @@
                     <img src="/<%= locals.job && job.metaImage ? job.metaImage : 'images/default-job.jpg' %>" class="card-img-top" width="100%"></img>
                     <div class="card-body">
                         <h5 class="card-title"><%= locals.job ? job.title : '' %></h5>
-                        <ul class="normal-job-dis card-text">
+                        <ul class="normal-job-dis card-text ul-disc">
                             <li>
                                 <i class="ti-location-pin"></i>
                                 <%  if (locals.job && job.locations && job.locations.length) { %>
@@ -42,7 +42,7 @@
                                 <% } %>
                             </li>
                         </ul>
-                        <div id="share"></div>
+                        <div id="shareIcons"></div>
                     </div>
                 </div>
             </div>
@@ -60,11 +60,11 @@
                             </tr>
                             <tr>
                                 <td class="font-weight-bold">Job Description</td>
-                                <td><%= job.description ? job.description : 'N/A' %></td>
+                                <td><%- job.description ? job.description : 'N/A' %></td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold">Job Responsibility</td>
-                                <td><%= job.responsibilities ? job.responsibilities : 'N/A' %></td>
+                                <td><%- job.responsibilities ? job.responsibilities : 'N/A' %></td>
                             </tr>
                         </table>
                         <a class="btn btn-primary" href="/jobs/apply/<%= job.guid%>"><i class="ti-bag"></i>

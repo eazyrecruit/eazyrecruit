@@ -87,7 +87,7 @@ import { InterviewListComponent } from './components/interview/interview-list/in
 import { InboundComponent } from './components/settings/emailsettings/inbound/inbound.component';
 import { OutboundComponent } from './components/settings/emailsettings/outbound/outbound.component';
 import { EmailTemplateComponent } from './components/settings/emailsettings/email-template/email-template.component';
-
+import { ColorPickerModule } from 'ngx-color-picker';
 
 @NgModule({
   declarations: [
@@ -178,7 +178,8 @@ import { EmailTemplateComponent } from './components/settings/emailsettings/emai
     RatingModule.forRoot(),
     TypeaheadModule.forRoot(),
     ChartsModule,
-    QuillModule.forRoot()
+    QuillModule.forRoot(),
+    ColorPickerModule
   ],
   entryComponents: [
     ApplicantpageComponent,
