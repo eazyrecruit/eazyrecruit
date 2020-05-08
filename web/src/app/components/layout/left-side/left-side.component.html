@@ -2,7 +2,7 @@
   <!-- Logo -->
   <a href="/admin/index.html" class="logo text-left">
     <!-- mini logo for sidebar mini 50x50 pixels -->
-    <img [class]="biglogo?'width-150':'width-100'" src="/{{biglogo ? logo : '/admin/assets/img/short-logo.png'}}"
+    <img [class]="biglogo?'width-150':'width-100'" src="/{{biglogo ? logo || 'admin/assets/img/logo.png' : 'admin/assets/img/short-logo.png'}}"
       alt="">
   </a>
 </header>
