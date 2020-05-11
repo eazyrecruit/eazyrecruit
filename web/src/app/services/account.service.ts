@@ -46,6 +46,10 @@ export class AccountService {
         }
     }
 
+    getToken() {
+        return this.authStorage.getAuthData().data.token;
+    }
+
     previlege() {
         const authData = this.helper.decodeToken(this.authStorage.getAuthData().data.token);
         return authData.id;

@@ -13,7 +13,7 @@
             <div class="col-sm-12">
                 <form method="GET" action="<%= locals.baseUrl %>" class="input-group mb-5">
                     <input type="text" class="form-control" placeholder="Search job" aria-label="Search jobs"
-                    aria-describedby="button-addon2" name="search">
+                    aria-describedby="button-addon2" name="search" id="searchBox" value="<%= search %>">
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
                     </div>
@@ -71,23 +71,23 @@
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 <li class="page-item">
-                    <a class="page-link" href="<%= locals.baseUrl %>?page=1">First</a>
+                    <a class="page-link" id="first" href="<%= locals.baseUrl %>?page=1&search=">First</a>
                 </li>
                 <% if (locals.hasPreviousPage) { %>
                 <li class="page-item">
-                    <a class="page-link" href="<%= locals.baseUrl %>?page=<%= previousPage %>"><%= previousPage %></a>
+                    <a class="page-link" id="previousPage" href="<%= locals.baseUrl %>?page=<%= previousPage %>&search="><%= previousPage %></a>
                 </li>
                 <% } %>
                 <li class="page-item active">
-                    <a class="page-link" href="<%= locals.baseUrl %>?page=<%= previousPage %>"><%= currentPage %></a>
+                    <a class="page-link" id="currentPage" href="<%= locals.baseUrl %>?page=<%= previousPage %>&search="><%= currentPage %></a>
                 </li>
                 <% if (locals.hasNextPage) { %>
                 <li class="page-item">
-                    <a class="page-link" href="<%= locals.baseUrl %>?page=<%= nextPage %>"><%= nextPage %></a>
+                    <a class="page-link" id="nextPage" href="<%= locals.baseUrl %>?page=<%= nextPage %>&search="><%= nextPage %></a>
                 </li>
                 <% } %>
                 <li class="page-item">
-                    <a class="page-link" href="<%= locals.baseUrl %>?page=<%= lastPage %>">Last</a>
+                    <a class="page-link" id="last" href="<%= locals.baseUrl %>?page=<%= lastPage %>&search=">Last</a>
                 </li>
             </ul>
         </nav>
