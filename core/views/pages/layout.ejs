@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Akeo Software Solutions Pvt Ltd | Akeo India | Akeo | Jobs | Openings</title>
+    <title><%= company.name %> | <%= company.header_description ? company.header_description + " | " : "" %> <%= company.website  %></title>
     <!-- CSS (load bootstrap from a CDN) -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -24,16 +24,18 @@
             }
             skill = ' | ' + skills.join();
         }
-        var description = location + ' | ' + (job.minExperience ? job.minExperience : '') +  skill;
+        var description = location + ' | ' + (job.minExperience ? job.minExperience + ' years' : '') +  skill;
     } %>
     <link rel="stylesheet" href="/css/akeo.css">
     <meta property="og:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %> " />
     <meta property="og:description" content=" <%= description %> " />
-    <meta property="og:image" content="<%=baseURL%>/<%= locals.job ? job.metaImage : '/images/default-job.jpg' %>"/>
+    <meta property="og:image" content="<%=baseURL%><%= locals.job ? job.metaImage : '/images/default-job.jpg' %>"/>
+    <meta property="og:image:alt" content="<%= locals.job ? job.metaImageAltText : 'image' %>" />
     <meta property="twitter:card" content="summary_large_image"/>
     <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %> " />
     <meta property="twitter:description" content=" <%= description %> " />
-    <meta property="twitter:image" content="<%= locals.baseURL %>/<%= locals.job ? job.metaImage : '/images/default-job.jpg' %>"/>    
+    <meta property="twitter:image" content="<%= locals.baseURL %><%= locals.job ? job.metaImage : '/images/default-job.jpg' %>"/>    
+    <meta property="twitter:image:alt" content="<%= locals.job ? job.metaImageAltText : 'image' %>" />
 </head>
 <body>
     <header>
@@ -43,7 +45,7 @@
         <section class="jumbotron text-center" id="companyHeader">
             <div class="container text-center">
                 <h3 id="companyHeaderText">
-                    <%= locals.headerDescription ? locals.headerDescription : 'Company header description here.' %>
+                    <%= company.header_description ? company.header_description : 'Company header description here.' %>
                 </h3>
             </div>
         </section>
@@ -72,8 +74,32 @@
         });
     </script>
     <script>
-        $("#companyHeader").css("background-color", "<%= company && company.header_bg_color ? company.header_bg_color : '#2c3e50' %>");
-        $("#companyHeaderText").css("color", "<%= company && company.header_text_color ? company.header_text_color : '#000000' %>");
+        $(document).ready(function() {
+            $("#companyHeader").css("background-color", "<%= company && company.header_bg_color ? company.header_bg_color : '#2c3e50' %>");
+            $("#companyHeaderText").css("color", "<%= company && company.header_text_color ? company.header_text_color : '#000000' %>");
+            $("#first").click(function() {
+                getUrl("#first");
+            });
+            $("#last").click(function() {
+                getUrl("#last");
+            });
+            $("#previousPage").click(function() {
+                getUrl("#previousPage");
+            });
+            $("#currentPage").click(function() {
+                getUrl("#currentPage");
+            });
+            $("#nextPage").click(function() {
+                getUrl("#nextPage");
+            });
+
+            function getUrl(selector) {
+                let search = $("#searchBox").val();
+                let url = $(selector).attr("href");
+                let newUrl = url.concat(search);
+                $(selector).attr("href", newUrl);
+            }
+        });
     </script>
 </body>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
