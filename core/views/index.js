@@ -12,6 +12,7 @@ var utilService = require('../services/util.service');
 const request = require('request');
 const fs = require('fs');
 const config = require('../config').config();
+let Log = require('../models/log');
 // var FormData = require('form-data');
 // var http = require('http');
 
@@ -90,29 +91,49 @@ router.post("/apply/:id",
 ], 
 resume.any(),
 async (req, res) => {
+    let log = new Log();
+    config.website = 'https://dev.eazyrecruit.in';
     // Finds the validation errors in this request and wraps them in an object with handy functions
     const errors = validationResult(req.body);
     if (!errors.isEmpty()) {
+        log.groupName = "error";
+        log.data.push({title: "req. validation", message: JSON.stringify(errors) });
+        await log.save();
         return res.status(422).json({ errors: errors.array() });
     }
 
     let company = await companyService.getCompany();
     try {
-        console.log(req.body);
-        let admin = await User.findOne({ email: 'admin@eazyrecruit.in' }, { select: 'email' });
-        if (admin) {
-            req.user = {
-                id: admin.id
-            }
-        }
+        console.log('body : ', req.body);
+        log.groupName = "execute request";
+        log.data.push({title: "try block", message: JSON.stringify(req.body)});
+        // let admin = await User.findOne({ email: 'admin@eazyrecruit.in' }, { select: 'email' });
+        // if (admin) {
+        //     req.user = {
+        //         id: admin.id
+        //     }
+        // }
 
         let fileName;
-        if (req.files && req.files.length) {
-            let position = req.files[0].originalname.lastIndexOf('.');
-            let name = req.files[0].originalname.toString();
-            fileName = await utilService.writeResumeFile(req, name.substring(0, position));
+        try {
+            if (req.files && req.files.length) {
+                log.groupName = "execute request";
+                log.data.push({title: "try block file ", message: req.files[0].originalname.toString()});
+                let position = req.files[0].originalname.lastIndexOf('.');
+                let name = req.files[0].originalname.toString();
+                fileName = await utilService.writeResumeFile(req, name.substring(0, position));
+                log.groupName = "execute request";
+                log.data.push({title: "try block file created ", message: fileName});
+            }            
+        } catch (error) {
+            log.groupName = "execute request";
+            log.data.push({title: "catch block file create ", message: JSON.stringify(error)});
         }
-
+        console.log('config : ', config.admin);
+        log.groupName = "execute request";
+        log.data.push({title: "config details ", message: JSON.stringify(config.admin)});
+        log.groupName = "execute request";
+        log.data.push({title: "dev login url ", message: `${config.website}/api/account/login`});
         request.post({
             "headers": { 
                 "content-type": "application/json"
@@ -125,10 +146,26 @@ async (req, res) => {
             },
             "json": true
             }, (error, response, body) => {
-                if(error) {
-                    return console.dir(error);
+                if (error) {
+                    log.groupName = "execute request";
+                    log.data.push({title: "dev login error ", message: JSON.stringify(error)});
+                    log.save().then(x => {
+                        console.log('save log');                        
+                    }).catch(e => {
+                        console.log('save log error');                        
+                    });
+                    return console.log('error : ', error);
+                }
+                if (response) {
+                    log.groupName = "execute request";
+                    log.data.push({title: "dev login response ", message: JSON.stringify(response)});
                 }
                 if (body['success'] && body['success']['data']) {
+                    console.log('login success body : ', body);
+                    console.log('url : ', config.website + config.pyUrl);
+                    log.groupName = "execute request";
+                    log.data.push({title: "dev login success body ", message: JSON.stringify(body)});
+                    log.data.push({title: "applicant save engin url ", message: config.website + config.pyUrl});
                     request.post({
                         "headers": { 
                             "content-type": "application/json",
@@ -147,11 +184,29 @@ async (req, res) => {
                             resume: fs.createReadStream(path.join(__dirname, `../resumes/${fileName}`))
                         }
                         }, (error, response, body) => {
-                            if(error) {
-                                return console.dir(error);
+                            if (error) {
+                                log.data.push({title: "applicant save error ", message: JSON.stringify(error)});
+                                log.save().then(x => {
+                                    console.log('save log');                        
+                                }).catch(e => {
+                                    console.log('save log error');                        
+                                });
+                                return console.log(error);
+                            }
+                            if (response) {
+                                console.log('save applicant response : ', response);
+                                log.data.push({title: "applicant save response ", message: JSON.stringify(response)});
                             }
                             res.render('pages/thanks', { company: company[0] });
+                            console.log('path : ', path.join(__dirname, `../resumes/${fileName}`));
+                            log.data.push({title: "applicant save delete file ", message: path.join(__dirname, `../resumes/${fileName}`) });
                             fs.unlinkSync(path.join(__dirname, `../resumes/${fileName}`)); 
+                            log.data.push({title: "applicant save complete ", message: "applicant save complete" });
+                            log.save().then(x => {
+                                console.log('log saved');
+                            }).catch(e => {
+                                console.log('log save error');
+                            })
                         });
                 }
             });
@@ -159,6 +214,9 @@ async (req, res) => {
         // if (err) res.render('pages/error');
         // else res.render('pages/thanks', { job: data });       
     } catch (error) {
+        log.groupName = "error";
+        log.data.push(errors);
+        await log.save();
         res.render('pages/thanks', { company: company[0] });
     }
 });
