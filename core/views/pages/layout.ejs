@@ -29,13 +29,13 @@
     <link rel="stylesheet" href="/css/akeo.css">
     <meta property="og:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %> " />
     <meta property="og:description" content=" <%= description %> " />
-    <meta property="og:image" content="<%=baseURL%><%= locals.job ? job.metaImage : '/images/default-job.jpg' %>"/>
-    <meta property="og:image:alt" content="<%= locals.job ? job.metaImageAltText : 'image' %>" />
+    <meta property="og:image" content="<%= locals.baseURL %>/images<%= locals.job && job.metaImage ? '/'+job.metaImage : '/default-job.jpg' %>"/>
+    <meta property="og:image:alt" content="<%= locals.job ? job.metaImageAltText : '' %>" />
     <meta property="twitter:card" content="summary_large_image"/>
     <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %> " />
     <meta property="twitter:description" content=" <%= description %> " />
-    <meta property="twitter:image" content="<%= locals.baseURL %><%= locals.job ? job.metaImage : '/images/default-job.jpg' %>"/>    
-    <meta property="twitter:image:alt" content="<%= locals.job ? job.metaImageAltText : 'image' %>" />
+    <meta property="twitter:image" content="<%= locals.baseURL %>/images<%= locals.job && job.metaImage ? '/'+job.metaImage : '/default-job.jpg' %>"/>    
+    <meta property="twitter:image:alt" content="<%= locals.job ? job.metaImageAltText : '' %>" />
 </head>
 <body>
     <header>
@@ -59,7 +59,7 @@
     <script>   
             $("#shareIcons").jsSocials({
             shares: ["facebook", "linkedin", "twitter"],
-            url: "<%= locals.baseURL %>",
+            url: "<%= locals.baseURL + locals.path %>",
             text: "<%= locals.job ? job.metaTitle : '' %>",
             showLabel: false,
             showCount: false,

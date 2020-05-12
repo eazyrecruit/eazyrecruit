@@ -47,7 +47,7 @@ export class CompanysettingsComponent implements OnInit {
       if (result['success']['data']) {
         this.company = result['success']['data'][0];
         this.companyDetails.setValue({
-          logo: [result['success']['data'][0].logo || ''],
+          logo: [null],
           headerDescription: result['success']['data'][0].header_description || '',
           headerBgColor: result['success']['data'][0].header_bg_color || '',
           headerTextColor: result['success']['data'][0].header_text_color || '',

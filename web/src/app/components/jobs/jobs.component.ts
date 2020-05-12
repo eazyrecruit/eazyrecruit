@@ -47,7 +47,7 @@ export class JobsComponent implements OnInit {
         // this.dataShared.currentMessage.subscribe(jobById => this.jobById = jobById);
         this.filter = {
             pageIndex: 1,
-            pageSize: 10,
+            pageSize: 12,
             searchText: 'title',
             sortField: '',
             sortOrder: '1',

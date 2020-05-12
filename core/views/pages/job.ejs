@@ -28,7 +28,7 @@
                             </span>
                             <span class="col-sm-12">
                                 <% if (locals.job && job.minExperience) { %>
-                                    <%= job.minExperience %> Year experience
+                                    <%= job.minExperience %> years experience
                                     <% } else { %>
                                     N/A
                                     <% } %>
@@ -55,8 +55,8 @@
                                 <td class="font-weight-bold">Required Experience</td>
                                 <td>
                                     <div class="row">
-                                        <span class="col-sm-6">Minimum : <%= job && job.minExperience ? job.minExperience : 'N/A' %></span>
-                                        <span class="col-sm-6">Maximum : <%= job && job.maxExperience ? job.maxExperience : 'N/A' %></span>
+                                        <span class="col-sm-6">Minimum : <%= job && job.minExperience ? job.minExperience + ' years' : 'N/A' %></span>
+                                        <span class="col-sm-6">Maximum : <%= job && job.maxExperience ? job.maxExperience + ' years' : 'N/A' %></span>
                                     </div>
                                 </td>
                             </tr>
