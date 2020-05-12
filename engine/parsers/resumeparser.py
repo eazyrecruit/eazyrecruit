@@ -6,12 +6,13 @@ import string
 from mongoengine import *
 import extractors.extracter as extracter
 import nltk
+# nltk.download('stopwords')
+# nltk.download('SnowballStemmer')
+# nltk.download('universal_tagset')
+
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 import csv
-nltk.download('stopwords')
-nltk.download('SnowballStemmer')
-nltk.download('universal_tagset')
 
 def parse(tempFileName):
     try:

@@ -15,7 +15,7 @@ def post_data_to_core(file_path, payload, auth_token):
         files = [('resume', open(file_path,'rb'))]
         headers = {'Authorization': auth_token}
         response = requests.request("POST", url, headers=headers, data = payload, files = files)
-        # print("17",response)
+        print("17",response)
         return json.loads(response.text) 
     except:
         print("error occured")
@@ -25,10 +25,10 @@ def post_data_to_core(file_path, payload, auth_token):
 def resume(request):
     res={}
     # print("views.py 22")
-    if request.method == 'POST' and request.FILES['resumeData']:
+    if request.method == 'POST' and len(request.FILES)==1 and 'HTTP_AUTHORIZATION' in request.META:
         # print("views.py 24")
         try:
-            myfile = request.FILES['resumeData']
+            myfile = request.FILES[next(iter(request.FILES))]
             fs = FileSystemStorage()
             tempFile = fs.save(myfile.name, myfile)
             savedFilePath = os.getcwd()+"/media/"+tempFile
