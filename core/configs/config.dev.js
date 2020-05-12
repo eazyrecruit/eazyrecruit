@@ -52,5 +52,9 @@ module.exports = {
     iv: 'cattmbworqqehaoq',
     key: 'axiwhdscmzundjrlxwmjxoofvpquspku'
   },
-  pyUrl: "/api/engine/resume"
+  pyUrl: "/api/engine/resume",
+  admin: {
+    username: "admin@eazyrecruit.in",
+    password: "root"
+  }
 };

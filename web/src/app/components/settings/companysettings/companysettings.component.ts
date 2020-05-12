@@ -61,6 +61,7 @@ export class CompanysettingsComponent implements OnInit {
         })
         this.headerBgColor = result['success']['data'][0].header_bg_color;
         this.headerTextColor = result['success']['data'][0].header_text_color;
+        this.logo = result['success']['data'][0].logo;
         this.isSearchResultAvail = 1;
       } else {
         this.isSearchResultAvail = 2;

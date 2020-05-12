@@ -67,7 +67,12 @@ exports.updateSettings = async (req, next) => {
 
 exports.update = async (req, next) => {
     try {
-        let image = await utilService.readWriteFile(req, req.body.id);
+        let image;
+        if (req.body.logo) {
+            image = req.body.logo;
+        } else {
+            image = await utilService.readWriteFile(req, req.body.id);
+        }
         Company.findByIdAndUpdate(req.body.id, 
             {
                 name: req.body.name,

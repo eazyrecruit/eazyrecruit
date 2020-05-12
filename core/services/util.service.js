@@ -15,7 +15,7 @@ exports.readWriteFile = async (req, imageName) => {
                         reject(err);
                     }
                     else {
-                        console.log("The sheel file was written");
+                        console.log("file was written : ", name);
                         resolve(name)
                     }
                 });    
@@ -44,7 +44,7 @@ exports.writeResumeFile = async (req, imageName) => {
                         reject(err);
                     }
                     else {
-                        console.log("The sheel file was written");
+                        console.log("file was written : ", name);
                         resolve(name)
                     }
                 });    

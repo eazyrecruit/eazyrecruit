@@ -53,27 +53,6 @@ router.get("", async (req, res) => {
     }
 });
 
-// router.post("", async (req, res) => {
-//     try {
-//         const pageIndex = +req.query.page || 1;
-//         let totalItems = 0; 
-//         let limit = 12;
-//         let offset = (pageIndex - 1) * limit;
-//         var jobs = await jobService.getPublishedJobs({ title: new RegExp(`^.*${req.body.search}.*$`, 'i') }, limit, offset);
-//         res.render('pages/jobs', { 
-//             count: jobs.count, 
-//             jobs: jobs.jobs, 
-//             currentPage: pageIndex,
-//             hasNextPage: (limit * pageIndex) < totalItems,
-//             hasPreviousPage: pageIndex > 1,
-//             nextPage: pageIndex + 1,
-//             previousPage: pageIndex - 1,
-//             lastPage: Math.ceil(totalItems / limit) 
-//         });
-//     } catch (err) {
-//         res.render('pages/error')
-//     }
-// });
 
 router.get("/apply/:id", async (req, res) => {
     try {
@@ -133,27 +112,6 @@ async (req, res) => {
             let name = req.files[0].originalname.toString();
             fileName = await utilService.writeResumeFile(req, name.substring(0, position));
         }
-        // var form = new FormData();
-        // form.append('my_field', 'my value');
-        // form.append('resume', new Buffer(req.files[0].buffer));
-        // // formData.buffer = new Buffer(req.files[0].buffer)        
-        // let file = {}
-        // if (req.files && req.files.length) {
-        //     console.log('path : ', __dirname + './images');
-        //     // file = { buffer: new Buffer(req.files[0].buffer), encoding: req.files[0].encoding, 
-        //     //     fieldname: req.files[0].fieldname, mimetype: req.files[0].mimetype, originalname: req.files[0].originalname, size: req.files[0].size }
-        //     // formData.resume = fs.createReadStream(__dirname + '../images/5e957b8866a6470018b23fc2.png');
-        // }
-        // let options = {
-        //     "headers": { 
-        //         "content-type": "application/json",
-        //         "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlOTU5NjYwMzgzYmFkNWU2OWExZTQzZCIsImRpc3BsYXlOYW1lIjoidmlja3kgdmlja3kiLCJlbWFpbCI6InZpY2t5QGFrZW8ubm8iLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE1ODkxODM0NzYsImV4cCI6MTU4OTI2OTg3NiwiYXVkIjoiRWF6eVJlY3J1aXRVc2VycyIsImlzcyI6Imh0dHBzOi8vZGV2LWFwaS5lYXp5cmVjcnVpdC5pbiJ9.VJrKKS3ke_YmccmOb3q8ctbHlyU6wrTRm9SMcxZ2JMc"
-        //     },
-        // }
-        // form.submit('http://localhost:8082/api/applicant/', options, function(err, res) {
-        // // res – response object (http.IncomingMessage)  //
-        // res.resume();
-        // });
 
         request.post({
             "headers": { 
@@ -162,8 +120,8 @@ async (req, res) => {
             "url": `${config.website}/api/account/login`,
             "method": "POST", 
             "body": {
-                "userName": "admin@eazyrecruit.in",
-                "password": "root"
+                "userName": config.admin.username,
+                "password": config.admin.password
             },
             "json": true
             }, (error, response, body) => {
@@ -171,9 +129,6 @@ async (req, res) => {
                     return console.dir(error);
                 }
                 if (body['success'] && body['success']['data']) {
-                    console.dir(JSON.parse(body));
-                    console.log('url : ', config.website + config.pyUrl);
-                    console.log(' token : ', `Bearer ${body['success']['data'].token}`);
                     request.post({
                         "headers": { 
                             "content-type": "application/json",
@@ -195,8 +150,8 @@ async (req, res) => {
                             if(error) {
                                 return console.dir(error);
                             }
-                            console.dir(JSON.parse(body));
-                            res.render('pages/thanks', { company: company[0] }); 
+                            res.render('pages/thanks', { company: company[0] });
+                            fs.unlinkSync(path.join(__dirname, `../resumes/${fileName}`)); 
                         });
                 }
             });
