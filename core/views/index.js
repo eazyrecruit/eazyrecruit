@@ -92,7 +92,6 @@ router.post("/apply/:id",
 resume.any(),
 async (req, res) => {
     let log = new Log();
-    config.website = 'https://dev.eazyrecruit.in';
     // Finds the validation errors in this request and wraps them in an object with handy functions
     const errors = validationResult(req.body);
     if (!errors.isEmpty()) {
@@ -134,6 +133,8 @@ async (req, res) => {
         log.data.push({title: "config details ", message: JSON.stringify(config.admin)});
         log.groupName = "execute request";
         log.data.push({title: "dev login url ", message: `${config.website}/api/account/login`});
+        console.log('url : ', `${config.website}/api/account/login`);
+        console.log('url : ', `${config}`);
         request.post({
             "headers": { 
                 "content-type": "application/json"
@@ -147,6 +148,7 @@ async (req, res) => {
             "json": true
             }, (error, response, body) => {
                 if (error) {
+                    console.log('error : ', error);
                     log.groupName = "execute request";
                     log.data.push({title: "dev login error ", message: JSON.stringify(error)});
                     log.save().then(x => {
@@ -159,11 +161,13 @@ async (req, res) => {
                 if (response) {
                     log.groupName = "execute request";
                     log.data.push({title: "dev login response ", message: JSON.stringify(response)});
+                    console.log('response : ', response);
                 }
                 if (body['success'] && body['success']['data']) {
                     console.log('login success body : ', body);
                     console.log('url : ', config.website + config.pyUrl);
                     log.groupName = "execute request";
+                    console.log('login ', body);
                     log.data.push({title: "dev login success body ", message: JSON.stringify(body)});
                     log.data.push({title: "applicant save engin url ", message: config.website + config.pyUrl});
                     request.post({
@@ -185,6 +189,7 @@ async (req, res) => {
                         }
                         }, (error, response, body) => {
                             if (error) {
+                                console.log('error ', error);
                                 log.data.push({title: "applicant save error ", message: JSON.stringify(error)});
                                 log.save().then(x => {
                                     console.log('save log');                        
