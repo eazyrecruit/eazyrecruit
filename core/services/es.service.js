@@ -28,16 +28,16 @@ exports.searchApplicants = async (req) => {
         let from = 0, size = 10;
         if (req.query.limit) size = parseInt(req.query.limit);
         if (req.query.offset) from = parseInt(req.query.offset);
-        if (req.body.searchText) {
+        if (req.query.search) {
             query = {
                 "bool": {
                     "should": [
-                        { "match_phrase": { "email": req.body.searchText } },
-                        { "match_phrase": { "firstName": req.body.searchText } },
-                        { "match_phrase": { "middleName": req.body.searchText } },
-                        { "match_phrase": { "lastName": req.body.searchText } },
-                        { "match": { "phones": req.body.searchText } },
-                        { "match": { "skills.name": req.body.searchText } }]
+                        { "match_phrase": { "email": req.query.search } },
+                        { "match_phrase": { "firstName": req.query.search } },
+                        { "match_phrase": { "middleName": req.query.search } },
+                        { "match_phrase": { "lastName": req.query.search } },
+                        { "match": { "phones": req.query.search } },
+                        { "match": { "skills.name": req.query.search } }]
                 }
             }
         } else {
@@ -68,7 +68,7 @@ exports.searchJobs = async (req) => {
         let offset = 0, limit = 12;
         if (req.query.limit) limit = parseInt(req.query.limit);
         if (req.query.offset) offset = parseInt(req.query.offset);
-        if (req.query.title) {
+        if (req.query.searchText) {
             var query = {
                 "query_string" : {
                     "fields" : ["title"],

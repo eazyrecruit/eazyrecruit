@@ -18,16 +18,20 @@
           </small>
         </div>
       </div>
-      <div class="col-sm-1">
-        <div class="form-group">
-          <label for="active">Active</label>
-          <input style="margin-left: 25px;" type="checkbox" formControlName="active" [(ngModel)]="active">
-        </div>
-      </div>
-      <div class="col-sm-1">
-        <div class="form-group">
-          <label for="is_published">Publish</label>
-          <input style="margin-left: 25px;" type="checkbox" formControlName="is_published" [(ngModel)]="publish">
+      <div class="col-sm-3">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="active">Active</label>
+              <input style="margin-left: 25px;" type="checkbox" formControlName="active" [(ngModel)]="active">
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="is_published">Publish</label>
+              <input style="margin-left: 25px;" type="checkbox" formControlName="is_published" [(ngModel)]="publish">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -85,7 +89,7 @@
     <div class="row">
       <div class="col-sm-6">
         <div class="form-group">
-          <label for="locations">Job Locations</label>
+          <label for="locations" class="required">Job Locations</label>
           <tag-input [onlyFromAutocomplete]="true" formControlName="locations">
             <tag-input-dropdown [identifyBy]="'_id'" [displayBy]="'city'" [autocompleteObservable]="asyncLocations">
               <ng-template let-item="item" let-index="index">
@@ -110,7 +114,7 @@
     <div class="row">
       <div class="col-sm-12">
         <div class="form-group">
-          <label for="skills">Skills</label>
+          <label for="skills" class="required">Skills</label>
           <tag-input [onlyFromAutocomplete]="true" formControlName="skills">
             <tag-input-dropdown [identifyBy]="'_id'" [displayBy]="'name'" [autocompleteObservable]="asyncSkills">
               <ng-template let-item="item" let-index="index">
