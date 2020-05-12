@@ -135,86 +135,94 @@ async (req, res) => {
         log.data.push({title: "dev login url ", message: `${config.website}/api/account/login`});
         console.log('url : ', `${config.website}/api/account/login`);
         console.log('url : ', `${config}`);
+        // request.post({
+        //     "headers": { 
+        //         "content-type": "application/json"
+        //     },
+        //     "url": `${config.website}/api/account/login`,
+        //     "method": "POST", 
+        //     "body": {
+        //         "userName": config.admin.username,
+        //         "password": config.admin.password
+        //     },
+        //     "json": true
+        //     }, (error, response, body) => {
+        //         if (error) {
+        //             console.log('error : ', error);
+        //             log.groupName = "execute request";
+        //             log.data.push({title: "dev login error ", message: JSON.stringify(error)});
+        //             log.save().then(x => {
+        //                 console.log('save log');                        
+        //             }).catch(e => {
+        //                 console.log('save log error');                        
+        //             });
+        //             return console.log('error : ', error);
+        //         }
+        //         if (response) {
+        //             log.groupName = "execute request";
+        //             log.data.push({title: "dev login response ", message: JSON.stringify(response)});
+        //             console.log('response : ', response);
+        //         }
+        //         if (body['success'] && body['success']['data']) {
+        //             console.log('login success body : ', body);
+        //             console.log('url : ', config.website + config.pyUrl);
+        //             log.groupName = "execute request";
+        //             console.log('login ', body);
+        //             log.data.push({title: "dev login success body ", message: JSON.stringify(body)});
+        //             log.data.push({title: "applicant save engin url ", message: config.website + config.pyUrl});
+                    
+                    
+        //         }
+        //     });
+
+
+        var token = jwt.generateToken({ username: config.admin.username });
         request.post({
             "headers": { 
-                "content-type": "application/json"
+                "content-type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
-            "url": `${config.website}/api/account/login`,
-            "method": "POST", 
-            "body": {
-                "userName": config.admin.username,
-                "password": config.admin.password
-            },
-            "json": true
+            "url": config.website + config.pyUrl,
+            "formData": {
+                name: req.body.name,
+                email: req.body.email,
+                phone: req.body.phone,
+                availability: req.body.availability,
+                currentCtc: req.body.currentCtc,
+                expectedCtc: req.body.expectedCtc,
+                source: req.body.source,
+                jobId: req.body.jobId,
+                resume: fs.createReadStream(path.join(__dirname, `../resumes/${fileName}`))
+            }
             }, (error, response, body) => {
                 if (error) {
-                    console.log('error : ', error);
-                    log.groupName = "execute request";
-                    log.data.push({title: "dev login error ", message: JSON.stringify(error)});
+                    console.log('error ', error);
+                    log.data.push({title: "applicant save error ", message: JSON.stringify(error)});
                     log.save().then(x => {
                         console.log('save log');                        
                     }).catch(e => {
                         console.log('save log error');                        
                     });
-                    return console.log('error : ', error);
+                    return console.log(error);
                 }
                 if (response) {
-                    log.groupName = "execute request";
-                    log.data.push({title: "dev login response ", message: JSON.stringify(response)});
-                    console.log('response : ', response);
+                    console.log('save applicant response : ', response);
+                    log.data.push({title: "applicant save response ", message: JSON.stringify(response)});
                 }
-                if (body['success'] && body['success']['data']) {
-                    console.log('login success body : ', body);
-                    console.log('url : ', config.website + config.pyUrl);
-                    log.groupName = "execute request";
-                    console.log('login ', body);
-                    log.data.push({title: "dev login success body ", message: JSON.stringify(body)});
-                    log.data.push({title: "applicant save engin url ", message: config.website + config.pyUrl});
-                    request.post({
-                        "headers": { 
-                            "content-type": "application/json",
-                            "Authorization": `Bearer ${body['success']['data'].token}`
-                        },
-                        "url": config.website + config.pyUrl,
-                        "formData": {
-                            name: req.body.name,
-                            email: req.body.email,
-                            phone: req.body.phone,
-                            availability: req.body.availability,
-                            currentCtc: req.body.currentCtc,
-                            expectedCtc: req.body.expectedCtc,
-                            source: req.body.source,
-                            jobId: req.body.jobId,
-                            resume: fs.createReadStream(path.join(__dirname, `../resumes/${fileName}`))
-                        }
-                        }, (error, response, body) => {
-                            if (error) {
-                                console.log('error ', error);
-                                log.data.push({title: "applicant save error ", message: JSON.stringify(error)});
-                                log.save().then(x => {
-                                    console.log('save log');                        
-                                }).catch(e => {
-                                    console.log('save log error');                        
-                                });
-                                return console.log(error);
-                            }
-                            if (response) {
-                                console.log('save applicant response : ', response);
-                                log.data.push({title: "applicant save response ", message: JSON.stringify(response)});
-                            }
-                            res.render('pages/thanks', { company: company[0] });
-                            console.log('path : ', path.join(__dirname, `../resumes/${fileName}`));
-                            log.data.push({title: "applicant save delete file ", message: path.join(__dirname, `../resumes/${fileName}`) });
-                            fs.unlinkSync(path.join(__dirname, `../resumes/${fileName}`)); 
-                            log.data.push({title: "applicant save complete ", message: "applicant save complete" });
-                            log.save().then(x => {
-                                console.log('log saved');
-                            }).catch(e => {
-                                console.log('log save error');
-                            })
-                        });
-                }
+                res.render('pages/thanks', { company: company[0] });
+                console.log('path : ', path.join(__dirname, `../resumes/${fileName}`));
+                log.data.push({title: "applicant save delete file ", message: path.join(__dirname, `../resumes/${fileName}`) });
+                fs.unlinkSync(path.join(__dirname, `../resumes/${fileName}`)); 
+                log.data.push({title: "applicant save complete ", message: "applicant save complete" });
+                log.save().then(x => {
+                    console.log('log saved');
+                }).catch(e => {
+                    console.log('log save error');
+                })
             });
+
+
+
         // let result = await applicantService.save(req);
         // if (err) res.render('pages/error');
         // else res.render('pages/thanks', { job: data });       
