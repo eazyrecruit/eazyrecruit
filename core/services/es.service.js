@@ -65,7 +65,7 @@ exports.searchApplicants = async (req) => {
 
 exports.searchJobs = async (req) => {
     return new Promise(function (resolve, reject) {
-        let offset = 0, limit = 10;
+        let offset = 0, limit = 12;
         if (req.query.limit) limit = parseInt(req.query.limit);
         if (req.query.offset) offset = parseInt(req.query.offset);
         if (req.query.title) {

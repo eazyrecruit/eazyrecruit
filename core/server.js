@@ -25,7 +25,8 @@ app.use(function (req, res, next) {
   // Pass to next layer of middleware
   console.log('req', req.originalUrl, 'method', req.method);
   res.locals.protocol = req.protocol;
-  res.locals.baseURL = `${config.website}${req.originalUrl}`;
+  res.locals.baseURL = config.website;
+  res.locals.path = req.originalUrl;
   // Go to next module
   next();
 });

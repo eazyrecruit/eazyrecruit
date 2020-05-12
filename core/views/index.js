@@ -17,7 +17,7 @@ const config = require('../config').config();
 
 router.get("", async (req, res) => {
     try {
-        const pageIndex = +req.query.page || 1;
+        let pageIndex = +req.query.page || 1;
         let totalItems = 0; 
         let limit = 12;
         let offset = (pageIndex - 1) * limit;
@@ -172,6 +172,8 @@ async (req, res) => {
                 }
                 if (body['success'] && body['success']['data']) {
                     console.dir(JSON.parse(body));
+                    console.log('url : ', config.website + config.pyUrl);
+                    console.log(' token : ', `Bearer ${body['success']['data'].token}`);
                     request.post({
                         "headers": { 
                             "content-type": "application/json",

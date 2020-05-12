@@ -52,5 +52,5 @@ module.exports = {
     iv: 'cattmbworqqehaoq',
     key: 'axiwhdscmzundjrlxwmjxoofvpquspku'
   },
-  pyUrl: "api/engine/resume"
+  pyUrl: "/api/engine/resume"
 };
