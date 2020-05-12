@@ -19,6 +19,7 @@ services:
 
     ez_web:
         container_name: ez_web
+        image: ez_web
         build:
             context: ./core
             dockerfile: dockerfile
@@ -33,13 +34,20 @@ services:
 
     ez_engine:
         container_name: ez_engine
-        #image: ez-engine:latest
+        image: ez-engine
         build:
             context: ./engine
             dockerfile: dockerfile
         command: [ "gunicorn", "api.wsgi:application", "--bind","0.0.0.0:8000", "--workers", "3" ]
         environment:
-            - CORE_SERVICE_PATH=http://ez_web:8082
+            - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
+            - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT
+            - MONGO_DB=$MONGO_DB
+            - MONGO_URL=$MONGO_URL
+            - REDIS_URL=$REDIS_URL
+            - NODE_DECRYPTION_IV=$NODE_DECRYPTION_IV
+            - NODE_DECRYPTION_KEY=$NODE_DECRYPTION_KEY
+            - PYTHONUNBUFFERED=TRUE
         expose:
             - "8000"
         depends_on:
@@ -48,17 +56,19 @@ services:
    
     ez_worker:
         container_name: ez_worker
+        image: ez_worker
         build:
             context: ./engine
             dockerfile: celery.dockerfile
         environment:
-            - CORE_SERVICE_PATH=http://ez_web:8082/api
-            - DJANGO_DEVELOPMENT=dev
-            - MONGO_DB=admin
-            - MONGO_URL=mongodb://eazyrecruit:klkjhgbvfcf@ez_mongodb/admin
-            - REDIS_URL=redis://:klkjhgbvfcf@ez_redis:6379/0
-            - NODE_DECRYPTION_IV=cattmbworqqehaoq
-            - NODE_DECRYPTION_KEY=axiwhdscmzundjrlxwmjxoofvpquspku
+            - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
+            - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT
+            - MONGO_DB=$MONGO_DB
+            - MONGO_URL=$MONGO_URL
+            - REDIS_URL=$REDIS_URL
+            - NODE_DECRYPTION_IV=$NODE_DECRYPTION_IV
+            - NODE_DECRYPTION_KEY=$NODE_DECRYPTION_KEY
+            - PYTHONUNBUFFERED=TRUE
         depends_on:
             - ez_redis
             - ez_mongodb
@@ -70,9 +80,9 @@ services:
             - discovery.type=single-node
         volumes:
             - ./elastic_search_data:/usr/share/elasticsearch/data
-        # ports:
-        #     - 9500:9300
-        #     - 9400:9200
+        ports:
+            - 9500:9300
+            - 9400:9200
         depends_on:
             - ez_mongodb
 
@@ -81,8 +91,8 @@ services:
         container_name: ez_mongodb
         environment:
             - MONGO_DATA_DIR=/data/db
-            - MONGO_INITDB_ROOT_USERNAME=eazyrecruit
-            - MONGO_INITDB_ROOT_PASSWORD=klkjhgbvfcf
+            - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+            - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
         volumes:
             - ./mongo_db:/data/db
         ports:
@@ -92,10 +102,10 @@ services:
         image: bitnami/redis:latest
         container_name: ez_redis
         environment:
-            - REDIS_PASSWORD=klkjhgbvfcf
+            - REDIS_PASSWORD=$REDIS_PASSWORD
             - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-        # ports:
-        #     - 6379:6379
+        ports:
+            - 6379:6379
         volumes:
             - redis_data:/bitnami/redis/data
 
