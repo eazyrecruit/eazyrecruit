@@ -16,8 +16,10 @@ var Histories = require('../models/history');
 exports.save = async (req) => {
     return new Promise(async (resolve, reject) => {
         try {
+            console.log('request recived');
             if (req.body.body) req.body = JSON.parse(req.body.body);
             if (req.body && (req.body.email || req.body._id)) {
+                console.log('request recived email or id found');
                 // Get email from body
                 var email = Array.isArray(req.body.email) ? req.body.email.length > 0
                     ? req.body.email[0] : null : req.body.email;
@@ -59,6 +61,7 @@ exports.save = async (req) => {
                     modelApplicant.firstName = email;
                 }
 
+                console.log('request recived saving resume');
                 // Create/Update resume 
                 if (req.body.resume && req.body.resume.id && req.body.resume.id.length > 0) {
                     modelApplicant.resume = req.body.resume.id;
@@ -82,6 +85,7 @@ exports.save = async (req) => {
                     }
                 }
 
+                console.log('request recived saving skills');
                 // Create/Update skills
                 if (req.body.skills) {
                     let skills;
@@ -110,6 +114,7 @@ exports.save = async (req) => {
                     }
                 }
 
+                console.log('request recived saving location');
                 // Create/Update Address 
                 var modelCurrentLocation = null;
                 if (req.body.currentLocation) {
@@ -134,6 +139,7 @@ exports.save = async (req) => {
                     modelApplicant.location = null;
                 }
 
+                console.log('request recived saving prefered location');
                 var modelpreferredLocation = null;
                 if (req.body.preferredLocation) {
                     var preferred = JSON.parse(req.body.preferredLocation);
@@ -205,6 +211,7 @@ exports.save = async (req) => {
                 modelApplicant.modified_at = new Date();
                 modelApplicant = await modelApplicant.save();
                 
+                console.log('request recived saving job applicant');
                 // if jobid and pipelinid available then add applicant to that job
                 let jobPipeline = null;
                 let modelJobApplicant = new JobApplicant();
@@ -244,6 +251,7 @@ exports.save = async (req) => {
                     await notifyHR(candidate);
                     //await notifyCandidate(candidate);
                 }
+                console.log('request recived saving applicant completed');
                 if (jobPipeline) {
                     resolve(modelJobApplicant);
                 } else {
@@ -251,9 +259,11 @@ exports.save = async (req) => {
                 }
                 
             } else {
+                console.log('save applicant : ', 'Email or Id is required');
                 reject("Email or Id is required");
             }
         } catch (err) {
+            console.log('save applicant catch : ', err);
             reject(err);
         }
     });
