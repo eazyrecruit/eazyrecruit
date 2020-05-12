@@ -51,5 +51,6 @@ module.exports = {
   encrypt: {
     iv: 'cattmbworqqehaoq',
     key: 'axiwhdscmzundjrlxwmjxoofvpquspku'
-  }
+  },
+  pyUrl: "api/engine/resume"
 };

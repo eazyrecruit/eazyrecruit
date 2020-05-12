@@ -16,9 +16,8 @@
                     <img src="/<%= locals.job && job.metaImage ? job.metaImage : 'images/default-job.jpg' %>" class="card-img-top" width="100%"></img>
                     <div class="card-body">
                         <h5 class="card-title"><%= locals.job ? job.title : '' %></h5>
-                        <ul class="normal-job-dis card-text ul-disc">
-                            <li>
-                                <i class="ti-location-pin"></i>
+                        <div class="row">
+                            <span class="col-sm-12">
                                 <%  if (locals.job && job.locations && job.locations.length) { %>
                                     <% for(let i = 0; i < job.locations.length; i++) { %>
                                     <%= job.locations[i].city %>, <%= job.locations[i].state %>
@@ -26,23 +25,24 @@
                                 <% } else { %>
                                     N/A
                                 <%  } %>
-                            </li>
-                            <li><i class="ti-bag"></i>
+                            </span>
+                            <span class="col-sm-12">
                                 <% if (locals.job && job.minExperience) { %>
-                                <%= job.minExperience %> Year experiance
-                                <% } else { %>
-                                N/A
-                                <% } %>
-                            </li>
-                            <li><i class="ti-timer"></i>
+                                    <%= job.minExperience %> Year experience
+                                    <% } else { %>
+                                    N/A
+                                    <% } %>
+                            </span>
+                            <span class="col-sm-12">
                                 <% if (locals.job && job.type) { %>
                                     <%= job.type %>
                                 <% } else { %>
                                     N/A
                                 <% } %>
-                            </li>
-                        </ul>
-                        <div id="shareIcons"></div>
+                            </span>
+                        </div>
+                        <br>
+                        <div id="shareIcons" class="col-sm-12"></div>
                     </div>
                 </div>
             </div>
@@ -52,10 +52,12 @@
                     <div class="card-body">
                         <table class="table bg-dark-black mt-30 border-light">
                             <tr>
-                                <td class="font-weight-bold">Required Experiance</td>
+                                <td class="font-weight-bold">Required Experience</td>
                                 <td>
-                                    <span>Minimum : <%= job ? job.minExperience : 'N/A' %></span>
-                                    <span>Maximum : <%= job ? job.maxExperience : 'N/A' %></span>
+                                    <div class="row">
+                                        <span class="col-sm-6">Minimum : <%= job && job.minExperience ? job.minExperience : 'N/A' %></span>
+                                        <span class="col-sm-6">Maximum : <%= job && job.maxExperience ? job.maxExperience : 'N/A' %></span>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
