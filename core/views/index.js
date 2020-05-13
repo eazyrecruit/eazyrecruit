@@ -127,11 +127,11 @@ async (req, res) => {
         log.groupName = "execute request";
         log.data.push({title: "config details ", message: JSON.stringify(config.admin)});
         log.groupName = "execute request";
-        log.data.push({title: "dev login url ", message: `${config.website}/api/account/login`});
-        console.log('url : ', `${config.website}/api/account/login`);
+        log.data.push({title: "dev login url ", message: config.website + config.pyUrl});
+        console.log('url : ', config.website + config.pyUrl);
 
         let token = jwt.generateToken({ username: config.admin.username });
-        console.log('url : ', `${token}`);
+        console.log('token : ', `${token}`);
         log.data.push({title: "token ", message: token});
         request.post({
             "headers": { 
@@ -162,9 +162,11 @@ async (req, res) => {
                     return console.log(error);
                 }
                 if (response) {
-                    console.log('save applicant response : ', response);
-                    log.data.push({title: "applicant save response ", message: JSON.stringify(response)});
+                    console.log('save applicant response : ', response.body);
+                    log.data.push({title: "applicant save response ", message: JSON.stringify(response.body)});
                 }
+                console.log('body : ', body);
+                log.data.push({title: "applicant save body (api response)  ", message: JSON.stringify(body)});
                 res.render('pages/thanks', { company: company[0] });
                 console.log('path : ', path.join(__dirname, `../resumes/${fileName}`));
                 log.data.push({title: "applicant save delete file ", message: path.join(__dirname, `../resumes/${fileName}`) });
