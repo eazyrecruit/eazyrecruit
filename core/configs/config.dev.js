@@ -54,7 +54,6 @@ module.exports = {
   },
   pyUrl: "/api/engine/resume",
   admin: {
-    username: "admin@eazyrecruit.in",
-    password: "root"
+    username: "admin@eazyrecruit.in"
   }
 };

@@ -13,6 +13,7 @@ const request = require('request');
 const fs = require('fs');
 const config = require('../config').config();
 let Log = require('../models/log');
+var jwt = require("../services/jwt.service").jwtProfile;
 // var FormData = require('form-data');
 // var http = require('http');
 
@@ -106,12 +107,6 @@ async (req, res) => {
         console.log('body : ', req.body);
         log.groupName = "execute request";
         log.data.push({title: "try block", message: JSON.stringify(req.body)});
-        // let admin = await User.findOne({ email: 'admin@eazyrecruit.in' }, { select: 'email' });
-        // if (admin) {
-        //     req.user = {
-        //         id: admin.id
-        //     }
-        // }
 
         let fileName;
         try {
@@ -134,49 +129,10 @@ async (req, res) => {
         log.groupName = "execute request";
         log.data.push({title: "dev login url ", message: `${config.website}/api/account/login`});
         console.log('url : ', `${config.website}/api/account/login`);
-        console.log('url : ', `${config}`);
-        // request.post({
-        //     "headers": { 
-        //         "content-type": "application/json"
-        //     },
-        //     "url": `${config.website}/api/account/login`,
-        //     "method": "POST", 
-        //     "body": {
-        //         "userName": config.admin.username,
-        //         "password": config.admin.password
-        //     },
-        //     "json": true
-        //     }, (error, response, body) => {
-        //         if (error) {
-        //             console.log('error : ', error);
-        //             log.groupName = "execute request";
-        //             log.data.push({title: "dev login error ", message: JSON.stringify(error)});
-        //             log.save().then(x => {
-        //                 console.log('save log');                        
-        //             }).catch(e => {
-        //                 console.log('save log error');                        
-        //             });
-        //             return console.log('error : ', error);
-        //         }
-        //         if (response) {
-        //             log.groupName = "execute request";
-        //             log.data.push({title: "dev login response ", message: JSON.stringify(response)});
-        //             console.log('response : ', response);
-        //         }
-        //         if (body['success'] && body['success']['data']) {
-        //             console.log('login success body : ', body);
-        //             console.log('url : ', config.website + config.pyUrl);
-        //             log.groupName = "execute request";
-        //             console.log('login ', body);
-        //             log.data.push({title: "dev login success body ", message: JSON.stringify(body)});
-        //             log.data.push({title: "applicant save engin url ", message: config.website + config.pyUrl});
-                    
-                    
-        //         }
-        //     });
 
-
-        var token = jwt.generateToken({ username: config.admin.username });
+        let token = jwt.generateToken({ username: config.admin.username });
+        console.log('url : ', `${token}`);
+        log.data.push({title: "token ", message: token});
         request.post({
             "headers": { 
                 "content-type": "application/json",
