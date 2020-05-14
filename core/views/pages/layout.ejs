@@ -27,12 +27,12 @@
         var description = location + ' | ' + (job.minExperience ? job.minExperience + ' years' : '') +  skill;
     } %>
     <link rel="stylesheet" href="/css/akeo.css">
-    <meta property="og:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %> " />
+    <meta property="og:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %><%= ' - ' + company.name %> " />
     <meta property="og:description" content=" <%= description %> " />
     <meta property="og:image" content="<%= locals.baseURL %><%= locals.job && job.metaImage ? '/'+job.metaImage : '/images/default-job.jpg' %>"/>
     <meta property="og:image:alt" content="<%= locals.job ? job.metaImageAltText : '' %>" />
     <meta property="twitter:card" content="summary_large_image"/>
-    <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %> " />
+    <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %><%= ' - ' + company.name %> " />
     <meta property="twitter:description" content=" <%= description %> " />
     <meta property="twitter:image" content="<%= locals.baseURL %><%= locals.job && job.metaImage ? '/'+job.metaImage : '/images/default-job.jpg' %>"/>    
     <meta property="twitter:image:alt" content="<%= locals.job ? job.metaImageAltText : '' %>" />

@@ -22,18 +22,18 @@ constructor(private http: HttpClient, private accountService: AccountService) { 
     //     return this.http.get(this.constService.baseUrl + `/applicant/get-applicant/${id}`);
     // }
 
-    // save(data) {
-    //     const headers = new HttpHeaders();
-    //     headers.set('Content-Type', 'multipart/form-data');
-    //     return this.http.post(this.constService.baseUrl + 'applicant/', data, { headers: headers });
-    // }
-    save (resume)  {
+    save(data) {
         const headers = new HttpHeaders();
         headers.set('Content-Type', 'multipart/form-data');
-        headers.set('Authorization', `Bearer ${this.accountService.getToken()}`);
-        return this.http.post(this.constService.pyUrl + 'resume', resume, { headers: headers });
-        //return this.http.post("/engine/resume", resume, { headers: headers });
+        return this.http.post(this.constService.baseUrl + 'applicant/', data, { headers: headers });
     }
+    // save (resume)  {
+    //     const headers = new HttpHeaders();
+    //     headers.set('Content-Type', 'multipart/form-data');
+    //     headers.set('Authorization', `Bearer ${this.accountService.getToken()}`);
+    //     return this.http.post(this.constService.pyUrl + 'resume', resume, { headers: headers });
+    //     //return this.http.post("/engine/resume", resume, { headers: headers });
+    // }
 
     reprocess(){
         return this.http.get(this.constService.baseUrl + 'applicant/reparse/');
