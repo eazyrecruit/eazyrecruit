@@ -68,10 +68,13 @@ exports.updateSettings = async (req, next) => {
 exports.update = async (req, next) => {
     try {
         let image;
-        if (req.body.logo) {
-            image = req.body.logo;
+        if (req.files.length) {
+            if (req.body.logo) {
+                fs.unlinkSync(path.join(__dirname, `../images/${req.body.logo}`)); 
+            }
+            image = await utilService.readWriteFile(req, req.body.id + new Date().getMilliseconds());
         } else {
-            image = await utilService.readWriteFile(req, req.body.id);
+            image = req.body.logo;
         }
         Company.findByIdAndUpdate(req.body.id, 
             {
@@ -164,13 +167,4 @@ exports.delete = function (req, next) {
                 next(null, data);
         }
     });
-}
-
-function saveLogo(url) {
-    all= fs.createWriteStream("out."+imgtype);
-    for(i=0; i<end; i++){
-        var buffer = new Buffer( new Uint8Array(picarray[i]) );
-        all.write(buffer);
-    }
-    all.end();
 }

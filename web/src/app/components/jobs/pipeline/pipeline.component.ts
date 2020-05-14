@@ -147,7 +147,8 @@ export class PipelineComponent implements OnInit {
         dragData: {
           pipeline: item._id,
           applicant: event.dragData.applicant ? event.dragData.applicant._id : event.dragData,
-          job: event.dragData.job
+          job: event.dragData.job,
+          id: event.dragData._id
         }
       };
       this.changeStatus(obj);
@@ -312,11 +313,21 @@ export class PipelineComponent implements OnInit {
       initialState: initialState
     });
     this.modalRef.content.closePopup.subscribe(result => {
-        if (result) {
-          this.job.applicants.push(result['data']);
+        if (result && result['data'] && result['data'].pipeline) {
+          let newApplicant = result['data']
+          newApplicant.pipeline = result['data'].pipeline._id;
+          newApplicant.applicant.fullName = this.getFullName.bind(result['data'].applicant);
+          this.job.applicants.push(newApplicant);
         }
     });
-}
+  }
+
+  getFullName(firstName, middleName, lastName) {
+    var name = firstName;
+    if (middleName && middleName != "null") name = name + " " + middleName;
+    if (lastName && lastName != "null") name = name + " " + lastName;
+    return name;
+  }
 
   goToCreate() {
     // let pipe_id = 0;
