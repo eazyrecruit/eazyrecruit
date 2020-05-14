@@ -12,32 +12,25 @@ services:
             - ez_web
             - ez_engine
 
-    ez_web_build:
-        container_name: ez_web_build
-        build:
-            context: ./web
-
     ez_web:
         container_name: ez_web
         image: ez_web
         build:
-            context: ./core
-            dockerfile: dockerfile
+            context: .
+            dockerfile: web.dockerfile
         # ports:
         #     - "8082:8082"
         environment:
             - NODE_ENV=dev
         depends_on:
             - ez_engine
-            - ez_web_build
-
 
     ez_engine:
         container_name: ez_engine
         image: ez-engine
         build:
-            context: ./engine
-            dockerfile: dockerfile
+            context: .
+            dockerfile: engine.dockerfile
         command: [ "gunicorn", "api.wsgi:application", "--bind","0.0.0.0:8000", "--workers", "3" ]
         environment:
             - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
@@ -56,10 +49,8 @@ services:
    
     ez_worker:
         container_name: ez_worker
-        image: ez_worker
-        build:
-            context: ./engine
-            dockerfile: celery.dockerfile
+        image: ez-engine
+        command: [ "celery", "worker", "-A", "tasks", "-B", "-s", "/usr/src/celery"]
         environment:
             - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
             - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT
@@ -72,6 +63,7 @@ services:
         depends_on:
             - ez_redis
             - ez_mongodb
+            - ez_engine
         
     ez_elastic:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
@@ -79,7 +71,7 @@ services:
         environment:
             - discovery.type=single-node
         volumes:
-            - ./elastic_search_data:/usr/share/elasticsearch/data
+            - elastic_search_data:/usr/share/elasticsearch/data
         ports:
             - 9500:9300
             - 9400:9200
@@ -111,6 +103,7 @@ services:
 
 volumes:
     redis_data:
+    elastic_search_data:
             
     
     
