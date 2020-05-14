@@ -5,7 +5,7 @@ db_up(){
 }
 
 ez_docker_up(){
-    sudo docker-compose up --build -d nginx ez_engine ez_web
+    sudo docker-compose up --build -d ez_engine ez_web nginx
     sleep 1
     sudo docker-compose up --build -d ez_worker
 }
