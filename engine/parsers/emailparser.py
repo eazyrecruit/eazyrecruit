@@ -16,76 +16,86 @@ import textract
 from parsers import resumeanalyse as ResumeAnalyse
 
 def parse():
-    jobstatusmodel = JobStatusModel()
-    settingsModel = SettingsModel()
-    imapSettings = settingsModel.getImapSettings()
+    try:
+        jobstatusmodel = JobStatusModel()
+        settingsModel = SettingsModel()
+        imapSettings = settingsModel.getImapSettings()
 
-    if imapSettings:
-        print("user", imapSettings['user'])
-        last_mail_id = jobstatusmodel.get_latest('email', imapSettings['user'])
-        print("last_mail_id", last_mail_id)
-        if last_mail_id:
-            mails, last_mail_id = getRecentMails(imapSettings, last_mail_id)
-            resumes = []
-            if mails and len(mails) > 0:
-                for mail in mails:
-                    if is_resume(mail):
-                        resumes.extend(mail["attachments"])
-            if last_mail_id:       
-                jobstatusmodel.save_latest('email', imapSettings['user'], last_mail_id)
-            return resumes
+        if imapSettings:
+            print("user", imapSettings['user'])
+            last_mail_id = jobstatusmodel.get_latest('email', imapSettings['user'])
+            print("last_mail_id", last_mail_id)
+            if last_mail_id:
+                mails, last_mail_id = getRecentMails(imapSettings, last_mail_id)
+                resumes = []
+                if mails and len(mails) > 0:
+                    for mail in mails:
+                        if is_resume(mail):
+                            resumes.extend(mail["attachments"])
+                if last_mail_id:       
+                    jobstatusmodel.save_latest('email', imapSettings['user'], last_mail_id)
+                return resumes
+            else:
+                return None
         else:
+            print('No IMAP settings was found, It will try again after some time')
             return None
-    else:
-        print('No IMAP settings was found, It will try again after some time')
+    except:
+        print("line 44 emailparser.py")
         return None
+       
 
 def getRecentMails(imapSettings, last_mail_id = 0):
     # connecting to the gmail imap server
     # settingsModel = SettingsModel()
     # imapSettings = settingsModel.getImapSettings()
     # print("password", imapSettings['password'])
-    
-    if imapSettings:
-        print("host", imapSettings['host'])
-        if 'port' in imapSettings:
-            print("port", imapSettings['port'])
-            m = imaplib.IMAP4_SSL(imapSettings['host'], imapSettings['port'])
+    try:
+        if imapSettings:
+            print("host", imapSettings['host'])
+            if 'port' in imapSettings:
+                print("port", imapSettings['port'])
+                m = imaplib.IMAP4_SSL(imapSettings['host'], imapSettings['port'])
+            else:
+                m = imaplib.IMAP4_SSL(imapSettings['host'])
+
+            m.login(imapSettings['user'], imapSettings['password'])
+
+            if 'folder' in imapSettings:
+                print("folder", imapSettings['folder'])
+                m.select(imapSettings['folder'])
+            else:
+                m.select(imapSettings['inbox'])
+
+        
+            # you could filter using the IMAP rules here (check http://www.example-code.com/csharp/imap-search-critera.asp)
+            resp, items = m.search(None, "ALL") # search and return uids instead
+            # no new email
+            if not items and len(items) < 1:
+                return None
+            # extract
+            items = items[0].split()  # getting the mails id
+            mails = []
+            # last_mail_id = 0
+            while last_mail_id < len(items):
+                # fetching the mail, "`(RFC822)`" means "get the whole stuff", but you can ask for headers only, etc
+                resp, data = m.fetch(items[last_mail_id], "(RFC822)")
+                email_body = data[0][1].decode('utf-8')  # getting the mail content
+                received_email = readMail(email_body)
+                
+                last_mail_id += 1
+                if not received_email:
+                    received_email={}
+                received_email["id"] = last_mail_id
+                mails.append(received_email)
+            return mails, last_mail_id
         else:
-            m = imaplib.IMAP4_SSL(imapSettings['host'])
-
-        m.login(imapSettings['user'], imapSettings['password'])
-
-        if 'folder' in imapSettings:
-            print("folder", imapSettings['folder'])
-            m.select(imapSettings['folder'])
-        else:
-            m.select(imapSettings['inbox'])
-
-      
-        # you could filter using the IMAP rules here (check http://www.example-code.com/csharp/imap-search-critera.asp)
-        resp, items = m.search(None, "ALL") # search and return uids instead
-        # no new email
-        if not items and len(items) < 1:
-            return None
-        # extract
-        items = items[0].split()  # getting the mails id
-        mails = []
-        # last_mail_id = 0
-        while last_mail_id < len(items):
-            # fetching the mail, "`(RFC822)`" means "get the whole stuff", but you can ask for headers only, etc
-            resp, data = m.fetch(items[last_mail_id], "(RFC822)")
-            email_body = data[0][1].decode('utf-8')  # getting the mail content
-            received_email = readMail(email_body)
-            
-            last_mail_id += 1
-            if not received_email:
-                received_email={}
-            received_email["id"] = last_mail_id
-            mails.append(received_email)
-        return mails, last_mail_id
-    else:
+            return None, None
+    except:
+        print("line 95 emailparser.py")
         return None, None
+    
+    
 
 def readMail(email_body):
     # directory where to save attachments (default: current)
@@ -122,23 +132,26 @@ def readMail(email_body):
     return received_email
 
 def is_resume(mail):
-    if mail is not None:
-        clean_resume_data = None
-        clean_rm_subject = None
-        clean_rm_body = None
-        # parsing email contents
-        if 'attachments' in mail:
-            for countAttachment in range(len(mail['attachments'])):
-                resume_string = textract.process(mail['attachments'][countAttachment]['tempFile'])
-                resume_string = str(resume_string, 'utf-8')
-                clean_resume_data=ResumeParser.clean_resume(resume_string)
-                if mail['subject']:
-                    rm_subject = mail['subject']
-                    clean_rm_subject=ResumeParser.clean_resume(rm_subject)
-                if mail['body']:
-                    rm_body = mail['body']
-                    clean_rm_body=ResumeParser.clean_resume(rm_body)
-                return ResumeAnalyse.analyse_resume(clean_resume_data, clean_rm_body, clean_rm_subject)
+    try:
+        if mail is not None:
+            clean_resume_data = None
+            clean_rm_subject = None
+            clean_rm_body = None
+            # parsing email contents
+            if 'attachments' in mail:
+                for countAttachment in range(len(mail['attachments'])):
+                    resume_string = textract.process(mail['attachments'][countAttachment]['tempFile'])
+                    resume_string = str(resume_string, 'utf-8')
+                    clean_resume_data=ResumeParser.clean_resume(resume_string)
+                    if mail['subject']:
+                        rm_subject = mail['subject']
+                        clean_rm_subject=ResumeParser.clean_resume(rm_subject)
+                    if mail['body']:
+                        rm_body = mail['body']
+                        clean_rm_body=ResumeParser.clean_resume(rm_body)
+                    return ResumeAnalyse.analyse_resume(clean_resume_data, clean_rm_body, clean_rm_subject)
+    except:
+        return False
                 
     #subject contains resume
     # if mail.get('subject', None) is not None:
