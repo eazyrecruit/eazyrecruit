@@ -13,7 +13,7 @@ const request = require('request');
 const fs = require('fs');
 const config = require('../config').config();
 let Log = require('../models/log');
-var jwt = require("../services/jwt.service").jwtProfile;
+var redisClient = require('../services/redis.service');
 
 router.get("", async (req, res) => {
     try {
@@ -106,11 +106,31 @@ async (req, res) => {
         log.groupName = "execute request";
         log.data.push({title: "request body", message: JSON.stringify(req.body)});
 
+        let admin = await User.findOne({ email: config.admin.username }, { select: 'email' });
+        if (admin) {
+            req.user = {
+                id: admin.id
+            }
+        }
+
         let result = await applicantService.save(req);
         log.groupName = "execute request";
         log.data.push({title: "success response", message: JSON.stringify(result)});
-        await log.save();
         res.render('pages/thanks', { company: company[0] });
+        
+        if (result.applicant && result.applicant.resume) {
+            redisClient.parse(result.applicant.resume.id).then(data => {
+                console.log('redis success = : ', data);
+                log.groupName = "execute request";
+                log.data.push({title: "redis success", message: JSON.stringify(data)});
+            }).catch(err => {
+                console.log('redis error = : ', err);
+                log.groupName = "execute request";
+                log.data.push({title: "redis error", message: JSON.stringify(err)});
+            });
+        }
+        await log.save();
+        
         // if (err) res.render('pages/error');
         // else res.render('pages/thanks', { job: data });       
     } catch (error) {
