@@ -5,7 +5,7 @@ db_up(){
 }
 
 ez_docker_up(){
-    sudo docker-compose up --build -d ez_engine ez_web nginx
+    sudo docker-compose up --build -d ez_web nginx  #ez_engine
     sleep 1
     sudo docker-compose up --build -d ez_worker
 }
@@ -90,7 +90,8 @@ if [ "$1" == "restart" ]; then
 elif [ "$1" == "destroy" ]; then 
   destroy
 elif [ "$1" == "update" ]; then 
-  sudo docker-compose up --build -d nginx ez_engine ez_web
+  ez_docker_up
+  # sudo docker-compose up --build -d nginx ez_web ez_engine
 else
   setup
 fi
