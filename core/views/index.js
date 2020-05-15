@@ -128,9 +128,9 @@ async (req, res) => {
         // if (err) res.render('pages/error');
         // else res.render('pages/thanks', { job: data });       
     } catch (error) {
-        console.log('redis error = : ', err);
+        console.log('redis error = : ', error);
         log.groupName = "execute request";
-        log.data.push({title: "error", message: err.message });
+        log.data.push({title: "error", message: error.message });
         await log.save();
         res.render('pages/thanks', { company: company[0] });
     }
