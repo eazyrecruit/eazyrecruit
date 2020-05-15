@@ -12,6 +12,7 @@ var JobApplicant = require('../models/jobApplicant');
 var JobPipeline = require('../models/jobPipeline');
 var Jobs = require('../models/job');
 var Histories = require('../models/history');
+var emailService = require('../services/email.service');
 
 exports.save = async (req) => {
     return new Promise(async (resolve, reject) => {
@@ -78,7 +79,7 @@ exports.save = async (req) => {
                         modelResume = await modelResume.save();
                         modelApplicant.resume = modelResume._id;
                     } else {
-                        modelApplicant.resume = null;
+                        modelApplicant.resume = req.body.resume;
                     }
                 }
 
@@ -244,6 +245,14 @@ exports.save = async (req) => {
                     await notifyHR(candidate);
                     //await notifyCandidate(candidate);
                 }
+                
+                try {
+                    await notifyCandidate(modelApplicant);
+                    console.log('email sent to : ', modelApplicant.email);
+                } catch (error) {
+                    console.log('send email error : ', error);
+                }
+                
                 if (jobPipeline) {
                     resolve(modelJobApplicant);
                 } else {

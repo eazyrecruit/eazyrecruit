@@ -48,7 +48,6 @@ var applicantResumeUpload = multer({ storage: multer.memoryStorage(), limits: { 
 router.post("/", applicantResumeUpload.any(), async (req, res) => {
     try {
         var applicant = await applicantService.save(req);
-        responseService.response(req, null, logTypes.debug, applicant, res);
         if (typeof applicant == 'object') {
             let id;
             if (applicant.resume) {
@@ -56,12 +55,10 @@ router.post("/", applicantResumeUpload.any(), async (req, res) => {
             } else if (applicant.applicant && applicant.applicant.resume) {
                 id = applicant.applicant.resume.id
             }
-            redisClient.parse(id).then(data => {
-                responseService.response(req, null, 'Update Resume', dataResume, res);
-            }).catch(err => {
-                responseService.response(req, err, 'Update Resume', null, res);
-            });
+            let parsedData = await redisClient.parse(id);
+            console.log('parsed data : ', parsedData);
         }
+        responseService.response(req, null, logTypes.debug, applicant, res);
     } catch (err) {
         responseService.response(req, err, logTypes.debug, null, res);
     }

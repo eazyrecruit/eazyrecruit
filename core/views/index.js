@@ -116,26 +116,21 @@ async (req, res) => {
         let result = await applicantService.save(req);
         log.groupName = "execute request";
         log.data.push({title: "success response", message: JSON.stringify(result)});
-        res.render('pages/thanks', { company: company[0] });
         
         if (result.applicant && result.applicant.resume) {
-            redisClient.parse(result.applicant.resume.id).then(data => {
-                console.log('redis success = : ', data);
-                log.groupName = "execute request";
-                log.data.push({title: "redis success", message: JSON.stringify(data)});
-            }).catch(err => {
-                console.log('redis error = : ', err);
-                log.groupName = "execute request";
-                log.data.push({title: "redis error", message: JSON.stringify(err)});
-            });
+            let parsedData = await redisClient.parse(result.applicant.resume.id);
+            console.log('redis success = : ', parsedData);
+            log.groupName = "execute request";
+            log.data.push({title: "redis success - taskid", message: parsedData.taskid });
+            await log.save();
         }
-        await log.save();
-        
+        res.render('pages/thanks', { company: company[0] });
         // if (err) res.render('pages/error');
         // else res.render('pages/thanks', { job: data });       
     } catch (error) {
-        log.groupName = "error";
-        log.data.push(errors);
+        console.log('redis error = : ', err);
+        log.groupName = "execute request";
+        log.data.push({title: "error", message: err.message });
         await log.save();
         res.render('pages/thanks', { company: company[0] });
     }

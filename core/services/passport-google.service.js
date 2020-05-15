@@ -66,17 +66,19 @@ exports.authenticate = async function (req, res, next) {
 let getGoogleConfig = async (group) => {
     let company = [];
     let settings = [];
-    company = await companyService.getCompany();
-    let req = {
-        query: { id: company[0].id, group }
-    }
-    settings = await companyService.getSettings(req);
     let emailConfig = {};
-    for (let i =0; i < settings.length; i++) {        
-        Object.defineProperty(emailConfig, settings[i].key, {
-            value: settings[i].value,
-            writable: true
-        });
+    company = await companyService.getCompany();
+    if (company && company.length) {
+        let req = {
+            query: { id: company[0].id, group }
+        }
+        settings = await companyService.getSettings(req);    
+        for (let i =0; i < settings.length; i++) {        
+            Object.defineProperty(emailConfig, settings[i].key, {
+                value: settings[i].value,
+                writable: true
+            });
+        }
     }
     return emailConfig;
 }

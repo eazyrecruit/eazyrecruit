@@ -45,6 +45,7 @@ export class JobComponent implements OnInit {
   publish: boolean;
   closePopup: Subject<any>;
   metaImage: any;
+  currentMetaImage: any;
 
   @Output()
   refreshList: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -258,6 +259,7 @@ export class JobComponent implements OnInit {
       this.jobDetails.controls["metaImage"].setValue(job.metaImage);
       this.jobDetails.controls["metaImageAltText"].setValue(job.metaImageAltText);
       this.jobDetails.controls["metaTitle"].setValue(job.metaTitle);
+      this.currentMetaImage = job.metaImage;
     }
   }
 
@@ -341,6 +343,8 @@ export class JobComponent implements OnInit {
 
       if (this.metaImage) {
         formData.set('metaImage', this.metaImage);
+      } else {
+        formData.set('metaImage', this.currentMetaImage);
       }
       this.jobService.saveJob(formData).subscribe(result => {
         if (result['success']) {
