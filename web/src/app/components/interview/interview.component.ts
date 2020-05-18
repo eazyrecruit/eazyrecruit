@@ -91,8 +91,7 @@ export class InterviewComponent implements OnInit {
         if (result && result['success'] && result['success']['data']) {
           this.results.push({ 
             interview: this.interview._id,
-            criteria: { name: result['success']['data'].name, id: result['success']['data']._id },
-            criteriaId: result['success']['data']._id, 
+            criteria: { name: result['success']['data'].name, _id: result['success']['data']._id }, 
             score: 0,
             created_by: this.interview.interviewer,
             modified_by: this.interview.interviewer
@@ -107,11 +106,15 @@ export class InterviewComponent implements OnInit {
 
   removeCriteria(index) {
     if (index >= 0) {
-      this.interviewService.deleteResult(this.results[index]['_id']).subscribe(res => {
-        if (res['success']) {
-          this.results.splice(index, 1);
-        }
-      })
+      if (this.results[index]['_id']) {
+        this.interviewService.deleteResult(this.results[index]['_id']).subscribe(res => {
+          if (res['success'] && res['success']['data']) {
+            this.results.splice(index, 1);
+          }
+        })
+      } else {
+        this.results.splice(index, 1);
+      }
     }
   }
 

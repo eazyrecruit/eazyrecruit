@@ -17,6 +17,7 @@ export class CompanysettingsComponent implements OnInit {
   logo: any;
   headerBgColor: any;
   headerTextColor: any;
+  currentLogo: any;
   
 
   constructor(private companyService: CompanyService, 
@@ -62,6 +63,7 @@ export class CompanysettingsComponent implements OnInit {
         this.headerBgColor = result['success']['data'][0].header_bg_color;
         this.headerTextColor = result['success']['data'][0].header_text_color;
         this.logo = result['success']['data'][0].logo;
+        this.currentLogo = result['success']['data'][0].logo;
         this.isSearchResultAvail = 1;
       } else {
         this.isSearchResultAvail = 2;
@@ -81,6 +83,8 @@ export class CompanysettingsComponent implements OnInit {
     }
     if (this.logo) {
       formData.set('logo', this.logo);
+    } else {
+      formData.set('logo', this.currentLogo);
     }
     if (this.headerBgColor) {
       formData.set('headerBgColor', this.headerBgColor);

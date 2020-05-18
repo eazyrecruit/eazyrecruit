@@ -65,7 +65,11 @@ exports.save = async (req) => {
         modelJob.is_published = req.body.published ? req.body.published : true;
         
         // we are storing image with name and we are using guid as name
-        modelJob.metaImage = await utilService.readWriteFile(req, modelJob.guid);
+        if (req.files && req.files.length) {
+            modelJob.metaImage = await utilService.readWriteFile(req, modelJob.guid);
+        } else {
+            modelJob.metaImage = req.body.metaImage;
+        }
 
         modelJob.metaImageAltText = req.body.metaImageAltText ? req.body.metaImageAltText : null;
         modelJob.metaTitle = req.body.metaTitle ? req.body.metaTitle : null;

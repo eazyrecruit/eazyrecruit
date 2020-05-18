@@ -122,7 +122,7 @@ export class DashboardComponent implements OnInit {
     });
     this.modalRef.content.close = (data) => {
       if (data) {
-        let updatedEvent = this.fullCalendarElement.calendar.getEventById(data._id);
+        let updatedEvent = this.fullCalendarElement.calendar.getEventById(data.interview._id);
         var startDate = new Date(data.start);
         var endDate = new Date(data.end);
         data.jobApplicant = updatedEvent.extendedProps.jobApplicant;

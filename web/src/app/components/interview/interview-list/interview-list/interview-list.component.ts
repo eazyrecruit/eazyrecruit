@@ -30,6 +30,7 @@ export class InterviewListComponent implements OnInit, OnChanges {
       offset: 0,
       type: 'PENDING'
     };
+    this.onFilterChange(this.filter);
   }
 
   openInterviewPage(id) {

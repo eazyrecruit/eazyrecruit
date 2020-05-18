@@ -4,6 +4,7 @@ var Users = require('./models/user');
 var Companies = require('./models/company');
 var Applicant = require('./models/applicant');
 var Job = require('./models/job');
+var Role = require('./models/userRole');
 const crypto = require('crypto');
 
 // ****** eazy recruit *******
@@ -26,16 +27,29 @@ module.exports.setup = () => {
   mongodb.on('error', console.error.bind(console, 'EZ MongoDB connection error:'));
 }
 module.exports.initialize = async () => {
+  
+  var dbRoles = await Role.find();
+  if(dbRoles.length <= 0) {
+    var roles = ['admin', 'hr', 'interviewer',];
+    for (let i = 0; i < roles.length; i++) {
+      var role = new Role();
+      role.name = roles[i];
+      role.is_deleted = false;
+      role.created_at = new Date();
+      role.modified_at = new Date();
+      await role.save(); 
+    }
+  }
+
   var dbUsers = await Users.find();
   if(dbUsers.length <= 0){
     const randomString = () => crypto.randomBytes(6).hexSlice();
+    let role = await Role.findOne({ name: 'admin' });
     var user = new Users();
     user.password = randomString();
     user.email = 'admin@eazyrecruit.in';
+    user.roles = role ? [role._id] : [];
     console.log('Admin Password:',user.password)
-    // console.log('*** Admin Password ***')
-    // console.log(user.password)
-    // console.log('******')
     await user.save();
   }
 

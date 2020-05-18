@@ -34,6 +34,7 @@ export class CreateApplicantComponent implements OnInit {
   applicantForm: FormGroup;
   referrers: any;
   resume: any;
+  currentResume: any;
 
   constructor(
     private bsModelRef: BsModalRef,
@@ -105,6 +106,7 @@ export class CreateApplicantComponent implements OnInit {
         currentLocation: [applicant.location, []],
         preferredLocation: [applicant.preferredLocations, []]
       });
+      this.currentResume = applicant.resume;
     } else {
       this.applicantForm = this.fbForm.group({
         resume: [null],
@@ -218,6 +220,8 @@ export class CreateApplicantComponent implements OnInit {
 
       if (this.resume) {
         formData.set('resume', this.resume);
+      } else {
+        formData.set('resume', this.currentResume);
       }
 
       if (this.pipelineId) {

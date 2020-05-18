@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
         let company = await companyService.getCompany();
         responseService.response(req, null, 'get company', company, res);  
     } catch (error) {
-        responseService.response(req, err, 2, data, res);
+        responseService.response(req, error, 2, data, res);
     }
 
 });
