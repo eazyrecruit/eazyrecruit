@@ -20,36 +20,35 @@ services:
             dockerfile: web.dockerfile
         # ports:
         #     - "8082:8082"
+        volumes:
+            - web_images:/usr/src/app/images
         environment:
             - NODE_ENV=dev
-        # depends_on:
-        #     - ez_engine
 
-    # ez_engine:
-    #     container_name: ez_engine
-    #     image: ez-engine
-    #     build:
-    #         context: .
-    #         dockerfile: engine.dockerfile
-    #     command: [ "gunicorn", "api.wsgi:application", "--bind","0.0.0.0:8000", "--workers", "3" ]
-    #     environment:
-    #         - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
-    #         - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT
-    #         - MONGO_DB=$MONGO_DB
-    #         - MONGO_URL=$MONGO_URL
-    #         - REDIS_URL=$REDIS_URL
-    #         - NODE_DECRYPTION_IV=$NODE_DECRYPTION_IV
-    #         - NODE_DECRYPTION_KEY=$NODE_DECRYPTION_KEY
-    #         - PYTHONUNBUFFERED=TRUE
-    #     expose:
-    #         - "8000"
-    #     depends_on:
-    #         - ez_mongodb
-    #         - ez_elastic
+    ez_engine:
+        container_name: ez_engine
+        image: ez-engine
+        build:
+            context: .
+            dockerfile: engine.dockerfile
+        command: [ "gunicorn", "api.wsgi:application", "--bind","0.0.0.0:8000", "--workers", "3" ]
+        environment:
+            - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
+            - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT
+            - MONGO_DB=$MONGO_DB
+            - MONGO_URL=$MONGO_URL
+            - REDIS_URL=$REDIS_URL
+            - NODE_DECRYPTION_IV=$NODE_DECRYPTION_IV
+            - NODE_DECRYPTION_KEY=$NODE_DECRYPTION_KEY
+            - PYTHONUNBUFFERED=TRUE
+        expose:
+            - "8000"
+        depends_on:
+            - ez_mongodb
+            - ez_elastic
    
     ez_worker:
         container_name: ez_worker
-        image: ez-engine
         build:
             context: .
             dockerfile: engine.dockerfile
@@ -75,7 +74,7 @@ services:
         environment:
             - discovery.type=single-node
         volumes:
-            - ./elastic_search_data:/usr/share/elasticsearch/data
+            - elastic_search_data:/usr/share/elasticsearch/data
         ports:
             - 9500:9300
             - 9400:9200
@@ -90,7 +89,7 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
             - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
         volumes:
-            - ./mongo_db:/data/db
+            - mongo_db:/data/db
         ports:
             - 27019:27017
 
@@ -108,6 +107,8 @@ services:
 volumes:
     redis_data:
     elastic_search_data:
+    mongo_db:
+    web_images:
             
     
     

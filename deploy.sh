@@ -70,15 +70,15 @@ restart(){
 
 destroy(){
   sudo docker-compose down
-  if [ -d elastic_search_data ]; then
-    cp -r elastic_search_data /tmp/eazyrecruit/
-    sudo rm -r elastic_search_data
-  fi
+  # if [ -d elastic_search_data ]; then
+  #   cp -r elastic_search_data /tmp/eazyrecruit/
+  #   sudo rm -r elastic_search_data
+  # fi
 
-  if [ -d mongo_db ]; then
-    cp -r mongo_db /tmp/eazyrecruit/
-    sudo rm -r mongo_db
-  fi
+  # if [ -d mongo_db ]; then
+  #   cp -r mongo_db /tmp/eazyrecruit/
+  #   sudo rm -r mongo_db
+  # fi
 
   sudo rm .adminpass
   sudo rm -r ./core/admin
