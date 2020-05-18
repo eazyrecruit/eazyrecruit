@@ -29,8 +29,8 @@ module.exports.setup = () => {
 module.exports.initialize = async () => {
   
   var dbRoles = await Role.find();
-  if(dbRoles.length >= 0) {
-    var roles = ['admin1', 'hr1', 'interviewer1',];
+  if(dbRoles.length <= 0) {
+    var roles = ['admin', 'hr', 'interviewer',];
     for (let i = 0; i < roles.length; i++) {
       var role = new Role();
       role.name = roles[i];
@@ -42,7 +42,7 @@ module.exports.initialize = async () => {
   }
 
   var dbUsers = await Users.find();
-  if(dbUsers.length >= 0){
+  if(dbUsers.length <= 0){
     const randomString = () => crypto.randomBytes(6).hexSlice();
     let role = await Role.findOne({ name: 'admin' });
     var user = new Users();

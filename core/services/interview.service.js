@@ -153,7 +153,7 @@ exports.saveResult = async (req) => {
 }
 
 exports.addCriteria = async (req) => {
-    let criteria = await interviewCriteria.findOne({ name: req.body.name.toLowerCase(), is_deleted: { $ne: true} });
+    let criteria = await interviewCriteria.findOne({ name: { "$regex": req.body.name, "$options": "i" }, is_deleted: { $ne: true} });
     if (!criteria) {
         criteria = await interviewCriteria.create({
             name: req.body.name,
