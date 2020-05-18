@@ -42,7 +42,7 @@ module.exports.setup = (app) => {
   app.use('/api/applicant/employer', require('./services/crud.service')(ApplicantEmployerModel, 'CRUDQ'));
   app.use('/api/activity', require('./services/crud.service')(ActivityModels, 'CRUDQ'));
   app.use('/api/industry', require('./services/crud.service')(IndustryModel, 'CRUDQ'));
-  app.use('/api/interview/criteria', require('./services/crud.service')(InterviewCriteriaModel, 'CRUDQ'));
+  // app.use('/api/interview/criteria', require('./services/crud.service')(InterviewCriteriaModel, 'CRUDQ'));
   app.use('/api/interview/mode', require('./services/crud.service')(InterviewModeModel, 'CRUDQ'));
   // app.use('/api/interview/result', require('./services/crud.service')(InterviewResultModel, 'CRUDQ'));
   app.use('/api/pipeline', require('./services/crud.service')(JobPipelineModel, 'CRUDQ'));

@@ -15,7 +15,6 @@ export class LeftSideComponent implements OnInit {
   biglogo: boolean = true;
   username: any;
   role: any;
-  logo: any;
 
   constructor(private sharedService: SharedService, 
     private router: Router,
@@ -25,11 +24,6 @@ export class LeftSideComponent implements OnInit {
   ngOnInit() {
     this.username = this.sharedService.getLoggedInUsername();
     this.role = this.accountService.getRole();
-    this.companyService.getCompany().subscribe(result => {
-      if (result['success'] && result['success']['data'] && result['success']['data'].length) {
-        this.logo = result['success']['data'][0].logo;
-      }
-    });
   }
 
   logout() {

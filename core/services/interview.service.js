@@ -120,7 +120,7 @@ exports.saveResult = async (req) => {
         if (!criteria._id) {
             createInterviewResults.push({
                 interview: criteria.interview,
-                criteria: criteria.criteriaId, 
+                criteria: criteria.criteria.id, 
                 score: criteria.score,
                 is_deleted: false,
                 created_at: Date.now(),
@@ -132,6 +132,7 @@ exports.saveResult = async (req) => {
             let updatedCriteria = await interviewResults.findByIdAndUpdate({_id : criteria._id}, {
                 score: criteria.score,
                 criteria: criteria.criteria._id,
+                is_deleted: false,
                 modified_at: Date.now(),
                 modified_by: criteria.modified_by
             }, {new: true});
@@ -152,9 +153,9 @@ exports.saveResult = async (req) => {
 }
 
 exports.addCriteria = async (req) => {
-    let criteria = interviewCriteria.find({ name: req.body.name.toLowerCase(), is_deleted: { $ne: true} });
+    let criteria = await interviewCriteria.findOne({ name: req.body.name.toLowerCase(), is_deleted: { $ne: true} });
     if (!criteria) {
-        interviewCriteria.create({
+        criteria = await interviewCriteria.create({
             name: req.body.name,
             created_at: new Date(),
             created_by: req.user.id,
@@ -162,9 +163,8 @@ exports.addCriteria = async (req) => {
             modified_by: req.user.id,
             is_deleted: false
         });
-    } else {
-        return criteria;
     }
+    return criteria;
 }
 
 exports.getInterviews = async (req) => {
