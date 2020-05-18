@@ -10,7 +10,7 @@ services:
             - ./nginx:/etc/nginx/conf.d
         depends_on:
             - ez_web
-            - ez_engine
+            # - ez_engine
 
     ez_web:
         container_name: ez_web
@@ -22,34 +22,37 @@ services:
         #     - "8082:8082"
         environment:
             - NODE_ENV=dev
-        depends_on:
-            - ez_engine
+        # depends_on:
+        #     - ez_engine
 
-    ez_engine:
-        container_name: ez_engine
-        image: ez-engine
-        build:
-            context: .
-            dockerfile: engine.dockerfile
-        command: [ "gunicorn", "api.wsgi:application", "--bind","0.0.0.0:8000", "--workers", "3" ]
-        environment:
-            - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
-            - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT
-            - MONGO_DB=$MONGO_DB
-            - MONGO_URL=$MONGO_URL
-            - REDIS_URL=$REDIS_URL
-            - NODE_DECRYPTION_IV=$NODE_DECRYPTION_IV
-            - NODE_DECRYPTION_KEY=$NODE_DECRYPTION_KEY
-            - PYTHONUNBUFFERED=TRUE
-        expose:
-            - "8000"
-        depends_on:
-            - ez_mongodb
-            - ez_elastic
+    # ez_engine:
+    #     container_name: ez_engine
+    #     image: ez-engine
+    #     build:
+    #         context: .
+    #         dockerfile: engine.dockerfile
+    #     command: [ "gunicorn", "api.wsgi:application", "--bind","0.0.0.0:8000", "--workers", "3" ]
+    #     environment:
+    #         - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
+    #         - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT
+    #         - MONGO_DB=$MONGO_DB
+    #         - MONGO_URL=$MONGO_URL
+    #         - REDIS_URL=$REDIS_URL
+    #         - NODE_DECRYPTION_IV=$NODE_DECRYPTION_IV
+    #         - NODE_DECRYPTION_KEY=$NODE_DECRYPTION_KEY
+    #         - PYTHONUNBUFFERED=TRUE
+    #     expose:
+    #         - "8000"
+    #     depends_on:
+    #         - ez_mongodb
+    #         - ez_elastic
    
     ez_worker:
         container_name: ez_worker
         image: ez-engine
+        build:
+            context: .
+            dockerfile: engine.dockerfile
         command: [ "celery", "worker", "-A", "tasks", "-B", "-s", "/usr/src/celery"]
         environment:
             - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
@@ -63,7 +66,8 @@ services:
         depends_on:
             - ez_redis
             - ez_mongodb
-            - ez_engine
+        ports:
+            - 5555:5555
         
     ez_elastic:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
@@ -71,7 +75,7 @@ services:
         environment:
             - discovery.type=single-node
         volumes:
-            - elastic_search_data:/usr/share/elasticsearch/data
+            - ./elastic_search_data:/usr/share/elasticsearch/data
         ports:
             - 9500:9300
             - 9400:9200

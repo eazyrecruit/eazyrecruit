@@ -11,13 +11,13 @@ class ResumeModel(BaseModel):
 
     def getAll(self, skip, count):
         db = super().EazyrecruitDB()
-        resumes = db.userresumes.find().skip(skip).limit(count)
+        resumes = db.applicantresumes.find().skip(skip).limit(count)
         return resumes
 
     def getById(self, resumeId):
         db = super().EazyrecruitDB()
-        return db.userresumes.find_one({"_id": ObjectId(resumeId)})
+        return db.applicantresumes.find_one({"_id": ObjectId(resumeId)})
 
     def getTotalCount(self):
         db = super().EazyrecruitDB()
-        return db.userresumes.find().count()
+        return db.applicantresumes.find().count()
