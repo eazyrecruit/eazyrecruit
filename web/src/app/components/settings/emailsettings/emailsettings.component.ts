@@ -64,47 +64,53 @@ export class EmailsettingsComponent implements OnInit {
   }
 
   editInbound() {
-    this.modalRef = this.modalService.show(InboundComponent, { 
-      class: 'modal-md', 
-      initialState: { settings: this.inboundSettings }
-    });
-    this.modalRef.content.closePopup.subscribe(result => {
-        if (result) {
-          this.inboundSettings = result;
-          this.toasterService.pop('success', 'Settings updated', 'inbound email settings updated successfully');
-        }
-    });
+    if (this.company && this.company._id) {
+      this.modalRef = this.modalService.show(InboundComponent, { 
+        class: 'modal-md', 
+        initialState: { settings: this.inboundSettings, companyId: this.company._id }
+      });
+      this.modalRef.content.closePopup.subscribe(result => {
+          if (result) {
+            this.inboundSettings = result;
+            this.toasterService.pop('success', 'Settings updated', 'inbound email settings updated successfully');
+          }
+      });
+    }
   }
 
   editOutbound() {
-    this.modalRef = this.modalService.show(OutboundComponent, { 
-      class: 'modal-md', 
-      initialState: { settings: this.outboundSettings }
-    });
-    this.modalRef.content.closePopup.subscribe(result => {
-        if (result) {
-          this.outboundSettings = result;
-          this.toasterService.pop('success', 'Settings updated', 'outbound email settings updated successfully');
-        }
-    });
+    if (this.company && this.company._id) {
+      this.modalRef = this.modalService.show(OutboundComponent, { 
+        class: 'modal-md', 
+        initialState: { settings: this.outboundSettings, companyId: this.company._id  }
+      });
+      this.modalRef.content.closePopup.subscribe(result => {
+          if (result) {
+            this.outboundSettings = result;
+            this.toasterService.pop('success', 'Settings updated', 'outbound email settings updated successfully');
+          }
+      });
+    }
   }
 
   editTemplate(form) {
-    this.modalRef = this.modalService.show(EmailTemplateComponent, { 
-      class: 'modal-lg',
-      initialState: { settings: this.templateSettings }
-    });
-    this.modalRef.content.closePopup.subscribe(result => {
-        if (result) {
-          this.templateSettings = result;
-          this.templateSettings.forEach(element => {
-            if (element.key == 'content') {
-              this.htmlPreview = element.value;
-            }
-          });
-          this.toasterService.pop('success', 'Settings updated', 'template email settings updated successfully');
-        }
-    });
+    if (this.company && this.company._id) {
+      this.modalRef = this.modalService.show(EmailTemplateComponent, { 
+        class: 'modal-lg',
+        initialState: { settings: this.templateSettings, companyId: this.company._id  }
+      });
+      this.modalRef.content.closePopup.subscribe(result => {
+          if (result) {
+            this.templateSettings = result;
+            this.templateSettings.forEach(element => {
+              if (element.key == 'content') {
+                this.htmlPreview = element.value;
+              }
+            });
+            this.toasterService.pop('success', 'Settings updated', 'template email settings updated successfully');
+          }
+      });
+    }  
   }
 
   setForms() {

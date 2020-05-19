@@ -19,6 +19,9 @@ export class OutboundComponent implements OnInit {
   @Input('settings')
   settings;
 
+  @Input('companyId')
+  companyId;
+
   constructor(private companyService: CompanyService,
     private fbForm: FormBuilder,
     private validationService: ValidationService,
@@ -51,7 +54,7 @@ export class OutboundComponent implements OnInit {
     if (!this.outboundForm.valid) {
       this.validationService.validateAllFormFields(this.outboundForm);
     } else {
-      this.companyService.editSettings(form, this.settings[0].companyId, form.mailvia).subscribe(result => {
+      this.companyService.editSettings(form, this.companyId, form.mailvia).subscribe(result => {
         if (result['success'] && result['success']['data']) {
           // emit updated data and close model
           this.closePopup.next(result['success']['data']);

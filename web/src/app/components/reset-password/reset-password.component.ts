@@ -21,8 +21,8 @@ export class ResetPasswordComponent implements OnInit {
     private route: ActivatedRoute) {
 
     this.passwordForm = this.fbuilder.group({
-      newPassword: [null, [<any>Validators.required]],
-      confirmPassword: [null, [<any>Validators.required]]
+      newPassword: [null, [<any>Validators.required, Validators.minLength(6)]],
+      confirmPassword: [null, [<any>Validators.required, Validators.minLength(6)]]
     });
   }
 
