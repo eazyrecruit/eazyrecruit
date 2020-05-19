@@ -76,7 +76,7 @@ destroy(){
   # fi
 
   # if [ -d mongo_db ]; then
-  #   cp -r mongo_db /tmp/eazyrecruit/
+  #   cp -r elastic_search_db /tmp/eazyrecruit/
   #   sudo rm -r mongo_db
   # fi
 

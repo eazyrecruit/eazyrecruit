@@ -52,7 +52,7 @@ services:
         build:
             context: .
             dockerfile: engine.dockerfile
-        command: [ "celery", "worker", "-A", "tasks", "-B", "-s", "/usr/src/celery"]
+        command: sh -c "supervisord && celery worker -A tasks -B -s /usr/src/celery"
         environment:
             - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
             - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT

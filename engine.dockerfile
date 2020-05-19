@@ -17,13 +17,14 @@ WORKDIR /usr/src/app
 
 #Installing depandancies
 COPY ./engine/requirements.txt .
+RUN pip install supervisor flower
 RUN pip install -r requirements.txt
 
 # Project copy 
 COPY ./engine .
 
 # Expose ports
-EXPOSE 8000
+EXPOSE 8000 5555
 
 # default command to execute 
 CMD [ "gunicorn", "api.wsgi:application", "--bind","0.0.0.0:8000", "--workers", "3" ]
