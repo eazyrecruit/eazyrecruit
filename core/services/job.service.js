@@ -6,6 +6,7 @@ var Interview = require('../models/interview');
 const uuidv4 = require('uuid/v4');
 var histroyService = require('../services/history.service');
 var utilService = require('../services/util.service');
+var esService = require('../services/es.service');
 
 exports.save = async (req) => {
     if (req.body) {
@@ -287,7 +288,8 @@ exports.removeApplicant = async (req) => {
             if (req.params.id) {
                 let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
                 if (jobApplicant) {
-                    let job = await Jobs.findByIdAndUpdate(jobApplicant.job, { $pull: { applicants: [jobApplicant.applicant] }}, { new: true });
+                    let job = await Jobs.findByIdAndUpdate(jobApplicant.job, { $pull: { applicants: req.params.id }}, { new: true });
+                    let elJob = await esService.update(job.id, job);
                     let interview = await Interview.findOne({ jobId: jobApplicant.job, jobApplicant: jobApplicant.applicant });
                     if (interview) {
                         try {
