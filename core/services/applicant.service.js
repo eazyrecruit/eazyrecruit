@@ -247,8 +247,10 @@ exports.save = async (req) => {
                 }
                 
                 try {
-                    await notifyCandidate(modelApplicant);
-                    console.log('email sent to : ', modelApplicant.email);
+                    if (modelApplicant.email) {
+                        await notifyCandidate(modelApplicant);
+                        console.log('email sent to : ', modelApplicant.email);
+                    }
                 } catch (error) {
                     console.log('send email error : ', error);
                 }
