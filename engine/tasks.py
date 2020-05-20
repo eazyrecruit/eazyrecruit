@@ -43,8 +43,10 @@ def dbreparser_task():
 
 @app.task(name="dbparser")
 def dbparser_task(resumeId):
+    # print(type(resumeId))
+    print(resumeId)
     file = DbParser.parseById(resumeId)
-    if file:
+    if file and file['tempFile']:
         resumeparser_task.delay(file['tempFile'], file['fileName'], file['resumeId'], 'upload')
 
 @app.task(name="resumeparser")

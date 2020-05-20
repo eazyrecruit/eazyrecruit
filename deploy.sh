@@ -21,7 +21,7 @@ setup(){
 
     db_up
 
-    echo "########## Wait few min, Setting MongoDb and Elastic Search Dockers #########################"
+    echo "########## Wait few minutes, Setting MongoDb and Elastic Search Dockers #########################"
     mongodb_status_check=`sudo docker logs ez_mongodb | grep "MongoDB init process complete;"`
     # echo $mongodb_status_check
     while [ -z "$mongodb_status_check" ]
@@ -32,7 +32,7 @@ setup(){
         # echo $mongodb_status_check
     done
 
-    echo "########## Wait few sec, Setting core and engine services #######################"
+    echo "########## Wait few seconds, Setting core and engine services #######################"
     sleep 10
 
     ez_docker_up
@@ -76,11 +76,11 @@ destroy(){
   # fi
 
   # if [ -d mongo_db ]; then
-  #   cp -r elastic_search_db /tmp/eazyrecruit/
+  #   cp -r mongo_db /tmp/eazyrecruit/
   #   sudo rm -r mongo_db
   # fi
 
-  # sudo rm .adminpass
+  sudo rm .adminpass
   sudo rm -r ./core/admin
 
 }

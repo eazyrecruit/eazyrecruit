@@ -10,7 +10,7 @@ services:
             - ./nginx:/etc/nginx/conf.d
         depends_on:
             - ez_web
-            - ez_engine
+            # - ez_engine
 
     ez_web:
         container_name: ez_web
@@ -20,10 +20,10 @@ services:
             dockerfile: web.dockerfile
         # ports:
         #     - "8082:8082"
+        volumes:
+            - web_images:/usr/src/app/images
         environment:
             - NODE_ENV=dev
-        depends_on:
-            - ez_engine
 
     ez_engine:
         container_name: ez_engine
@@ -49,7 +49,9 @@ services:
    
     ez_worker:
         container_name: ez_worker
-        image: ez-engine
+        build:
+            context: .
+            dockerfile: engine.dockerfile
         command: [ "celery", "worker", "-A", "tasks", "-B", "-s", "/usr/src/celery"]
         environment:
             - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
@@ -63,7 +65,8 @@ services:
         depends_on:
             - ez_redis
             - ez_mongodb
-            - ez_engine
+        ports:
+            - 5555:5555
         
     ez_elastic:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
@@ -86,7 +89,7 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
             - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
         volumes:
-            - ./mongo_db:/data/db
+            - mongo_db:/data/db
         ports:
             - 27019:27017
 
@@ -104,6 +107,8 @@ services:
 volumes:
     redis_data:
     elastic_search_data:
+    mongo_db:
+    web_images:
             
     
     
