@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-import pymongo
 import config
 conn = config.get_config()['mongo_conn']
 

@@ -27,7 +27,8 @@ def parse(skip, count):
 def parseById(resumeId):
     try:
         resumemodel = ResumeModel()
-        resume = resumemodel.getById(resumeId)  
+        resume = resumemodel.getById(resumeId) 
+        tempFileName=None 
         if resume and isValidFormat(resume['fileType'], resume['fileName']):
             tempFileName = './dump/'+ uuid.uuid4().hex + os.path.splitext(resume['fileName'])[1]
             resume_64_decode = base64.b64decode(resume['resume'])
