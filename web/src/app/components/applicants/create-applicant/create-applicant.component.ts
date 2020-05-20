@@ -220,7 +220,7 @@ export class CreateApplicantComponent implements OnInit {
 
       if (this.resume) {
         formData.set('resume', this.resume);
-      } else {
+      } else if (this.currentResume) {
         formData.set('resume', this.currentResume);
       }
 
