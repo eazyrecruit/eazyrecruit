@@ -37,7 +37,7 @@ module.exports = {
     // host: 'mongodb://localhost:27017/eazyrecruit'
   },
   redis: {
-    host: "https://192.168.1.168:6379"
+    host: "redis://:klkjhgbvfcf@192.168.1.168:6379/0"
   },
   elasticSearch: {
     // host: "http://192.168.1.157:9200",

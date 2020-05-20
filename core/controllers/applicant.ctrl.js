@@ -51,9 +51,9 @@ router.post("/", applicantResumeUpload.any(), async (req, res) => {
         if (typeof applicant == 'object') {
             let id;
             if (applicant.resume) {
-                id = applicant.resume.id;
+                id = applicant.resume.toString();
             } else if (applicant.applicant && applicant.applicant.resume) {
-                id = applicant.applicant.resume.id
+                id = applicant.applicant.resume.toString();
             }
             let parsedData = await redisClient.parse(id);
             console.log('parsed data : ', parsedData);

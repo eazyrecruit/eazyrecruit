@@ -5,7 +5,9 @@ var Companies = require('./models/company');
 var Applicant = require('./models/applicant');
 var Job = require('./models/job');
 var Role = require('./models/userRole');
+var locationService = require('./services/location.service');
 const crypto = require('crypto');
+var fs = require('fs');
 
 // ****** eazy recruit *******
 module.exports.setup = () => {
@@ -49,8 +51,21 @@ module.exports.initialize = async () => {
     user.password = randomString();
     user.email = 'admin@eazyrecruit.in';
     user.roles = role ? [role._id] : [];
-    console.log('Admin Password:',user.password)
+    console.log('Admin Password : ', user.password)
     await user.save();
+
+    // create locations
+    try {
+      let states = fs.readFileSync('./states.json', 'utf8');
+      if (states) {
+        await locationService.location(JSON.parse(states), user.id);
+        console.log('locations added');  
+      } else {
+        console.log('states.json file is missing!');
+      }
+    } catch (error) {
+      console.log('location error : ', error);
+    }
   }
 
   var dbCompanies = await Companies.find();

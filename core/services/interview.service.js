@@ -7,6 +7,8 @@ const ics = require('ics')
 const uuidv1 = require('uuid/v1');
 var emailService = require('../services/email.service');
 let interviewCriteria = require('../models/interviewCriteria');
+let config = require('../config').config();
+let Company = require('../models/company');
 
 exports.createAndInvite = async (req) => {
     req.body.interview.interview = await Interview.create(
@@ -120,7 +122,7 @@ exports.saveResult = async (req) => {
         if (!criteria._id) {
             createInterviewResults.push({
                 interview: criteria.interview,
-                criteria: criteria.criteria.id, 
+                criteria: criteria.criteria._id, 
                 score: criteria.score,
                 is_deleted: false,
                 created_at: Date.now(),
@@ -200,7 +202,7 @@ exports.getInterviews = async (req) => {
     return { count, interviews };
 }
 
-async function inviteCandidate(req) {
+async function inviteCandidate(req, title) {
     return await createInvitation(req, 'Interview scheduled',
         `
         <p>Dear ${req.body.interview.candidate.name},</p>
@@ -208,8 +210,6 @@ async function inviteCandidate(req) {
         <p>Profile: <b>${req.body.interview.job.name}<b><br/>
         Interview date: <b>${new Date(req.body.interview.start).toLocaleString()}<b><br/>
         </p>
-        <p>Best regards,<br>
-        Team Eazyrecruit</p>
     `, req.body.interview.candidate.email, req.body.interview.organizer.email);
 }
 
@@ -219,9 +219,7 @@ async function inviteInterviewer(req, title) {
         <p>Dear ${req.body.interview.interviewer.name },</p>
         <p>${req.body.interview.organizer.name} invited you to interview ${req.body.interview.candidate.name} for the profile ${req.body.interview.job.name}.
         Please click on below link to access more details about the interview.</p>
-        <p><a href="https://web.easyrecruit.in/interview/${req.body.interview.interview._id.toString()}">https://web.easyrecruit.in/interview/${req.body.interview.interview.id}</p>
-        <p>Best regards,<br>
-        Team Easyrecruit</p>
+        <p><a href="${config.website}/interview/${req.body.interview.interview._id.toString()}">${config.website}/interview/${req.body.interview.interview.id}</p>
     `, req.body.interview.interviewer.email, req.body.interview.organizer.email);
 }
 
@@ -234,9 +232,7 @@ async function inviteOrganizer(req, title) {
         Interviewer Name: ${req.body.interview.interviewer.name}<br>
         Profile: ${req.body.interview.job.name}</p>
         <p>Please click on below link to access more details about the interview.<p>
-        <p>https://web.easyrecruit.in/interview/${req.body.interview.interview._id.toString()}</p>
-        <p>Best regards,<br>
-        Team Eazyrecruit</p>
+        <p>${config.website}/interview/${req.body.interview.interview._id.toString()}</p>
     `, req.body.interview.organizer.email, req.body.interview.organizer.email);
 }
 

@@ -60,7 +60,7 @@ import { InterviewListComponent } from './components/interview/interview-list/in
         path: '', component: LayoutComponent,
         children: [
           { path: '', redirectTo: 'home', pathMatch: 'full' },
-          { path: 'home', component: DashboardComponent, canActivate: [RoleGuardService], data: { expectedRole: ['user', 'admin', 'hr'] } },
+          { path: 'home', component: DashboardComponent, canActivate: [RoleGuardService], data: { expectedRole: ['interviewer', 'admin', 'hr'] } },
           {
             path: 'jobs', children: [
               { path: '', component: JobsComponent },
@@ -90,8 +90,8 @@ import { InterviewListComponent } from './components/interview/interview-list/in
               { path: 'google', component: GoogleComponent }
             ], canActivate: [RoleGuardService], data: { expectedRole: ['admin'] }
           },
-          { path: 'interviews', component: InterviewListComponent, data: { expectedRole: ['user', 'admin', 'hr'] } },
-          { path: 'interview/:interviewId', component: InterviewComponent, data: { expectedRole: ['user', 'admin', 'hr'] } },
+          { path: 'interviews', component: InterviewListComponent, data: { expectedRole: ['interviewer', 'admin', 'hr'] } },
+          { path: 'interview/:interviewId', component: InterviewComponent, data: { expectedRole: ['interviewer', 'admin', 'hr'] } },
           { path: 'search', component: SearchComponent, canActivate: [RoleGuardService], data: { expectedRole: ['admin', 'hr'] } },
           { path: 'createjob', component: JobComponent, canActivate: [RoleGuardService], data: { expectedRole: ['admin', 'hr'] } },
           { path: 'viewjobs', component: ViewJobsComponent, canActivate: [RoleGuardService], data: { expectedRole: ['admin', 'hr'] } }

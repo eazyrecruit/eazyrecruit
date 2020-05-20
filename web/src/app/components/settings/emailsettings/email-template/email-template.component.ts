@@ -20,6 +20,9 @@ export class EmailTemplateComponent implements OnInit {
   @Input('settings')
   settings;
 
+  @Input('companyId')
+  companyId;
+
   constructor(private companyService: CompanyService,
     private fbForm: FormBuilder,
     private validationService: ValidationService,
@@ -47,7 +50,7 @@ export class EmailTemplateComponent implements OnInit {
     if (!this.templateForm.valid) {
       this.validationService.validateAllFormFields(this.templateForm);
     } else {
-      this.companyService.editSettings(form, this.settings[0].companyId, 'template').subscribe(result => {
+      this.companyService.editSettings(form, this.companyId, 'template').subscribe(result => {
         if (result['success'] && result['success']['data']) {
           // emit updated data and close model
           this.closePopup.next(result['success']['data']);

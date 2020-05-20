@@ -117,7 +117,7 @@
                   <li *ngFor="let jobApplicant of applicant.jobs">
                     <span class="text">Title: </span>
                     <span class="text-info">
-                      {{jobApplicant.job.title}}
+                      {{jobApplicant.job ? jobApplicant.job.title : 'N/A'}}
                     </span>
                     <!-- <br>
                     <span class="text">Stage: </span>
@@ -201,7 +201,7 @@
                     <p>Status :
                       <span *ngIf="history.pipeline">{{history.pipeline.name}}</span>
                     </p>
-                    <p>{{history.created_at | amTimeAgo}}</p>
+                    <p>{{history.created_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</p>
                     <!-- <div class="comment" *ngFor="let rejectionComment of history.rejectionHistory">
                       <span>{{rejectionComment.comment}}</span> 
                       <div class="row">

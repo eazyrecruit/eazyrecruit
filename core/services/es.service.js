@@ -100,3 +100,32 @@ exports.searchJobs = async (req) => {
     });
 }
 
+exports.updateJob = async (id, job) => {
+    return new Promise(async (resolve, reject) => {
+        /* Update a Document */
+        if (id) {
+            Jobs.update({
+                id: id,
+                body: job
+            })
+            .then(
+                function(resp) {
+                    console.log("Successfully updated in elastic!");
+                    resolve(resp);
+                },
+                function(err) {
+                    console.log(err.message);
+                    reject(err);
+                }
+            );
+        } else {
+            reject({ status: 400, message: "job id is missing" });
+        }
+    });
+}
+
+// var elasticsearch = require("elasticsearch");
+
+// var client = new elasticsearch.Client({
+//     hosts: ["localhost:9200"]
+// });

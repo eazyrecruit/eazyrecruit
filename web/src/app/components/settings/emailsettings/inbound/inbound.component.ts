@@ -19,6 +19,8 @@ export class InboundComponent implements OnInit {
   @Input('settings')
   settings;
 
+  @Input('companyId')
+  companyId;
 
   constructor(private companyService: CompanyService,
     private fbForm: FormBuilder,
@@ -53,7 +55,7 @@ export class InboundComponent implements OnInit {
     if (!this.inboundForm.valid) {
       this.validationService.validateAllFormFields(this.inboundForm);
     } else {
-      this.companyService.editSettings(form, this.settings[0].companyId, form.type).subscribe(result => {
+      this.companyService.editSettings(form, this.companyId, form.type).subscribe(result => {
         if (result['success'] && result['success']['data']) {
           // emit updated data and close model
           this.closePopup.next(result['success']['data']);
