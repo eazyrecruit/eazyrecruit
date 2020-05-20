@@ -219,6 +219,7 @@ exports.save = async (req) => {
                     if (jobPipeline == null) {
                         modelJobApplicant = new JobApplicant();
                     }
+                    modelJobApplicant.job = modelJob.id;
                     modelJobApplicant.pipeline = jobPipeline;
                     modelJobApplicant.applicant = modelApplicant._id;
                     modelJobApplicant.is_deleted = false;
