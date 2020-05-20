@@ -70,6 +70,13 @@ restart(){
 
 destroy(){
   sudo docker-compose down
+  docker volume rm eazyrecruit_mongo_db
+  docker volume rm eazyrecruit_elastic_search_data
+  docker volume rm eazyrecruit_redis_data
+  docker volume rm eazyrecruit_web_images
+
+  sudo rm .adminpass
+  sudo rm -r ./core/admin
   # if [ -d elastic_search_data ]; then
   #   cp -r elastic_search_data /tmp/eazyrecruit/
   #   sudo rm -r elastic_search_data
@@ -79,10 +86,6 @@ destroy(){
   #   cp -r elastic_search_db /tmp/eazyrecruit/
   #   sudo rm -r mongo_db
   # fi
-
-  sudo rm .adminpass
-  sudo rm -r ./core/admin
-
 }
 
 if [ "$1" == "restart" ]; then
