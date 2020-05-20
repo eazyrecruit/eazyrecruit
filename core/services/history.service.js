@@ -13,5 +13,5 @@ exports.create = async (history) => {
 }
 
 exports.get = async (applicantId) => {
-    return await History.find({ applicant: applicantId });
+    return await History.find({ applicant: applicantId, is_deleted: false  });
 }

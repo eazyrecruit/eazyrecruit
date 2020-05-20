@@ -13,6 +13,7 @@ var JobPipeline = require('../models/jobPipeline');
 var Jobs = require('../models/job');
 var Histories = require('../models/history');
 var emailService = require('../services/email.service');
+var histroyService = require('../services/history.service');
 
 exports.save = async (req) => {
     return new Promise(async (resolve, reject) => {
@@ -235,6 +236,14 @@ exports.save = async (req) => {
                     modelJob.applicants.push(modelJobApplicant._id);
                     modelJob = await modelJob.save();
                     modelJobApplicant.applicant = modelApplicant;
+
+                    await histroyService.create({ 
+                        applicant: modelApplicant._id, 
+                        pipeline: jobPipeline,
+                        job: modelJob.id,
+                        createdBy: req.user.id,
+                        modifiedBy: req.user.id,
+                    });
                 }
 
                 // Update HR and candidate
