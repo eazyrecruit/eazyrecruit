@@ -51,7 +51,7 @@ module.exports.initialize = async () => {
     user.password = randomString();
     user.email = 'admin@eazyrecruit.in';
     user.roles = role ? [role._id] : [];
-    console.log('Admin Password : ', user.password)
+    console.log('Admin Password:', user.password) // dont add any space in "Admin Password:" log using it in reading admin password
     await user.save();
 
     // create locations

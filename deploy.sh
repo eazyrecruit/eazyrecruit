@@ -11,13 +11,13 @@ ez_docker_up(){
 }
 
 setup(){
-    if [ ! -d elastic_search_data ]; then
-      mkdir elastic_search_data
-    fi
+    # if [ ! -d elastic_search_data ]; then
+    #   mkdir elastic_search_data
+    # fi
 
-    if [ ! -d mongo_db ]; then
-      mkdir mongo_db
-    fi
+    # if [ ! -d mongo_db ]; then
+    #   mkdir mongo_db
+    # fi
 
     db_up
 
@@ -50,7 +50,7 @@ setup(){
 
     echo "############## EazyRecruit has successfully setup: #########################################"
     echo " "
-    echo "Access Url: http://127.0.0.1/admin"
+    echo "Access Url: http://0.0.0.0/admin"
     echo " "
     echo "Admin User: admin@eazyrecruit.in"
     echo " "
@@ -76,7 +76,7 @@ destroy(){
   docker volume rm eazyrecruit_web_images
 
   sudo rm .adminpass
-  sudo rm -r ./core/admin
+  # sudo rm -r ./core/admin
   # if [ -d elastic_search_data ]; then
   #   cp -r elastic_search_data /tmp/eazyrecruit/
   #   sudo rm -r elastic_search_data
