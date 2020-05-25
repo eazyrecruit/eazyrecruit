@@ -47,10 +47,18 @@ setup(){
         echo $admin_user_create_check > .adminpass
         # echo $admin_user_create_check
     done
-
+    ARCH=$(uname -s | grep Darwin)
+    if [ "$ARCH" == "Darwin" ]; then
+      privateIP=`ipconfig getifaddr en0`
+    else
+      privateIP=`ip route get 1 | awk '{print $NF;exit}'`
+    fi
+    
+    
     echo "############## EazyRecruit has successfully setup: #########################################"
     echo " "
-    echo "Access Url: http://0.0.0.0/admin"
+    echo "Access Url: http://${privateIP}/admin" 
+    echo "            http://0.0.0.0/admin"
     echo " "
     echo "Admin User: admin@eazyrecruit.in"
     echo " "
