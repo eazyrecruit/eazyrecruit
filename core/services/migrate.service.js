@@ -97,7 +97,7 @@ exports.restoreJob = async (data) => {
     return await Job.create(jobs);
 }
 
-let pipeline = async (data) => {
+let pipeline = async (data, id) => {
     let pipelines = [];
     for (let i = 0; i < data.length; i++) {
         let obj = data[i];
@@ -105,9 +105,9 @@ let pipeline = async (data) => {
         pipeline.name = obj.name;
         pipeline.position = obj.position;
         pipeline.is_deleted = obj.is_deleted;
-        pipeline.created_by = data.user.id;
+        pipeline.created_by = id;
         pipeline.created_at = new Date(obj.created_at);
-        pipeline.modified_by = data.user.id;
+        pipeline.modified_by = id;
         pipeline.modified_at = new Date(obj.modified_at);
         pipelines.push(pipeline);
     }
