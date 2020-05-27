@@ -33,9 +33,9 @@ exports.restoreUser = async (data) => {
             user.tokens = [];
             user.picture = "";
             user.is_deleted = false;
-            user.created_by = req.user.id;
+            user.created_by = data.user.id;
             user.created_at = new Date();
-            user.modified_by = req.user.id;
+            user.modified_by = data.user.id;
             user.modified_at = new Date();
             users.push(user);
         }
@@ -53,9 +53,9 @@ exports.restoreState = async (data) => {
         location.city = obj.city.city;
         location.state = obj.state;
         location.is_deleted = false;
-        location.created_by = req.user.id;
+        location.created_by = data.user.id;
         location.created_at = new Date();
-        location.modified_by = req.user.id;
+        location.modified_by = data.user.id;
         location.modified_at = new Date();
         states.push(location);
     }
@@ -88,9 +88,9 @@ exports.restoreJob = async (data) => {
         job.metaTitle = obj.title;
         job.tags = [];
         job.is_deleted = obj.is_deleted;
-        job.created_by = req.user.id;
+        job.created_by = data.user.id;
         job.created_at = new Date(obj.created_at);
-        job.modified_by = req.user.id;
+        job.modified_by = data.user.id;
         job.modified_at = new Date(obj.modified_at);
         jobs.push(job);
     }
@@ -105,9 +105,9 @@ let pipeline = async (data) => {
         pipeline.name = obj.name;
         pipeline.position = obj.position;
         pipeline.is_deleted = obj.is_deleted;
-        pipeline.created_by = req.user.id;
+        pipeline.created_by = data.user.id;
         pipeline.created_at = new Date(obj.created_at);
-        pipeline.modified_by = req.user.id;
+        pipeline.modified_by = data.user.id;
         pipeline.modified_at = new Date(obj.modified_at);
         pipelines.push(pipeline);
     }
@@ -127,9 +127,9 @@ exports.restoreApplicant = async (data) => {
         if (modelApplicant == null) {
             modelApplicant = new Applicant();
         }
-        modelApplicant.created_by = req.user.id;
+        modelApplicant.created_by = data.user.id;
         modelApplicant.created_at = new Date(obj.created_at);
-        modelApplicant.modified_by = req.user.id;
+        modelApplicant.modified_by = data.user.id;
         modelApplicant.modified_at = new Date(obj.modified_at);
         modelApplicant.email = obj.personal.email;
         modelApplicant.phones = [obj.personal.mobile_number];
@@ -160,9 +160,9 @@ exports.restoreApplicant = async (data) => {
                     modelSkills.name = obj.skills.skill[iSkill];
                 }
                 modelSkills.is_deleted = false;
-                modelSkills.created_by = req.user.id;
+                modelSkills.created_by = data.user.id;
                 modelSkills.created_at = new Date();
-                modelSkills.modified_by = req.user.id;
+                modelSkills.modified_by = data.user.id;
                 modelSkills.modified_at = new Date();
                 modelSkills = await modelSkills.save();
                 modelApplicant.skills.push(modelSkills);
@@ -195,12 +195,12 @@ exports.restoreResume = async (data) => {
         let obj = data[i];
         let applicant = null;
         let modelResume = new Resume();
-            modelResume.created_by = req.user.id;
+            modelResume.created_by = data.user.id;
             modelResume.created_at = new Date();
             modelResume.resume = obj.resume,
             modelResume.fileName = obj.fileName;
             modelResume.fileType = obj.fileType;
-            modelResume.modified_by = req.user.id;
+            modelResume.modified_by = data.user.id;
             modelResume.modified_at = new Date();
             modelResume = await modelResume.save();
 
@@ -237,9 +237,9 @@ exports.restoreJobApplicant = async (data) => {
             modelJobApplicant.job = job._id;
             modelJobApplicant.is_deleted = false;
             modelJobApplicant.created_at = new Date();
-            modelJobApplicant.created_by = req.user.id;
+            modelJobApplicant.created_by = data.user.id;
             modelJobApplicant.modified_at = new Date();
-            modelJobApplicant.modified_by = req.user.id;
+            modelJobApplicant.modified_by = data.user.id;
             modelJobApplicant = await modelJobApplicant.save();
             // Link with Job
             if (job.applicants == null) {
