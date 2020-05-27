@@ -4,6 +4,7 @@ let migrateService = require('../services/migrate.service');
 
 router.post('/user', async (req, res) => {
     try {
+        req.body.user = req.user;
         let result = await migrateService.restoreUser(req.body);
         res.send(result);
     } catch (error) {
@@ -13,6 +14,7 @@ router.post('/user', async (req, res) => {
 
 router.post('/state', async (req, res) => {
     try {
+        req.body.user = req.user;
         let result = await migrateService.restoreState(req.body);
         res.send(result);
     } catch (error) {
@@ -22,6 +24,7 @@ router.post('/state', async (req, res) => {
 
 router.post('/job', async (req, res) => {
     try {
+        req.body.user = req.user;
         let result = await migrateService.restoreJob(req.body);
         res.send(result);
     } catch (error) {
@@ -31,6 +34,7 @@ router.post('/job', async (req, res) => {
 
 router.post('/applicant', async (req, res) => {
     try {
+        req.body.user = req.user;
         let result = await migrateService.restoreApplicant(req.body);
         res.send(result);
     } catch (error) {
@@ -40,6 +44,7 @@ router.post('/applicant', async (req, res) => {
 
 router.post('/resume', async (req, res) => {
     try {
+        req.body.user = req.user;
         let result = await migrateService.restoreResume(req.body);
         res.send(result);
     } catch (error) {
@@ -49,6 +54,7 @@ router.post('/resume', async (req, res) => {
 
 router.post('/jobapplicant', async (req, res) => {
     try {
+        req.body.user = req.user;
         let result = await migrateService.restoreJobApplicant(req.body);
         res.send(result);
     } catch (error) {
@@ -58,6 +64,7 @@ router.post('/jobapplicant', async (req, res) => {
 
 router.post('/comment', async (req, res) => {
     try {
+        req.body.user = req.user;
         let result = await migrateService.restoreComments(req.body);
         res,send(result);
     } catch (error) {
@@ -67,6 +74,7 @@ router.post('/comment', async (req, res) => {
 
 router.post('/history', async (req, res) => {
     try {
+        req.body.user = req.user;
         let result = await migrateService.restoreHistory(req.body);
         res.send(result);
     } catch (error) {
@@ -76,6 +84,7 @@ router.post('/history', async (req, res) => {
 
 router.get('/applicantbyjob', async (req, res) => {
     try {
+        req.body.user = req.user;
         let result = await migrateService.emailByJob(req.query.id);
         res.send(result);
     } catch (error) {
