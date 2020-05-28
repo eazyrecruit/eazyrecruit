@@ -257,8 +257,7 @@ exports.restoreJobApplicant = async (data) => {
 exports.restoreComments = async (data) => {
     let comments = [];
     for (let i = 0; i < data.length; i++) {
-        if (i > 632) {
-            let obj = data[i];
+        let obj = data[i];
             let job;
             if (obj.job_post_applicant && obj.job_post_applicant.job_post && obj.job_post_applicant.job_post.guid) {
                 job = await Job.findOne({ guid: obj.job_post_applicant.job_post.guid  });
@@ -277,7 +276,6 @@ exports.restoreComments = async (data) => {
             comment.modified_by = user.id
             await comment.save(); 
             comments.push(comment);
-        }
     }
     return comments;
 }
@@ -305,7 +303,7 @@ exports.restoreHistory = async (data) => {
         let history = new History();
         history.applicant = applicant.id,
         history.pipeline = jobPipeline,
-        history.job = obj.job,
+        history.job = job ? job.id : null,
         history.is_deleted = obj.is_deleted,
         history.created_at = Date.now(obj.created_at),
         history.created_by = user.id,
