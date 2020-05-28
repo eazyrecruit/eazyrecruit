@@ -328,7 +328,7 @@ exports.updateCommentsById = async (req) => {
 }
 
 exports.getComments = async (req) => {
-    return await ApplicantComments.find({ applicant: req.params.id , is_deleted: false});
+    return await ApplicantComments.find({ applicant: req.params.id, is_deleted: false}).populate({ path: 'modified_by', select: 'email firstName lastName'});
 }
 
 exports.getCommentsByJob = async (applicantId, jobId) => {
