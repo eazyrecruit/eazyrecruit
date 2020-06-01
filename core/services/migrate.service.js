@@ -29,13 +29,13 @@ exports.restoreUser = async (data) => {
             user.passwordResetExpires = "";
             user.emailVerificationToken = "";
             user.emailVerified = true;
-            user.google = "";
+            user.google = false;
             user.tokens = [];
             user.picture = "";
             user.is_deleted = false;
-            user.created_by = "5e6b047ddc8153001188bfcb";
+            user.created_by = data.user.id;
             user.created_at = new Date();
-            user.modified_by = "5e6b047ddc8153001188bfcb";
+            user.modified_by = data.user.id;
             user.modified_at = new Date();
             users.push(user);
         }
@@ -53,9 +53,9 @@ exports.restoreState = async (data) => {
         location.city = obj.city.city;
         location.state = obj.state;
         location.is_deleted = false;
-        location.created_by = "5e6b047ddc8153001188bfcb";
+        location.created_by = data.user.id;
         location.created_at = new Date();
-        location.modified_by = "5e6b047ddc8153001188bfcb";
+        location.modified_by = data.user.id;
         location.modified_at = new Date();
         states.push(location);
     }
@@ -88,16 +88,16 @@ exports.restoreJob = async (data) => {
         job.metaTitle = obj.title;
         job.tags = [];
         job.is_deleted = obj.is_deleted;
-        job.created_by = "5e6b047ddc8153001188bfcb";
+        job.created_by = data.user.id;
         job.created_at = new Date(obj.created_at);
-        job.modified_by = "5e6b047ddc8153001188bfcb";
+        job.modified_by = data.user.id;
         job.modified_at = new Date(obj.modified_at);
         jobs.push(job);
     }
     return await Job.create(jobs);
 }
 
-let pipeline = async (data) => {
+let pipeline = async (data, id) => {
     let pipelines = [];
     for (let i = 0; i < data.length; i++) {
         let obj = data[i];
@@ -105,9 +105,9 @@ let pipeline = async (data) => {
         pipeline.name = obj.name;
         pipeline.position = obj.position;
         pipeline.is_deleted = obj.is_deleted;
-        pipeline.created_by = "5e6b047ddc8153001188bfcb";
+        pipeline.created_by = id;
         pipeline.created_at = new Date(obj.created_at);
-        pipeline.modified_by = "5e6b047ddc8153001188bfcb";
+        pipeline.modified_by = id;
         pipeline.modified_at = new Date(obj.modified_at);
         pipelines.push(pipeline);
     }
@@ -127,9 +127,9 @@ exports.restoreApplicant = async (data) => {
         if (modelApplicant == null) {
             modelApplicant = new Applicant();
         }
-        modelApplicant.created_by = '5e6b047ddc8153001188bfcb';
+        modelApplicant.created_by = data.user.id;
         modelApplicant.created_at = new Date(obj.created_at);
-        modelApplicant.modified_by = '5e6b047ddc8153001188bfcb';
+        modelApplicant.modified_by = data.user.id;
         modelApplicant.modified_at = new Date(obj.modified_at);
         modelApplicant.email = obj.personal.email;
         modelApplicant.phones = [obj.personal.mobile_number];
@@ -160,9 +160,9 @@ exports.restoreApplicant = async (data) => {
                     modelSkills.name = obj.skills.skill[iSkill];
                 }
                 modelSkills.is_deleted = false;
-                modelSkills.created_by = '5e6b047ddc8153001188bfcb';
+                modelSkills.created_by = data.user.id;
                 modelSkills.created_at = new Date();
-                modelSkills.modified_by = '5e6b047ddc8153001188bfcb';
+                modelSkills.modified_by = data.user.id;
                 modelSkills.modified_at = new Date();
                 modelSkills = await modelSkills.save();
                 modelApplicant.skills.push(modelSkills);
@@ -195,19 +195,19 @@ exports.restoreResume = async (data) => {
         let obj = data[i];
         let applicant = null;
         let modelResume = new Resume();
-            modelResume.created_by = '5e6b047ddc8153001188bfcb';
+            modelResume.created_by = data.user.id;
             modelResume.created_at = new Date();
             modelResume.resume = obj.resume,
             modelResume.fileName = obj.fileName;
             modelResume.fileType = obj.fileType;
-            modelResume.modified_by = '5e6b047ddc8153001188bfcb';
+            modelResume.modified_by = data.user.id;
             modelResume.modified_at = new Date();
             modelResume = await modelResume.save();
 
         if (obj.profile_id && obj.profile_id.personal && obj.profile_id.personal.email) {
             applicant = await Applicant.findOne({ email: obj.profile_id.personal.email });
-            applicant.resume = modelResume._id;
-            applicant.save();
+            applicant.resume = modelResume.id;
+            await applicant.save();
         }
         array.push(applicant);
     }
@@ -237,9 +237,9 @@ exports.restoreJobApplicant = async (data) => {
             modelJobApplicant.job = job._id;
             modelJobApplicant.is_deleted = false;
             modelJobApplicant.created_at = new Date();
-            modelJobApplicant.created_by = '5e6b047ddc8153001188bfcb';
+            modelJobApplicant.created_by = data.user.id;
             modelJobApplicant.modified_at = new Date();
-            modelJobApplicant.modified_by = '5e6b047ddc8153001188bfcb';
+            modelJobApplicant.modified_by = data.user.id;
             modelJobApplicant = await modelJobApplicant.save();
             // Link with Job
             if (job.applicants == null) {
@@ -257,8 +257,7 @@ exports.restoreJobApplicant = async (data) => {
 exports.restoreComments = async (data) => {
     let comments = [];
     for (let i = 0; i < data.length; i++) {
-        if (i > 632) {
-            let obj = data[i];
+        let obj = data[i];
             let job;
             if (obj.job_post_applicant && obj.job_post_applicant.job_post && obj.job_post_applicant.job_post.guid) {
                 job = await Job.findOne({ guid: obj.job_post_applicant.job_post.guid  });
@@ -277,7 +276,6 @@ exports.restoreComments = async (data) => {
             comment.modified_by = user.id
             await comment.save(); 
             comments.push(comment);
-        }
     }
     return comments;
 }
@@ -305,7 +303,7 @@ exports.restoreHistory = async (data) => {
         let history = new History();
         history.applicant = applicant.id,
         history.pipeline = jobPipeline,
-        history.job = obj.job,
+        history.job = job ? job.id : null,
         history.is_deleted = obj.is_deleted,
         history.created_at = Date.now(obj.created_at),
         history.created_by = user.id,

@@ -1080,3 +1080,7 @@ tag-input {
     align-items: center;
     font-weight: 900;
 }
+
+.mr-top {
+    margin-top: 3.5rem;
+}
