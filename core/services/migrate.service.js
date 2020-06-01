@@ -206,8 +206,8 @@ exports.restoreResume = async (data) => {
 
         if (obj.profile_id && obj.profile_id.personal && obj.profile_id.personal.email) {
             applicant = await Applicant.findOne({ email: obj.profile_id.personal.email });
-            applicant.resume = modelResume._id;
-            applicant.save();
+            applicant.resume = modelResume.id;
+            await applicant.save();
         }
         array.push(applicant);
     }
