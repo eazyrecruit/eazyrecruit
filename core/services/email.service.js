@@ -3,48 +3,54 @@ var config = require('../config').config();
 var companyService = require('../services/company.service');
 
 exports.sendEmail = async function (emailObj, next) {
-    // get email configuration by company
-    let emailConfig = await getEmailConfig('smtp');
+    if (config.emailConfig.stop === false) {
 
-    if (emailConfig && emailConfig.hasOwnProperty('user')) {
-        // create reusable transporter object
-        if (config.emailConfig.test === true) {
-            emailObj.toEmail = config.emailConfig.testRecepient;
-        }
-        var transporter = nodemailer.createTransport({
-            service: 'SMTP',
-            auth: {
-                user: emailConfig.user,
-                pass: emailConfig.password,
-            },
-            secureConnection: true, // use SSL
-            port: emailConfig.port, // port for secure SMTP
-            host: emailConfig.host, // Amazon email SMTP hostname
-        });
-
-        // setup email data with unicode symbols
-        var mailOptions = {
-            from: emailConfig.fromEmail, // sender address
-            to: emailObj.toEmail, // list of receivers
-            subject: emailObj.subject, // Subject line
-            html: await getEmailBody({ title: emailObj.subject, body: emailObj.body, signature: "<b>HR team</b><br>Akeo Software Solutions Pvt Ltd<br><a href='mailto:hr@akeo.in'>hr@akeo.in</a>" }) // html body,
-        };
-
-        if (emailObj.attachments) {
-            mailOptions.attachments = emailObj.attachments
-        }
-
-        // send mail with defined transport object
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                next(error, null);
-            } else {
-                next(null, 'Email sent');
+        // get email configuration by company
+        let emailConfig = await getEmailConfig('smtp');
+        
+        if (emailConfig && emailConfig.hasOwnProperty('user')) {
+            // create reusable transporter object
+            if (config.emailConfig.test === true) {
+                emailObj.toEmail = config.emailConfig.testRecepient;
             }
-        });
+            var transporter = nodemailer.createTransport({
+                service: 'SMTP',
+                auth: {
+                    user: emailConfig.user,
+                    pass: emailConfig.password,
+                },
+                secureConnection: true, // use SSL
+                port: emailConfig.port, // port for secure SMTP
+                host: emailConfig.host, // Amazon email SMTP hostname
+            });
+            
+            // setup email data with unicode symbols
+            var mailOptions = {
+                from: emailConfig.fromEmail, // sender address
+                to: emailObj.toEmail, // list of receivers
+                subject: emailObj.subject, // Subject line
+                html: await getEmailBody({ title: emailObj.subject, body: emailObj.body, signature: "<b>HR team</b><br>Akeo Software Solutions Pvt Ltd<br><a href='mailto:hr@akeo.in'>hr@akeo.in</a>" }) // html body,
+            };
+
+            if (emailObj.attachments) {
+                mailOptions.attachments = emailObj.attachments
+            }
+            
+            // send mail with defined transport object
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    next(error, null);
+                } else {
+                    next(null, 'Email sent');
+                }
+            });
+        } else {
+            console.log('email config not found');
+            next({ status: 500, message: 'email config not found' }, null);
+        }
     } else {
-        console.log('email config not found');
-        next({ status: 500, message: 'email config not found' }, null);
+        console.log(`send email service stop : ${config.emailConfig.stop}`);
+        next(null, { status: 200, message: `send email service stop : ${config.emailConfig.stop}` });
     }
 }
 
