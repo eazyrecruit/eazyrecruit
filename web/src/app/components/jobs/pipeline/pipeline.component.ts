@@ -95,6 +95,7 @@ export class PipelineComponent implements OnInit {
     applicant.applicant = obj.dragData.applicant;
     applicant.pipeline = obj.dragData.pipeline;
     applicant.job = obj.dragData.job;
+    applicant.id = obj.dragData.id;
     this.pipelineService.updateApplicantStatus(applicant).subscribe(result => {
       if (result['success']['data']) {
         this.ngOnInit();
@@ -146,7 +147,8 @@ export class PipelineComponent implements OnInit {
         dragData: {
           pipeline: item._id,
           applicant: event.dragData.applicant ? event.dragData.applicant._id : event.dragData,
-          job: event.dragData.job
+          job: event.dragData.job,
+          id: event.dragData._id
         }
       };
       this.changeStatus(obj);
@@ -311,11 +313,21 @@ export class PipelineComponent implements OnInit {
       initialState: initialState
     });
     this.modalRef.content.closePopup.subscribe(result => {
-        if (result) {
-          this.job.applicants.push(result['data']);
+        if (result && result['data'] && result['data'].pipeline) {
+          let newApplicant = result['data']
+          newApplicant.pipeline = result['data'].pipeline._id;
+          newApplicant.applicant.fullName = this.getFullName.bind(result['data'].applicant);
+          this.job.applicants.push(newApplicant);
         }
     });
-}
+  }
+
+  getFullName(firstName, middleName, lastName) {
+    var name = firstName;
+    if (middleName && middleName != "null") name = name + " " + middleName;
+    if (lastName && lastName != "null") name = name + " " + lastName;
+    return name;
+  }
 
   goToCreate() {
     // let pipe_id = 0;
@@ -388,7 +400,8 @@ export class PipelineComponent implements OnInit {
         dragData: {
           pipeline: applicant.moveToPipeline,
           applicant: applicant.applicant._id,
-          job: applicant.job
+          job: applicant.job,
+          id: applicant._id  // job pipelineId
         }
       };
       this.changeStatus(obj);
@@ -401,6 +414,14 @@ export class PipelineComponent implements OnInit {
       SiteJS.stopLoader();
     } else {
       SiteJS.stopLoader();
+    }
+  }
+
+  onUpdate($event) {
+    for (let i = 0; i < this.job.applicants.length; i++) {
+      if ($event._id == this.job.applicants[i].applicant._id) {
+        this.job.applicants[i].applicant = $event;
+      }
     }
   }
 }

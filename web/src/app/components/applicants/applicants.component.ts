@@ -94,13 +94,8 @@ export class ApplicantsComponent implements OnInit {
   }
 
   openCandidate(applicantId: any) {
-    this.applicantDataService.getApplicantCompleteData(applicantId).subscribe(result => {
-      if (result['success'] && result['success']['data']) {
-        this.applicant = { _id: applicantId };
-        this.applicant.fullName = this.getFullName.bind(this.applicant);
-        SiteJS.slideOpen('applicant-info');
-      }
-    });
+    this.applicant = { _id: applicantId, isApplicantList: true };
+    SiteJS.slideOpen('applicant-info');
   }
 
   getFullName(firstName, middleName, lastName) {
@@ -193,11 +188,18 @@ export class ApplicantsComponent implements OnInit {
     this.modalRef = this.modalService.show(UploadResumeComponent);
     this.modalRef.content.onClose.subscribe(result => {
       if (result) {
-        console.log('new applicant : ', result);
         this.ApplicantList.unshift(result);
         this.totalRecords++; 
         //this.toasterService.pop('success', 'Success', 'Resume uploaded successfully.');
       }
     });
+  }
+
+  onUpdate($event) {
+    for (let i = 0; i < this.ApplicantList.length; i++) {
+      if ($event._id == this.ApplicantList[i]._id) {
+        this.ApplicantList[i] = $event;
+      }
+    }
   }
 }

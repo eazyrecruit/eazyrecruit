@@ -5,7 +5,7 @@ var esSearch = require('../services/es.service');
 var skillService = require('../services/skill.service');
 var locationService = require('../services/location.service');
 var responseService = require('../services/response.service');
-var validationService = require('../services/validation.service');
+var multer = require('multer');
 
 router.get("/applicants/pipelines/:id", async(req, res) => {
     try {
@@ -45,22 +45,33 @@ router.get("/", async (req, res) => {
                 results.hits.hits[iHit]._source.locations = await locationService.getAllByIds(results.hits.hits[iHit]._source.locations);
                 jobs.push(results.hits.hits[iHit]._source);
             }
-            responseService.response(req, null, 'Jobs GET', jobs, res);
+            responseService.successResponse({ count: results.hits.total.value, jobs: jobs }, 'Jobs GET', res);
         } else {
-            responseService.response(req, null, 'Jobs GET', null, res);
+            responseService.successResponse({ count: results.hits.total.value, jobs: [] }, 'Jobs GET', res);
         }
     } catch (err) {
-        responseService.response(req, err, 'Jobs GET', null, res);
+        let error = {
+            status: 500,
+            message: "internal server error"
+        }
+        console.log('save job error : ', err);
+        responseService.errorResponse(error, 'Jobs GET', res);
     }
 });
 
 // create new records in database
-router.post("/", async (req, res) => {
+var metaImage = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+router.post("/", metaImage.any(), async (req, res) => {
     try {
         var job = await jobService.save(req);
-        responseService.response(req, null, 'Job SAVE', job, res);
+        responseService.successResponse(job, 'Job SAVE', res);
     } catch (err) {
-        responseService.response(req, err, 'Job SAVE', null, res);
+        let error = {
+            status: 500,
+            message: "internal server error"
+        }
+        console.log('save job error : ', err);
+        responseService.errorResponse(error, 'Job SAVE', res);
     }
 });
 
@@ -93,10 +104,6 @@ router.put("/applicant", async (req, res) => {
     }
 });
 
-// update records
-router.put("/", (req, res) => {
-});
-
 // update record to make it delete.
 router.delete("/:id", (req, res) => {
     jobService.delete(req, function (err, data) {
@@ -104,10 +111,13 @@ router.delete("/:id", (req, res) => {
     });
 });
 
-router.delete("/applicant/:id", (req, res) => {
-    jobService.removeApplicant(req, function (err, data) {
-        responseService.response(req, err, 'delete job', data, res);
-    });
+router.delete("/applicant/:id", async (req, res) => {
+    try {
+        let result = await jobService.removeApplicant(req);
+        responseService.successResponse(result, 'remove applicant', res);   
+    } catch (error) {
+        responseService.errorResponse(error, 'remove applicnat', res);
+    }
 });
 
 // return job which is not deleted according to id

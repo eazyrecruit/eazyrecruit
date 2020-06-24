@@ -4,7 +4,10 @@ var Users = require('./models/user');
 var Companies = require('./models/company');
 var Applicant = require('./models/applicant');
 var Job = require('./models/job');
+var Role = require('./models/userRole');
+var locationService = require('./services/location.service');
 const crypto = require('crypto');
+var fs = require('fs');
 
 // ****** eazy recruit *******
 module.exports.setup = () => {
@@ -26,17 +29,43 @@ module.exports.setup = () => {
   mongodb.on('error', console.error.bind(console, 'EZ MongoDB connection error:'));
 }
 module.exports.initialize = async () => {
+  
+  var dbRoles = await Role.find();
+  if(dbRoles.length <= 0) {
+    var roles = ['admin', 'hr', 'interviewer',];
+    for (let i = 0; i < roles.length; i++) {
+      var role = new Role();
+      role.name = roles[i];
+      role.is_deleted = false;
+      role.created_at = new Date();
+      role.modified_at = new Date();
+      await role.save(); 
+    }
+  }
+
   var dbUsers = await Users.find();
   if(dbUsers.length <= 0){
     const randomString = () => crypto.randomBytes(6).hexSlice();
+    let role = await Role.findOne({ name: 'admin' });
     var user = new Users();
     user.password = randomString();
     user.email = 'admin@eazyrecruit.in';
-    console.log('Admin Password:',user.password)
-    // console.log('*** Admin Password ***')
-    // console.log(user.password)
-    // console.log('******')
+    user.roles = role ? [role._id] : [];
+    console.log('Admin Password:', user.password) // dont add any space in "Admin Password:" log using it in reading admin password
     await user.save();
+
+    // create locations
+    try {
+      let states = fs.readFileSync('./states.json', 'utf8');
+      if (states) {
+        await locationService.location(JSON.parse(states), user.id);
+        console.log('locations added');  
+      } else {
+        console.log('states.json file is missing!');
+      }
+    } catch (error) {
+      console.log('location error : ', error);
+    }
   }
 
   var dbCompanies = await Companies.find();
@@ -44,10 +73,11 @@ module.exports.initialize = async () => {
     var company = new Companies();
     company.name = 'Eazy Recruit';
     company.website = 'eazyrecruit.in';
-    company.email = 'info.eazyrecruit.in';
+    company.email = 'info@eazyrecruit.in';
     company.address_line_1 = '1st floor, malwa tower';
     company.phone = '9876543210';
-    console.log('*** Test Conpany Creation***')
+    company.groupName = ['imap','smtp','google'];
+    console.log('*** Test Company Creation***')
     await company.save();
   }
 

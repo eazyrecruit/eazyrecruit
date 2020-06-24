@@ -2,23 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Akeo Software Solutions Pvt Ltd | Akeo India | Akeo | Jobs | Openings</title>
+    <title>Jobs <%= locals.job && locals.job.title ? " - " + locals.job.title + " | " : " | " %><%= company.website %></title>
     <!-- CSS (load bootstrap from a CDN) -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/jssocials.css">
+    <link rel="stylesheet" href="/css/jssocials-theme-classic.css">
+    <% if (locals.job) {
+        let location = '';
+        if (job.locations && job.locations.length) {
+            for(let i = 0; i < job.locations.length; i++) {
+                location = job.locations[i].city + ', ' + job.locations[i].state;
+            } 
+        }
+        let skill = '';
+        if (job.skills && job.skills.length) {
+            let skills = [];
+            for(let i = 0; i < job.skills.length; i++) {
+                skills.push(job.skills[i].name);
+            }
+            skill = ' | ' + skills.join();
+        }
+        var description = location + ' | ' + (job.minExperience ? job.minExperience + ' years' : '') +  skill;
+    } %>
     <link rel="stylesheet" href="/css/akeo.css">
+    <meta property="og:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %><%= ' - ' + company.name %> " />
+    <meta property="og:description" content=" <%= description %> " />
+    <meta property="og:image" content="<%= locals.baseURL %><%= locals.job && job.metaImage ? '/'+job.metaImage : '/images/default-job.jpg' %>"/>
+    <meta property="og:image:alt" content="<%= locals.job ? job.metaImageAltText : '' %>" />
+    <meta property="twitter:card" content="summary_large_image"/>
+    <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %><%= ' - ' + company.name %> " />
+    <meta property="twitter:description" content=" <%= description %> " />
+    <meta property="twitter:image" content="<%= locals.baseURL %><%= locals.job && job.metaImage ? '/'+job.metaImage : '/images/default-job.jpg' %>"/>    
+    <meta property="twitter:image:alt" content="<%= locals.job ? job.metaImageAltText : '' %>" />
 </head>
 <body>
     <header>
         <%- include('../partials/header') %>
     </header>
     <main role="main">
-        <section class="jumbotron text-center">
+        <section class="jumbotron text-center" id="companyHeader">
             <div class="container text-center">
-                <h3>
-                    We are looking for passionate and creative people to join us in pushing boundaries and innovating
-                    businesses.
+                <h3 id="companyHeaderText">
+                    <%= company.header_description ? company.header_description : 'Company header description here.' %>
                 </h3>
             </div>
         </section>
@@ -27,6 +54,55 @@
     <footer>
         <%- include('../partials/footer') %>
     </footer>
+    <script src="/js/jquery-3.5.1.js"></script>
+    <script src="/js/jssocials.js"></script>
+    <script>   
+            $("#shareIcons").jsSocials({
+            shares: ["facebook", "linkedin", "twitter"],
+            url: "<%= locals.baseURL + locals.path %>",
+            text: "<%= locals.job ? job.metaTitle : '' %>",
+            showLabel: false,
+            showCount: false,
+            shareIn: "popup",
+            on: {
+                click: function(e) {
+                    console.log("share url : \"" + this.url + "\" at " + e.timeStamp);
+                },
+                mouseenter: function(e) {},
+                mouseleave: function(e) {}
+            }
+        });
+        $("#shareIcons").jsSocials("refresh");
+
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#companyHeader").css("background-color", "<%= company && company.header_bg_color ? company.header_bg_color : '#2c3e50' %>");
+            $("#companyHeaderText").css("color", "<%= company && company.header_text_color ? company.header_text_color : '#000000' %>");
+            $("#first").click(function() {
+                getUrl("#first");
+            });
+            $("#last").click(function() {
+                getUrl("#last");
+            });
+            $("#previousPage").click(function() {
+                getUrl("#previousPage");
+            });
+            $("#currentPage").click(function() {
+                getUrl("#currentPage");
+            });
+            $("#nextPage").click(function() {
+                getUrl("#nextPage");
+            });
+
+            function getUrl(selector) {
+                let search = $("#searchBox").val();
+                let url = $(selector).attr("href");
+                let newUrl = url.concat(search);
+                $(selector).attr("href", newUrl);
+            }
+        });
+    </script>
 </body>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
     integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"

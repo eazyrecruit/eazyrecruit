@@ -1,7 +1,11 @@
-import { Component, OnInit,  } from '@angular/core';
-import { FormGroup, FormBuilder, Validators} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { CompanyService } from '../../../services/company.service';
 import { ValidationService } from '../../../services/validation.service';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { InboundComponent } from './inbound/inbound.component';
+import { OutboundComponent } from './outbound/outbound.component';
+import { EmailTemplateComponent } from './email-template/email-template.component';
+import { ToasterService, ToasterConfig } from 'angular2-toaster';
 
 @Component({
   selector: 'app-emailsettings',
@@ -13,77 +17,100 @@ export class EmailsettingsComponent implements OnInit {
 
   inbound: boolean;
   outbound: boolean;
-  inboundForm: FormGroup;
-  outboundForm: FormGroup;
   company: any;
+  htmlPreview: String;
+  modalRef: BsModalRef;
+  inboundSettings: any;
+  outboundSettings: any;
+  templateSettings: any;
 
   constructor(private companyService: CompanyService,
-    private validationService: ValidationService,
-    private fbForm: FormBuilder) 
-    { 
-      this.inboundForm = this.fbForm.group({
-        type: ["imap", [<any>Validators.required]],
-        host: [null, [<any>Validators.required]],
-        user: [null, [<any>Validators.required]],
-        password: [null, [<any>Validators.required]],
-        ssl: [null],
-        port: [null],
-        folder: [null],
-        messages: [null]
-      });
-      this.outboundForm = this.fbForm.group({
-        mailvia: ["smtp", [<any>Validators.required]],
-        host: [null, [<any>Validators.required]],
-        user: [null],
-        password: [null],
-        port: [null]
-      });
-    }
+    private modalService: BsModalService,
+    private toasterService: ToasterService) {}
+
+  public config: ToasterConfig =  new ToasterConfig({
+    showCloseButton: true,
+    tapToDismiss: true,
+    timeout: 1000,
+    animation: 'fade',
+    positionClass: 'toast-top-right'
+  });
 
   ngOnInit() {
     this.setForms();
   }
 
   inboundEdit() {
-        this.companyService.getSettings(this.company._id, this.inboundForm.controls.type.value).subscribe(result =>{
-          var settings = result['success']['data'];
-          settings.forEach(setting => {
-            this.inboundForm.get(setting.key).setValue(setting.value);
-          });
-        })
+    this.companyService.getSettings(this.company._id, 'imap').subscribe(result =>{
+      this.inboundSettings = result['success']['data'];
+    });
   }
 
   outboundEdit() {
-        this.companyService.getSettings(this.company._id, this.outboundForm.controls.mailvia.value).subscribe(result =>{
-          var settings = result['success']['data'];
-          settings.forEach(setting => {
-            this.outboundForm.get(setting.key).setValue(setting.value);
-          });
-        })
+    this.companyService.getSettings(this.company._id, 'smtp').subscribe(result =>{
+      this.outboundSettings = result['success']['data'];
+    });
   }
 
-  editInbound(form) {
-    if (!this.inboundForm.valid) {
-      this.validationService.validateAllFormFields(this.inboundForm);
-    } else {
-      this.companyService.editSettings(form, this.company._id, form.type).subscribe(result => {
-        if (result['success']) {
-          this.inboundEdit();
+  templateEdit() {
+    this.companyService.getSettings(this.company._id, 'template').subscribe(result =>{
+      this.templateSettings = result['success']['data'];
+      this.templateSettings.forEach(element => {
+        if (element.key == 'content') {
+          this.htmlPreview = element.value;
         }
+      });
+    });
+  }
+
+  editInbound() {
+    if (this.company && this.company._id) {
+      this.modalRef = this.modalService.show(InboundComponent, { 
+        class: 'modal-md', 
+        initialState: { settings: this.inboundSettings, companyId: this.company._id }
+      });
+      this.modalRef.content.closePopup.subscribe(result => {
+          if (result) {
+            this.inboundSettings = result;
+            this.toasterService.pop('success', 'Settings updated', 'inbound email settings updated successfully');
+          }
       });
     }
   }
 
-  editOutbound(form) {
-    if (!this.outboundForm.valid) {
-      this.validationService.validateAllFormFields(this.outboundForm);
-    } else {
-      this.companyService.editSettings(form, this.company._id, form.mailvia).subscribe(result => {
-        if (result['success']) {
-          this.outboundEdit();
-        }
+  editOutbound() {
+    if (this.company && this.company._id) {
+      this.modalRef = this.modalService.show(OutboundComponent, { 
+        class: 'modal-md', 
+        initialState: { settings: this.outboundSettings, companyId: this.company._id  }
+      });
+      this.modalRef.content.closePopup.subscribe(result => {
+          if (result) {
+            this.outboundSettings = result;
+            this.toasterService.pop('success', 'Settings updated', 'outbound email settings updated successfully');
+          }
       });
     }
+  }
+
+  editTemplate(form) {
+    if (this.company && this.company._id) {
+      this.modalRef = this.modalService.show(EmailTemplateComponent, { 
+        class: 'modal-lg',
+        initialState: { settings: this.templateSettings, companyId: this.company._id  }
+      });
+      this.modalRef.content.closePopup.subscribe(result => {
+          if (result) {
+            this.templateSettings = result;
+            this.templateSettings.forEach(element => {
+              if (element.key == 'content') {
+                this.htmlPreview = element.value;
+              }
+            });
+            this.toasterService.pop('success', 'Settings updated', 'template email settings updated successfully');
+          }
+      });
+    }  
   }
 
   setForms() {
@@ -92,9 +119,7 @@ export class EmailsettingsComponent implements OnInit {
         this.company = company['success']['data'][0];
         this.inboundEdit();
         this.outboundEdit();
-      } else {
-        this.inboundForm.reset();
-        this.outboundForm.reset();
+        this.templateEdit();
       }
     })
   }

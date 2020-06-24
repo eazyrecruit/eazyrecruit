@@ -41,14 +41,18 @@ export class InterviewComponent implements OnInit {
             if (result['success']['data']) {
               this.applicant = result['success']['data'];
               this.applicantDataService.getResume(this.applicant.resume).subscribe((result) => {
-                this.resume = result['success']['data'];
-                if ((this.resume.fileName).includes('.pdf')) {
-                  const blob = this.converBase64toBlob(this.resume.resume, 'application/pdf');
-                  const blobURL = window.URL.createObjectURL(blob);
-                  this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
-                } else {
-                  this.resume_html = this.resume.resume;
+                if (result['success'] && result['success']['data']) {
+                  this.resume = result['success']['data'];
+                  if ((this.resume.fileName).includes('.pdf')) {
+                    const blob = this.converBase64toBlob(this.resume.resume, 'application/pdf');
+                    const blobURL = window.URL.createObjectURL(blob);
+                    this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
+                  } else {
+                    this.resume_html = this.resume.resume;
+                  }
                 }
+              }, error => {
+                this.resume = null;
               });
             }
           });
@@ -87,8 +91,7 @@ export class InterviewComponent implements OnInit {
         if (result && result['success'] && result['success']['data']) {
           this.results.push({ 
             interview: this.interview._id,
-            criteria: { name: result['success']['data'].name, id: result['success']['data']._id },
-            criteriaId: result['success']['data']._id, 
+            criteria: { name: result['success']['data'].name, _id: result['success']['data']._id }, 
             score: 0,
             created_by: this.interview.interviewer,
             modified_by: this.interview.interviewer
@@ -96,18 +99,22 @@ export class InterviewComponent implements OnInit {
           this.newCriteria = '';
         }
       }, (error) => {
-        console.log('error : ', error);
+        this.results = [];
       });
     }
   }
 
   removeCriteria(index) {
     if (index >= 0) {
-      this.interviewService.deleteResult(this.results[index]['_id']).subscribe(res => {
-        if (res['success']) {
-          this.results.splice(index, 1);
-        }
-      })
+      if (this.results[index]['_id']) {
+        this.interviewService.deleteResult(this.results[index]['_id']).subscribe(res => {
+          if (res['success'] && res['success']['data']) {
+            this.results.splice(index, 1);
+          }
+        })
+      } else {
+        this.results.splice(index, 1);
+      }
     }
   }
 
@@ -133,7 +140,6 @@ export class InterviewComponent implements OnInit {
 
   getFullName(firstName, middleName, lastName) {
     var name = firstName;
-    // console.log(firstName, middleName, lastName);
     if (middleName && middleName != "null") name = name + " " + middleName;
     if (lastName && lastName != "null") name = name + " " + lastName;
     return name;

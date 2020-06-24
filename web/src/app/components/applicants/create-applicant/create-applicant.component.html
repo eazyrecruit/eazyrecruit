@@ -75,42 +75,34 @@
         </small>
       </div>
       <div class="form-group col-sm-4">
-        <label for="contact" class="not-required">Refered By</label>
-        <input type="text" placeholder="Refered By" class="form-control" formControlName="referredBy">
-        <small class="text-danger" *ngIf="applicantForm.controls['referredBy'].hasError('nameValid')">
-          Please enter correct name
-        </small>
+        <label for="contact" class="not-required">Referred By</label>
+        <select formControlName="referredBy" class="form-control">
+          <option value="" disabled selected>Select Referrer</option>
+          <option *ngFor="let referrer of referrers;" value="{{referrer._id}}"> {{referrer.firstName}} {{referrer.lastName}}{{'<' + referrer.email + '>'}}</option>
+        </select>
       </div>
     </div>
 
     <div class="row">
       <div class="form-group col-md-4">
         <label for="contact">Availability</label>
-        <select class="form-control" formControlName="availability">
-          <option value="null" selected disabled>Select time</option>
-          <option value="Immediate">Immediate</option>
-          <option value="One month">One month</option>
-          <option value="Two months">Two months</option>
-          <option value="Two months">More than months</option>
+        <select class="form-control" formControlName="availability" (change)="validateAvailability($event)">
+          <option value="" selected disabled>Select time</option>
+          <option value="0">Immediate</option>
+          <option value="1">One month</option>
+          <option value="2">Two months</option>
+          <option value="3">More than two months</option>
         </select>
-        <!-- <select class="form-control" formControlName="availability" [(ngModel)]="availability">
-          <option>Select Time</option>
-          <option *ngFor="let avail of availArray;" value="{{avail.id}}_{{avail.name}}">{{avail.name}}</option>
-        </select> -->
-        <!-- <small class="text-danger"
-          *ngIf="applicantForm.controls['availability'].hasError('required') && applicantForm.controls['availability'].touched">
-          Please Select time.
-        </small> -->
       </div>
 
       <div class="form-group col-md-4">
-        <label for="alterEgo">Notice Period</label>
+        <label for="alterEgo">Notice Period (Months)</label>
         <input type="text" placeholder="Notice period" class="form-control" formControlName="noticePeriod">
       </div>
 
       <div class="form-group col-sm-4">
         <label for="contact">Notice Period (Negotiable)</label>
-        <input type="text" placeholder="Notice period" class="form-control" formControlName="noticePeriodNegotiable">
+        <input type="text" placeholder="Yes/No" class="form-control" formControlName="noticePeriodNegotiable">
       </div>
     </div>
     <div class="row">
@@ -157,10 +149,6 @@
     <div class="row">
       <div class="form-group col-md-12 taggingBox">
         <label for="name">Skills</label>
-        <small class="text-danger"
-          *ngIf="applicantForm.controls['skills'].hasError('required') && applicantForm.controls['skills'].touched">
-          Please add skills.
-        </small>
         <tag-input formControlName = "skills" [onlyFromAutocomplete]="false">
           <tag-input-dropdown [identifyBy]="'_id'" [displayBy]="'name'" [autocompleteObservable]="asyncSkills">
             <ng-template let-item="item" let-index="index">
@@ -170,13 +158,10 @@
         </tag-input>
       </div>
     </div>
+    
     <div class="row">
       <div class="form-group col-md-6 taggingBox">
         <label for="name">Current Location</label>
-        <small class="text-danger"
-          *ngIf="applicantForm.controls['skills'].hasError('required') && applicantForm.controls['skills'].touched">
-          Please add current location.
-        </small>
         <tag-input formControlName = "currentLocation" [onlyFromAutocomplete]="true" [maxItems]='1'>
           <tag-input-dropdown [identifyBy]="'_id'" [displayBy]="'city'" [autocompleteObservable]="asyncLocations">
             <ng-template let-item="item" let-index="index">
@@ -188,10 +173,6 @@
 
       <div class="form-group col-md-6 taggingBox">
         <label for="name">Preferred Locations</label>
-        <small class="text-danger"
-          *ngIf="applicantForm.controls['skills'].hasError('required') && applicantForm.controls['skills'].touched">
-          Please add preferred location(s).
-        </small>
         <tag-input formControlName = "preferredLocation" [onlyFromAutocomplete]="true">
           <tag-input-dropdown [identifyBy]="'_id'" [displayBy]="'city'" [autocompleteObservable]="asyncLocations">
             <ng-template let-item="item" let-index="index">
@@ -201,7 +182,6 @@
         </tag-input>
       </div>
     </div>
-
 
     <div class="row">
       <div class="form-group col-md-12">

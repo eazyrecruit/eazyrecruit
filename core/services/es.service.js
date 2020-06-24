@@ -24,19 +24,20 @@ exports.syncApplicants = async () => {
 
 exports.searchApplicants = async (req) => {
     return new Promise(function (resolve, reject) {
-        var from = req.body.offset > 0 ? req.body.offset - 1 : 0;
-        var size = req.body.pageSize;
-        var query;
-        if (req.body.searchText) {
+        let query;
+        let from = 0, size = 10;
+        if (req.query.limit) size = parseInt(req.query.limit);
+        if (req.query.offset) from = parseInt(req.query.offset);
+        if (req.query.search) {
             query = {
                 "bool": {
                     "should": [
-                        { "match_phrase": { "email": req.body.searchText } },
-                        { "match_phrase": { "firstName": req.body.searchText } },
-                        { "match_phrase": { "middleName": req.body.searchText } },
-                        { "match_phrase": { "lastName": req.body.searchText } },
-                        { "match": { "phones": req.body.searchText } },
-                        { "match": { "skills.name": req.body.searchText } }]
+                        { "match_phrase": { "email": req.query.search } },
+                        { "match_phrase": { "firstName": req.query.search } },
+                        { "match_phrase": { "middleName": req.query.search } },
+                        { "match_phrase": { "lastName": req.query.search } },
+                        { "match": { "phones": req.query.search } },
+                        { "match": { "skills.name": req.query.search } }]
                 }
             }
         } else {
@@ -64,11 +65,14 @@ exports.searchApplicants = async (req) => {
 
 exports.searchJobs = async (req) => {
     return new Promise(function (resolve, reject) {
-        if (req.query.title) {
+        let offset = 0, limit = 12;
+        if (req.query.limit) limit = parseInt(req.query.limit);
+        if (req.query.offset) offset = parseInt(req.query.offset);
+        if (req.query.searchText) {
             var query = {
                 "query_string" : {
                     "fields" : ["title"],
-                    "query" : "*" + req.query.title + "*"
+                    "query" : "*" + req.query.searchText + "*"
                 }
             }
         } else {
@@ -76,6 +80,7 @@ exports.searchJobs = async (req) => {
         }
         if (query) {
             Jobs.search(query, {
+                from: offset, size: limit,
                 sort: [{
                     "created_at": {
                         "order": "desc"
@@ -95,3 +100,32 @@ exports.searchJobs = async (req) => {
     });
 }
 
+exports.updateJob = async (id, job) => {
+    return new Promise(async (resolve, reject) => {
+        /* Update a Document */
+        if (id) {
+            Jobs.update({
+                id: id,
+                body: job
+            })
+            .then(
+                function(resp) {
+                    console.log("Successfully updated in elastic!");
+                    resolve(resp);
+                },
+                function(err) {
+                    console.log(err.message);
+                    reject(err);
+                }
+            );
+        } else {
+            reject({ status: 400, message: "job id is missing" });
+        }
+    });
+}
+
+// var elasticsearch = require("elasticsearch");
+
+// var client = new elasticsearch.Client({
+//     hosts: ["localhost:9200"]
+// });

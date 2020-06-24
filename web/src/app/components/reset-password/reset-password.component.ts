@@ -21,8 +21,8 @@ export class ResetPasswordComponent implements OnInit {
     private route: ActivatedRoute) {
 
     this.passwordForm = this.fbuilder.group({
-      newPassword: [null, [<any>Validators.required]],
-      confirmPassword: [null, [<any>Validators.required]]
+      newPassword: [null, [<any>Validators.required, Validators.minLength(6)]],
+      confirmPassword: [null, [<any>Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -34,7 +34,7 @@ export class ResetPasswordComponent implements OnInit {
 
     this.accountService.verifyOtp(otp).subscribe(result => {
       if (result['success']['data']) {
-        this.otp = result['success']['data'].otp;
+        this.otp = result['success']['data'].passwordResetToken;
       }
     });
   }

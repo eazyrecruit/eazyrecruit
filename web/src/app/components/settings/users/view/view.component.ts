@@ -23,6 +23,7 @@ export class ViewComponent implements OnInit {
   isDetailsUploading = false;
   isSubmitDisabled = false;
   roles = [];
+  selectedrole = [];
   isSearchResultAvail: any = 0;
   userId: any;
   userDialogTitle: string;
@@ -56,7 +57,7 @@ export class ViewComponent implements OnInit {
       sortOrder: '1',
       offset: 0
     };
-
+    this.isRoleSelect = false;
     // this.onFilterChange(this.filter);
 
     this.accountService.getRoles().subscribe(result => {
@@ -74,18 +75,27 @@ export class ViewComponent implements OnInit {
     this.filter.offset = (filter.pageIndex - 1) * filter.pageSize;
     this.filter.searchText = filter.searchText;
     this.filter.pageSize = filter.pageSize;
-
-    this.accountService.getAllUsers(filter).subscribe(result => {
-      if (result['success']['data'].length) {
-        this.users = result['success']['data'];
-        this.totalRecords = result['success']['data'].length;
-        this.serialNo = (filter.pageIndex - 1) * filter.pageSize;
-        this.isSearchResultAvail = 1;
+    this.filter.pageIndex = filter.pageIndex;
+    this.accountService.getAllUsers(this.filter).subscribe(result => {
+      if (result['success']) {
+        if (result['success']['data'] && result['success']['data']['count']) {
+          this.users = result['success']['data']['users'];
+          this.totalRecords = result['success']['data']['count'];
+          this.serialNo = (filter.pageIndex - 1) * filter.pageSize;
+          this.isSearchResultAvail = 1;
+        } else {
+          this.users.length = 0;
+          this.isSearchResultAvail = 2;
+          this.totalRecords = 0;
+        }
       } else {
-        this.users.length = 0;
         this.isSearchResultAvail = 2;
         this.totalRecords = 0;
       }
+    }, (error) => {
+      this.users.length = 0;
+      this.isSearchResultAvail = 2;
+      this.totalRecords = 0;
     });
   }
 
@@ -99,30 +109,33 @@ export class ViewComponent implements OnInit {
 
   populateForm(details) {
     if (details) {
+      let roleId = details.roles.length ? details.roles[0]._id : null;
       this.adminDetails = this.fbForm.group({
-        firstName: [details.first_name, [<any>Validators.required], this.validationService.nameValid],
-        lastName: [details.last_name, [<any>Validators.required], this.validationService.nameValid],
-        email: [details.user ? details.user.email : '', [<any>Validators.required], this.validationService.emailValid],
-        phoneNo: [details.phone, [<any>Validators.required], this.validationService.mobileValid],
-        roleId: [null, []],
+        firstName: [details.firstName, [<any>Validators.required], this.validationService.nameValid],
+        lastName: [details.lastName, [<any>Validators.required], this.validationService.nameValid],
+        email: [details.email, [<any>Validators.required], this.validationService.emailValid],
+        phone: [details.phone, [<any>Validators.required], this.validationService.mobileValid],
+        is_deleted: false,
+        roleId: [roleId, []],
       });
-      this.adminDetails.controls['roleId'].setValue(details.user ? details.user.role_id : '0', { onlySelf: true });
       this.adminDetails.controls['email'].disable({ onlySelf: true });
     } else {
       this.adminDetails = this.fbForm.group({
         firstName: [null, [<any>Validators.required], this.validationService.nameValid],
         lastName: [null, [<any>Validators.required], this.validationService.nameValid],
         email: [null, [<any>Validators.required], this.validationService.emailValid],
-        phoneNo: [null, [<any>Validators.required], this.validationService.mobileValid],
+        phone: [null, [<any>Validators.required], this.validationService.mobileValid],
+        is_deleted: false,
         roleId: [null, []],
       });
     }
   }
 
   onRoleChnage(event) {
-    const value = parseInt(event.target.value);
-    if (value > 0) {
-      this.isRoleSelect = false;
+    const value = event.target.value;
+    if (value) {
+      this.selectedrole.length = 0;
+      this.selectedrole.push(value);
     } else {
       this.isRoleSelect = true;
     }
@@ -133,6 +146,7 @@ export class ViewComponent implements OnInit {
       this.validationService.validateAllFormFields(this.adminDetails);
     } else if (this.adminDetails.valid && this.adminDetails.controls['roleId'].value != null) {
       this.isDetailsUploading = true;
+      adminFormDetail.roleId = this.selectedrole;
       this.accountService.createUser(adminFormDetail).subscribe(result => {
         if (result['success']['data']) {
           this.adminDetails.reset();
@@ -167,7 +181,7 @@ export class ViewComponent implements OnInit {
     } else if (this.adminDetails.valid && this.adminDetails.controls['roleId'].value != null) {
       this.isDetailsUploading = true;
       adminFormDetail.id = id;
-      this.accountService.update(adminFormDetail).subscribe(result => {
+      this.accountService.update(adminFormDetail, id).subscribe(result => {
         if (result['success']['data']) {
           this.adminDetails.reset();
           const close = document.getElementById('close');
@@ -188,8 +202,8 @@ export class ViewComponent implements OnInit {
 
   openDeleteModal(user, template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template, { class: 'modal-sm' });
-    this.userId = user.user_id;
-    this.deleteName = `${user.first_name}  ${user.last_name}`;
+    this.userId = user._id;
+    this.deleteName = `${user.firstName}  ${user.lastName}`;
   }
 
   setUserId(user) {
@@ -198,7 +212,7 @@ export class ViewComponent implements OnInit {
       this.adminDetails.reset();
     } else {
       this.userDialogTitle = 'Edit';
-      this.userId = user.user_id;
+      this.userId = user._id;
     }
     this.populateForm(user);
   }

@@ -10,6 +10,7 @@ import { InterviewService } from '../../../services/interview.service';
 import { SchedulerComponent } from '../../interview/scheduler/scheduler.component';
 import { AccountService } from '../../../services/account.service';
 import { ActivatedRoute, Params } from '@angular/router';
+import { CreateApplicantComponent } from '../../applicants/create-applicant/create-applicant.component';
 
 declare global {
     interface Window { editApplicantPopup: any; }
@@ -35,12 +36,16 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     modalRef: BsModalRef;
     scheduledInterviews: Array<any>;
     interviewers: Array<any>;
+    showComments: boolean = false;
 
     @Input()
     applicant?: any;
 
     @Output()
     onReject: EventEmitter<any> = new EventEmitter();
+
+    @Output()
+    onUpdate: EventEmitter<any> = new EventEmitter();
 
     constructor(
         private route: ActivatedRoute,
@@ -207,16 +212,20 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         if (this.interviewers) {
             var ivrs = this.interviewers.filter(ivr => ivr._id == userId);
             if (ivrs && ivrs.length > 0) {
-                return this.applicant.fullName(ivrs[0].firstName, ivrs[0].middleName, ivrs[0].lastName)
+                if (ivrs[0].firstName) {
+                    return this.applicant.fullName(ivrs[0].firstName, ivrs[0].lastName)
+                } else {
+                    return this.applicant.fullName(ivrs[0].email, '', '');
+                }
             }
         }
         return "Display name";
     }
 
     getAllUsers() {
-        this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '' }).subscribe(result => {
-            if (result['success']['data'].length) {
-                this.interviewers = result['success']['data'];
+        this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '', all: true }).subscribe(result => {
+            if (result['success']['data']) {
+                this.interviewers = result['success']['data']['users'];
             }
         });
 
@@ -225,7 +234,6 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     getApplicantById(id: string) {
         this.applicantInfoService.getApplicantById(id).subscribe(result => {
             if (result) {
-                // console.log('applicant result ===>>> ', result['success']['data']);
                 this.applicant = result['success']['data'];
                 this.applicant.fullName = this.getFullName.bind(this.applicant);
             }
@@ -236,7 +244,6 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         if (this.applicant && this.applicant._id) {
             this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
                 if (result) {
-                    // console.log('applicant job result ===>>> ', result['success']['data']);
                     this.applicant.jobs = result['success']['data'];
                 }
             });
@@ -248,5 +255,24 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         if (middleName && middleName != "null") name = name + " " + middleName;
         if (lastName && lastName != "null") name = name + " " + lastName;
         return name;
+    }
+
+    updateApplicant() {
+        this.modalRef = this.modalService.show(CreateApplicantComponent, { 
+            class: 'modal-lg', 
+            initialState: { applicant: this.applicant } 
+        });
+        this.modalRef.content.closePopup.subscribe(result => {
+            if (result) {
+                this.getApplicantById(result['data']._id);
+                // this.onUpdate.emit(this.applicant);   // old
+                result['data'].fullName = this.getFullName.bind(this.applicant);
+                this.onUpdate.emit(result['data']);   // new testing 
+            }
+        });
+    }
+
+    getComments() {
+        this.showComments = true;
     }
 }

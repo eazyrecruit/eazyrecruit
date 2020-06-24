@@ -52,7 +52,7 @@ import { SkillsAssessmentComponent } from './components/onboarding/skills-assess
 import { ThankyouComponent } from './components/onboarding/thankyou/thankyou.component';
 
 import { ConstService } from './services/const.service';
-import { AuthInterceptor, AuthGuard, AccountService } from './services/account.service';
+import { AuthInterceptor, AuthGuard, AccountService, RoleGuardService } from './services/account.service';
 import { SharedService } from './services/shared.service';
 import { DataShareService } from './services/data-share.service';
 
@@ -83,7 +83,11 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ApplicantSettingsComponent } from './components/settings/applicants/applicant-settings.component';
 import { EmailsettingsComponent } from './components/settings/emailsettings/emailsettings.component';
 import { GoogleComponent } from './components/settings/google/google.component';
-
+import { InterviewListComponent } from './components/interview/interview-list/interview-list/interview-list.component';
+import { InboundComponent } from './components/settings/emailsettings/inbound/inbound.component';
+import { OutboundComponent } from './components/settings/emailsettings/outbound/outbound.component';
+import { EmailTemplateComponent } from './components/settings/emailsettings/email-template/email-template.component';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 @NgModule({
   declarations: [
@@ -139,7 +143,11 @@ import { GoogleComponent } from './components/settings/google/google.component';
     SettingsComponent,
     ApplicantSettingsComponent,
     EmailsettingsComponent,
-    GoogleComponent
+    GoogleComponent,
+    InterviewListComponent,
+    InboundComponent,
+    OutboundComponent,
+    EmailTemplateComponent
   ],
   imports: [
     ToasterModule,
@@ -170,13 +178,22 @@ import { GoogleComponent } from './components/settings/google/google.component';
     RatingModule.forRoot(),
     TypeaheadModule.forRoot(),
     ChartsModule,
-    QuillModule.forRoot()
+    QuillModule.forRoot(),
+    ColorPickerModule
   ],
-  entryComponents: [ApplicantpageComponent, SchedulerComponent, UploadResumeComponent],
+  entryComponents: [
+    ApplicantpageComponent,
+    SchedulerComponent,
+    UploadResumeComponent,
+    InboundComponent,
+    OutboundComponent,
+    EmailTemplateComponent
+  ],
   providers: [ConstService,
     SharedService,
     ApplicantResolver,
     AuthGuard,
+    RoleGuardService,
     AccountService,
     ToasterService,
     DataShareService,

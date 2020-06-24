@@ -44,6 +44,8 @@ export class JobComponent implements OnInit {
   active: boolean;
   publish: boolean;
   closePopup: Subject<any>;
+  metaImage: any;
+  currentMetaImage: any;
 
   @Output()
   refreshList: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -222,8 +224,8 @@ export class JobComponent implements OnInit {
       title: [null, [<any>Validators.required], this.validationService.jobTitleValid],
       active: [null],
       is_published: [null],
-      skills: [null],
-      locations: [null],
+      skills: [null, [<any>Validators.required]],
+      locations: [null, [<any>Validators.required]],
       type: [null],
       expiryDate: [null],
       minExperience: [null, [], this.validationService.jobExperience],
@@ -249,14 +251,30 @@ export class JobComponent implements OnInit {
       this.jobDetails.controls["maxExperience"].setValue(job.maxExperience);
       this.jobDetails.controls["ctc"].setValue(job.ctc);
       this.jobDetails.controls["type"].setValue(job.type);
-      this.jobDetails.controls["expiryDate"].setValue(job.expiryDate);
-      this.jobDetails.controls["skills"].setValue(job.skills);
-      this.jobDetails.controls["locations"].setValue(job.locations);
+      this.jobDetails.controls["expiryDate"].setValue(new Date(job.expiryDate));
+      this.jobDetails.controls["skills"].setValue(this.addDisplayName(job.skills));
+      this.jobDetails.controls["locations"].setValue(this.addDisplayName(job.locations));
       this.jobDetails.controls["description"].setValue(job.description);
       this.jobDetails.controls["responsibilities"].setValue(job.responsibilities);
       this.jobDetails.controls["metaImage"].setValue(job.metaImage);
       this.jobDetails.controls["metaImageAltText"].setValue(job.metaImageAltText);
       this.jobDetails.controls["metaTitle"].setValue(job.metaTitle);
+      this.currentMetaImage = job.metaImage;
+    }
+  }
+
+  addDisplayName(array: any) {
+    if (array && array.length) {
+      array.forEach(obj => {
+        if (obj.hasOwnProperty('city')) {
+          obj['display'] = obj['city'];
+        } else {
+          obj['display'] = obj['name'];
+        }
+      });
+      return array;
+    } else {
+      return [];
     }
   }
 
@@ -282,7 +300,53 @@ export class JobComponent implements OnInit {
     if (!this.jobDetails.valid || !this.active || !this.publish) {
       this.validationService.validateAllFormFields(this.jobDetails);
     } else {
-      this.jobService.saveJob(jobForm).subscribe(result => {
+      const formData = new FormData();
+      for ( var key in jobForm) {
+        if (jobForm[key] !== null) {
+          formData.append(key, jobForm[key]);
+        }
+      }
+      let skill = [];
+      let current = [];
+      let preferred = [];
+      if (jobForm.skills) {
+        for (let index = 0; index < jobForm.skills.length; index++) {
+          if (jobForm.skills[index]._id) {
+            skill.push({ _id: jobForm.skills[index]._id, name: jobForm.skills[index].name });
+          } else {
+            skill.push({ name: jobForm.skills[index].value });
+          }
+        }
+        formData.set('skills', JSON.stringify(skill));
+      }
+
+      if (jobForm.locations) {
+        for (let index = 0; index < jobForm.locations.length; index++) {
+          if (jobForm.locations[index]._id) {
+            current.push({ 
+              _id: jobForm.locations[index]._id, 
+              country: jobForm.locations[index].country, 
+              state: jobForm.locations[index].state, 
+              city: jobForm.locations[index].city, 
+              zip: jobForm.locations[index].zip });
+          } else {
+            current.push({ 
+              _id: jobForm.locations[index]._id, 
+              country: jobForm.locations[index].country, 
+              state: jobForm.locations[index].state, 
+              city: jobForm.locations[index].city, 
+              zip: jobForm.locations[index].zip });
+          }
+        }
+        formData.set('locations', JSON.stringify(current));
+      }
+
+      if (this.metaImage) {
+        formData.set('metaImage', this.metaImage);
+      } else {
+        formData.set('metaImage', this.currentMetaImage);
+      }
+      this.jobService.saveJob(formData).subscribe(result => {
         if (result['success']) {
           // this.publishJob(jobForm);
           // this.jobDetails.reset();
@@ -349,10 +413,29 @@ export class JobComponent implements OnInit {
   }
 
   public asyncSkills = (text: string): Observable<any> => {
-    return this.skillService.getSkills(text).pipe(map((data: any) => data.success.data));
+    let filter = { pageSize: 10, offset: 0, searchText: text };
+    return this.skillService.getSkills(filter).pipe(map((result: any) => result.success.data.skills ));
   };
-
+  
   public asyncLocations = (text: string): Observable<any> => {
     return this.locationService.getLocations(text).pipe(map((data: any) => data.success.data));
   };
+
+  onFileChange(event) {
+    const reader = new FileReader();
+    if (event && event.length) {
+      if (event[0].type.includes('jpg') || event[0].type.includes('jpeg')) {
+        reader.onload = () => {
+          this.metaImage = event[0];      
+        }
+        reader.readAsDataURL(event[0]);
+      } else {
+        this.jobDetails.get(['metaImage']).setValue('');
+        this.metaImage = null;
+      }
+    } else {
+      this.jobDetails.get(['metaImage']).setValue('');
+      this.metaImage = null;
+    }
+  }
 }

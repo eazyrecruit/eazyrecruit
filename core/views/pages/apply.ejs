@@ -12,24 +12,50 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-3 col-md-3">
                 <div class="card" style="width: 18rem;">
-                    <img src="/images/freshers.jpg" class="card-img-top" width="100%"></img>
+                    <img src="/<%= locals.job && job.metaImage ? job.metaImage : 'images/default-job.jpg' %>" class="card-img-top" width="100%"></img>
                     <div class="card-body">
                         <h5 class="card-title"><%= job.title %></h5>
-                        <ul class="normal-job-dis card-text">
-                            <li><i class="ti-location-pin"></i> Jaipur Rajsthan, 32006</li>
-                            <li><i class="ti-bag"></i> <%= job.experiance %> Year experiance</li>
-                            <li><i class="ti-timer"></i> <%= job.employment_type %></li>
-                        </ul>
+                        <div class="row">
+                            <span class="col-sm-12">
+                                <%  if (locals.job && job.locations && job.locations.length) { %>
+                                    <% for(let i = 0; i < job.locations.length; i++) { %>
+                                    <%= job.locations[i].city %>, <%= job.locations[i].state %>
+                                    <%  } %>
+                                <% } else { %>
+                                    N/A
+                                <%  } %>
+                            </span>
+                            <span class="col-sm-12">
+                                <% if (locals.job && job.minExperience) { %>
+                                    <%= job.minExperience %> Year experience
+                                    <% } else { %>
+                                    N/A
+                                    <% } %>
+                            </span>
+                            <span class="col-sm-12">
+                                <% if (locals.job && job.type) { %>
+                                    <%= job.type %>
+                                <% } else { %>
+                                    N/A
+                                <% } %>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-9">
+            <div class="col-sm-9 col-md-9">
                 <div class="card ml-5">
                     <div class="card-header"><i class="fa fa-address-book "></i> <%= job.title %></div>
                     <div class="card-body">
-                        <form method="post" action="#">
+                        <form method="post" action="#" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <input type="hidden" class="form-control" name="jobId" value="<%= job.id%>" required>
+                                    <input type="hidden" class="form-control" name="source" value="website" required>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="form-group col-md-12">
                                     <label for="name" class="required">Name</label>
@@ -44,7 +70,7 @@
                                 </div>
                                 <div class="form-group col-sm-6">
                                     <label for="contact" class="required">Phone number</label>
-                                    <input type="text" placeholder="Phone number" class="form-control" name="phoneNo"
+                                    <input type="text" placeholder="Phone number" class="form-control" name="phone"
                                         required>
                                 </div>
                             </div>

@@ -13,21 +13,21 @@ class JobStatusModel(BaseModel):
     def __init__(self):
         super().__init__()
 
-    def save_latest(self, job, last_index):
+    def save_latest(self, job, imapuser, last_index):
         id = ObjectId()
         db = super().EazyrecruitDB()
-        jstatus = db.jobstatus.find_one({'job': job})
+        jstatus = db.jobstatus.find_one({'job': job, 'imapuser': imapuser})
         if jstatus:
             db.jobstatus.update({'_id': jstatus['_id']},
                 {'$set': {'last_index': last_index, 'date': datetime.datetime.now()}})
         else:
             db.jobstatus.insert(
-                {'_id': id, 'job': job, 'last_index': last_index, 'date': datetime.datetime.now()})
+                {'_id': id, 'job': job, "imapuser": imapuser,'last_index': last_index, 'date': datetime.datetime.now()})
 
-    def get_latest(self, job):
+    def get_latest(self, job, imapuser):
         db = super().EazyrecruitDB()
-        if db.jobstatus.find({'job': job}).count() > 0:
-            recent_mail = db.jobstatus.find({'job': job}).sort(
+        if db.jobstatus.find({'job': job, 'imapuser': imapuser}).count() > 0:
+            recent_mail = db.jobstatus.find({'job': job, 'imapuser': imapuser}).sort(
                 'date', pymongo.DESCENDING).limit(1)
             return recent_mail[0]['last_index']
         else:

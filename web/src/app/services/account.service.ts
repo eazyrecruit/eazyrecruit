@@ -19,16 +19,35 @@ export class AccountService {
     isAuthorized() {
         const authData = this.authStorage.getAuthData();
         let isexpire = true;
-
+        let authorization: any;
         if (authData && authData.data) {
             isexpire = this.helper.isTokenExpired(authData.data.token);
         }
 
         if (isexpire) {
-            return false;
+            return { isAuthorized: false, role: null };
         } else {
-            return true;
+            const tokenPayload = this.helper.decodeToken(authData.data.token);
+            if (this.constService.roles.indexOf(tokenPayload.roles[0] !== -1)) {
+                authorization = { isAuthorized: true, role: tokenPayload.roles[0] };
+            } else {
+                authorization = { isAuthorized: false, role: tokenPayload.roles[0] };
+            }
+            return authorization;
         }
+    }
+
+    getRole() {
+        const payload = this.helper.decodeToken(this.authStorage.getAuthData().data.token);
+        if (payload) {
+            return payload.roles.length ?  payload.roles[0] : null;
+        } else {
+            return null;
+        }
+    }
+
+    getToken() {
+        return this.authStorage.getAuthData().data.token;
     }
 
     previlege() {
@@ -48,8 +67,8 @@ export class AccountService {
         return this.http.post(this.constService.baseUrl + 'user/', userdetail);
     }
 
-    update(userData) {
-        return this.http.put(this.constService.baseUrl + 'user/', userData);
+    update(userData, id) {
+        return this.http.put(`${this.constService.baseUrl}user/${id}`, userData);
     }
 
     delete(id) {
@@ -57,7 +76,7 @@ export class AccountService {
     }
 
     getRoles() {
-        return this.http.get(this.constService.baseUrl + 'user/getroles');
+        return this.http.get(this.constService.baseUrl + 'user/roles');
     }
 
     getUsers() {
@@ -69,7 +88,7 @@ export class AccountService {
     }
 
     getAllUsers(filter) {
-        return this.http.get(this.constService.baseUrl + 'user/', filter);
+        return this.http.get(`${this.constService.baseUrl}user?limit=${filter.pageSize}&offset=${filter.offset}&search=${filter.searchText}&all=${filter.all}`);
     }
 
     logout() {
@@ -81,11 +100,11 @@ export class AccountService {
     }
 
     verifyOtp(otp) {
-        return this.http.get(this.constService.baseUrl + 'user/otpverification/' + otp);
+        return this.http.get(this.constService.baseUrl + 'account/verify/' + otp);
     }
 
     resetPassword(password) {
-        return this.http.post(this.constService.baseUrl + 'user/resetpassword/', password);
+        return this.http.post(this.constService.baseUrl + 'account/resetpassword/', password);
     }
 
     forgetPassword(email) {
@@ -97,24 +116,39 @@ export class AccountService {
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(private router: Router, private accountService: AccountService) { }
-    // canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    //     // logged in so return true
-    //     if (this.AccountService.isAuthorized()) {
-    //         return true;
-    //     }
-    //     // not logged in so redirect to login page with the return url
-    //     this.router.navigate(['/login']);
-    //     return false;
-    // }
     canActivate() {
         // logged in so return true
-        if (this.accountService.isAuthorized()) {
+        let user = this.accountService.isAuthorized();
+        if (user && user.isAuthorized) {
             return true;
         }
         // not logged in so redirect to login page with the return url
         this.router.navigate(['/login']);
         return false;
     }
+}
+
+@Injectable()
+export class RoleGuardService implements CanActivate {
+    authStorage = new AuthStorage();
+    helper = new JwtHelperService();
+    constructor(private accountService: AccountService, private router: Router) {}
+    canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+        const authData = this.authStorage.getAuthData();
+        if (!this.accountService.isAuthorized()) {
+            this.router.navigate(['/login']);
+            return false;
+        } else {
+            // decode the token to get its payload
+            const tokenPayload = this.helper.decodeToken(authData.data.token);
+            if (next.data.expectedRole.indexOf(tokenPayload.roles[0]) === -1) {
+                this.router.navigate(['/login']);
+                return false;
+            }
+            return true;
+        }
+    }
+    
 }
 
 @Injectable()
@@ -142,20 +176,12 @@ export class AuthInterceptor implements HttpInterceptor {
                     this.authStorage.setAuthorizationHeader(null);
                     this.router.navigate(['login']);
                     SiteJS.stopLoader();
+                } else {
+                    SiteJS.stopLoader();
                 }
               }
             })
         );
-        // return next.handle(authReq).do(event => {
-        //     /* If something needs to be handled when response returned */
-        // }).catch((e) => {
-        //     if (e.status === 401 || e.status === 403) {
-        //         SiteJS.notifyDanger('You are not allowed');
-        //         this.authStorage.setAuthorizationHeader(null);
-        //         this.router.navigate(['/login']);
-        //     }
-        //     return Observable.throw(new Error(`${e.status} ${e.statusText}`));
-        // }).finally(() => { /* Loader will be hidden here*/ });
     }
 }
 

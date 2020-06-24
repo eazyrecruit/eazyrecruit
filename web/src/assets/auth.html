@@ -5,7 +5,6 @@
         <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>   
         <script>            
             $(document).ready(function () {
-                console.log('her');
                 var app = getParameterByName('socialApp');
                 window.location.href = getApiUrl() + '/account/' + app;
                 window.localStorage.setItem("app", app);
@@ -24,9 +23,9 @@
             function getApiUrl() {
                 var serviceBase = 'http://localhost:8082/api';
                 if (window.location.host=='dev.eazyrecruit.in') {
-                    serviceBase = 'https://dev-api.eazyrecruit.in/api';
+                    serviceBase = 'https://dev.eazyrecruit.in/api';
                 } else if (window.location.host =="web.eazyrecruit.in") {
-                    serviceBase = 'https://app.eazyrecruit.in/api';
+                    serviceBase = 'https://web.eazyrecruit.in/api';
                 }
                 return serviceBase;
             }

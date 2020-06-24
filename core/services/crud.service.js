@@ -26,7 +26,7 @@ module.exports = (Collection, Operations) => {
     const readOne = (req, res) => {
         if (Operations.indexOf('R') >= 0) {
             const id = req.params._id;
-            Collection.find({_id: id , is_deleted: false}, (e, result) => {
+            Collection.find({_id: id , is_deleted: { $ne: false }}, (e, result) => {
                 if (e) {
                     responseService.response(req, e, "", null, res);
                 } else {
@@ -43,7 +43,7 @@ module.exports = (Collection, Operations) => {
     // ========
     const readMany = (req, res) => {
         if (Operations.indexOf('R') >= 0) {
-            Collection.find({is_deleted: false}, (e, result) => {
+            Collection.find({is_deleted: { $ne: false }}, (e, result) => {
                 if (e) {
                     responseService.response(req, e, "", null, res);
                 } else {

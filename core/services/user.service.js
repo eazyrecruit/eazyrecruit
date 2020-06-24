@@ -1,272 +1,158 @@
-var models = require('../sequelize');
 var mail = require('./email.service');
 const uuidv4 = require('uuid/v4');
 var bcrypt = require('bcrypt-nodejs');
-var emailBody = require('../helpers/emailBody');
-exports.register = (req, next) => {
-    models.User.findOne({
-        where: { email: req.body.createdEmail ? req.body.createdEmail : req.body.email }
-    }).then(user => {
-        if (!user && req.body.email) {
-            models.User.create({
-                email: req.body.createdEmail ? req.body.createdEmail : req.body.email,
-                otp: uuidv4(),
-                role_id: req.body.roleId
-            }).then(data => {
-                saveUserDetails(req, data, next);
-            }).catch(err=>{
-                next(err, null)
-            });
-        } else { 
-            // next({ error: 'user already exist!' }, null) 
-            next(null, user);
-        }
-    }).catch(err=>{
-        next(err, null)
-    });
+var User = require('../models/user');
+var Role = require('../models/userRole');
+var emailService = require('../services/email.service');
+
+exports.getRoles = async () => {
+    return await Role.find({ is_deleted: false });
 };
 
-exports.bulkRegister = (userArray, next) => {
-    let emails = userArray.map(x => x.email);
-    models.User.findAll({
-        where: { email: emails }
-    }).then(user => {
-        let userList = [];
-        if (user.length > 0) {
-            userArray.forEach(element => {
-                userObj =  user.find(x => x.email === element.email);
-                if (!userObj) {
-                    userList.push({
-                        email: element.email,
-                        otp: uuidv4(),
-                        role_id: element.role
-                    });
+exports.getUsers = async (req) => {
+    let skip = 0, limit = 10;
+    let count = 0; 
+    let users;
+    if (req.query.all == 'true') {
+        users = await User.find({ is_deleted: false }, {password: 0, passwordResetToken: 0});
+    } else {
+        if (req.query.limit) limit = parseInt(req.query.limit);
+        if (req.query.offset) skip = parseInt(req.query.offset);
+        count = await User.count({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false });
+        users = await User.find({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false }, { password: 0, passwordResetToken: 0 }).populate('roles').skip(skip).limit(limit).exec();
+    }
+    return { count, users };
+};
+
+exports.register = async (req) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await User.find({ email: req.body.email, is_deleted: false });
+            if (user && user.length) {
+                resolve(`${req.body.email} already exist`);
+            } else {
+                try {
+                    //create user
+                    let otp = uuidv4();
+                    let userModel = new User();
+                    userModel.name = `${req.body.firstName} ${req.body.lastName}`
+                    userModel.email = req.body.email;
+                    userModel.firstName = req.body.firstName;
+                    userModel.lastName = req.body.lastName;
+                    userModel.roles = req.body.roleId,
+                    userModel.phone = [req.body.phone],
+                    userModel.passwordResetToken = otp,
+                    userModel.passwordResetExpires = new Date(),
+                    userModel.emailVerificationToken = '',
+                    userModel.emailVerified = false,
+                    userModel.google = false,
+                    userModel.tokens = [],
+                    userModel.picture = '',
+                    userModel.is_deleted = false,
+                    userModel.created_by = req.user.id,
+                    userModel.created_at = new Date(),
+                    userModel.modified_by = req.user.id,
+                    userModel.modified_at = new Date();
+                    await userModel.save();
+        
+                    //send email
+                    let email = {};
+                    email.name = userModel.firstName ? `${userModel.firstName} ${userModel.lastName}` : req.body.email;
+                    email.receiverAddress = userModel.email;
+                    email.subject = 'Registration successfull';
+                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
+                    try {
+                        await emailService.sendEmail(email);
+                        resolve(`An email has been sent to ${email.receiverAddress} for user registration.`);
+                    } catch (error) {
+                        let err = {
+                            status: 500,
+                            message: 'internal server error'
+                        }
+                        console.log('user registration email error : ', error);
+                        reject(err); 
+                    }
+                } catch (error) {
+                    let err = {
+                        status: 500,
+                        message: 'internal server error'
+                    }
+                    console.log('create user : ', error);
+                    reject(err);
                 }
-            });
-        } else {
-            userList = userArray.map(x => {
-                return {
-                    email: x.email,
-                    otp: uuidv4(),
-                    role_id: x.roleId
+            }   
+        } catch (error) {
+            reject(error);
+        }        
+    });
+};
+
+exports.update = async (req) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let userModel = await User.findById({ _id: req.params.id, is_deleted: false });
+            if (userModel) {
+                try {
+                    // update user
+                    userModel.name = `${req.body.firstName} ${req.body.lastName}`
+                    userModel.firstName = req.body.firstName;
+                    userModel.lastName = req.body.lastName;
+                    userModel.roles = req.body.roleId,
+                    userModel.phone = [req.body.phone],
+                    userModel.modified_by = req.user.id,
+                    userModel.modified_at = new Date();
+                    resolve(await userModel.save());
+                } catch (error) {
+                    let err = {
+                        status: 500,
+                        message: 'internal server error'
+                    }
+                    console.log('update user : ', error);
+                    reject(err);
                 }
-            });
-        }
-
-        if (userList.length > 0) {
-            models.User.bulkCreate(userList).then(data => {
-                let detailObj = {
-                    newUser: data,
-                    oldUser: user
+            } else {
+                let err = {
+                    status: 404,
+                    message: 'user not found'
                 }
-                bulkSaveUserDetails(detailObj, next);
-            }).catch(err=>{
-                next(err, null)
-            });
-        } else {
-            next(null, user);
-        }
-    }).catch(err=>{
-        next(err, null)
+                console.log('update user : ', error);
+                reject(err);
+            }   
+        } catch (error) {
+            reject(error);
+        }        
     });
 };
 
-function bulkSaveUserDetails (userDataObj, next) {
-    let userDetails = userDataObj.newUser.map(obj => {
-        return {
-            user_id: obj.id,
-            first_name: obj.email,
-            last_name: '',
-            phone: '',
-            status: 1,
-            created_by: 1,
-            modified_by: 1
-        }
-    });
-    models.UserDetail.bulkCreate(userDetails).then(user => {
-        let userArray = [];
-        userArray = user;
-        if (userDataObj.oldUser.length > 0) {
-            userDataObj.oldUser.forEach(element => {
-                userArray.push(element);
-            });
-        }
-        next(null, userArray)
-    }).catch(err=>{
-        next(err, null)
-    });
-}
-
-exports.getRole = (req, next) => {
-    models.Roles.findAll({ where: { is_deleted: false } }).then(role => {
-        next(null, role);
-    }).catch(err=>{
-        next(err, null);
-    });
-};
-
-exports.getUsers = (req, next) => {
-    const Op = Sequelize.Op;
-    let pageSize = req.body.pageSize != null ? req.body.pageSize : null;
-    models.UserDetail.findAndCountAll({ 
-        where: {
-            [Op.or] : [
-                { first_name: { [Op.like]: `%${req.body.searchText}%` } },
-                { last_name: { [Op.like]: `%${req.body.searchText}%` } }
-            ], 
-            is_deleted: false
-        },
-        include: [{ model: models.User, attributes: ['email', 'role_id'] }],
-        offset: req.body.offset, limit: parseInt(pageSize) 
-     }).then(user => {
-        next(null, user);
-    }).catch(err=>{
-        next(err, null)
+exports.delete = async (req) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let userModel = await User.findById({ _id: req.params.id, is_deleted: false });
+            if (userModel) {
+                try {
+                    // delete user
+                    userModel.is_deleted = true,
+                    userModel.modified_by = req.user.id,
+                    userModel.modified_at = new Date();
+                    resolve(await userModel.save());
+                } catch (error) {
+                    let err = {
+                        status: 500,
+                        message: 'internal server error'
+                    }
+                    console.log('delete user : ', error);
+                    reject(err);
+                }
+            } else {
+                let err = {
+                    status: 404,
+                    message: 'user not found'
+                }
+                console.log('delete user : ', error);
+                reject(err);
+            }   
+        } catch (error) {
+            reject(error);
+        }        
     });
 };
-
-exports.searchUser = (req, next) => {
-    const Op = Sequelize.Op;
-    models.UserDetail.findAll({ 
-        where: {
-            [Op.or] : [
-                { first_name: { [Op.like]: `%${req.params.value}%` } },
-                { last_name: { [Op.like]: `%${req.params.value}%` } }
-            ], 
-            is_deleted: false 
-        } 
-    }).then(user => {
-        next(null, user);
-    }).catch(err=>{
-        next(err, null)
-    });
-};
-
-exports.getUserByOtp = (req, next) => {
-    models.User.findOne({
-        where: { otp: req.params.otp, is_deleted: false }
-    }).then(user => {
-        next(null, user);
-    }).catch(err => {
-        next(err, null);
-    });
-}
-
-exports.changePassword = (req, next) => {
-    models.User.findOne({
-        where: { otp: req.body.otp, is_deleted: false }
-    }).then(user => {
-        if(user) {
-            let hash = bcrypt.hashSync(req.body.newPassword);
-            user.updateAttributes({
-                password: hash,
-                otp: null,
-                status: 1
-            })
-            next(null, user);
-        } else {
-            next(null, 'Otp Expired!');
-        }   
-    }).catch(err => {
-        next(err, null);
-    });
-}
-
-function saveUserDetails (req, data, next) {
-    models.UserDetail.create({
-        user_id: data.id,
-        first_name: req.body.createdEmail ? req.body.createdEmail : req.body.firstName,
-        last_name: req.body.lastName ? req.body.lastName : '',
-        phone: req.body.phoneNo ? req.body.phoneNo : '',
-        status: 1,
-        created_by: req.user != null ? req.user.id : 0,
-        modified_by: req.user != null ? req.user.id : 0,
-        role_id: req.body.roleId
-    }).then(user => {
-        if (!req.body.createdEmail) {
-            var email = {};
-            email.name = data.first_name ? `${data.first_name} ${data.last_name}` : req.body.createrEmail;
-            email.receiverAddress = data.email;
-            email.subject = 'Registration Successful!';
-            email.body = emailBody.getEmailContent(email.subject, `${req.headers.origin}/resetpassword/${data.otp}`);
-            mail.sendEmail(email, next);
-        }
-        next(null, user)
-    }).catch(err=>{
-        next(err, null)
-    });
-}
-
-exports.getUserById = (req, next) => {
-    models.User.findOne({
-        where: { id: req.params.id, is_deleted: false },
-        include: [{ model: models.UserDetail}]
-    }).then(user => {
-        next(null, user);
-    }).catch(err => {
-        next(err, null);
-    });
-}
-
-exports.update = (req, next) => {
-    models.UserDetail.findOne({
-        where: { user_id: req.body.id, is_deleted: false }
-    }).then(user => {
-        user.update({
-            first_name: req.body.firstName,
-            last_name: req.body.lastName,
-            phone: req.body.phoneNo,
-            status: 1,
-            created_by: req.user != null ? req.user.id : 0,
-            modified_by: req.user != null ? req.user.id : 0,
-            role_id: req.body.roleId
-        }).then(data => {
-            next(null, data);
-        }).catch(err=>{
-            next(err, null);
-        });
-    }).catch(err=>{
-        next(err, null)
-    });
-};
-
-exports.delete = (req, next) => {
-    models.User.findOne({
-        where: { id: req.params.id, is_deleted: false }
-    }).then(user => {
-        user.update({
-            is_deleted: true
-        }).then(data => {
-            models.UserDetail.findOne({
-                where: { user_id: req.params.id, is_deleted: false }
-            }).then(userDetail => {
-                userDetail.update({
-                    is_deleted: true
-                }).then(updateUserDetail => {
-                    next(null, updateUserDetail);
-                }).catch(updateError => {
-                    next(updateError, null);
-                });
-            }).catch(error => {
-                next(error, null);
-            });
-        }).catch(err=>{
-            next(err, null);
-        });
-    }).catch(err=>{
-        next(err, null)
-    });
-};
-
-exports.getUserByEmail = (userEmails, next) => {
-    models.User.findAll({
-        where: { is_deleted: false, email: userEmails },
-        include: [{ model: models.UserDetail}]
-    }).then(user => {
-        next(null, user);
-    }).catch(err => {
-        next(err, null);
-    });
-}
-
-exports.saveUserDetails = saveUserDetails;

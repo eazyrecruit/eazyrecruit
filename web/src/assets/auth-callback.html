@@ -10,7 +10,7 @@
                     type: 'GET',
                     url: getApiUrl() + '/account/google/callback?code=' + code,
                     success: function (data) {
-                        if(data.success){
+                        if (data.success) {
                             window.localStorage.setItem('Authorization', data.success.data.token);
                             window.localStorage.setItem('auth_data', JSON.stringify(data.success));
                             window.localStorage.setItem('userId', data.success.data.id);
@@ -39,9 +39,9 @@
             function getApiUrl() {
                 var serviceBase = 'http://localhost:8082/api';
                 if (window.location.host=='dev.eazyrecruit.in') {
-                    serviceBase = 'https://dev-api.eazyrecruit.in/api';
+                    serviceBase = 'https://dev.eazyrecruit.in/api';
                 } else if (window.location.host =="web.eazyrecruit.in") {
-                    serviceBase = 'https://app.eazyrecruit.in/api';
+                    serviceBase = 'https://web.eazyrecruit.in/api';
                 }
                 return serviceBase;
             }

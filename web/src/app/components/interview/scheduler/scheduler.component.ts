@@ -39,6 +39,7 @@ export class SchedulerComponent implements OnInit {
   endConString:string;
   appliedJobs: any;
   appliedJob: any;
+  role: any;
 
   constructor(
     public modalRef: BsModalRef,
@@ -83,6 +84,7 @@ export class SchedulerComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.role = this.accountService.getRole();
     this.getAllUsers();
     this.getCandidateDetails();
     this.setJobDetails();
@@ -146,9 +148,9 @@ export class SchedulerComponent implements OnInit {
   }
 
   getAllUsers() {
-    this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '' }).subscribe(result => {
-      if (result['success']['data'].length) {
-        this.interviewers = result['success']['data'];
+    this.accountService.getAllUsers({ offset: 0, pageSize: 0, searchText: '', all: true }).subscribe(result => {
+      if (result['success'] && result['success']['data'] && result['success']['data']['users'].length) {
+        this.interviewers = result['success']['data']['users'];
         this.interviewForm.get('interviewerId').setValue(this.event.extendedProps.interviewer);
       }
     });

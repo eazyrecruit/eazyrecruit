@@ -13,10 +13,10 @@ var validationService = require('../services/validation.service');
 router.post("/login", function (req, res) {
   passportLocal.authenticate(req, res, function (err, data) {
    if (err) {
-     responseService.response(req, err,'Login', err.message, res);
+     responseService.errorResponse(err, 'Login', res);
      } else {
      data.token = jwt.generateToken(data);
-      responseService.response(req, err,'Login', data, res);
+      responseService.successResponse(data,'Login', res);
      }
    });
 });
@@ -29,20 +29,39 @@ router.post("/register", function (req, res) {
 
 router.post("/forget", (req, res) => {
   accountService.resetPassword(req, (err, user) => {
-    responseService.response(req, err, 'Forget Password', user, res);
+    if (err) {
+      responseService.errorResponse(err, 'Forget Password', res);
+    } else {
+      responseService.successResponse(user, 'Forget Password', res);
+    }
   });
 });
 
+router.post("/resetpassword", (req, res) => {
+  accountService.changePassword(req, (err, data) => {
+    responseService.response(req, err, 'change password', data, res);
+  });
+});
+
+router.get("/verify/:otp", (req, res) => {
+  accountService.getUserByOtp(req, (err, data) => {
+      if (err) {
+          responseService.response(req, err, 'otp validation', 'otp validation failed', res);
+      } else {
+          responseService.response(req, err, 'otp validation', data, res); 
+      }
+  });
+});
 
 // Google routes
 router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}), (req, res) => {});
 router.get("/google/callback", function (req, res) {
   passportGoogle.authenticate(req, res, function (err, data) {
     if (err) {
-      responseService.response(req, err.message,'Login' ,err.message, res);
+      responseService.errorResponse(err, 'Login', res);
     } else {
       data.token = jwt.generateToken(data);
-      responseService.response(req, err, 'Login' ,data, res);
+      responseService.successResponse(data, 'Login', res);
     }
   });
 });

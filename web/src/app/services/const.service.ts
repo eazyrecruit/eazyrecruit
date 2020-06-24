@@ -2,20 +2,21 @@ export class ConstService {
     baseUrl: string;
     publicUrl: string;
     pyUrl: string;
+    roles = [];
     constructor() {
         if (window.location.hostname === 'dev.eazyrecruit.in') {
-            this.baseUrl = 'https://dev-api.eazyrecruit.in/api/';
-            this.publicUrl = 'https://dev.eazyrecruit.in/onboarding/job/';
-            this.pyUrl = 'https://devengine.eazyrecruit.in/';
+            this.baseUrl = '/api/';
+            this.publicUrl = 'https://dev.eazyrecruit.in/jobs/';
+            this.pyUrl = '/api/engine/';
         } else if (window.location.hostname === 'web.eazyrecruit.in') {
-            this.baseUrl = 'https://app.eazyrecruit.in/api/';
+            this.publicUrl = 'https://web.eazyrecruit.in/jobs/';
             this.baseUrl = '/api/';
             this.pyUrl = '/api/engine/';
         } else {
-            this.publicUrl = 'http://localhost:4200/onboarding/job/';
+            this.publicUrl = 'http://localhost:8082/jobs/';
             this.baseUrl = '/api/';
             this.pyUrl = '/api/engine/';
         }
-
+        this.roles = ['admin', 'user', 'hr'];
     }
 }

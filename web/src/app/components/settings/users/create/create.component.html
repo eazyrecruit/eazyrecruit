@@ -37,7 +37,7 @@
 
           <div class="form-group col-md-6">
             <label for="name">Last Name</label>
-            <input type="text" placeholder="Last name" class="form-control" formControlName="lastName" required>
+            <input type="text" placeholder="Last name" class="form-control" formControlName="lastName">
             <small class="text-danger" *ngIf="adminDetails.controls['lastName'].hasError('required') && adminDetails.controls['lastName'].touched">
               Please enter Last Name
             </small>
@@ -61,7 +61,7 @@
 
           <div class="form-group col-md-6">
             <label for="contact">Contact No.</label>
-            <input type="text" placeholder="+919123456789" class="form-control" formControlName="phoneNo" required>
+            <input type="text" placeholder="+919123456789" class="form-control" formControlName="phoneNo">
             <small class="text-danger" *ngIf="adminDetails.controls['phoneNo'].hasError('required') && adminDetails.controls['phoneNo'].touched">
               Please enter Contact No.
             </small>
@@ -76,7 +76,7 @@
             <label for="name">User Role</label>
             <select placeholder="Company" class="form-control" formControlName="roleId" (change)="onRoleChnage($event)">
               <option value="0" selected>Select Role</option>
-              <option *ngFor="let role of roles;" value="{{role.id}}"> {{role.name}}</option>
+              <option *ngFor="let role of roles;" value="role.id"> {{role.name}}</option>
             </select>
             <small class="text-danger" *ngIf="isRoleSelect">
               Please select User Role

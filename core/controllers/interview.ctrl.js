@@ -99,4 +99,13 @@ router.post("/criteria", async (req, res) => {
     }
 });
 
+router.get("/", async (req, res) => {
+    try {
+        var results = await interviewService.getInterviews(req);
+        responseService.response(req, null, 1, results, res);
+    } catch(err){
+        responseService.response(req, err, 1, false, res);
+    }
+});
+
 module.exports.interview = router;

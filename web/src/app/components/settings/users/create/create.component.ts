@@ -26,9 +26,9 @@ export class CreateComponent implements OnInit {
 
       this.adminDetails = this.fbForm.group({
         firstName: [null, [<any>Validators.required], this.validationService.nameValid],
-        lastName: [null, [<any>Validators.required], this.validationService.nameValid],
+        lastName: [null, [], this.validationService.nameValid],
         email: [null, [<any>Validators.required], this.validationService.emailValid],
-        phoneNo: [null, [<any>Validators.required], this.validationService.mobileValid],
+        phoneNo: [null, [], this.validationService.mobileValid],
         roleId: [null, []],
       });
     }
@@ -48,6 +48,7 @@ export class CreateComponent implements OnInit {
       this.validationService.validateAllFormFields(this.adminDetails);
     } else if (this.adminDetails.valid) {
       this.isDetailsUploading = true;
+      adminFormDetail.roleId = this.roles;
       this.accountService.createUser(adminFormDetail).subscribe(result => {
         if (result['success']['data']) {
           this.adminDetails.reset();
@@ -61,7 +62,8 @@ export class CreateComponent implements OnInit {
 
 onRoleChnage(event) {
     const value = event.target.value;
-    if (+value > 0) {
+    if (value) {
+      this.roles.push(value);
       this.isRoleSelect = false;
     } else {
       this.isRoleSelect = true;

@@ -1,21 +1,23 @@
 let mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const ISODate = mongoose.Types.ISODate;
-let interviews = require('../models/interview')
+let Interview = require('../models/interview')
 let interviewResults = mongoose.model('InterviewResults');
 const ics = require('ics')
 const uuidv1 = require('uuid/v1');
 var emailService = require('../services/email.service');
 let interviewCriteria = require('../models/interviewCriteria');
+let config = require('../config').config();
+let Company = require('../models/company');
 
 exports.createAndInvite = async (req) => {
-    req.body.interview = await interviews.create(
+    req.body.interview.interview = await Interview.create(
         {
             uid: uuidv1(),
             sequence: 1,
             status: "CONFIRMED",
-            start: new Date(req.body.interview.start),
-            end: new Date(req.body.interview.end),
+            start: new Date(new Date(req.body.interview.start).toUTCString()),
+            end: new Date(new Date(req.body.interview.end).toUTCString()),
             note: req.body.interview.note,
             round: req.body.interview.round,
             jobId: req.body.interview.job.id,
@@ -31,21 +33,21 @@ exports.createAndInvite = async (req) => {
             modified_at: Date.now()
         });
     // Invite Participants
-    // await inviteCandidate(req, 'Interview scheduled');
-    // await inviteInterviewer(req, 'Interview scheduled');
-    // await inviteOrganizer(req, 'Interview scheduled');
+    await inviteCandidate(req, 'Interview scheduled');
+    await inviteInterviewer(req, 'Interview scheduled');
+    await inviteOrganizer(req, 'Interview scheduled');
     // Return Interview Details
     return req.body.interview;
 }
 
 exports.rescheduleAndInvite = async (req) => {
-    let interview = await interviews.findById({ _id: req.body.id });
-    req.body.interview = await interviews.findByIdAndUpdate({ _id: req.body.id },
+    let interview = await Interview.findById({ _id: req.body.id });
+    req.body.interview.interview = await Interview.findByIdAndUpdate({ _id: req.body.id, is_deleted: { $ne: true } },
         {
             sequence: req.body.sequence + 1,
             status: "CONFIRMED",
-            start: new Date(req.body.interview.start),
-            end: new Date(req.body.interview.end),
+            start: new Date(new Date(req.body.interview.start).toUTCString()),
+            end: new Date(new Date(req.body.interview.end).toUTCString()),
             note: req.body.interview.note,
             round: req.body.interview.round,
             jobId: req.body.interview.job.id,
@@ -57,40 +59,46 @@ exports.rescheduleAndInvite = async (req) => {
             is_deleted: false,
             modified_by: req.body.interview.modified_by.id,
             modified_at: Date.now()
-        }, {new: true});
+        }, {new: true});   
     // Invite Participants
-    // await inviteCandidate(req, 'Interview rescheduled');
-    // await inviteInterviewer(req, 'Interview rescheduled');
-    // await inviteOrganizer(req, 'Interview rescheduled');
+    await inviteCandidate(req, 'Interview rescheduled');
+    await inviteInterviewer(req, 'Interview rescheduled');
+    await inviteOrganizer(req, 'Interview rescheduled');
     // Return Interview Details
     return req.body.interview;
 }
 
 exports.getAllBetweenDates = async (req) => {
-    return await interviews.find(
-        {
-            start: {
-                $gte: new Date(new Date(parseInt(req.params.start)).toISOString()),
-                $lt: new Date(new Date(parseInt(req.params.end)).toISOString())
-            }
-        }).populate({
-              path: 'jobApplicant',
-              model: 'Applicants'
-    });
+    let query = {
+        is_deleted: { $ne: true },
+        start: {
+            $gte: new Date(new Date(parseInt(req.params.start)).toISOString()),
+            $lt: new Date(new Date(parseInt(req.params.end)).toISOString())
+        }
+    };
+    if (req.user.roles.indexOf('admin') === -1 && req.user.roles.indexOf('hr') === -1) {
+        query.interviewer = req.user.id;
+    }
+    return await Interview.find(query
+        ).populate({
+            path: 'jobApplicant',
+            model: 'Applicants',
+        }
+    );
 }
 
 exports.getAllByCandidate = async (req) => {
-    return await interviews.find({ jobApplicant: req.params.candidateId }).sort([['start', -1]]);
+    return await Interview.find({ jobApplicant: req.params.candidateId, is_deleted: { $ne: true } }).sort([['start', -1]]);
 }
 
 exports.getAllByInterview = async (req) => {
-    return await interviews.aggregate([
-        { $match: { _id: ObjectId(req.params.interviewId) } },
+    return await Interview.aggregate([
+        { $match: { _id: ObjectId(req.params.interviewId), is_deleted: { $ne: true } } },
         { $lookup: { from: 'interviewresults', localField: '_id', foreignField: 'interview_id', as: 'interviewResults' } }]);
 }
 
 exports.comment = async (req) => {
-    return await interviews.findByIdAndUpdate({ _id: req.body._id }, {
+    return await Interview.findByIdAndUpdate({ _id: req.body._id, is_deleted: { $ne: true } }, {
         comment : req.body.comment,
         result : req.body.result
     }, {new : true});
@@ -114,7 +122,7 @@ exports.saveResult = async (req) => {
         if (!criteria._id) {
             createInterviewResults.push({
                 interview: criteria.interview,
-                criteria: criteria.criteriaId, 
+                criteria: criteria.criteria._id, 
                 score: criteria.score,
                 is_deleted: false,
                 created_at: Date.now(),
@@ -126,6 +134,7 @@ exports.saveResult = async (req) => {
             let updatedCriteria = await interviewResults.findByIdAndUpdate({_id : criteria._id}, {
                 score: criteria.score,
                 criteria: criteria.criteria._id,
+                is_deleted: false,
                 modified_at: Date.now(),
                 modified_by: criteria.modified_by
             }, {new: true});
@@ -146,9 +155,9 @@ exports.saveResult = async (req) => {
 }
 
 exports.addCriteria = async (req) => {
-    let criteria = interviewCriteria.find({ name: req.body.name.toLowerCase(), is_deleted: { $ne: true} });
+    let criteria = await interviewCriteria.findOne({ name: { "$regex": req.body.name, "$options": "i" }, is_deleted: { $ne: true} });
     if (!criteria) {
-        interviewCriteria.create({
+        criteria = await interviewCriteria.create({
             name: req.body.name,
             created_at: new Date(),
             created_by: req.user.id,
@@ -156,33 +165,61 @@ exports.addCriteria = async (req) => {
             modified_by: req.user.id,
             is_deleted: false
         });
-    } else {
-        return criteria;
     }
+    return criteria;
 }
 
-async function inviteCandidate(req) {
+exports.getInterviews = async (req) => {
+    let limit = 10, offset = 0, sortOrder = -1;
+    let type = 'PENDING';
+    if (req.query.limit) limit = parseInt(req.query.limit);
+    if (req.query.offset) offset = parseInt(req.query.offset);
+    if (req.query.type) type = req.query.type;
+    if (req.query.sortOrder) sortOrder = parseInt(req.query.sortOrder);
+    let query = {
+        is_deleted: { $ne: true }
+    };
+    if (req.user.roles.indexOf('admin') === -1 && req.user.roles.indexOf('hr') === -1) {
+        query = {
+            is_deleted: { $ne: true },
+            interviewer: req.user.id
+        }
+    }
+    if (type.toUpperCase() === 'PENDING') {
+        query.result = type
+    } else {
+        query.result = { $ne: 'PENDING' }
+    }
+    let count = await Interview.count(query);
+    let interviews = await Interview.find(query).populate([{
+        path: 'jobApplicant',
+        model: 'Applicants'
+    },{
+        path: 'jobId',
+        model: 'Jobs',
+        select: ['title']
+    }]).sort([['start', sortOrder]]).skip(offset).limit(limit).exec();
+    return { count, interviews };
+}
+
+async function inviteCandidate(req, title) {
     return await createInvitation(req, 'Interview scheduled',
         `
         <p>Dear ${req.body.interview.candidate.name},</p>
         <p>You are invited to attend an interview for the following profile.</p>
         <p>Profile: <b>${req.body.interview.job.name}<b><br/>
-        Interview date: <b>${req.body.interview.start}<b><br/>
+        Interview date: <b>${new Date(req.body.interview.start).toLocaleString()}<b><br/>
         </p>
-        <p>Best regards,<br>
-        Team Eazyrecruit</p>
     `, req.body.interview.candidate.email, req.body.interview.organizer.email);
 }
 
 async function inviteInterviewer(req, title) {
     return await createInvitation(req, title,
         `
-        <p>Dear ${req.body.interview.interviewer.name},</p>
+        <p>Dear ${req.body.interview.interviewer.name },</p>
         <p>${req.body.interview.organizer.name} invited you to interview ${req.body.interview.candidate.name} for the profile ${req.body.interview.job.name}.
         Please click on below link to access more details about the interview.</p>
-        <p><a href="https://web.easyrecruit.in/interview/${req.body.interview.interview._id.toString()}">https://web.easyrecruit.in/interview/${req.body.interview.interview.id}</p>
-        <p>Best regards,<br>
-        Team Easyrecruit</p>
+        <p><a href="${config.website}/interview/${req.body.interview.interview._id.toString()}">${config.website}/interview/${req.body.interview.interview.id}</p>
     `, req.body.interview.interviewer.email, req.body.interview.organizer.email);
 }
 
@@ -195,9 +232,7 @@ async function inviteOrganizer(req, title) {
         Interviewer Name: ${req.body.interview.interviewer.name}<br>
         Profile: ${req.body.interview.job.name}</p>
         <p>Please click on below link to access more details about the interview.<p>
-        <p>https://web.easyrecruit.in/interview/${req.body.interview.interview._id.toString()}</p>
-        <p>Best regards,<br>
-        Team Eazyrecruit</p>
+        <p>${config.website}/interview/${req.body.interview.interview._id.toString()}</p>
     `, req.body.interview.organizer.email, req.body.interview.organizer.email);
 }
 

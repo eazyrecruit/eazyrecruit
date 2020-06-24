@@ -1,7 +1,7 @@
 module.exports = {
   secret: 'ilovescotchyscotch',
   website: 'https://dev.eazyrecruit.in',
-  allowedOrigins: ['https://dev.eazyrecruit.in','http://localhost:4200'],
+  allowedOrigins: ['https://dev.eazyrecruit.in','http://localhost:4200, http://localhost:8081/api, https://dev-api.eazyrecruit.in', '*'],
   server: {
     cert: './cer.pem',
     key: './key.pem',
@@ -10,16 +10,17 @@ module.exports = {
     secureProtocol: 'TLSv1_2_method'
 
   },
-  website: 'http://localhost:4200',
+  website: 'http://localhost:8082',
   emailConfig: {
-    host: 'email-smtp.eu-west-1.amazonaws.com',
-    port: 587,
-    user: 'AKIAIY6YZ475BD7DAERQ',
-    pass: 'ArkJvRnnlKOXWtWJDg/tfKLax97/PvLeZLAWdGd7/Z4V',
-    fromEmail: 'Akeo India<noreply@akeo.in>',
-    fromDisplayname: 'Akeo India<noreply@akeo.in>',
+    // host: 'email-smtp.eu-west-1.amazonaws.com',
+    // port: 587,
+    // user: 'AKIAIY6YZ475BD7DAERQ',
+    // pass: 'ArkJvRnnlKOXWtWJDg/tfKLax97/PvLeZLAWdGd7/Z4V',
+    // fromEmail: 'Akeo India<noreply@akeo.in>',
+    // fromDisplayname: 'Akeo India<noreply@akeo.in>',
+    stop: true,
     test: true,
-    testRecepient: 'ashish@akeo.no'
+    testRecepient: 'vicky@akeo.no'
   },
   jwt: {
     secret: 'SHDJHDSDSD&(**DSUDSY^D&^USDHSODISOIY&D*SYDDH',
@@ -28,18 +29,27 @@ module.exports = {
     issuer: 'https://dev-api.eazyrecruit.in'
   },
   googleAuth: {
-    'clientID': '69938045268-m33a1kasl2peiqj9117kd2osr63en7qf.apps.googleusercontent.com',
-    'clientSecret': 'r7vAl-nI-dOX8J2ABUHAl51V',
-    'callbackURL': '/assets/auth-callback.html'
+    'clientID': '760504546841-0plne4g72ekra4847vvb22tilolj8oc8.apps.googleusercontent.com',
+    'clientSecret': 'HgU2-NmRMW6Q77fh2KJeSYg2',
+    'callbackURL': '/admin/assets/auth-callback.html'
   },
   mongo: {
-    host: 'mongodb://192.168.1.154:27017/eazyrecruit'
+    host: 'mongodb://eazyrecruit:klkjhgbvfcf@192.168.1.173:27019/admin'
+    // host: 'mongodb://localhost:27017/eazyrecruit'
   },
   redis: {
-    host: "redis://localhost:6379"
+    host: "redis://:klkjhgbvfcf@192.168.1.173:6379/0"
   },
   elasticSearch: {
     // host: "http://192.168.1.157:9200",
-    host: "http://192.168.1.190:9200"
+    host: "http://192.168.1.173:9400"
+  },
+  encrypt: {
+    iv: 'cattmbworqqehaoq',
+    key: 'axiwhdscmzundjrlxwmjxoofvpquspku'
+  },
+  pyUrl: "/api/engine/resume",
+  admin: {
+    username: "admin@eazyrecruit.in"
   }
 };

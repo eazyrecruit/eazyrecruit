@@ -12,6 +12,8 @@ var JobApplicant = require('../models/jobApplicant');
 var JobPipeline = require('../models/jobPipeline');
 var Jobs = require('../models/job');
 var Histories = require('../models/history');
+var emailService = require('../services/email.service');
+var histroyService = require('../services/history.service');
 
 exports.save = async (req) => {
     return new Promise(async (resolve, reject) => {
@@ -33,16 +35,18 @@ exports.save = async (req) => {
                     modelApplicant = new Applicants();
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
-                    modelApplicant.email = email;
                 }
+                modelApplicant.email = email;
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
                 modelApplicant.source = req.body.source ? req.body.source : '';
                 modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : '';
                 modelApplicant.currentCtc = req.body.currentCtc || '';
                 modelApplicant.expectedCtc = req.body.expectedCtc || '';
                 modelApplicant.noticePeriod = req.body.noticePeriod || '';
+                modelApplicant.noticePeriodNegotiable = req.body.noticePeriodNegotiable || '';
                 modelApplicant.totalExperience = req.body.experience || '';
                 modelApplicant.availability = req.body.availability || '';
+                modelApplicant.referredBy = req.body.referredBy || null;
                 if(req.body.firstName){
                     modelApplicant.firstName = req.body.firstName ? req.body.firstName : '';
                     modelApplicant.middleName = req.body.middleName ? req.body.middleName : '';
@@ -75,15 +79,22 @@ exports.save = async (req) => {
                         modelResume.modified_at = new Date();
                         modelResume = await modelResume.save();
                         modelApplicant.resume = modelResume._id;
+                    } else {
+                        modelApplicant.resume = req.body.resume;
                     }
                 }
 
                 // Create/Update skills
                 if (req.body.skills) {
-                    //var skills = JSON.parse(req.body.skills);
-                    var skills = req.body.skills;
+                    let skills;
+                    if (Array.isArray(req.body.skills)) {
+                        skills = req.body.skills;
+                    } else {
+                        skills = JSON.parse(req.body.skills);
+                    }
                     if (skills && skills.length > 0) {
                         modelApplicant.skills = [];
+                        modelApplicant.skills.length = 0;
                         for(var iSkill = 0; iSkill < skills.length; iSkill ++) {
                             modelSkills = await Skills.findOne({ _id: skills[iSkill].id });
                             if (modelSkills == null) {
@@ -106,7 +117,7 @@ exports.save = async (req) => {
                 if (req.body.currentLocation) {
                     var current = JSON.parse(req.body.currentLocation);
                     if (current && current.length > 0) {
-                        modelCurrentLocation = await Locations.findOne({ _id: current.id })
+                        modelCurrentLocation = await Locations.findOne({ _id: current[0].id })
                         if (modelCurrentLocation == null) {
                             modelCurrentLocation = new Locations();
                             modelCurrentLocation.country = current.country || '';
@@ -121,6 +132,8 @@ exports.save = async (req) => {
                         }
                         modelApplicant.location = modelCurrentLocation;
                     }
+                } else {
+                    modelApplicant.location = null;
                 }
 
                 var modelpreferredLocation = null;
@@ -142,7 +155,7 @@ exports.save = async (req) => {
                                 modelpreferredLocation.modified_at = new Date();
                                 modelpreferredLocation = await modelpreferredLocation.save();
                             }
-                            modelApplicant.preferredLocations.push(modelpreferredLocation);
+                            modelApplicant.preferredLocations.push(modelpreferredLocation._id);
                         }
                     }
                 }
@@ -195,29 +208,42 @@ exports.save = async (req) => {
                 modelApplicant = await modelApplicant.save();
                 
                 // if jobid and pipelinid available then add applicant to that job
-                let jobPipeline;
+                let jobPipeline = null;
                 let modelJobApplicant = new JobApplicant();
-                if (req.body.pipelineId) {
+                if (req.body.jobId) {
                     let modelJob = await Jobs.findById(req.body.jobId).populate('pipeline');
-                    jobPipeline = await JobPipeline.findById({ _id: req.body.pipelineId, is_deleted: { $ne: true } });
-                    
-                    if (jobPipeline) {                        
-                        modelJobApplicant.pipeline = req.body.pipelineId;
-                        modelJobApplicant.applicant = modelApplicant._id;
-                        modelJobApplicant.is_deleted = false;
-                        modelJobApplicant.created_at = new Date();
-                        modelJobApplicant.created_by = req.user.id;
-                        modelJobApplicant.modified_at = new Date();
-                        modelJobApplicant.modified_by = req.user.id;
-                        modelJobApplicant = await modelJobApplicant.save();
-                        // Link with Job
-                        if (modelJob.applicants == null) {
-                            modelJob.applicants = [];
-                        }
-                        modelJob.applicants.push(modelJobApplicant._id);
-                        modelJob = await modelJob.save();
-                        modelJobApplicant.applicant = modelApplicant;
+                    if (req.body.pipelineId) {
+                        jobPipeline = await JobPipeline.findById({ _id: req.body.pipelineId, is_deleted: { $ne: true } });
+                    } else {
+                        jobPipeline = modelJob.pipelines ? modelJob.pipelines[0] : null;
                     }
+                    if (jobPipeline == null) {
+                        modelJobApplicant = new JobApplicant();
+                    }
+                    modelJobApplicant.job = modelJob.id;
+                    modelJobApplicant.pipeline = jobPipeline;
+                    modelJobApplicant.applicant = modelApplicant._id;
+                    modelJobApplicant.is_deleted = false;
+                    modelJobApplicant.created_at = new Date();
+                    modelJobApplicant.created_by = req.user.id;
+                    modelJobApplicant.modified_at = new Date();
+                    modelJobApplicant.modified_by = req.user.id;
+                    modelJobApplicant = await modelJobApplicant.save();
+                    // Link with Job
+                    if (modelJob.applicants == null) {
+                        modelJob.applicants = [];
+                    }
+                    modelJob.applicants.push(modelJobApplicant._id);
+                    modelJob = await modelJob.save();
+                    modelJobApplicant.applicant = modelApplicant;
+
+                    await histroyService.create({ 
+                        applicant: modelApplicant._id, 
+                        pipeline: jobPipeline,
+                        job: modelJob.id,
+                        createdBy: req.user.id,
+                        modifiedBy: req.user.id,
+                    });
                 }
 
                 // Update HR and candidate
@@ -229,6 +255,16 @@ exports.save = async (req) => {
                     await notifyHR(candidate);
                     //await notifyCandidate(candidate);
                 }
+                
+                try {
+                    if (modelApplicant.email) {
+                        await notifyCandidate(modelApplicant);
+                        console.log('email sent to : ', modelApplicant.email);
+                    }
+                } catch (error) {
+                    console.log('send email error : ', error);
+                }
+                
                 if (jobPipeline) {
                     resolve(modelJobApplicant);
                 } else {
@@ -236,9 +272,11 @@ exports.save = async (req) => {
                 }
                 
             } else {
+                console.log('save applicant : ', 'Email or Id is required');
                 reject("Email or Id is required");
             }
         } catch (err) {
+            console.log('save applicant catch : ', err);
             reject(err);
         }
     });
@@ -246,11 +284,13 @@ exports.save = async (req) => {
 
 exports.getById = async (_id) => {
     return (await Applicants.findById(_id).populate('location')
-    .populate('preferredLocations').populate({path: 'skills', match: { is_deleted: { $ne: true} }}));
+    .populate('preferredLocations')
+    .populate({path: 'skills', match: { is_deleted: { $ne: true} }})
+    .populate('referredBy'));
 }
 
 exports.getjobsByApplicantId = async (_id) => {
-    return await JobApplicant.find({ applicant: _id }).populate('job');
+    return await JobApplicant.find({ applicant: _id, is_deleted: { $ne: true } }).populate({ path: 'job', select: 'title' }).populate({ path: 'pipeline', select: 'name' });
 }
 
 exports.delete = async (_id) => {
@@ -259,7 +299,7 @@ exports.delete = async (_id) => {
         modelApplicant.is_deleted = true;
         modelApplicant.modified_by = req.user.id;
         modelApplicant = new Date();
-        return await modelJob.save
+        return await modelApplicant.save();
     }
     throw 'invalid id';
 };
@@ -268,24 +308,31 @@ exports.addComment = async (req) => {
     let comment = {
         comment: req.body.comment,
         applicant: req.body.applicant,
+        job: req.body.job,
         is_deleted: false,
         created_at: Date.now(),
         created_by: req.user.id,
         modified_at: Date.now(),
-        modified_by: req.user.id} 
-        return await ApplicantComments.create(comment);
+        modified_by: req.user.id
+    } 
+    return await ApplicantComments.create(comment);
 }
 
 exports.updateCommentsById = async (req) => {
     let comment = {
         comment: req.body.comment,
         modified_at: Date.now(),
-        modified_by: req.user.id} 
-        return await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
+        modified_by: req.user.id
+    } 
+    return await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
 }
 
 exports.getComments = async (req) => {
-    return await ApplicantComments.find({ applicant: req.params.id , is_deleted: false});
+    return await ApplicantComments.find({ applicant: req.params.id, is_deleted: false}).populate({ path: 'modified_by', select: 'email firstName lastName'});
+}
+
+exports.getCommentsByJob = async (applicantId, jobId) => {
+    return ApplicantComments.find({ job: jobId, is_deleted: false }).populate({ path: 'modified_by', select: 'email firstName lastName'});
 }
 
 exports.getApplicantHistory = async (applicantId, ) => {

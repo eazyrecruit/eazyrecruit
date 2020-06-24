@@ -21,40 +21,84 @@ exports.register = (req, next) => {
 };
 
 exports.getUser = (req, next) => {
-    models.User.findAll({ where: { is_deleted: false }, include: [{model: models.UserDetail}]}).then(user => {
-        next(null, user[0]);
+    User.find({is_deleted: false}).then(user => {
+        next(null, user);
     }).catch(err=>{
         next(err, null)
     });
 };
 
 exports.resetPassword = (req, next) => {
-    models.User.findOne({ where: { email: req.body.email, is_deleted: false }, include: [{model: models.UserDetail}] }).then(async (user) => {
-        if (user && user.user_detail) {
-            try {
-                var email = {};
-                let otp = uuidv4();
-                user.otp = otp;
-                let result = await user.save();
-                email.name = user.user_detail.first_name ? `${user.user_detail.first_name} ${user.user_detail.last_name}` : req.body.email;
-                email.receiverAddress = user.email;
-                email.subject = 'Reset Password';
-                email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/resetpassword/${otp}">Reset Password</a>`;
-                emailService.sendEmail(email, (err, data) => {
-                    if (err) {
-                        next(err, null);
-                    } else {
-                        next(null, `${data} to ${email.receiverAddress}`);
+    User.findOne({ email: req.body.email, is_deleted: false }).then(async (user) => {
+        if (user) {
+            if (user.google != true) {
+                try {
+                    var email = {};
+                    let otp = uuidv4();
+                    user.passwordResetToken = otp;
+                    await user.save();
+                    email.name = user.firstName ? `${user.firstName} ${user.lastName}` : req.body.email;
+                    email.receiverAddress = user.email;
+                    email.subject = 'Reset Password';
+                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
+                    emailService.sendEmail(email, (err, data) => {
+                        if (err) {
+                            let err = {
+                                status: 500,
+                                message: 'internal server error'
+                            }
+                            console.log('forget password : ', error);
+                            next(err, null);
+                        } else {
+                            next(null, `An email has been sent to ${email.receiverAddress} for reset your password.`);
+                        }
+                    });
+                } catch (error) {
+                    let err = {
+                        status: 500,
+                        message: 'internal server error'
                     }
-                });
-            } catch (error) {
-                next(error, null);
-            }
-            
+                    console.log('forget password : ', error);
+                    next(err, null);
+                }
+            } else {
+                let err = {
+                    status: 400,
+                    message: 'Google login found, password can not be reset'
+                }
+                next(err, null);
+            }            
         } else {
-            next('User does not exist!', null);
+            let err = {
+                status: 400,
+                message: 'User does not exist'
+            }
+            next(err, null);
         }
     }).catch(err => {
         next(err, null);
     });
 };
+
+exports.getUserByOtp = (req, next) => {
+    User.findOne({ passwordResetToken: req.params.otp, is_deleted: false }).then(user => {
+        next(null, user);
+    }).catch(err => {
+        next(err, null);
+    });
+}
+
+exports.changePassword = async (req, next) => {
+    try {
+        User.findOneAndUpdate({ passwordResetToken: req.body.otp, is_deleted: false }, 
+            { $set: { password: bcryptNodejs.hashSync(req.body.newPassword), passwordResetToken: null } }, {new: true}, (err, doc) => {
+            if (err) {
+                next(err, null);
+            } else {
+                next(null, doc);
+            }
+        });
+    } catch (error) {
+        next(null, error);
+    }
+}

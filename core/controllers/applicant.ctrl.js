@@ -4,7 +4,6 @@ var applicantService = require("../services/applicant.service");
 var responseService = require('../services/response.service');
 var Logs = require('../models/logs');
 var multer = require('multer');
-var validationService = require('../services/validation.service');
 var esService = require('../services/es.service');
 var skillService = require('../services/skill.service');
 var locationService = require('../services/location.service');
@@ -14,7 +13,7 @@ var redisClient = require('../services/redis.service');
 var logTypes = require('../helpers/logType');
 var resumeService = require('../services/resume.service');
 
-router.post("/search", async (req, res) => {
+router.get("/search", async (req, res) => {
     try {
         var results = await esService.searchApplicants(req);
         if (results.hits && results.hits.total.value > 0) {
@@ -49,6 +48,16 @@ var applicantResumeUpload = multer({ storage: multer.memoryStorage(), limits: { 
 router.post("/", applicantResumeUpload.any(), async (req, res) => {
     try {
         var applicant = await applicantService.save(req);
+        if (typeof applicant == 'object') {
+            let id;
+            if (applicant.resume) {
+                id = applicant.resume.toString();
+            } else if (applicant.applicant && applicant.applicant.resume) {
+                id = applicant.applicant.resume.toString();
+            }
+            let parsedData = await redisClient.parse(id);
+            console.log('parsed data : ', parsedData);
+        }
         responseService.response(req, null, logTypes.debug, applicant, res);
     } catch (err) {
         responseService.response(req, err, logTypes.debug, null, res);
@@ -73,39 +82,6 @@ router.delete("/:id", applicantResumeUpload.any(), async (req, res) => {
         responseService.response(req, err, logTypes.debug, null, res);
     }
 });
-
-
-// router.get("/resync", async (req, res) => {
-//     try {
-//        var result = await candidateService.syncElasticSearch();
-//        responseService.response(req, null, 'resync', result, res);
-//     } catch (ex) {
-//        responseService.response(req, ex, 'resync', null, res);
-//     }
-//  });
-
-//  router.get("/reparse", async (req, res) => {
-//     try {
-//        var reparseResp = await redisClient.reparseDb();
-//        responseService.response(req, null, 'reparse', reparseResp, res);
-//     } catch (ex) {
-//        responseService.response(req, ex, 'reparse', null, res);
-//     }
-//  });
-
-//  var uploadService = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
-// router.post('/received/:source?', uploadService.any(), async (req, res) => {
-//    try {
-//       var candidate = await candidateService.saveAndUpdateCandidate(req, res);
-//       responseService.response(req, null, '1', candidate, res);
-//    } catch (err) {
-//       responseService.response(req, err, '1', null, res);
-//    }
-// });
-
-
-
-
 
 var uploadService = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
 router.post("/upload", uploadService.any(), (req, res) => {
@@ -207,12 +183,6 @@ router.get("/download/:id", (req, res) => {
     });
 });
 
-// router.post("/upload", uploadService.any(),  (req, res) => {
-//     accountService.uploadResume(req, function (err, users) {
-//         responseService.response(req, err,2 ,users, res);
-//       })
-// });
-
 router.post("/comment", async (req, res) => {
     try {
         var comment = await applicantService.addComment(req);
@@ -240,12 +210,6 @@ router.put("/comment", async (req, res) => {
     }
 });
 
-// router.get("/jobApplied", (req, res) => {
-//     applicantService.getAppliedJob(req, (err, data) => {
-//         responseService.response(req, err, 'Jobs Applied by Applicant', data, res);
-//     });
-// });
-
 router.get("/getrejection", (req, res) => {
     applicantService.getrejection(req, (err, data) => {
         responseService.response(req, err, 'Applicant Reject', data, res);
@@ -257,47 +221,6 @@ router.post("/reject", (req, res) => {
         responseService.response(req, err, "Applicant Reject", data, res);
     });
 });
-
-
-router.get("/id/:mongoId", async (req, res) => {
-    try {
-        var applicant = await applicantService.getByMongoid(req.params.mongoId);
-        responseService.response(req, null, "Applicant", applicant, res);
-    } catch (err) {
-        responseService.response(req, err, "Applicant", null, res);
-    }
-});
-
-router.get("/info/:id",
-    async (req, res, next) => {
-        try {
-            //fetch applicant's basic details viz. 
-            //personal, resume, experiences, skills and location
-            let applicantBasicInformation = await candidateService.getApplicatInfoById(req.params.id);
-            //get all the jobs, applicant applied for
-            let appliedJobs = await applicantService.getAppliedJobByMongoid(req.params.id);
-            //fetch all comments related to the applicant
-            let jobAndComments
-            if (appliedJobs) {
-                jobAndComments = await applicantService.getAllComments(appliedJobs.job_post_applicants);
-            }
-            response = {
-                addresses: applicantBasicInformation.addresses,
-                experiences: applicantBasicInformation.experiences,
-                personal: applicantBasicInformation.personal,
-                skills: applicantBasicInformation.skills,
-                appliedJobs: jobAndComments,
-                resume_id: applicantBasicInformation.resume ? applicantBasicInformation.resume._id.toString() : null,
-                // comments: comments
-            }
-            responseService.response(req, null, "Applicant complete information", response, res);
-        } catch (err) {
-            responseService.response(req, err, "Applicant complete information", null, res);
-
-        }
-
-    }
-)
 
 router.get("/resume", (req, res, next) => {
     let datastring = "data:application/msword;base64," + req.body.docbase64;
@@ -330,11 +253,21 @@ router.get("/resume", (req, res, next) => {
                 .done();
         }
     });
-})
+});
 
 router.get("/job/:applicantId",  async (req, res) => {
     try {
         let result = await applicantService.getjobsByApplicantId(req.params.applicantId);
+        responseService.response(req, null, 'get applicant applied job', result, res);
+    } catch(error) {
+        responseService.response(req, error, 'get applicant applied job', null, res);
+    }
+});
+
+// getCommentsByJob
+router.get("/comment/:applicant/:job",  async (req, res) => {
+    try {
+        let result = await applicantService.getCommentsByJob(req.params.applicant, req.params.job);
         responseService.response(req, null, 'get applicant applied job', result, res);
     } catch(error) {
         responseService.response(req, error, 'get applicant applied job', null, res);

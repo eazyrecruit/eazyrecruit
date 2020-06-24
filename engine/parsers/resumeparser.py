@@ -6,12 +6,13 @@ import string
 from mongoengine import *
 import extractors.extracter as extracter
 import nltk
+# nltk.download('stopwords')
+# nltk.download('SnowballStemmer')
+# nltk.download('universal_tagset')
+
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 import csv
-nltk.download('stopwords')
-nltk.download('SnowballStemmer')
-nltk.download('universal_tagset')
 
 def parse(tempFileName):
     try:
@@ -40,18 +41,20 @@ returns: cleaned text ready for processing
 """
 def clean_resume(resume_text):
   cleaned_resume = []
+  whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
   # replacing newlines and punctuations with space
-  return resume_text.replace('\t', ' ').replace('\n', ' ')
-#   for punctuation in string.punctuation:
-#     resume_text = resume_text.replace(punctuation, ' ')
-#   resume_text = resume_text.split()
+  #return resume_text.replace('\t', ' ').replace('\n', ' ')
+  for punctuation in string.punctuation:
+    resume_text = resume_text.replace(punctuation, ' ')
+  resume_text = resume_text.split()
 #   # removing stop words and Stemming the remaining words in the resume
-#   stemmer = SnowballStemmer("english")
-#   for word in resume_text:
-#     if word not in stopwords.words('english') and not word.isdigit():
-#       cleaned_resume.append(word.lower())  # stemmer.stem(word))
-#   cleaned_resume = ' '.join(cleaned_resume)
-#   return cleaned_resume
+  stemmer = SnowballStemmer("english")
+  for word in resume_text:
+    if word not in stopwords.words('english') and not word.isdigit():
+      cleaned_resume.append(word.lower())  # stemmer.stem(word))
+  cleaned_resume = ' '.join(cleaned_resume)
+  cleaned_resume = ''.join(filter(whitelist.__contains__, cleaned_resume))
+  return cleaned_resume
 
 
 def getResumeData(resume_string):

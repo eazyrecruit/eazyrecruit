@@ -98,7 +98,7 @@
     </div>
   </div>
 </section>
-<applicant-info id="applicant-info-pipeline" [applicant]="selectedApplicant" (onReject)="onCandidateReject($event)">
+<applicant-info id="applicant-info-pipeline" [applicant]="selectedApplicant" (onUpdate)="onUpdate($event)" (onReject)="onCandidateReject($event)">
 </applicant-info>
 <!-- <div class="modal fade" id="myModal" role="dialog">
   <div class="modal-dialog window-popup">

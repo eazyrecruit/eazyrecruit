@@ -11,28 +11,89 @@
         </div>
         <div class="row">
             <div class="col-sm-12">
-                <div class="input-group mb-5">
+                <form method="GET" action="<%= locals.baseUrl %>" class="input-group mb-5">
                     <input type="text" class="form-control" placeholder="Search job" aria-label="Search jobs"
-                        aria-describedby="button-addon2">
+                    aria-describedby="button-addon2" name="search" id="searchBox" value="<%= search %>">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+                        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
-        <div class="row">
+        <% if (jobs.length) { %>
+            <div class="row">
             <% for(var jobIndex=0; jobIndex < jobs.length; jobIndex++) {%>
-            <div class="col-md-4" style="margin-bottom:10px;">
-                <div class="card">
-                    <img src="/images/freshers.jpg" width="100%"></img>
-                    <div class="card-body">
-                        <h5 class="card-title"><%= jobs[jobIndex].title %></h5>
-                        <p class="card-text"><%- jobs[jobIndex].description %></p>
-                        <a href="<%= 'jobs/'+jobs[jobIndex].guid %> " class="btn btn-primary">More</a>
+                <div class="col-md-4" style="margin-bottom:10px;">
+                    <div class="card">
+                        <img src="/<%= jobs[jobIndex].metaImage ? jobs[jobIndex].metaImage : 'images/default-job.jpg' %>" width="100%"></img>
+                        <div class="card-body">
+                            <h5 class="card-title"><%= jobs[jobIndex].title ? jobs[jobIndex].title : 'Title' %></h5>
+                            <% if (locals.jobs) {
+                                let location = '';
+                                if (jobs[jobIndex].locations && jobs[jobIndex].locations.length) {
+                                    let jobLocation = jobs[jobIndex].locations;
+                                    for(let i = 0; i < jobLocation.length; i++) {
+                                        location = jobLocation[i].city + ', ' + jobLocation[i].state;
+                                    } 
+                                }
+                                let skill = '';
+                                if (jobs[jobIndex].skills && jobs[jobIndex].skills.length) {
+                                    let skills = [];
+                                    let jobSkills = jobs[jobIndex].skills;
+                                    for(let i = 0; i < jobSkills.length; i++) {
+                                        skills.push(jobSkills[i].name);
+                                    }
+                                    skill = skills.join();
+                                }
+                                var description = [];
+                                if (location.length) {
+                                    description.push(location);
+                                }
+                                if (jobs[jobIndex].minExperience && jobs[jobIndex].minExperience.length) {
+                                    description.push(jobs[jobIndex].minExperience); 
+                                }
+                                if (skill.length) {
+                                    description.push(skill);
+                                }
+                            } %>
+                            <div class="row custom-mg">
+                                <p class="truncate"><%= description.length ? description.join(' | ') : 'Description' %></p>
+                            </div>
+                            <div class="card-text">
+                                <a href="<%= 'jobs/'+jobs[jobIndex].guid %> " class="btn btn-primary">More</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
             <% } %>
-        </div>
+            </div>
+        <% } else { %>
+        <div class="row"><span class="col-sm-12 text-center">No result found</span></div>
+        <% } %>
+    </div>
+    <div class="container mt-4">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" id="first" href="<%= locals.baseUrl %>?page=1&search=">First</a>
+                </li>
+                <% if (locals.hasPreviousPage) { %>
+                <li class="page-item">
+                    <a class="page-link" id="previousPage" href="<%= locals.baseUrl %>?page=<%= previousPage %>&search="><%= previousPage %></a>
+                </li>
+                <% } %>
+                <li class="page-item active">
+                    <a class="page-link" id="currentPage" href="<%= locals.baseUrl %>?page=<%= previousPage %>&search="><%= currentPage %></a>
+                </li>
+                <% if (locals.hasNextPage) { %>
+                <li class="page-item">
+                    <a class="page-link" id="nextPage" href="<%= locals.baseUrl %>?page=<%= nextPage %>&search="><%= nextPage %></a>
+                </li>
+                <% } %>
+                <li class="page-item">
+                    <a class="page-link" id="last" href="<%= locals.baseUrl %>?page=<%= lastPage %>&search=">Last</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>

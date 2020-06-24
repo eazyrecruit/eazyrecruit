@@ -21,7 +21,8 @@ const User = require('./models/user');
 module.exports.setup = (app) => {
   var unprotected = [
     pathToRegexp('/api/account/*'),
-    pathToRegexp('/api/user/otpverification/*'),
+    //yash need save api to be open
+    // pathToRegexp('/api/applicant/*'),
     pathToRegexp('/api/user/resetpassword'),
     pathToRegexp('/api/candidate/received/email'),
     pathToRegexp('/jobs/*')
@@ -41,7 +42,7 @@ module.exports.setup = (app) => {
   app.use('/api/applicant/employer', require('./services/crud.service')(ApplicantEmployerModel, 'CRUDQ'));
   app.use('/api/activity', require('./services/crud.service')(ActivityModels, 'CRUDQ'));
   app.use('/api/industry', require('./services/crud.service')(IndustryModel, 'CRUDQ'));
-  app.use('/api/interview/criteria', require('./services/crud.service')(InterviewCriteriaModel, 'CRUDQ'));
+  // app.use('/api/interview/criteria', require('./services/crud.service')(InterviewCriteriaModel, 'CRUDQ'));
   app.use('/api/interview/mode', require('./services/crud.service')(InterviewModeModel, 'CRUDQ'));
   // app.use('/api/interview/result', require('./services/crud.service')(InterviewResultModel, 'CRUDQ'));
   app.use('/api/pipeline', require('./services/crud.service')(JobPipelineModel, 'CRUDQ'));
@@ -49,7 +50,6 @@ module.exports.setup = (app) => {
   app.use('/api/location', require('./services/crud.service')(LocationModel, 'CRUDQ'));
   app.use('/api/skill', require('./services/crud.service')(SkillsModel, 'CRUDQ'));
   app.use('/api/user/getroles', require('./services/crud.service')(UserRoleModel, 'CRUDQ'));
-  app.use('/api/user', require('./services/crud.service')(User, 'CRUDQ'));
   // Custom Implementation
   app.use('/api/account', require('./controllers/account.ctrl').account);
   app.use('/api/applicant', require('./controllers/applicant.ctrl').applicant);
@@ -58,13 +58,15 @@ module.exports.setup = (app) => {
   app.use('/api/interview', require('./controllers/interview.ctrl').interview);
   app.use('/api/reports', require('./controllers/report.ctrl').report);
   // Extended Services
-  app.use('/api/skill', require('./controllers/skill.ctrl').skillRoutes);
+  app.use('/api/skills', require('./controllers/skill.ctrl').skillRoutes);
   app.use('/api/location', require('./controllers/location.ctrl').locationRoutes);
   app.use('/api/company', require('./controllers/company.ctrl').company);
   // Resume
   app.use('/api/resume', require('./controllers/resume.ctrl').resume);
   // Views
   app.use('/jobs', require('./views/index').pages);
+  app.use('/api/migration', require('./controllers/migrate.ctrl').migrate);
+  app.use('/api/user', require('./controllers/user.ctrl').user);
 };
 
 var secretRecruitCallBack = function (req, payload, done) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ConstService } from './const.service';
 
 @Injectable()
@@ -8,8 +8,8 @@ export class JobService {
   constructor(private http: HttpClient, private constService: ConstService) { }
 
   // (title = '') - this is to assign a default value to the title variable
-  getJob(title = '') {
-    return this.http.get(this.constService.baseUrl + 'job?title=' + title);
+  getJob(filter) {
+    return this.http.get(`${this.constService.baseUrl}job?searchText=${filter.searchText}&offset=${filter.offset}&limit=${filter.pageSize}`);
   }
 
   getJobById(id) {
@@ -25,7 +25,9 @@ export class JobService {
   }
 
   saveJob(Job) {
-    return this.http.post(this.constService.baseUrl + 'job/', Job);
+    const headers = new HttpHeaders();
+    headers.set('Content-Type', 'multipart/form-data');
+    return this.http.post(this.constService.baseUrl + 'job/', Job, { headers });
   }
 
   editJob(job) {

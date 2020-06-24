@@ -3,7 +3,7 @@
   <h4 class="modal-title">Job</h4>
 </div>
 <div class="modal-body content-move">
-  <form [formGroup]="jobDetails" novalidate (ngSubmit)="jobDetail(jobDetails.value)">
+  <form [formGroup]="jobDetails" novalidate (ngSubmit)="createJob(jobDetails.value)">
     <div class="row">
       <div class="col-sm-9">
         <div class="form-group">
@@ -14,20 +14,24 @@
             Please enter Job Title
           </small>
           <small class="text-danger" *ngIf="jobDetails.controls['title'].hasError('jobTitleValid')">
-            Please enter correct job title
+            Please enter correct job title            
           </small>
         </div>
       </div>
-      <div class="col-sm-1">
-        <div class="form-group">
-          <label for="active">Active</label>
-          <input style="margin-left: 25px;" type="checkbox" formControlName="active" [(ngModel)]="active">
-        </div>
-      </div>
-      <div class="col-sm-1">
-        <div class="form-group">
-          <label for="is_published">Publish</label>
-          <input style="margin-left: 25px;" type="checkbox" formControlName="is_published" [(ngModel)]="publish">
+      <div class="col-sm-3 mr-top">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="active">Active</label>
+              <input style="margin-left: 25px;" type="checkbox" formControlName="active" [(ngModel)]="active">
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="is_published">Publish</label>
+              <input style="margin-left: 25px;" type="checkbox" formControlName="is_published" [(ngModel)]="publish">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -43,11 +47,11 @@
       </div>
       <div class="col-sm-3">
         <div class="form-group">
-          <label for="ctc" class="required">Anual CTC</label>
-          <input type="text" placeholder="Anual CTC" class="form-control" formControlName="ctc" required>
+          <label for="ctc" class="required">Annual CTC (Lakh)</label>
+          <input type="text" placeholder="Annual CTC" class="form-control" formControlName="ctc" required>
           <small class="text-danger"
             *ngIf="jobDetails.controls['ctc'].hasError('required') && jobDetails.controls['ctc'].touched">
-            Please enter Anual CTC
+            Please enter Annual CTC
           </small>
           <small class="text-danger" *ngIf="jobDetails.controls['ctc'].hasError('jobExperience')">
             Please enter correct CTC
@@ -60,7 +64,7 @@
           <input type="text" placeholder="0-2" class="form-control" formControlName="minExperience" required>
           <small class="text-danger"
             *ngIf="jobDetails.controls['minExperience'].hasError('required') && jobDetails.controls['minExperience'].touched">
-            Please enter experiance
+            Please enter experience
           </small>
           <small class="text-danger" *ngIf="jobDetails.controls['minExperience'].hasError('jobExperience')">
             Please enter correct experience
@@ -73,7 +77,7 @@
           <input type="text" placeholder="0-2" class="form-control" formControlName="maxExperience" required>
           <small class="text-danger"
             *ngIf="jobDetails.controls['maxExperience'].hasError('required') && jobDetails.controls['maxExperience'].touched">
-            Please enter experiance
+            Please enter experience
           </small>
           <small class="text-danger" *ngIf="jobDetails.controls['maxExperience'].hasError('jobExperience')">
             Please enter correct experience
@@ -85,7 +89,7 @@
     <div class="row">
       <div class="col-sm-6">
         <div class="form-group">
-          <label for="locations">Job Locations</label>
+          <label for="locations" class="required">Job Locations</label>
           <tag-input [onlyFromAutocomplete]="true" formControlName="locations">
             <tag-input-dropdown [identifyBy]="'_id'" [displayBy]="'city'" [autocompleteObservable]="asyncLocations">
               <ng-template let-item="item" let-index="index">
@@ -110,7 +114,7 @@
     <div class="row">
       <div class="col-sm-12">
         <div class="form-group">
-          <label for="skills">Skills</label>
+          <label for="skills" class="required">Skills</label>
           <tag-input [onlyFromAutocomplete]="true" formControlName="skills">
             <tag-input-dropdown [identifyBy]="'_id'" [displayBy]="'name'" [autocompleteObservable]="asyncSkills">
               <ng-template let-item="item" let-index="index">
@@ -170,7 +174,7 @@
     <div class="row" *ngIf="publish">
       <div class="form-group col-md-3">
         <label for="metaImage" class="not-required">Meta Image</label>
-        <input type="file" class="form-control" formControlName="metaImage" multiple="" accept=".jpg, .jpeg">
+        <input type="file" class="form-control" formControlName="metaImage" #file (change)="onFileChange(file.files)" multiple="" accept=".jpg, .jpeg">
         <small class="text-danger" *ngIf="errInvalidFile">
           Please upload only jpg/jpeg image
         </small>

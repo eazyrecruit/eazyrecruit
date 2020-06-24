@@ -5,13 +5,12 @@ var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
  
 var jobSchema = new Schema({
-
     title: String,
     guid: String,
     active: Boolean,
     description: String,
     responsibilities: String,
-    ctc: Number,
+    ctc: String,
     minExperience: Number,
     maxExperience: Number,
     mode: String,
@@ -39,7 +38,7 @@ var jobSchema = new Schema({
 
     expiryDate: Date,
     is_published: Boolean,
-    metaImage: String,
+    metaImage: { type: String },
     metaImageAltText: String,
     metaTitle: String,
     tags: Array,
@@ -59,7 +58,8 @@ var jobSchema = new Schema({
 
 }, {
     versionKey: false,
-    usePushEach: true
+    usePushEach: true,
+    strict: false
 });
 
 jobSchema.plugin(mexp, {

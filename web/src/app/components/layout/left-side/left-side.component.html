@@ -2,7 +2,7 @@
   <!-- Logo -->
   <a href="/admin/index.html" class="logo text-left">
     <!-- mini logo for sidebar mini 50x50 pixels -->
-    <img [class]="biglogo?'width-150':'width-100'" [src]="biglogo?'/admin/assets/img/logo.png':'/admin/assets/img/short-logo.png'"
+    <img [class]="biglogo?'width-150':'width-100'" src="/{{biglogo ? 'admin/assets/img/logo.png' : 'admin/assets/img/short-logo.png'}}"
       alt="">
   </a>
 </header>
@@ -67,7 +67,7 @@
       </div>
     </div>
     <!-- sidebar menu: : style can be found in sidebar.less -->
-    <ul class="sidebar-menu tree" (click)="sidebarMenu();">
+    <ul class="sidebar-menu tree" *ngIf="role == 'admin' || role == 'hr'" (click)="sidebarMenu();">
       <li>
         <a routerLink="/dashboard">
           <i class="fa fa-home"></i>
@@ -86,16 +86,36 @@
           <span>Applicants</span>
         </a>
       </li>
+      <li>
+        <a routerLink="/interviews">
+          <i class="fa fa-home"></i>
+          <span>Interviews</span>
+        </a>
+      </li>
       <!-- <li>
         <a routerLink="/applicants">
           <i class="fa fa-users"></i>
           <span>Applicants</span>
         </a>
       </li> -->
-      <li >
+      <li *ngIf="role == 'admin'">
         <a routerLinkActive="active" routerLink="/settings">
           <i class="fa fa-gear"></i>
           <span>Settings</span>
+        </a>
+      </li>
+    </ul>
+    <ul class="sidebar-menu tree" *ngIf="role == 'user'" (click)="sidebarMenu();">
+      <li>
+        <a routerLink="/dashboard">
+          <i class="fa fa-home"></i>
+          <span>Home</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/interviews">
+          <i class="fa fa-home"></i>
+          <span>Interviews</span>
         </a>
       </li>
     </ul>

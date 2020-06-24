@@ -6,16 +6,19 @@ var Schema = mongoose.Schema;
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
+  firstName: { type: String },
+  lastName: { type: String },
   roles: [{
     type: Schema.Types.ObjectId,
     ref: 'UserRoles'
   }],
+  phone: String,
   password: String,
   passwordResetToken: String,
   passwordResetExpires: Date,
   emailVerificationToken: String,
   emailVerified: Boolean,
-  google: String,
+  google: Boolean,
   tokens: Array,
   picture: String,
   is_deleted: Boolean,

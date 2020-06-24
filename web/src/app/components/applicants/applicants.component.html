@@ -72,4 +72,4 @@
     </div>
 </section>
 
-<applicant-info id="applicant-info" [applicant]="applicant"></applicant-info>
+<applicant-info id="applicant-info" (onUpdate)="onUpdate($event)" [applicant]="applicant"></applicant-info>

@@ -16,14 +16,14 @@ app = Celery('tasks', broker=config.get_config()['redis_host'])
 
 @app.on_after_configure.connect
 def emailparser_job(sender, **kwargs):
-    sender.add_periodic_task(20.0, emailparser_task.s(), name='add every 20')
+    sender.add_periodic_task(600.0, emailparser_task.s(), name='add every 2400')
 
 @app.task(name="emailparser")
 def emailparser_task():
     listFiles = MailParser.parse()
     if listFiles and len(listFiles) > 0:
         for index in range(len(listFiles)):
-                resumeparser_task.delay(listFiles[index]['tempFile'], listFiles[index]['fileName'], '', 'email')
+            resumeparser_task.delay(listFiles[index]['tempFile'], listFiles[index]['fileName'], '', 'email')
 
 @app.task(name="dbreparser")
 def dbreparser_task():
@@ -43,8 +43,10 @@ def dbreparser_task():
 
 @app.task(name="dbparser")
 def dbparser_task(resumeId):
+    # print(type(resumeId))
+    print(resumeId)
     file = DbParser.parseById(resumeId)
-    if file:
+    if file and file['tempFile']:
         resumeparser_task.delay(file['tempFile'], file['fileName'], file['resumeId'], 'upload')
 
 @app.task(name="resumeparser")
@@ -55,7 +57,9 @@ def resumeparser_task(tempFile, fileName, resumeId, source):
         resume_text, data = ResumeParser.parse(tempFile)
         if data:
             data['resume'] = {'file': fileName, 'id': resumeId}
-            eazyrecruitAPI.uploadResumeWithData( tempFile, data, "/candidate/received/"+source, "")
+            #this token is valid for 10 years from 8 Apr, 2020
+            token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlOGM0NTcxYmNhNjZkZWMxMmUwOTliMyIsImVtYWlsIjoidmlja3lAYWtlby5ubyIsInJvbGVzIjpbXSwiaWF0IjoxNTg2MzM5MDQyLCJleHAiOjE5MDE2OTkwNDIsImF1ZCI6IkVhenlSZWNydWl0VXNlcnMiLCJpc3MiOiJodHRwczovL2Rldi1hcGkuZWF6eXJlY3J1aXQuaW4ifQ.J1RhGZwarEhhFreOc91NK9Ag9Gfa3GCc8YLfH15Frls"
+            eazyrecruitAPI.uploadResumeWithData( tempFile, data, "/api/applicant", token)
     except Exception as xf:
         print(xf)
     finally:
@@ -83,10 +87,17 @@ def resumeparser_task(tempFile, fileName, resumeId, source):
 
 #{'success': {'data': 'success'}}
 #data.get('resumes', None)[0]['content']
-#emailparser_task()
+#emailparser_task.delay()
 #dbreparser_task()
 #dbparser_task("5e3fbe262d6dff65a35408be")
 #owncloudparser_task.delay()
 # odoodata_task.delay()
 #skillsScraper.dump_skill_list("./data/skills/linkedinskill.list")
-#resumeparser_task("./dump/cb41e2b94a4f48f9ad1a1572e8a990a3.pdf", "Manish Kumar Resume.docx", "askjdh1231k2l3j", "")
+#resumeparser_task("./dump/d20374726a2546db87a0b45dd0684fd1.pdf", "AbhishekSharmaResume.pdf", '', 'email')
+
+# app.conf.beat_schedule = {
+#     "check-mail-every-hour": {
+#         "task": "tasks.emailparser_task",
+#         "schedule": 3600
+#     }
+# }

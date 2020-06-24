@@ -1,8 +1,12 @@
 var Jobs = require('../models/job');
 var JobPipelines = require('../models/jobPipeline');
 var JobApplicants = require('../models/jobApplicant');
+var JobMetaImage = require('../models/jobMetaImage');
+var Interview = require('../models/interview');
 const uuidv4 = require('uuid/v4');
 var histroyService = require('../services/history.service');
+var utilService = require('../services/util.service');
+var esService = require('../services/es.service');
 
 exports.save = async (req) => {
     if (req.body) {
@@ -40,6 +44,8 @@ exports.save = async (req) => {
         modelJob.type = req.body.type ? req.body.type : null;
         modelJob.mode = req.body.mode ? req.body.mode : null;
         if (req.body.locations) {
+            modelJob.locations = [];
+            req.body.locations = JSON.parse(req.body.locations);
             for (var iLoc = 0; iLoc < req.body.locations.length; iLoc++) {
                 modelJob.locations.push(req.body.locations[iLoc]._id);
             }
@@ -50,13 +56,22 @@ exports.save = async (req) => {
             }
         }
         if (req.body.skills) {
+            modelJob.skills = [];
+            req.body.skills = JSON.parse(req.body.skills);
             for (var iSkill = 0; iSkill < req.body.skills.length; iSkill++) {
                 modelJob.skills.push(req.body.skills[iSkill]._id);
             }
         }
         modelJob.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
         modelJob.is_published = req.body.published ? req.body.published : true;
-        modelJob.metaImage = req.body.metaImage ? req.body.metaImage : null;
+        
+        // we are storing image with name and we are using guid as name
+        if (req.files && req.files.length) {
+            modelJob.metaImage = await utilService.readWriteFile(req, modelJob.guid);
+        } else {
+            modelJob.metaImage = req.body.metaImage;
+        }
+
         modelJob.metaImageAltText = req.body.metaImageAltText ? req.body.metaImageAltText : null;
         modelJob.metaTitle = req.body.metaTitle ? req.body.metaTitle : null;
         if (req.body.tags) {
@@ -77,9 +92,20 @@ exports.save = async (req) => {
     }
 }
 
-exports.getPublishedJobs = async () => {
-    return await Jobs.find({}).populate("locations").populate("skills")
-        .populate("tags").populate("categories");
+exports.getPublishedJobs = async (query, limit, offset) => {
+    let count = 0;
+    let jobs;
+    if (query.hasOwnProperty('title')) {
+        count = await Jobs.find(query).count();
+        jobs = await Jobs.find(query).populate("locations").populate("skills")
+        .populate("tags").populate("categories").sort({ created_at: 'desc' });
+        
+    } else {
+        count = await Jobs.find(query).count()
+        jobs = await Jobs.find(query).populate("locations").populate("skills")
+        .populate("tags").populate("categories").sort({ created_at: 'desc' }).limit(limit).skip(offset);
+    }
+    return { count, jobs };
 };
 
 exports.getByGuid = async (guid) => {
@@ -200,7 +226,7 @@ exports.addApplicant = async (req) => {
         let applicant = await JobApplicants.findOne({ applicant: req.body.applicantId, job: req.body.jobId, is_deleted: { $ne: true } });
         if (!applicant) {
             // Create Job Applicant
-            var jobApplicant = new JobApplicants();
+            let jobApplicant = new JobApplicants();
             jobApplicant.applicant = req.body.applicantId;
             jobApplicant.pipeline = req.body.pipelineId;
             jobApplicant.job = req.body.jobId;
@@ -211,10 +237,13 @@ exports.addApplicant = async (req) => {
             jobApplicant.is_deleted = false;
             jobApplicant = await jobApplicant.save();
             // Link with Job
-            if(modelJob.applicants == null){
+            if(modelJob.applicants == null) {
                 modelJob.applicants = [];
             }
             modelJob.applicants.push(jobApplicant._id);
+            if (!modelJob.hasOwnProperty("metaImage")) {
+                modelJob.metaImage = null;
+            }
             modelJob = await modelJob.save();
             await histroyService.create({ 
                 applicant: req.body.applicantId, 
@@ -231,13 +260,15 @@ exports.addApplicant = async (req) => {
 }
 
 exports.editApplicant = async (req) => {
-    let applicant = await JobApplicants.findOneAndUpdate({applicant: req.body.applicant}, {
-        pipeline : req.body.pipeline,
-        modefied_by : req.user.id,
-        modefied_at : Date.now(),
-        is_deleted : false
-    }, {new : true});
+
+    let applicant = await JobApplicants.findOne({ _id: req.body.id, applicant: req.body.applicant, is_deleted: false}); 
     if (applicant) {
+        applicant.pipeline = req.body.pipeline,
+        applicant.modefied_by = req.user.id,
+        applicant.modefied_at = Date.now(),
+        applicant.is_deleted = false
+        await applicant.save();
+
         await histroyService.create({ 
             applicant: req.body.applicant, 
             pipeline: req.body.pipeline,
@@ -252,14 +283,43 @@ exports.editApplicant = async (req) => {
 }
 
 exports.removeApplicant = async (req) => {
-    if (req.params.id) {
-        let applicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
-        if (applicant) {
-            return applicant;
-        } else {
-            return { status: 400, message: "invalid id" };    
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (req.params.id) {
+                let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
+                if (jobApplicant) {
+                    let job = await Jobs.findByIdAndUpdate(jobApplicant.job, { $pull: { applicants: req.params.id }}, { new: true });
+                    let elJob = await esService.updateJob(job.id, job);
+                    let interview = await Interview.findOne({ jobId: jobApplicant.job, jobApplicant: jobApplicant.applicant });
+                    if (interview) {
+                        try {
+                            interview.is_deleted =  true;
+                            interview.modified_at = new Date();
+                            interview.modified_by = req.user.id;
+                            interview.save((err, data) => {
+                                if (err) {
+                                    reject({ status: 207, message: "applicant removed successfully, interview remove error" });
+                                } else {
+                                    console.log(data);
+                                    resolve(jobApplicant);
+                                }
+                            });
+                        } catch (error) {
+                            console.log('remove interview : ', error);
+                            reject({ status: 207, message: "applicant removed successfully, interview remove error" });
+                        }
+                    } else {
+                        resolve(jobApplicant);
+                    }
+                } else {
+                    reject({ status: 400, message: "invalid id" });    
+                }
+            } else {
+                reject({ status: 400, message: "id required" });
+            }            
+        } catch (error) {
+            console.log('remove applicanr error : ', error);
+            reject({ status: 500, message: "internal server error" });
         }
-    } else {
-        return { status: 400, message: "id required" };
-    }
+    });
 }

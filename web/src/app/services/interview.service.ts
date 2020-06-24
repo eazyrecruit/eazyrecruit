@@ -62,4 +62,10 @@ export class InterviewService {
   addCriteria(criteria) {
     return this.http.post(`${this.constService.baseUrl}interview/criteria`, criteria);
   }
+
+  getAllInterviews(filter) {
+    return this.http.get(`${this.constService.baseUrl}interview?limit=${filter.pageSize}
+      &offset=${filter.offset}&search=${filter.searchText}&sortOrder=${filter.sortOrder}
+      &type=${filter.type}`);
+  }
 }
