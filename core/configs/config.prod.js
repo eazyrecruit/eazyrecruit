@@ -3,7 +3,7 @@ module.exports = {
   // website: 'https://portalapi.eazyrecruit.in',
   // website: 'http://192.168.1.157:9072',    //backend end 
   // website: 'https://app.eazyrecruit.in',    //backend end
-  allowedOrigins: ['http://192.168.1.157:9073', 'https://web.eazyrecruit.in'],  //front end
+  allowedOrigins: ['http://192.168.1.157:7069', 'https://web.eazyrecruit.in'],  //front end
   // allowedOrigins: ['https://portal.eazyrecruit.in'],
   server: {
     cert: './cer.pem',
@@ -46,7 +46,7 @@ module.exports = {
     'callbackURL': '/admin/assets/auth-callback.html'
   },
   mongo: {
-    host: 'mongodb://eazyrecruit:8EjqJAidtp@192.168.1.46/eazyrecruitprod'
+    host: 'mongodb://eazyrecruit-prd:klkjhgbvfcf@192.168.1.173:27019/eazyrecruit-prod'
   },
   redis: {
     host: "redis://eazyrecruit-redis:6379"
