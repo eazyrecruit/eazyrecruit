@@ -6,7 +6,14 @@
         <div class="col-md-1" (click)="populateForm(comment)"><i class="fa fa-pencil"></i></div>
       </div>
       <div class="row">
-        <div class="col-md-6 coment-info-text" *ngIf="comment.modified_by && comment.modified_by.firstName">{{comment.modified_by.firstName}} {{comment.modified_by.lastName}}</div>
+        <div class="col-md-6 coment-info-text" *ngIf="comment.modified_by && comment.modified_by.firstName; else showEmail">
+          {{comment.modified_by.firstName}} {{comment.modified_by.lastName}}
+        </div>
+        <ng-template #showEmail>
+          <div class="col-md-6 coment-info-text">
+            {{comment?.modified_by?.email}}
+          </div>
+        </ng-template>
         <div class="col-md-6 align-text-right coment-info-text">{{comment.modified_at | date}}</div>
         <!-- <div class="col-md-6 align-text-right coment-info-text">{{comment.modified_at | amTimeAgo}}</div> -->
       </div>
