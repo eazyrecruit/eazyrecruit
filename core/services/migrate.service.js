@@ -155,23 +155,23 @@ exports.restoreApplicant = async (data) => {
         if (obj.skills && obj.skills.skill.length > 0) {
             modelApplicant.skills = [];
             modelApplicant.skills.length = 0;
-            // for(var iSkill = 0; iSkill < obj.skills.skill.length; iSkill ++) {
-            //     console.log('skills i : ', iSkill);
-            //     let [skill, array] = await findOrCreate(skills, obj.skills.skill[iSkill]);
-            //     skills = array;
-            //     // let modelSkills = await Skill.findOne({ name: obj.skills.skill[iSkill] });
-            //     // if (modelSkills == null) {
-            //     //     modelSkills = new Skill();
-            //     //     modelSkills.name = obj.skills.skill[iSkill];
-            //     // }
-            //     // modelSkills.is_deleted = false;
-            //     // modelSkills.created_by = data.user.id;
-            //     // modelSkills.created_at = new Date();
-            //     // modelSkills.modified_by = data.user.id;
-            //     // modelSkills.modified_at = new Date();
-            //     // modelSkills = await modelSkills.save();
-            //     modelApplicant.skills.push(skill);
-            // }
+            for(var iSkill = 0; iSkill < obj.skills.skill.length; iSkill ++) {
+                console.log('skills i : ', iSkill);
+                let [skill, array] = await findOrCreate(skills, obj.skills.skill[iSkill]);
+                skills = array;
+                let modelSkills = await Skill.findOne({ name: obj.skills.skill[iSkill] });
+                if (modelSkills == null) {
+                    modelSkills = new Skill();
+                    modelSkills.name = obj.skills.skill[iSkill];
+                }
+                modelSkills.is_deleted = false;
+                modelSkills.created_by = data.user.id;
+                modelSkills.created_at = new Date();
+                modelSkills.modified_by = data.user.id;
+                modelSkills.modified_at = new Date();
+                modelSkills = await modelSkills.save();
+                modelApplicant.skills.push(skill);
+            }
         } else {
             modelApplicant.skills = [];
         }
