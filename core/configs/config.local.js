@@ -34,7 +34,7 @@ module.exports = {
     'callbackURL': '/admin/assets/auth-callback.html'
   },
   mongo: {
-    host: 'mongodb://eazyrecruit:klkjhgbvfcf@192.168.1.173:27019/admin'
+    host: 'mongodb://eazyrecruit:klkjhgbvfcf@192.168.1.241:27019/admin'
     // host: 'mongodb://localhost:27017/eazyrecruit'
   },
   redis: {
@@ -42,7 +42,7 @@ module.exports = {
   },
   elasticSearch: {
     // host: "http://192.168.1.157:9200",
-    host: "http://192.168.1.173:9400"
+    host: "http://192.168.1.241:9400"
   },
   encrypt: {
     iv: 'cattmbworqqehaoq',
