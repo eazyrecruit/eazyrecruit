@@ -121,7 +121,9 @@ let pipeline = async (data, id) => {
 
 exports.restoreApplicant = async (data) => {
     let applicantsArray = [];
+    // let skills = await Skill.find({});
     for (let i = 0; i < data.length; i++) {
+        console.log("applicant i : ", i);
         let obj = data[i];
         let modelApplicant = await Applicant.findOne({ email: obj.personal.email });
         if (modelApplicant == null) {
@@ -153,20 +155,23 @@ exports.restoreApplicant = async (data) => {
         if (obj.skills && obj.skills.skill.length > 0) {
             modelApplicant.skills = [];
             modelApplicant.skills.length = 0;
-            for(var iSkill = 0; iSkill < obj.skills.skill.length; iSkill ++) {
-                let modelSkills = await Skill.findOne({ name: obj.skills.skill[iSkill] });
-                if (modelSkills == null) {
-                    modelSkills = new Skill();
-                    modelSkills.name = obj.skills.skill[iSkill];
-                }
-                modelSkills.is_deleted = false;
-                modelSkills.created_by = data.user.id;
-                modelSkills.created_at = new Date();
-                modelSkills.modified_by = data.user.id;
-                modelSkills.modified_at = new Date();
-                modelSkills = await modelSkills.save();
-                modelApplicant.skills.push(modelSkills);
-            }
+            // for(var iSkill = 0; iSkill < obj.skills.skill.length; iSkill ++) {
+            //     console.log('skills i : ', iSkill);
+            //     let [skill, array] = await findOrCreate(skills, obj.skills.skill[iSkill]);
+            //     skills = array;
+            //     // let modelSkills = await Skill.findOne({ name: obj.skills.skill[iSkill] });
+            //     // if (modelSkills == null) {
+            //     //     modelSkills = new Skill();
+            //     //     modelSkills.name = obj.skills.skill[iSkill];
+            //     // }
+            //     // modelSkills.is_deleted = false;
+            //     // modelSkills.created_by = data.user.id;
+            //     // modelSkills.created_at = new Date();
+            //     // modelSkills.modified_by = data.user.id;
+            //     // modelSkills.modified_at = new Date();
+            //     // modelSkills = await modelSkills.save();
+            //     modelApplicant.skills.push(skill);
+            // }
         } else {
             modelApplicant.skills = [];
         }
@@ -189,27 +194,53 @@ exports.restoreApplicant = async (data) => {
     return applicantsArray;
 }
 
+async function findOrCreate(array, name) {
+    return new Promise(async (resolve, reject) => {
+        try {        
+            let skill = array.find(obj => obj.name === name);
+            if (!skill) {
+                skill = new Skill();
+                skill.name = name;
+                skill.is_deleted = false;
+                skill.created_by = data.user.id;
+                skill.created_at = new Date();
+                skill.modified_by = data.user.id;
+                skill.modified_at = new Date();
+                skill = await skill.save();
+                array.push(skill);
+            }
+            resolve({ skill: skill, array: array });
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
 exports.restoreResume = async (data) => {
     let array = [];
     for (let i = 0; i < data.length; i++) {
         let obj = data[i];
         let applicant = null;
-        let modelResume = new Resume();
-            modelResume.created_by = data.user.id;
-            modelResume.created_at = new Date();
-            modelResume.resume = obj.resume,
-            modelResume.fileName = obj.fileName;
-            modelResume.fileType = obj.fileType;
-            modelResume.modified_by = data.user.id;
-            modelResume.modified_at = new Date();
-            modelResume = await modelResume.save();
-
-        if (obj.profile_id && obj.profile_id.personal && obj.profile_id.personal.email) {
-            applicant = await Applicant.findOne({ email: obj.profile_id.personal.email });
-            applicant.resume = modelResume.id;
-            await applicant.save();
+        if (obj.resume && obj.resume.fileName) {
+            let modelResume = new Resume();
+                modelResume.created_by = data.user.id;
+                modelResume.created_at = new Date();
+                modelResume.resume = obj.resume.resume,
+                modelResume.fileName = obj.resume.fileName;
+                modelResume.fileType = obj.resume.fileType;
+                modelResume.modified_by = data.user.id;
+                modelResume.modified_at = new Date();
+                modelResume = await modelResume.save();
+    
+            if (obj && obj.personal && obj.personal.email) {
+                applicant = await Applicant.findOne({ email: obj.personal.email });
+                applicant.resume = modelResume.id;
+                await applicant.save();
+            }
+            array.push(applicant);
+        } else {
+            array.push({ message: `resume not available in ${obj.personal.email}`})
         }
-        array.push(applicant);
     }
     return array;
 }
