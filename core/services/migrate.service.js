@@ -157,8 +157,8 @@ exports.restoreApplicant = async (data) => {
             modelApplicant.skills.length = 0;
             for(var iSkill = 0; iSkill < obj.skills.skill.length; iSkill ++) {
                 console.log('skills i : ', iSkill);
-                let [skill, array] = await findOrCreate(skills, obj.skills.skill[iSkill]);
-                skills = array;
+                // let [skill, array] = await findOrCreate(skills, obj.skills.skill[iSkill]);
+                // skills = array;
                 let modelSkills = await Skill.findOne({ name: obj.skills.skill[iSkill] });
                 if (modelSkills == null) {
                     modelSkills = new Skill();
@@ -170,7 +170,7 @@ exports.restoreApplicant = async (data) => {
                 modelSkills.modified_by = data.user.id;
                 modelSkills.modified_at = new Date();
                 modelSkills = await modelSkills.save();
-                modelApplicant.skills.push(skill);
+                modelApplicant.skills.push(modelSkills);
             }
         } else {
             modelApplicant.skills = [];
