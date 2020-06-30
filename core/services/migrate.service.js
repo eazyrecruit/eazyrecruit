@@ -133,8 +133,10 @@ exports.restoreApplicant = async (data) => {
         modelApplicant.created_at = new Date(obj.created_at);
         modelApplicant.modified_by = data.user.id;
         modelApplicant.modified_at = new Date(obj.modified_at);
-        modelApplicant.email = obj.personal.email.trim();
-        modelApplicant.phones = [obj.personal.mobile_number.trim()];
+        modelApplicant.email = obj.personal.email ? obj.personal.email.trim() : '';
+        if (obj.personal.mobile_number) {
+            modelApplicant.phones = [obj.personal.mobile_number.trim()];
+        }
         modelApplicant.dob = obj.personal.dob ? new Date(obj.personal.dob) : '';
         modelApplicant.currentCtc = obj.experiences[0] ? obj.experiences[0].current_Ctc : 0;
         modelApplicant.expectedCtc = obj.experiences[0] ? obj.experiences[0].expected_Ctc : 0;
@@ -146,7 +148,7 @@ exports.restoreApplicant = async (data) => {
             modelApplicant.lastName = obj.personal.last_name ? obj.personal.last_name.trim() : '';
         } else {
             // If nothing found
-            modelApplicant.firstName = obj.personal.email.trim();
+            modelApplicant.firstName = obj.personal.email ? obj.personal.email.trim() : '';
         }
 
         modelApplicant.resume = obj.resume
