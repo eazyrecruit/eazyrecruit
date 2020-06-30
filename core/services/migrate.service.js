@@ -155,7 +155,7 @@ exports.restoreApplicant = async (data) => {
         if (obj.skills && obj.skills.skill.length > 0) {
             modelApplicant.skills = [];
             modelApplicant.skills.length = 0;
-            let skills = await findOrCreate(obj.skills.skill, modelApplicant, data.user.id);
+            let skills = await findOrCreate(obj.skills.skill, data.user.id);
             modelApplicant.skills = skills;
         } else {
             modelApplicant.skills = [];
