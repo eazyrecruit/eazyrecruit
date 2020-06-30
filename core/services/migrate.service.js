@@ -186,8 +186,9 @@ async function findOrCreate(array, userId) {
             let skills = [];
             for(var iSkill = 0; iSkill < array.length; iSkill ++) {
                 let name = array[iSkill].trim();
+                console.log('skill i : ' + iSkill + ' name : ' + name);
                 if (skillObject && skillObject.hasOwnProperty(name)) {
-                    skills.push(skillObject[array[iSkill]]._id);
+                    skills.push(skillObject[name]._id);
                 } else {
                     let skill = await Skill.findOne({ name: array[iSkill] });
                     if (!skill) {
