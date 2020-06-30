@@ -122,9 +122,10 @@ let pipeline = async (data, id) => {
 exports.restoreApplicant = async (data) => {
     let applicantsArray = [];
     for (let i = 0; i < data.length; i++) {
-        console.log("applicant i : ", i);
         let obj = data[i];
-        let modelApplicant = await Applicant.findOne({ email: obj.personal.email });
+        console.log("applicant i : ", i);
+        console.log("applicant email : ", obj.personal.email.trim());
+        let modelApplicant = await Applicant.findOne({ email: obj.personal.email.trim() });
         if (modelApplicant == null) {
             modelApplicant = new Applicant();
         }
