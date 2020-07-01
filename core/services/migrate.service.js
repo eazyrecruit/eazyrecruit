@@ -249,6 +249,7 @@ exports.restoreResume = async (data) => {
 
 exports.restoreJobApplicant = async (data) => {
     let result = [];
+    let unsaved = [];
     for (let i = 0; i < data.length; i++) {
         let obj = data[i];
         let job = await Job.findOne({ guid: obj.job_post.guid  }).populate('pipelines');
@@ -282,8 +283,15 @@ exports.restoreJobApplicant = async (data) => {
             job = await job.save();
             modelJobApplicant.applicant = applicant;
             result.push(modelJobApplicant);
+        } else {
+            console.log('job : ', job.title);
+            console.log('job : ', job.guid);
+            console.log('jobapplicants : ', obj.applicant.mongo_id);
+            unsaved.push({ title: job.title, guid: job.guid, mongo_id: obj.applicant.mongo_id});
+            console.log('unsaved : ', unsaved.length);
         }
     }
+    console.log('unseved items: ', unsaved);
     return result;
 }
 
@@ -291,24 +299,33 @@ exports.restoreComments = async (data) => {
     let comments = [];
     for (let i = 0; i < data.length; i++) {
         let obj = data[i];
-            let job;
-            if (obj.job_post_applicant && obj.job_post_applicant.job_post && obj.job_post_applicant.job_post.guid) {
-                job = await Job.findOne({ guid: obj.job_post_applicant.job_post.guid  });
-            }
+        let job;
+        if (obj.job_post_applicant && obj.job_post_applicant.job_post && obj.job_post_applicant.job_post.guid) {
+            job = await Job.findOne({ guid: obj.job_post_applicant.job_post.guid  });
+        }
+        if (obj.job_post_applicant && obj.job_post_applicant.applicant && obj.job_post_applicant.applicant.mongo_id) {
             let applicant = await Applicant.findOne({ email: obj.job_post_applicant.applicant.mongo_id });
             let user = await User.findOne({ email: obj.user.email });
-    
-            let comment = new Comment();
-            comment.comment = obj.comment,
-            comment.applicant = applicant.id,
-            comment.job = job ? job.id : null,
-            comment.is_deleted = obj.is_deleted,
-            comment.created_at = Date.now(obj.created_at),
-            comment.created_by = user.id,
-            comment.modified_at = Date.now(obj.modified_by),
-            comment.modified_by = user.id
-            await comment.save(); 
-            comments.push(comment);
+            
+            if (applicant) {
+                let comment = new Comment();
+                comment.comment = obj.comment,
+                comment.applicant = applicant.id,
+                comment.job = job ? job.id : null,
+                comment.is_deleted = obj.is_deleted,
+                comment.created_at = Date.now(obj.created_at),
+                comment.created_by = user.id,
+                comment.modified_at = Date.now(obj.modified_by),
+                comment.modified_by = user.id
+                await comment.save(); 
+                comments.push(comment);
+            } else {
+                console.log('applicant dosent have email : ', obj.job_post_applicant.applicant.mongo_id);
+                console.log('comments not saved (id) : ', obj.id);   
+            }
+        } else {
+            console.log('comments not saved (id) : ', obj.id);
+        }
     }
     return comments;
 }
@@ -330,20 +347,31 @@ exports.restoreHistory = async (data) => {
                 }
             }
         }
-        let applicant = await Applicant.findOne({ email: obj.applicant.mongo_id });
-        let user = await User.findOne({ email: obj.user.email });
 
-        let history = new History();
-        history.applicant = applicant.id,
-        history.pipeline = jobPipeline,
-        history.job = job ? job.id : null,
-        history.is_deleted = obj.is_deleted,
-        history.created_at = Date.now(obj.created_at),
-        history.created_by = user.id,
-        history.modified_at = Date.now(obj.modified_at),
-        history.modified_by = user.id
-        await history.save(); 
-        histories.push(history);
+        if (obj.applicant && obj.applicant.mongo_id) {
+            let applicant = await Applicant.findOne({ email: obj.applicant.mongo_id });
+            let user = await User.findOne({ email: obj.user.email });
+
+            if (applicant) {            
+                let history = new History();
+                history.applicant = applicant.id,
+                history.pipeline = jobPipeline,
+                history.job = job ? job.id : null,
+                history.is_deleted = obj.is_deleted,
+                history.created_at = Date.now(obj.created_at),
+                history.created_by = user.id,
+                history.modified_at = Date.now(obj.modified_at),
+                history.modified_by = user.id
+                await history.save(); 
+                histories.push(history);
+            } else {
+                console.log('applicant dosent have email : ', obj.applicant.mongo_id); 
+                console.log('history not saved (id) : ', obj.id);   
+            }
+        } else {
+            console.log('history not saved (id) : ', obj.id);
+        }
+
     }
     return histories;
 }
