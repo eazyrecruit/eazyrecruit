@@ -46,7 +46,8 @@ module.exports = {
     'callbackURL': '/admin/assets/auth-callback.html'
   },
   mongo: {
-    host: 'mongodb://eazyrecruit-prd:klkjhgbvfcf@192.168.1.173:27019/eazyrecruit-prod'
+    // host: 'mongodb://eazyrecruit-prd:klkjhgbvfcf@192.168.1.173:27019/eazyrecruit-prod'
+    host: 'mongodb://eazyrecruit:klkjhgbvfcf@ez_mongodb/admin'
   },
   redis: {
     host: "redis://eazyrecruit-redis:6379"
