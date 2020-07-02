@@ -61,5 +61,12 @@ module.exports = {
   pyUrl: "/api/engine/resume",
   admin: {
     username: "admin@eazyrecruit.in"
+  },
+  companyInfo: {
+    name: 'Eazy Recruit',
+    website: 'eazyrecruit.in',
+    email: 'info@eazyrecruit.in',
+    address_line_1: '1st floor, malwa tower',
+    phone: '9876543210'
   }
 };

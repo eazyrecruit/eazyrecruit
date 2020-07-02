@@ -38,7 +38,7 @@ module.exports = {
     // host: 'mongodb://localhost:27017/eazyrecruit'
   },
   redis: {
-    host: "redis://:klkjhgbvfcf@192.168.1.173:6379/0"
+    host: "redis://:klkjhgbvfcf@192.168.1.241:6379/0"
   },
   elasticSearch: {
     // host: "http://192.168.1.157:9200",
@@ -51,5 +51,12 @@ module.exports = {
   pyUrl: "/api/engine/resume",
   admin: {
     username: "admin@eazyrecruit.in"
+  },
+  companyInfo: {
+    name: 'Eazy Recruit',
+    website: 'eazyrecruit.in',
+    email: 'info@eazyrecruit.in',
+    address_line_1: '1st floor, malwa tower',
+    phone: '9876543210'
   }
 };
