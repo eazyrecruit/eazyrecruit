@@ -94,24 +94,6 @@ exports.save = async (req) => {
                     }
                     let skillsResult = await findOrCreate(skills, req.user.id);
                     modelApplicant.skills = skillsResult;
-                    // if (skills && skills.length > 0) {
-                    //     modelApplicant.skills = [];
-                    //     modelApplicant.skills.length = 0;
-                    //     for(var iSkill = 0; iSkill < skills.length; iSkill ++) {
-                    //         modelSkills = await Skills.findOne({ _id: skills[iSkill].id });
-                    //         if (modelSkills == null) {
-                    //             modelSkills = new Skills();
-                    //             modelSkills.name = skills[iSkill].name?skills[iSkill].name.trim():skills[iSkill].trim();
-                    //             modelSkills.is_deleted = false;
-                    //             modelSkills.created_by = req.user.id;
-                    //             modelSkills.created_at = new Date();
-                    //             modelSkills.modified_by = req.user.id;
-                    //             modelSkills.modified_at = new Date();
-                    //             modelSkills = await modelSkills.save();
-                    //         }
-                    //         modelApplicant.skills.push(modelSkills);
-                    //     }
-                    // }
                 }
 
                 // Create/Update Address 
