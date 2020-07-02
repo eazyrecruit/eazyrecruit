@@ -32,7 +32,7 @@ module.exports.initialize = async () => {
   
   var dbRoles = await Role.find();
   if(dbRoles.length <= 0) {
-    var roles = ['admin', 'hr', 'interviewer',];
+    var roles = config.roles;
     for (let i = 0; i < roles.length; i++) {
       var role = new Role();
       role.name = roles[i];
@@ -49,7 +49,9 @@ module.exports.initialize = async () => {
     let role = await Role.findOne({ name: 'admin' });
     var user = new Users();
     user.password = randomString();
-    user.email = 'admin@eazyrecruit.in';
+    user.is_deleted = false;
+    user.email = config.admin.username;
+    user.firstName = 'Admin';
     user.roles = role ? [role._id] : [];
     console.log('Admin Password:', user.password) // dont add any space in "Admin Password:" log using it in reading admin password
     await user.save();
@@ -71,11 +73,11 @@ module.exports.initialize = async () => {
   var dbCompanies = await Companies.find();
   if (dbCompanies.length <= 0) {
     var company = new Companies();
-    company.name = 'Eazy Recruit';
-    company.website = 'eazyrecruit.in';
-    company.email = 'info@eazyrecruit.in';
-    company.address_line_1 = '1st floor, malwa tower';
-    company.phone = '9876543210';
+    company.name = config.companyInfo.name;
+    company.website = config.companyInfo.website;
+    company.email = config.companyInfo.email;
+    company.address_line_1 = config.companyInfo.address_line_1;
+    company.phone = config.companyInfo.phone;
     company.groupName = ['imap','smtp','google'];
     console.log('*** Test Company Creation***')
     await company.save();

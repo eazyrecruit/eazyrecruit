@@ -121,11 +121,11 @@ let pipeline = async (data, id) => {
 
 exports.restoreApplicant = async (data) => {
     let applicantsArray = [];
-    // let skills = await Skill.find({});
     for (let i = 0; i < data.length; i++) {
-        console.log("applicant i : ", i);
         let obj = data[i];
-        let modelApplicant = await Applicant.findOne({ email: obj.personal.email });
+        console.log("applicant i : ", i);
+        console.log("applicant email : ", obj.personal.email.trim());
+        let modelApplicant = await Applicant.findOne({ email: obj.personal.email.trim() });
         if (modelApplicant == null) {
             modelApplicant = new Applicant();
         }
@@ -133,20 +133,22 @@ exports.restoreApplicant = async (data) => {
         modelApplicant.created_at = new Date(obj.created_at);
         modelApplicant.modified_by = data.user.id;
         modelApplicant.modified_at = new Date(obj.modified_at);
-        modelApplicant.email = obj.personal.email;
-        modelApplicant.phones = [obj.personal.mobile_number];
+        modelApplicant.email = obj.personal.email ? obj.personal.email.trim() : '';
+        if (obj.personal.mobile_number) {
+            modelApplicant.phones = [obj.personal.mobile_number.trim()];
+        }
         modelApplicant.dob = obj.personal.dob ? new Date(obj.personal.dob) : '';
         modelApplicant.currentCtc = obj.experiences[0] ? obj.experiences[0].current_Ctc : 0;
         modelApplicant.expectedCtc = obj.experiences[0] ? obj.experiences[0].expected_Ctc : 0;
 
         modelApplicant.totalExperience = obj.experiences[0] ? obj.experiences[0].duration : '';
         if (obj.personal.first_name) {
-            modelApplicant.firstName = obj.personal.first_name ? obj.personal.first_name : '';
-            modelApplicant.middleName = obj.personal.middle_name ? obj.personal.middle_name : '';
-            modelApplicant.lastName = obj.personal.last_name ? obj.personal.last_name : '';
+            modelApplicant.firstName = obj.personal.first_name ? obj.personal.first_name.trim() : '';
+            modelApplicant.middleName = obj.personal.middle_name ? obj.personal.middle_name.trim() : '';
+            modelApplicant.lastName = obj.personal.last_name ? obj.personal.last_name.trim() : '';
         } else {
             // If nothing found
-            modelApplicant.firstName = obj.personal.email;
+            modelApplicant.firstName = obj.personal.email ? obj.personal.email.trim() : '';
         }
 
         modelApplicant.resume = obj.resume
@@ -155,23 +157,8 @@ exports.restoreApplicant = async (data) => {
         if (obj.skills && obj.skills.skill.length > 0) {
             modelApplicant.skills = [];
             modelApplicant.skills.length = 0;
-            for(var iSkill = 0; iSkill < obj.skills.skill.length; iSkill ++) {
-                console.log('skills i : ', iSkill);
-                // let [skill, array] = await findOrCreate(skills, obj.skills.skill[iSkill]);
-                // skills = array;
-                let modelSkills = await Skill.findOne({ name: obj.skills.skill[iSkill] });
-                if (modelSkills == null) {
-                    modelSkills = new Skill();
-                    modelSkills.name = obj.skills.skill[iSkill];
-                }
-                modelSkills.is_deleted = false;
-                modelSkills.created_by = data.user.id;
-                modelSkills.created_at = new Date();
-                modelSkills.modified_by = data.user.id;
-                modelSkills.modified_at = new Date();
-                modelSkills = await modelSkills.save();
-                modelApplicant.skills.push(modelSkills);
-            }
+            let skills = await findOrCreate(obj.skills.skill, data.user.id);
+            modelApplicant.skills = skills;
         } else {
             modelApplicant.skills = [];
         }
@@ -194,22 +181,33 @@ exports.restoreApplicant = async (data) => {
     return applicantsArray;
 }
 
-async function findOrCreate(array, name) {
+let skillObject = {};
+async function findOrCreate(array, userId) {
     return new Promise(async (resolve, reject) => {
-        try {        
-            let skill = array.find(obj => obj.name === name);
-            if (!skill) {
-                skill = new Skill();
-                skill.name = name;
-                skill.is_deleted = false;
-                skill.created_by = data.user.id;
-                skill.created_at = new Date();
-                skill.modified_by = data.user.id;
-                skill.modified_at = new Date();
-                skill = await skill.save();
-                array.push(skill);
+        try {
+            let skills = [];
+            for(var iSkill = 0; iSkill < array.length; iSkill ++) {
+                let name = array[iSkill].trim();
+                console.log('skill i : ' + iSkill + ' name : ' + name);
+                if (skillObject && skillObject.hasOwnProperty(name)) {
+                    skills.push(skillObject[name]._id);
+                } else {
+                    let skill = await Skill.findOne({ name: array[iSkill] });
+                    if (!skill) {
+                        skill = new Skill();
+                        skill.name = name;
+                        skill.is_deleted = false;
+                        skill.created_by = userId;
+                        skill.created_at = new Date();
+                        skill.modified_by = userId;
+                        skill.modified_at = new Date();
+                        skill = await skill.save();                
+                    }
+                    skillObject[name] = skill;
+                    skills.push(skill._id);
+                }
             }
-            resolve({ skill: skill, array: array });
+            resolve(skills);
         } catch (error) {
             reject(error);
         }
@@ -234,8 +232,12 @@ exports.restoreResume = async (data) => {
     
             if (obj && obj.personal && obj.personal.email) {
                 applicant = await Applicant.findOne({ email: obj.personal.email });
-                applicant.resume = modelResume.id;
-                await applicant.save();
+                if (applicant) {
+                    applicant.resume = modelResume.id;
+                    await applicant.save();
+                } else {
+                    applicant = { message: `${obj.personal.email} is not found`}
+                }
             }
             array.push(applicant);
         } else {
@@ -247,6 +249,7 @@ exports.restoreResume = async (data) => {
 
 exports.restoreJobApplicant = async (data) => {
     let result = [];
+    let unsaved = [];
     for (let i = 0; i < data.length; i++) {
         let obj = data[i];
         let job = await Job.findOne({ guid: obj.job_post.guid  }).populate('pipelines');
@@ -280,8 +283,15 @@ exports.restoreJobApplicant = async (data) => {
             job = await job.save();
             modelJobApplicant.applicant = applicant;
             result.push(modelJobApplicant);
+        } else {
+            console.log('job : ', job.title);
+            console.log('job : ', job.guid);
+            console.log('jobapplicants : ', obj.applicant.mongo_id);
+            unsaved.push({ title: job.title, guid: job.guid, mongo_id: obj.applicant.mongo_id});
+            console.log('unsaved : ', unsaved.length);
         }
     }
+    console.log('unseved items: ', unsaved);
     return result;
 }
 
@@ -289,24 +299,33 @@ exports.restoreComments = async (data) => {
     let comments = [];
     for (let i = 0; i < data.length; i++) {
         let obj = data[i];
-            let job;
-            if (obj.job_post_applicant && obj.job_post_applicant.job_post && obj.job_post_applicant.job_post.guid) {
-                job = await Job.findOne({ guid: obj.job_post_applicant.job_post.guid  });
-            }
+        let job;
+        if (obj.job_post_applicant && obj.job_post_applicant.job_post && obj.job_post_applicant.job_post.guid) {
+            job = await Job.findOne({ guid: obj.job_post_applicant.job_post.guid  });
+        }
+        if (obj.job_post_applicant && obj.job_post_applicant.applicant && obj.job_post_applicant.applicant.mongo_id) {
             let applicant = await Applicant.findOne({ email: obj.job_post_applicant.applicant.mongo_id });
             let user = await User.findOne({ email: obj.user.email });
-    
-            let comment = new Comment();
-            comment.comment = obj.comment,
-            comment.applicant = applicant.id,
-            comment.job = job ? job.id : null,
-            comment.is_deleted = obj.is_deleted,
-            comment.created_at = Date.now(obj.created_at),
-            comment.created_by = user.id,
-            comment.modified_at = Date.now(obj.modified_by),
-            comment.modified_by = user.id
-            await comment.save(); 
-            comments.push(comment);
+            
+            if (applicant) {
+                let comment = new Comment();
+                comment.comment = obj.comment,
+                comment.applicant = applicant.id,
+                comment.job = job ? job.id : null,
+                comment.is_deleted = obj.is_deleted,
+                comment.created_at = Date.now(obj.created_at),
+                comment.created_by = user.id,
+                comment.modified_at = Date.now(obj.modified_by),
+                comment.modified_by = user.id
+                await comment.save(); 
+                comments.push(comment);
+            } else {
+                console.log('applicant dosent have email : ', obj.job_post_applicant.applicant.mongo_id);
+                console.log('comments not saved (id) : ', obj.id);   
+            }
+        } else {
+            console.log('comments not saved (id) : ', obj.id);
+        }
     }
     return comments;
 }
@@ -328,20 +347,31 @@ exports.restoreHistory = async (data) => {
                 }
             }
         }
-        let applicant = await Applicant.findOne({ email: obj.applicant.mongo_id });
-        let user = await User.findOne({ email: obj.user.email });
 
-        let history = new History();
-        history.applicant = applicant.id,
-        history.pipeline = jobPipeline,
-        history.job = job ? job.id : null,
-        history.is_deleted = obj.is_deleted,
-        history.created_at = Date.now(obj.created_at),
-        history.created_by = user.id,
-        history.modified_at = Date.now(obj.modified_at),
-        history.modified_by = user.id
-        await history.save(); 
-        histories.push(history);
+        if (obj.applicant && obj.applicant.mongo_id) {
+            let applicant = await Applicant.findOne({ email: obj.applicant.mongo_id });
+            let user = await User.findOne({ email: obj.user.email });
+
+            if (applicant) {            
+                let history = new History();
+                history.applicant = applicant.id,
+                history.pipeline = jobPipeline,
+                history.job = job ? job.id : null,
+                history.is_deleted = obj.is_deleted,
+                history.created_at = Date.now(obj.created_at),
+                history.created_by = user.id,
+                history.modified_at = Date.now(obj.modified_at),
+                history.modified_by = user.id
+                await history.save(); 
+                histories.push(history);
+            } else {
+                console.log('applicant dosent have email : ', obj.applicant.mongo_id); 
+                console.log('history not saved (id) : ', obj.id);   
+            }
+        } else {
+            console.log('history not saved (id) : ', obj.id);
+        }
+
     }
     return histories;
 }

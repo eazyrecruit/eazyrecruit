@@ -66,7 +66,7 @@ router.post('/comment', async (req, res) => {
     try {
         req.body.user = req.user;
         let result = await migrateService.restoreComments(req.body);
-        res,send(result);
+        res.send(result);
     } catch (error) {
         res.send(error);
     }

@@ -46,7 +46,8 @@ module.exports = {
     'callbackURL': '/admin/assets/auth-callback.html'
   },
   mongo: {
-    host: 'mongodb://eazyrecruit-prd:klkjhgbvfcf@192.168.1.173:27019/eazyrecruit-prod'
+    // host: 'mongodb://eazyrecruit-prd:klkjhgbvfcf@192.168.1.173:27019/eazyrecruit-prod'
+    host: 'mongodb://eazyrecruit:klkjhgbvfcf@ez_mongodb/admin'
   },
   redis: {
     host: "redis://eazyrecruit-redis:6379"
@@ -61,5 +62,13 @@ module.exports = {
   pyUrl: "/api/engine/resume",
   admin: {
     username: "admin@eazyrecruit.in"
+  },
+  roles: ['admin', 'hr', 'interviewer'],
+  companyInfo: {
+    name: 'Eazy Recruit',
+    website: 'eazyrecruit.in',
+    email: 'info@eazyrecruit.in',
+    address_line_1: '1st floor, malwa tower',
+    phone: '9876543210'
   }
 };
