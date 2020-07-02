@@ -71,7 +71,6 @@ exports.searchJobs = async (req) => {
         if (req.query.searchText) {
             var query = {
                 "query_string" : {
-                    "fields" : ["title"],
                     "query" : "*" + req.query.searchText + "*"
                 }
             }
