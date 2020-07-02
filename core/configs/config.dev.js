@@ -57,6 +57,7 @@ module.exports = {
   admin: {
     username: "admin@eazyrecruit.in"
   },
+  roles: ['admin', 'hr', 'interviewer'],
   companyInfo: {
     name: 'Eazy Recruit',
     website: 'eazyrecruit.in',

@@ -32,7 +32,7 @@ module.exports.initialize = async () => {
   
   var dbRoles = await Role.find();
   if(dbRoles.length <= 0) {
-    var roles = ['admin', 'hr', 'interviewer',];
+    var roles = config.roles;
     for (let i = 0; i < roles.length; i++) {
       var role = new Role();
       role.name = roles[i];
@@ -49,7 +49,8 @@ module.exports.initialize = async () => {
     let role = await Role.findOne({ name: 'admin' });
     var user = new Users();
     user.password = randomString();
-    user.email = 'admin@eazyrecruit.in';
+    user.is_deleted = false;
+    user.email = config.admin.username;
     user.firstName = 'Admin';
     user.roles = role ? [role._id] : [];
     console.log('Admin Password:', user.password) // dont add any space in "Admin Password:" log using it in reading admin password
