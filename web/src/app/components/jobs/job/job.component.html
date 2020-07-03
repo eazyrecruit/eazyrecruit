@@ -201,8 +201,8 @@
     <button type="submit" class="btn btn-primary">Submit
       <i class="fa fa-arrow-circle-right"></i>
     </button>
-    <small class="text-danger" *ngIf="!active || !publish">
-      Only active and published job can be submitted.
+    <small class="text-danger" *ngIf="!jobId  && (!active || !publish)">
+      {{jobId}} Only active and published job can be submitted.
     </small>
   </form>
 </div>

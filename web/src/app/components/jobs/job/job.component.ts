@@ -297,9 +297,12 @@ export class JobComponent implements OnInit {
     //   jobForm.type = jobForm.type.map(x => x.value);
     // }
 
-    if (!this.jobDetails.valid || !this.active || !this.publish) {
+    if (!this.jobDetails.valid) {
       this.validationService.validateAllFormFields(this.jobDetails);
     } else {
+      if (!this.jobId && (!this.active || !this.publish)) {
+        this.validationService.validateAllFormFields(this.jobDetails);
+      }
       const formData = new FormData();
       for ( var key in jobForm) {
         if (jobForm[key] !== null) {
