@@ -48,7 +48,9 @@ var applicantResumeUpload = multer({ storage: multer.memoryStorage(), limits: { 
 router.post("/", applicantResumeUpload.any(), async (req, res) => {
     try {
         var applicant = await applicantService.save(req);
+        console.log('applicant : ', applicant);
         if (typeof applicant == 'object') {
+            console.log('typeof applicant == object if : ', typeof applicant == 'object');
             let id;
             if (applicant.resume) {
                 id = applicant.resume.toString();
@@ -57,6 +59,8 @@ router.post("/", applicantResumeUpload.any(), async (req, res) => {
             }
             let parsedData = await redisClient.parse(id);
             console.log('parsed data : ', parsedData);
+        } else {
+            console.log('typeof applicant == object else : ', typeof applicant == 'object');
         }
         responseService.response(req, null, logTypes.debug, applicant, res);
     } catch (err) {

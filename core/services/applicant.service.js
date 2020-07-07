@@ -282,24 +282,29 @@ async function findOrCreate(array, userId) {
     return new Promise(async (resolve, reject) => {
         try {
             let skills = [];
+            console.log('skills array : ', array);
             for(var iSkill = 0; iSkill < array.length; iSkill ++) {
                 let name = array[iSkill].name;
-                if (skillObject && skillObject.hasOwnProperty(name)) {
-                    skills.push(skillObject[name]._id);
-                } else {
-                    let skill = await Skills.findOne({ name: array[iSkill].name });
-                    if (!skill) {
-                        skill = new Skills();
-                        skill.name = name.trim();
-                        skill.is_deleted = false;
-                        skill.created_by = userId;
-                        skill.created_at = new Date();
-                        skill.modified_by = userId;
-                        skill.modified_at = new Date();
-                        skill = await skill.save();                
+                if (name) {
+                    if (skillObject && skillObject.hasOwnProperty(name)) {
+                        skills.push(skillObject[name]._id);
+                    } else {
+                        let skill = await Skills.findOne({ name: array[iSkill].name });
+                        if (!skill && name) {
+                            skill = new Skills();
+                            skill.name = name.trim();
+                            skill.is_deleted = false;
+                            skill.created_by = userId;
+                            skill.created_at = new Date();
+                            skill.modified_by = userId;
+                            skill.modified_at = new Date();
+                            skill = await skill.save();                
+                        }
+                        skillObject[name] = skill;
+                        skills.push(skill._id);
                     }
-                    skillObject[name] = skill;
-                    skills.push(skill._id);
+                } else {
+                    console.log('error in skill name : ', array[iSkill].name);
                 }
             }
             resolve(skills);
