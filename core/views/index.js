@@ -125,15 +125,15 @@ async (req, res) => {
         //     await log.save();
         // }
         if (result && result.hasOwnProperty('id') && result.id) {
-            console.log('resume id : ', resume);;
-            let id = resume.id.toString();
+            console.log('resume id : ', result);;
+            let id = result.id.toString();
             let parsedData = await redisClient.parse(id);
             console.log('redis success = : ', parsedData);
             log.groupName = "execute request";
             log.data.push({title: "redis success - taskid", message: parsedData.taskid });
             await log.save();
         } else {
-            console.log('resume id : ', resume);
+            console.log('resume id : ', result);
         }
         res.render('pages/thanks', { company: company[0] });
         // if (err) res.render('pages/error');
