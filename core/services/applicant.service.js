@@ -284,12 +284,12 @@ async function findOrCreate(array, userId) {
             let skills = [];
             console.log('skills array : ', array);
             for(var iSkill = 0; iSkill < array.length; iSkill ++) {
-                let name = array[iSkill].name;
+                let name = array[iSkill].name ? array[iSkill].name : array[iSkill];
                 if (name) {
                     if (skillObject && skillObject.hasOwnProperty(name)) {
                         skills.push(skillObject[name]._id);
                     } else {
-                        let skill = await Skills.findOne({ name: array[iSkill].name });
+                        let skill = await Skills.findOne({ name: name });
                         if (!skill && name) {
                             skill = new Skills();
                             skill.name = name.trim();
@@ -304,12 +304,36 @@ async function findOrCreate(array, userId) {
                         skills.push(skill._id);
                     }
                 } else {
-                    console.log('error in skill name : ', array[iSkill].name);
+                    console.log('error in skill name : ', array[iSkill]);
                 }
             }
             resolve(skills);
         } catch (error) {
             reject(error);
+        }
+    });
+}
+
+exports.resume = async (req) => {
+    return new Promise(async(resolve, reject) => {
+        try {
+            if (req.files && req.files.length > 0) {                
+                let modelResume = new ApplicantResumes();
+                modelResume.created_by = req.user.id;
+                modelResume.created_at = new Date();
+                modelResume.resume = req.files[0].buffer.toString('base64')
+                modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
+                modelResume.fileType = req.files[0].mimetype;
+                modelResume.modified_by = req.user.id;
+                modelResume.modified_at = new Date();
+                modelResume = await modelResume.save();
+                resolve({ id: modelResume._id });
+            } else {
+                reject({ status: 400, message: 'resume file is missing' });
+            }           
+        } catch (error) {
+            console.log('resume save error : ', error);
+            reject({ status: 500, message: 'server error' });
         }
     });
 }

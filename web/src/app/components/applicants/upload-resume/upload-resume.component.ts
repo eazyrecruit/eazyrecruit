@@ -56,7 +56,7 @@ export class UploadResumeComponent implements OnInit {
       });
       const formData = new FormData();
       formData.append('resume', this.resume);
-      this.applicantService.save(formData).subscribe(result => {
+      this.applicantService.resume(formData).subscribe(result => {
         if (result['data']['success']) {
           this.onClose.next(result['data']['success']['data']);
           this.modalRef.hide();
