@@ -73,7 +73,7 @@ exports.save = async (req) => {
         if (req.files && req.files.length) {
             modelJob.metaImage = await utilService.readWriteFile(req, modelJob.guid);
         } else {
-            modelJob.metaImage = req.body.metaImage && req.body.metaImage !== 'null' ? req.body.metaImage : null;
+            modelJob.metaImage = req.body.metaImage && req.body.metaImage !== 'null' || req.body.metaImage !== 'undefined' ? req.body.metaImage : null;
         }
 
         modelJob.metaImageAltText = req.body.metaImageAltText ? req.body.metaImageAltText : null;
