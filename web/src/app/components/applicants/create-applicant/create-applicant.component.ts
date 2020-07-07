@@ -231,7 +231,7 @@ export class CreateApplicantComponent implements OnInit {
         formData.append('jobId', this.jobId);
       }
       
-      this.applicantService.save(formData).subscribe(result => {
+      this.applicantService.resume(formData).subscribe(result => {
         if (result && result['success']) {
           this.closePopup.next(result['success']);
           this.bsModelRef.hide();

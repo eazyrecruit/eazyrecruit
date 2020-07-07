@@ -17,9 +17,9 @@ module.exports = {
     // pass: 'ArkJvRnnlKOXWtWJDg/tfKLax97/PvLeZLAWdGd7/Z4V',
     // fromEmail: 'Akeo India<noreply@akeo.in>',
     // fromDisplayname: 'Akeo India<noreply@akeo.in>',
-    stop: true,
+    stop: false,
     test: true,
-    testRecepient: 'deveazyrecruit@gmail.com'
+    testRecepient: 'vicky@akeo.no'
   },
   jwt: {
     secret: 'SHDJHDSDSD&(**DSUDSY^D&^USDHSODISOIY&D*SYDDH',

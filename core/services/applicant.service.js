@@ -255,17 +255,6 @@ exports.save = async (req) => {
                     resolve(modelApplicant);
                 }
                 
-            } else if (req.files && req.files.length > 0) {                
-                let modelResume = new ApplicantResumes();
-                modelResume.created_by = req.user.id;
-                modelResume.created_at = new Date();
-                modelResume.resume = req.files[0].buffer.toString('base64')
-                modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
-                modelResume.fileType = req.files[0].mimetype;
-                modelResume.modified_by = req.user.id;
-                modelResume.modified_at = new Date();
-                modelResume = await modelResume.save();
-                resolve({ resume: modelResume._id });
             } else {
                 console.log('save applicant : ', 'Email or Id is required');
                 reject("Email or Id is required");

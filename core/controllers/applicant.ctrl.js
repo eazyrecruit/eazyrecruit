@@ -72,6 +72,8 @@ var resumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize:
 router.post("/resume", resumeUpload.any(), async (req, res) => {
     try {
         var resume = await applicantService.resume(req);
+        var applicant = await applicantService.save(req);
+        console.log('applicant save /resume path : ', applicant);
         console.log('applicant resume : ', resume);
         if (resume && resume.hasOwnProperty('id') && resume.id) {
             console.log('resume id : ', resume);;
