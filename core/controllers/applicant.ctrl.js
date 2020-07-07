@@ -48,20 +48,6 @@ var applicantResumeUpload = multer({ storage: multer.memoryStorage(), limits: { 
 router.post("/", applicantResumeUpload.any(), async (req, res) => {
     try {
         var applicant = await applicantService.save(req);
-        console.log('applicant data : ', applicant);
-        // if (typeof applicant == 'object') {
-        //     console.log('typeof applicant == object if : ', typeof applicant == 'object');
-        //     let id;
-        //     if (applicant.resume) {
-        //         id = applicant.resume.toString();
-        //     } else if (applicant.applicant && applicant.applicant.resume) {
-        //         id = applicant.applicant.resume.toString();
-        //     }
-        //     let parsedData = await redisClient.parse(id);
-        //     console.log('parsed data : ', parsedData);
-        // } else {
-        //     console.log('typeof applicant == object else : ', typeof applicant == 'object');
-        // }
         responseService.response(req, null, logTypes.debug, applicant, res);
     } catch (err) {
         responseService.response(req, err, logTypes.debug, null, res);
@@ -71,12 +57,11 @@ router.post("/", applicantResumeUpload.any(), async (req, res) => {
 var resumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
 router.post("/resume", resumeUpload.any(), async (req, res) => {
     try {
+        var applicant;
         if (req.body && (req.body.email || req.body._id)) {
-            var applicant = await applicantService.save(req);
+            applicant = await applicantService.save(req);
         }
         var resume = await applicantService.resume(req);
-        console.log('applicant save /resume path : ', applicant);
-        console.log('applicant resume : ', resume);
         if (resume && resume.hasOwnProperty('id') && resume.id) {
             console.log('resume id : ', resume);;
             let id = resume.id.toString();
@@ -85,7 +70,7 @@ router.post("/resume", resumeUpload.any(), async (req, res) => {
         } else {
             console.log('resume id : ', resume);
         }
-        responseService.response(req, null, logTypes.debug, resume, res);
+        responseService.response(req, null, logTypes.debug, applicant ? applicant : resume, res);
     } catch (err) {
         responseService.response(req, err, logTypes.debug, null, res);
     }
