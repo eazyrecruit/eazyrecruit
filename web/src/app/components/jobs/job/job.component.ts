@@ -343,7 +343,7 @@ export class JobComponent implements OnInit {
 
       if (this.metaImage) {
         formData.set('metaImage', this.metaImage);
-      } else {
+      } else if (this.currentMetaImage) {
         formData.set('metaImage', this.currentMetaImage);
       }
       this.jobService.saveJob(formData).subscribe(result => {

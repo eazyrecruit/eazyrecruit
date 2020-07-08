@@ -63,7 +63,7 @@ router.post("/resume", resumeUpload.any(), async (req, res) => {
         }
         var resume = await applicantService.resume(req);
         if (resume && resume.hasOwnProperty('id') && resume.id) {
-            console.log('resume id : ', resume);;
+            console.log('resume id : ', resume);
             let id = resume.id.toString();
             let parsedData = await redisClient.parse(id);
             console.log('parsed data : ', parsedData);
