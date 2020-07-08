@@ -194,7 +194,6 @@ exports.save = async (req) => {
                 // if jobid and pipelinid available then add applicant to that job
                 let jobPipeline = null;
                 let modelJobApplicant = new JobApplicant();
-                console.log('jobId : ', req.body.jobId);
                 if (req.body.jobId) {
                     let modelJob = await Jobs.findById(req.body.jobId).populate('pipeline');
                     if (req.body.pipelineId) {
@@ -222,16 +221,13 @@ exports.save = async (req) => {
                     modelJob = await modelJob.save();
                     modelJobApplicant.applicant = modelApplicant;
 
-                    console.log('modelJobApplicant._id : ', modelJobApplicant._id);
-
-                    let his = await histroyService.create({ 
+                    await histroyService.create({ 
                         applicant: modelApplicant._id, 
                         pipeline: jobPipeline,
                         job: modelJob.id,
                         createdBy: req.user.id,
                         modifiedBy: req.user.id,
                     });
-                    console.log('history : ', his);
                 } else {
                     console.log('job id is missing : ', req.body.jobId)
                 }
@@ -277,7 +273,6 @@ async function findOrCreate(array, userId) {
     return new Promise(async (resolve, reject) => {
         try {
             let skills = [];
-            console.log('skills array : ', array);
             for(var iSkill = 0; iSkill < array.length; iSkill ++) {
                 let name = array[iSkill].name ? array[iSkill].name : array[iSkill];
                 if (name) {

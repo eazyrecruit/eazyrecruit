@@ -19,7 +19,7 @@ module.exports = {
     // fromDisplayname: 'Akeo India<noreply@akeo.in>',
     stop: false,
     test: true,
-    testRecepient: 'vicky@akeo.no'
+    testRecepient: 'deveazyrecruit@gmail.com'
   },
   jwt: {
     secret: 'SHDJHDSDSD&(**DSUDSY^D&^USDHSODISOIY&D*SYDDH',

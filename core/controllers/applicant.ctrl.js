@@ -66,9 +66,8 @@ router.post("/resume", resumeUpload.any(), async (req, res) => {
             console.log('resume id : ', resume);
             let id = resume.id.toString();
             let parsedData = await redisClient.parse(id);
-            console.log('parsed data : ', parsedData);
         } else {
-            console.log('resume id : ', resume);
+            console.log('resume id not available');
         }
         responseService.response(req, null, logTypes.debug, applicant ? applicant : resume, res);
     } catch (err) {
