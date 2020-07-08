@@ -194,6 +194,7 @@ exports.save = async (req) => {
                 // if jobid and pipelinid available then add applicant to that job
                 let jobPipeline = null;
                 let modelJobApplicant = new JobApplicant();
+                console.log('jobId : ', req.body.jobId);
                 if (req.body.jobId) {
                     let modelJob = await Jobs.findById(req.body.jobId).populate('pipeline');
                     if (req.body.pipelineId) {
@@ -221,13 +222,18 @@ exports.save = async (req) => {
                     modelJob = await modelJob.save();
                     modelJobApplicant.applicant = modelApplicant;
 
-                    await histroyService.create({ 
+                    console.log('modelJobApplicant._id : ', modelJobApplicant._id);
+
+                    let his = await histroyService.create({ 
                         applicant: modelApplicant._id, 
                         pipeline: jobPipeline,
                         job: modelJob.id,
                         createdBy: req.user.id,
                         modifiedBy: req.user.id,
                     });
+                    console.log('history : ', his);
+                } else {
+                    console.log('job id is missing : ', req.body.jobId)
                 }
 
                 // Update HR and candidate
