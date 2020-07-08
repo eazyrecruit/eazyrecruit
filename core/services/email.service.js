@@ -60,7 +60,7 @@ let getEmailBody = async function (obj) {
     var content = emailTemplate.content;
     if (content) {
         for(var prop in obj) {
-            content = content.replace(new RegExp('${'+ prop +'}','g'), obj[prop]);
+            content = content.replace(new RegExp('{'+ prop +'}','g'), obj[prop]);
         }
     }
     return content;

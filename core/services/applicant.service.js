@@ -28,7 +28,7 @@ exports.save = async (req) => {
                 if (req.body._id) {
                     modelApplicant = await Applicants.findById(req.body._id);
                 } else if (email) {
-                    modelApplicant = await Applicants.findOne({ email: email });
+                    modelApplicant = await Applicants.findOne({ email: email.trim() });
                 }
                 // Create applicant if unable to find
                 if (modelApplicant == null) {
@@ -36,7 +36,7 @@ exports.save = async (req) => {
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
                 }
-                modelApplicant.email = email;
+                modelApplicant.email = email.trim();
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
                 modelApplicant.source = req.body.source ? req.body.source : '';
                 modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : '';

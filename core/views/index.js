@@ -118,7 +118,6 @@ async (req, res) => {
             applicant = await applicantService.save(req);
             console.log('applicant saved');
         }
-        console.log('applicant saved : ', applicant);
         let result = await applicantService.resume(req);
         log.groupName = "execute request";
         log.data.push({title: "success response", message: JSON.stringify(result)});
