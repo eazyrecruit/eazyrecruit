@@ -108,6 +108,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         });
         this.modalRef.content.close = (data) => {
             this.scheduledInterviews[index] = data;
+            this.scheduledInterviews[index].interviewer = data.interviewer.id;
             this.modalRef.hide();
         }
     }
