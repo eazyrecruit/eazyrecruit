@@ -27,6 +27,12 @@ constructor(private http: HttpClient, private accountService: AccountService) { 
         headers.set('Content-Type', 'multipart/form-data');
         return this.http.post(this.constService.baseUrl + 'applicant/', data, { headers: headers });
     }
+
+    resume(data) {
+        const headers = new HttpHeaders();
+        headers.set('Content-Type', 'multipart/form-data');
+        return this.http.post(this.constService.baseUrl + 'applicant/resume/', data, { headers: headers });
+    }
     // save (resume)  {
     //     const headers = new HttpHeaders();
     //     headers.set('Content-Type', 'multipart/form-data');

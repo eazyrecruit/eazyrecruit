@@ -28,7 +28,7 @@ exports.save = async (req) => {
                 if (req.body._id) {
                     modelApplicant = await Applicants.findById(req.body._id);
                 } else if (email) {
-                    modelApplicant = await Applicants.findOne({ email: email });
+                    modelApplicant = await Applicants.findOne({ email: email.trim() });
                 }
                 // Create applicant if unable to find
                 if (modelApplicant == null) {
@@ -36,7 +36,7 @@ exports.save = async (req) => {
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
                 }
-                modelApplicant.email = email;
+                modelApplicant.email = email.trim();
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
                 modelApplicant.source = req.body.source ? req.body.source : '';
                 modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : '';
@@ -228,6 +228,8 @@ exports.save = async (req) => {
                         createdBy: req.user.id,
                         modifiedBy: req.user.id,
                     });
+                } else {
+                    console.log('job id is missing : ', req.body.jobId)
                 }
 
                 // Update HR and candidate
@@ -272,28 +274,56 @@ async function findOrCreate(array, userId) {
         try {
             let skills = [];
             for(var iSkill = 0; iSkill < array.length; iSkill ++) {
-                let name = array[iSkill].name;
-                if (skillObject && skillObject.hasOwnProperty(name)) {
-                    skills.push(skillObject[name]._id);
-                } else {
-                    let skill = await Skills.findOne({ name: array[iSkill].name });
-                    if (!skill) {
-                        skill = new Skills();
-                        skill.name = name.trim();
-                        skill.is_deleted = false;
-                        skill.created_by = userId;
-                        skill.created_at = new Date();
-                        skill.modified_by = userId;
-                        skill.modified_at = new Date();
-                        skill = await skill.save();                
+                let name = array[iSkill].name ? array[iSkill].name : array[iSkill];
+                if (name) {
+                    if (skillObject && skillObject.hasOwnProperty(name)) {
+                        skills.push(skillObject[name]._id);
+                    } else {
+                        let skill = await Skills.findOne({ name: name });
+                        if (!skill && name) {
+                            skill = new Skills();
+                            skill.name = name.trim();
+                            skill.is_deleted = false;
+                            skill.created_by = userId;
+                            skill.created_at = new Date();
+                            skill.modified_by = userId;
+                            skill.modified_at = new Date();
+                            skill = await skill.save();                
+                        }
+                        skillObject[name] = skill;
+                        skills.push(skill._id);
                     }
-                    skillObject[name] = skill;
-                    skills.push(skill._id);
+                } else {
+                    console.log('error in skill name : ', array[iSkill]);
                 }
             }
             resolve(skills);
         } catch (error) {
             reject(error);
+        }
+    });
+}
+
+exports.resume = async (req) => {
+    return new Promise(async(resolve, reject) => {
+        try {
+            if (req.files && req.files.length > 0) {                
+                let modelResume = new ApplicantResumes();
+                modelResume.created_by = req.user.id;
+                modelResume.created_at = new Date();
+                modelResume.resume = req.files[0].buffer.toString('base64')
+                modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
+                modelResume.fileType = req.files[0].mimetype;
+                modelResume.modified_by = req.user.id;
+                modelResume.modified_at = new Date();
+                modelResume = await modelResume.save();
+                resolve({ id: modelResume._id });
+            } else {
+                reject({ status: 400, message: 'resume file is missing' });
+            }           
+        } catch (error) {
+            console.log('resume save error : ', error);
+            reject({ status: 500, message: 'server error' });
         }
     });
 }
