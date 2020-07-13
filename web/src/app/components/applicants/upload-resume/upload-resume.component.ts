@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
-import { UploadService } from '../../../services/upload.service';
+import { ApplicantService } from '../../../services/applicant.service';
 import { ValidationService } from '../../../services/validation.service';
 import { SkillsService } from '../../../services/skills.service';
 import { BsModalRef } from 'ngx-bootstrap';
@@ -13,7 +13,7 @@ import { Subject } from 'rxjs/internal/Subject';
   selector: 'app-upload-resume',
   templateUrl: './upload-resume.component.html',
   styleUrls: ['./upload-resume.component.css'],
-  providers: [UploadService, ValidationService, SkillsService]
+  providers: [ApplicantService, ValidationService, SkillsService]
 })
 export class UploadResumeComponent implements OnInit {
 
@@ -30,7 +30,7 @@ export class UploadResumeComponent implements OnInit {
   
   constructor(
     private modalRef: BsModalRef,
-    private uploadService: UploadService,
+    private applicantService: ApplicantService,
    
     private fbForm: FormBuilder,
 
@@ -55,9 +55,8 @@ export class UploadResumeComponent implements OnInit {
         technologies.push(element.value);
       });
       const formData = new FormData();
-      formData.append('resumeData', this.resume);
-      formData.append('data', JSON.stringify(resumeForm));
-      this.uploadService.upload(formData).subscribe(result => {
+      formData.append('resume', this.resume);
+      this.applicantService.resume(formData).subscribe(result => {
         if (result['data']['success']) {
           this.onClose.next(result['data']['success']['data']);
           this.modalRef.hide();

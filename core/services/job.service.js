@@ -63,13 +63,17 @@ exports.save = async (req) => {
             }
         }
         modelJob.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
-        modelJob.is_published = req.body.published ? req.body.published : true;
+        if (req.body.is_published) {
+            modelJob.is_published = req.body.is_published == 'true' ? true : false;    
+        } else {
+            modelJob.is_published = true;
+        }
         
         // we are storing image with name and we are using guid as name
         if (req.files && req.files.length) {
             modelJob.metaImage = await utilService.readWriteFile(req, modelJob.guid);
         } else {
-            modelJob.metaImage = req.body.metaImage;
+            modelJob.metaImage = req.body.metaImage ? req.body.metaImage : null;
         }
 
         modelJob.metaImageAltText = req.body.metaImageAltText ? req.body.metaImageAltText : null;
@@ -89,6 +93,8 @@ exports.save = async (req) => {
         modelJob = await modelJob.save();
 
         return modelJob;
+    } else {
+        return new Error('job data is missing');
     }
 }
 
