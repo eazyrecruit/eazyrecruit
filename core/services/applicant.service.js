@@ -15,7 +15,7 @@ var Histories = require('../models/history');
 var emailService = require('../services/email.service');
 var histroyService = require('../services/history.service');
 
-exports.save = async (req) => {
+exports.save = async (req, enableEmail) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (req.body.body) req.body = JSON.parse(req.body.body);
@@ -233,7 +233,7 @@ exports.save = async (req) => {
                 }
 
                 // Update HR and candidate
-                if (req.params.source && req.params.source == 'email') {
+                if (enableEmail && req.params.source && req.params.source == 'email') {
                     var candidate = {
                         id: modelApplicant._id, name: req.body.name, email: email,
                         phone: req.body.phone, source: req.params.source
@@ -243,7 +243,7 @@ exports.save = async (req) => {
                 }
                 
                 try {
-                    if (modelApplicant.email) {
+                    if (enableEmail && modelApplicant.email) {
                         await notifyCandidate(modelApplicant);
                         console.log('email sent to : ', modelApplicant.email);
                     }

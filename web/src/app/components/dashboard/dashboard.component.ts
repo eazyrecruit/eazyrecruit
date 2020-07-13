@@ -8,6 +8,7 @@ import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import { ReportService } from '../../services/report.service';
 import { Router } from '@angular/router';
 import { AccountService } from '../../services/account.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-dashboard',
@@ -65,6 +66,10 @@ export class DashboardComponent implements OnInit {
         });
       }
     });
+  }
+
+  utcToLocal (datetime) {
+    return moment.utc(moment().format('YYYY-MM-DD HH:mm'));
   }
 
   loadResumeByDay() {

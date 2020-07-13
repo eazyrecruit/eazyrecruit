@@ -208,7 +208,7 @@ async function inviteCandidate(req, title) {
         <p>Dear ${req.body.interview.candidate.name},</p>
         <p>You are invited to attend an interview for the following profile.</p>
         <p>Profile: <b>${req.body.interview.job.name}<b><br/>
-        Interview date: <b>${new Date(req.body.interview.start).toLocaleString()}<b><br/>
+        Interview date: <b>${new Date(req.body.interview.start)}<b><br/>
         </p>
     `, req.body.interview.candidate.email, req.body.interview.organizer.email);
 }
