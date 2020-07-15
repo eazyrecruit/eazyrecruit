@@ -47,7 +47,7 @@ router.get("/:id", async (req, res) => {
 var applicantResumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
 router.post("/", applicantResumeUpload.any(), async (req, res) => {
     try {
-        var applicant = await applicantService.save(req);
+        var applicant = await applicantService.save(req, true);
         responseService.response(req, null, logTypes.debug, applicant, res);
     } catch (err) {
         responseService.response(req, err, logTypes.debug, null, res);
@@ -59,7 +59,7 @@ router.post("/resume", resumeUpload.any(), async (req, res) => {
     try {
         var applicant;
         if (req.body && (req.body.email || req.body._id)) {
-            applicant = await applicantService.save(req);
+            applicant = await applicantService.save(req, false);
         }
         var resume = await applicantService.resume(req);
         if (resume && resume.hasOwnProperty('id') && resume.id) {

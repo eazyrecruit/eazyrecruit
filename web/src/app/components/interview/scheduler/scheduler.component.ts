@@ -232,7 +232,7 @@ export class SchedulerComponent implements OnInit {
         },
         interviewer: {
           id: interviewFormData.interviewerId,
-          name: this.interviewer.name,
+          name: this.interviewer.firstName ? this.getFullName(this.interviewer.firstName, null, this.interviewer.lastName) : this.interviewer.email,
           email: this.interviewer.email
         },
         organizer: { 
