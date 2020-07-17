@@ -96,6 +96,9 @@ destroy(){
   # fi
 }
 
+emptyVariable=""
+docker_compose_location=$(which docker-compose)
+
 if [ "$1" == "restart" ]; then
   restart
 elif [ "$1" == "destroy" ]; then 
@@ -104,5 +107,9 @@ elif [ "$1" == "update" ]; then
   ez_docker_up
   # sudo docker-compose up --build -d nginx ez_web ez_engine
 else
-  setup
+  if [ "$docker_compose_location" == "$emptyVariable" ]; then
+      echo '********** Please check docker-compose and then try again **********'
+  else
+      setup
+  fi
 fi
