@@ -57,8 +57,8 @@ setup(){
     
     echo "############## EazyRecruit has successfully setup: #########################################"
     echo " "
-    echo "Access Url: http://${privateIP}/admin" 
-    echo "            http://0.0.0.0/admin"
+    echo "Access Url: http://${privateIP}/jobs/admin" 
+    echo "            http://0.0.0.0/jobs/admin"
     echo " "
     echo "Admin User: admin@eazyrecruit.in"
     echo " "
