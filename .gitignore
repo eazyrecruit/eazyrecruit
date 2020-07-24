@@ -1,5 +1,6 @@
 core/node_modules
 .idea
+.env
 core/jobs
 core/images
 core/downloadable_files
