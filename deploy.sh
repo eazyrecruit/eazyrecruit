@@ -78,10 +78,10 @@ restart(){
 
 destroy(){
   sudo docker-compose down
-  docker volume rm eazyrecruit_mongo_db
-  docker volume rm eazyrecruit_elastic_search_data
-  docker volume rm eazyrecruit_redis_data
-  docker volume rm eazyrecruit_web_images
+  sudo docker volume rm eazyrecruit_mongo_db
+  sudo docker volume rm eazyrecruit_elastic_search_data
+  sudo docker volume rm eazyrecruit_redis_data
+  sudo docker volume rm eazyrecruit_web_images
 
   sudo rm .adminpass
   # sudo rm -r ./core/admin
