@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
 
   oauthLogin(app) {
     SiteJS.oauthpopup(
-      "/admin/assets/auth.html?socialApp=" + app, () => {
+      "/jobs/admin/assets/auth.html?socialApp=" + app, () => {
         let user = this.accountService.isAuthorized();
         if(user && user.isAuthorized) {
           if (user.role == 'admin' || user.role == 'hr') {

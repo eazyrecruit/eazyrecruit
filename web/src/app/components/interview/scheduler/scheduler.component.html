@@ -83,7 +83,8 @@
     <hr>
     <div class="row">
       <div class="form-group col-sm-12">
-        <button type="submit" class="btn btn-primary" *ngIf="role == 'admin'">Submit</button>
+
+        <button type="submit" class="btn btn-primary" *ngIf="['admin','hr'].indexOf(role)>=0">Submit</button>
       </div>
     </div>
   </form>

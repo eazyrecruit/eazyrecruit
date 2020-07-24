@@ -60,7 +60,7 @@ exports.register = async (req) => {
                     email.name = userModel.firstName ? `${userModel.firstName} ${userModel.lastName}` : req.body.email;
                     email.receiverAddress = userModel.email;
                     email.subject = 'Registration successfull';
-                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
+                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/jobs/admin/resetpassword/${otp}">Reset Password</a>`;
                     try {
                         await emailService.sendEmail(email);
                         resolve(`An email has been sent to ${email.receiverAddress} for user registration.`);

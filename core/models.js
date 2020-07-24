@@ -106,7 +106,7 @@ module.exports.initialize = async () => {
     applicant.firstName = "Test"
     applicant.lastName = "Applicant"
     applicant.created_at=new Date()
-    console.log('*** Test Applicant Creation ***')
+    console.log('*** Test Applicant Creation ***');
     await applicant.save();
   }
 
