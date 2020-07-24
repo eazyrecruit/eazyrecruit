@@ -29,7 +29,7 @@ exports.sendEmail = async function (emailObj, next) {
                 from: emailConfig.fromEmail, // sender address
                 to: emailObj.toEmail, // list of receivers
                 subject: emailObj.subject, // Subject line
-                html: await getEmailBody({ title: emailObj.subject, body: emailObj.body }) // html body,
+                html: await getEmailBody({ title: emailObj.subject, body: emailObj.body, signature: "<b>HR team</b><br>Akeo Software Solutions Pvt Ltd<br><a href='mailto:hr@akeo.in'>hr@akeo.in</a>" }) // html body,
             };
 
             if (emailObj.attachments) {

@@ -123,7 +123,7 @@ async (req, res) => {
         log.data.push({title: "success response", message: JSON.stringify(result)});
         
         if (result && result.hasOwnProperty('id') && result.id) {
-            console.log('resume id : ', result);;
+            console.log('resume id : ', result);
             let id = result.id.toString();
             let parsedData = await redisClient.parse(id);
             console.log('redis success = : ', parsedData);

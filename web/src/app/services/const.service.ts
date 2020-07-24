@@ -13,7 +13,7 @@ export class ConstService {
             this.baseUrl = '/api/';
             this.pyUrl = '/api/engine/';
         } else {
-            this.publicUrl = 'http://localhost:8082/jobs/';
+            this.publicUrl = window.location.protocol + '//' + window.location.hostname + '/jobs/';
             this.baseUrl = '/api/';
             this.pyUrl = '/api/engine/';
         }

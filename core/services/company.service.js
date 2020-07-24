@@ -11,8 +11,8 @@ exports.getCompany = async () => {
 
 exports.getSettings = async (req) => {
     try {
-        let companySettings = await CompanySettings.find({companyId : req.query.id} && {groupName : req.query.group});
-        if(companySettings && companySettings.length) {
+        let companySettings = await CompanySettings.find({companyId: req.query.id} && {groupName: req.query.group});
+        if (companySettings && companySettings.length) {
             for (let i = 0; i < companySettings.length; i++) {
                 companySettings[i].value = encryptService.decrypt(companySettings[i].value)
             }
@@ -31,15 +31,15 @@ exports.updateSettings = async (req, next) => {
     var formValues = [];
     formKeys = Object.keys(settings);
     formValues = Object.values(settings);
-    var dbCompanySettings = await CompanySettings.find({companyId : req.query.id, groupName : req.query.group});
+    var dbCompanySettings = await CompanySettings.find({companyId: req.query.id, groupName: req.query.group});
     if (dbCompanySettings.length <= 0) {
         for (index = 0; index < formKeys.length; index++) {
             let companySetting = await CompanySettings.create({
-                companyId : req.query.id, 
-                groupName : req.query.group, 
+                companyId: req.query.id,
+                groupName: req.query.group,
                 key: formKeys[index],
                 value: encryptService.encrypt(formValues[index].toString())
-                });    
+            });
             if (companySetting) {
                 companySetting.value = encryptService.decrypt(companySetting.value)
                 data.push(companySetting);
@@ -51,8 +51,12 @@ exports.updateSettings = async (req, next) => {
         return data;
     } else {
         for (index = 0; index < formKeys.length; index++) {
-            let companySettings = await CompanySettings.findOneAndUpdate({companyId : req.query.id, groupName : req.query.group, key: formKeys[index]},
-                { value: encryptService.encrypt(formValues[index].toString())}, { new: true });
+            let companySettings = await CompanySettings.findOneAndUpdate({
+                    companyId: req.query.id,
+                    groupName: req.query.group,
+                    key: formKeys[index]
+                },
+                {value: encryptService.encrypt(formValues[index].toString())}, {new: true});
             if (companySettings) {
                 companySettings.value = encryptService.decrypt(companySettings.value)
                 data.push(companySettings);
@@ -68,15 +72,56 @@ exports.updateSettings = async (req, next) => {
 exports.update = async (req, next) => {
     try {
         let image;
+        let companyRequest = {};
         if (req.files.length) {
-            if (req.body.logo) {
-                fs.unlinkSync(path.join(__dirname, `../images/${req.body.logo}`)); 
+            let fileData = {};
+            for (let index = 0; index < req.files.length; index++) {
+                fileData[req.files[index].fieldname] = req.files[index];
             }
-            image = await utilService.readWriteFile(req, req.body.id + new Date().getMilliseconds());
-        } else {
-            image = req.body.logo;
+            if (fileData.hasOwnProperty("logo")) {
+                companyRequest["logo"] = await utilService.readWriteFile(fileData["logo"], req.body.id + "_logo_" + new Date().getMilliseconds());
+            }
+            if (fileData.hasOwnProperty("favIcon")) {
+                companyRequest["favIcon"] = await utilService.readWriteFile(fileData["favIcon"], req.body.id + "_favIcon_" + new Date().getMilliseconds());
+            }
+
         }
-        Company.findByIdAndUpdate(req.body.id, 
+        companyRequest["name"] = req.body.name;
+        companyRequest["website"] = req.body.website;
+        companyRequest["address_line_1"] = req.body.address_line_1;
+        companyRequest["address_line_2"] = req.body.address_line_2;
+        companyRequest["address_line_3"] = req.body.address_line_3;
+        companyRequest["email"] = req.body.email;
+        companyRequest["phone"] = req.body.phone;
+        companyRequest["header_description"] = req.body.headerDescription;
+        companyRequest["header_bg_color"] = req.body.headerBgColor;
+        companyRequest["header_text_color"] = req.body.headerTextColor;
+        companyRequest["modified_at"] = Date.now();
+        Company.findByIdAndUpdate(req.body.id, companyRequest,
+            function (err, data) {
+                if (err) {
+                    next(err, null);
+                } else {
+                    next(null, data);
+                }
+            });
+    } catch (error) {
+        next(error, null);
+    }
+}
+
+exports.save = async (req, next) => {
+
+    if (req.body.hasOwnProperty("group")) {
+        var groupNames = [];
+        let groups = req.body.group;
+        groupNames = Object.keys(groups);
+        let logoName = "";
+        if (req.files && req.files.length) {
+            logoName = await utilService.readWriteFile(req.files[0], req.body.name);
+        }
+
+        var company = new Company(
             {
                 name: req.body.name,
                 website: req.body.website,
@@ -85,86 +130,50 @@ exports.update = async (req, next) => {
                 address_line_3: req.body.address_line_3,
                 email: req.body.email,
                 phone: req.body.phone,
-                logo: image,
-                header_description: req.body.headerDescription,
-                header_bg_color: req.body.headerBgColor, 
-                header_text_color: req.body.headerTextColor,
                 is_deleted: false,
-                modified_at:  Date.now()
-            }, 
-            function (err, data) {
-                if (err) {
-                    next(err, null);
-                } else { 
-                    next(null, data);
+                logo: logoName,
+                header_description: req.body.headerDescription,
+                created_by: req.body.created_by,
+                created_at: Date.now(),
+                modified_by: req.body.modified_by,
+                modified_at: Date.now(),
+                groupName: groupNames
             }
-        });
-    } catch (error) {
-        next(error, null);
+        );
+        company.save(function (err, result) {
+            if (err) {
+                next(err, null);
+            } else {
+                var companySetting = [];
+                for (var key in groups) {
+                    groups[key].forEach(group => {
+                        companySetting.push({
+                            groupName: key,
+                            key: group.key,
+                            value: group.value,
+                            companyId: result._id.toString()
+                        })
+                    });
+                }
+                CompanySettings.collection.insertMany(companySetting, (error, data) => {
+                    next(null, (result, data))
+                })
+            }
+        })
     }
-}
-
-exports.save = async (req, next) => {
-    
-    if(req.body.hasOwnProperty("group"))
-    {
-        var groupNames = [];
-        let groups = req.body.group;
-        groupNames = Object.keys(groups);
-
-        let logoName = await utilService.readWriteFile(req, req.body.name);
-        var company = new Company(
-        {
-            name: req.body.name,
-            website: req.body.website,
-            address_line_1: req.body.address_line_1,
-            address_line_2: req.body.address_line_2,
-            address_line_3: req.body.address_line_3,
-            email: req.body.email,
-            phone: req.body.phone,
-            is_deleted: false,
-            logo: logoName,
-            header_description: req.body.headerDescription,
-            created_by: req.body.created_by,
-            created_at:  Date.now(),
-            modified_by: req.body.modified_by,
-            modified_at:  Date.now(),
-            groupName: groupNames
-        }
-    );
-    company.save(function (err, result) {
-        if (err) {
-            next(err, null);
-        } else {
-            var companySetting = [];
-            for(var key in  groups){
-                groups[key].forEach(group => {
-                    companySetting.push({
-                        groupName: key,
-                        key: group.key,
-                        value: group.value,
-                        companyId: result._id.toString()
-                    })
-                });
-            }
-            CompanySettings.collection.insertMany(companySetting, (error, data)=>{
-                next(null, (result,data))
-            })
-        }
-    })}
 };
 
 exports.delete = function (req, next) {
-    Company.findByIdAndUpdate(req.query.id , 
+    Company.findByIdAndUpdate(req.query.id,
         {
             is_deleted: true,
-            modified_at:  Date.now()
-        }, 
+            modified_at: Date.now()
+        },
         function (err, data) {
             if (err) {
                 next(err, null);
-            } else { 
+            } else {
                 next(null, data);
-        }
-    });
+            }
+        });
 }

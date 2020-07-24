@@ -49,7 +49,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadCalendar(start, end) {
-    this.interviewService.getEventBetweenDates(start,end).subscribe(res => {
+    this.interviewService.getEventBetweenDates(start, end).subscribe(res => {
       if (res['success']) {
         let allevents = this.fullCalendarElement.calendar.getEvents();
         allevents.forEach(el => { el.remove(); }); 
@@ -77,6 +77,7 @@ export class DashboardComponent implements OnInit {
       if (res['success'] && res['success'].data && res['success'].data.aggregations) {
         if (res['success'].data.aggregations.byday && res['success'].data.aggregations.byday.buckets
           && res['success'].data.aggregations.byday.buckets.length > 0) {
+          console.log("res['success'].data", res['success'].data.aggregations.byday.buckets);
           var labels = [], totals = [], emails = [], websites = [], uploads = [], dbs = [];
           res['success'].data.aggregations.byday.buckets.forEach(bucket => {
             labels.push(new Date(bucket.key_as_string).toLocaleDateString());
