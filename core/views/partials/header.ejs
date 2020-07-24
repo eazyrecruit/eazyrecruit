@@ -1,15 +1,5 @@
 <header>
     <nav class="navbar container navbar-expand-lg">
-        <%
-        let url = '/';
-        if (company && company.website) {
-            if (company.website.startsWith('www.')) {
-                url = company.website;
-            } else {
-                url = 'www.' + company.website;
-            }
-        }
-        %>
         <a class="navbar-brand" href="<%= locals.baseURL %>/jobs"><img
                     src="/<%= company && company.logo ? company.logo : 'images/defaultlogo.png' %>"
                     style="max-height: 60px " alt="<%= locals.baseURL %>" id="logo"></a>
@@ -22,7 +12,7 @@
                     <span class="nav-link"> | </span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://<%= url %>">Home <span class="sr-only">Home</span></a>
+                    <a class="nav-link" href="<%= company.website %>">Home <span class="sr-only">Home</span></a>
                 </li>
             </ul>
         </div>
