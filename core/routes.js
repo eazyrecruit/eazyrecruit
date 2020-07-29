@@ -32,9 +32,9 @@ module.exports.setup = (app) => {
     next();
   });
   // Admin
-  app.use('/admin', express.static(path.resolve(__dirname, 'admin')));
-  app.get('/admin/*', function (req, res) {
-    res.sendFile('/admin/index.html', { root: '.' });
+  app.use('/jobs/admin', express.static(path.resolve(__dirname, 'jobs/admin')));
+  app.get('/jobs/admin/*', function (req, res) {
+    res.sendFile('/jobs/admin/index.html', { root: '.' });
   });
   app.use("/api", expressJwt({ secret: secretRecruitCallBack }).unless({ path: unprotected }));
   // Generic Implementation

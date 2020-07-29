@@ -27,7 +27,7 @@ RUN npm install
 # Copying source files
 COPY ./core .
 
-COPY --from=build /usr/src/core/admin /usr/src/app/admin
+COPY --from=build /usr/src/core/jobs/admin /usr/src/app/jobs/admin
 
 EXPOSE 8082
 

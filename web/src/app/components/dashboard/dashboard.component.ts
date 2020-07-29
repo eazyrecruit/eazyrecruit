@@ -8,6 +8,7 @@ import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import { ReportService } from '../../services/report.service';
 import { Router } from '@angular/router';
 import { AccountService } from '../../services/account.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-dashboard',
@@ -48,7 +49,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadCalendar(start, end) {
-    this.interviewService.getEventBetweenDates(start,end).subscribe(res => {
+    this.interviewService.getEventBetweenDates(start, end).subscribe(res => {
       if (res['success']) {
         let allevents = this.fullCalendarElement.calendar.getEvents();
         allevents.forEach(el => { el.remove(); }); 
@@ -67,11 +68,16 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  utcToLocal (datetime) {
+    return moment.utc(moment().format('YYYY-MM-DD HH:mm'));
+  }
+
   loadResumeByDay() {
     this.reportService.getForLast15Days().subscribe(res => {
       if (res['success'] && res['success'].data && res['success'].data.aggregations) {
         if (res['success'].data.aggregations.byday && res['success'].data.aggregations.byday.buckets
           && res['success'].data.aggregations.byday.buckets.length > 0) {
+          console.log("res['success'].data", res['success'].data.aggregations.byday.buckets);
           var labels = [], totals = [], emails = [], websites = [], uploads = [], dbs = [];
           res['success'].data.aggregations.byday.buckets.forEach(bucket => {
             labels.push(new Date(bucket.key_as_string).toLocaleDateString());

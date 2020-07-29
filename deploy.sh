@@ -57,8 +57,8 @@ setup(){
     
     echo "############## EazyRecruit has successfully setup: #########################################"
     echo " "
-    echo "Access Url: http://${privateIP}/admin" 
-    echo "            http://0.0.0.0/admin"
+    echo "Access Url: http://${privateIP}/jobs/admin" 
+    echo "            http://0.0.0.0/jobs/admin"
     echo " "
     echo "Admin User: admin@eazyrecruit.in"
     echo " "
@@ -78,10 +78,10 @@ restart(){
 
 destroy(){
   sudo docker-compose down
-  docker volume rm eazyrecruit_mongo_db
-  docker volume rm eazyrecruit_elastic_search_data
-  docker volume rm eazyrecruit_redis_data
-  docker volume rm eazyrecruit_web_images
+  sudo docker volume rm eazyrecruit_mongo_db
+  sudo docker volume rm eazyrecruit_elastic_search_data
+  sudo docker volume rm eazyrecruit_redis_data
+  sudo docker volume rm eazyrecruit_web_images
 
   sudo rm .adminpass
   # sudo rm -r ./core/admin
@@ -96,6 +96,9 @@ destroy(){
   # fi
 }
 
+emptyVariable=""
+docker_compose_location=$(which docker-compose)
+
 if [ "$1" == "restart" ]; then
   restart
 elif [ "$1" == "destroy" ]; then 
@@ -104,5 +107,9 @@ elif [ "$1" == "update" ]; then
   ez_docker_up
   # sudo docker-compose up --build -d nginx ez_web ez_engine
 else
-  setup
+  if [ "$docker_compose_location" == "$emptyVariable" ]; then
+      echo '********** Please check docker-compose and then try again **********'
+  else
+      setup
+  fi
 fi

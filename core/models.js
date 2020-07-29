@@ -52,6 +52,7 @@ module.exports.initialize = async () => {
     user.is_deleted = false;
     user.email = config.admin.username;
     user.firstName = 'Admin';
+    user.lastName = '';
     user.roles = role ? [role._id] : [];
     console.log('Admin Password:', user.password) // dont add any space in "Admin Password:" log using it in reading admin password
     await user.save();
@@ -105,7 +106,7 @@ module.exports.initialize = async () => {
     applicant.firstName = "Test"
     applicant.lastName = "Applicant"
     applicant.created_at=new Date()
-    console.log('*** Test Applicant Creation ***')
+    console.log('*** Test Applicant Creation ***');
     await applicant.save();
   }
 

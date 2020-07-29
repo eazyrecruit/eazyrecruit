@@ -10,6 +10,7 @@ var company= new Schema({
     email: {type: String},
     phone: {type: String},
     logo: { type: String },
+    favIcon: { type: String },
     header_description: { type: String },
     header_bg_color: { type: String },
     header_text_color: { type: String },

@@ -113,20 +113,27 @@ async (req, res) => {
             }
         }
 
-        let result = await applicantService.save(req);
+        var applicant;
+        if (req.body && req.body.email) {
+            applicant = await applicantService.save(req);
+            console.log('applicant saved');
+        }
+        let result = await applicantService.resume(req);
         log.groupName = "execute request";
         log.data.push({title: "success response", message: JSON.stringify(result)});
         
-        if (result.applicant && result.applicant.resume) {
-            let parsedData = await redisClient.parse(result.applicant.resume.id);
+        if (result && result.hasOwnProperty('id') && result.id) {
+            console.log('resume id : ', result);
+            let id = result.id.toString();
+            let parsedData = await redisClient.parse(id);
             console.log('redis success = : ', parsedData);
             log.groupName = "execute request";
             log.data.push({title: "redis success - taskid", message: parsedData.taskid });
             await log.save();
+        } else {
+            console.log('resume id : ', result);
         }
-        res.render('pages/thanks', { company: company[0] });
-        // if (err) res.render('pages/error');
-        // else res.render('pages/thanks', { job: data });       
+        res.render('pages/thanks', { company: company[0] });      
     } catch (error) {
         console.log('redis error = : ', error);
         log.groupName = "execute request";

@@ -44,21 +44,35 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-var applicantResumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var applicantResumeUpload = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/", applicantResumeUpload.any(), async (req, res) => {
     try {
-        var applicant = await applicantService.save(req);
-        if (typeof applicant == 'object') {
-            let id;
-            if (applicant.resume) {
-                id = applicant.resume.toString();
-            } else if (applicant.applicant && applicant.applicant.resume) {
-                id = applicant.applicant.resume.toString();
-            }
-            let parsedData = await redisClient.parse(id);
-            console.log('parsed data : ', parsedData);
-        }
+        var applicant = await applicantService.save(req, true);
         responseService.response(req, null, logTypes.debug, applicant, res);
+    } catch (err) {
+        responseService.response(req, err, logTypes.debug, null, res);
+    }
+});
+
+var resumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+router.post("/resume", resumeUpload.any(), async (req, res) => {
+    try {
+        var applicant;
+        if (req.body && (req.body.email || req.body._id)) {
+            applicant = await applicantService.save(req, false);
+        }
+
+        if (!(req.body.resumeId && req.body.resumeId.length > 0)) {
+            var resume = await applicantService.resume(req);
+            if (resume && resume.hasOwnProperty('id') && resume.id) {
+                console.log('resume id : ', resume);
+                let id = resume.id.toString();
+                let parsedData = await redisClient.parse(id);
+            } else {
+                console.log('resume id not available');
+            }
+        }
+        responseService.response(req, null, logTypes.debug, applicant ? applicant : resume, res);
     } catch (err) {
         responseService.response(req, err, logTypes.debug, null, res);
     }

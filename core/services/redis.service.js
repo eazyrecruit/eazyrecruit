@@ -17,7 +17,7 @@ exports.reparseDb =  async () => {
 
 exports.parse =  async (resumeId) => {
     return new Promise((resolve, reject) => {
-        client = celery.createClient({ CELERY_BROKER_URL: config.redis.host });
+        client = celery.createClient({ BROKER_URL: config.redis.host });
         client.on('error', function (err) {
             console.log('redis error : ', err);
             reject(err);

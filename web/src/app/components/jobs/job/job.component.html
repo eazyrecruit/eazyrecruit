@@ -91,7 +91,7 @@
         <div class="form-group">
           <label for="locations" class="required">Job Locations</label>
           <tag-input [onlyFromAutocomplete]="true" formControlName="locations">
-            <tag-input-dropdown [identifyBy]="'_id'" [displayBy]="'city'" [autocompleteObservable]="asyncLocations">
+            <tag-input-dropdown aria-placeholder="Enter new Job Location" [identifyBy]="'_id'" [displayBy]="'city'" [autocompleteObservable]="asyncLocations">
               <ng-template let-item="item" let-index="index">
                 {{ item.city + ', ' + item.state }}
               </ng-template>
@@ -116,7 +116,7 @@
         <div class="form-group">
           <label for="skills" class="required">Skills</label>
           <tag-input [onlyFromAutocomplete]="true" formControlName="skills">
-            <tag-input-dropdown [identifyBy]="'_id'" [displayBy]="'name'" [autocompleteObservable]="asyncSkills">
+            <tag-input-dropdown aria-placeholder="Enter new skill" [identifyBy]="'_id'" [displayBy]="'name'" [autocompleteObservable]="asyncSkills">
               <ng-template let-item="item" let-index="index">
                 {{ item.name }}
               </ng-template>
@@ -174,9 +174,9 @@
     <div class="row" *ngIf="publish">
       <div class="form-group col-md-3">
         <label for="metaImage" class="not-required">Meta Image</label>
-        <input type="file" class="form-control" formControlName="metaImage" #file (change)="onFileChange(file.files)" multiple="" accept=".jpg, .jpeg">
+        <input type="file" class="form-control" formControlName="metaImage" #file (change)="onFileChange(file.files)" multiple="" accept=".jpg, .jpeg, .png">
         <small class="text-danger" *ngIf="errInvalidFile">
-          Please upload only jpg/jpeg image
+          Please upload only png/jpg/jpeg image
         </small>
       </div>
       <div class="form-group col-md-3">
@@ -187,7 +187,7 @@
         <label for="metaTitle" class="required">Meta Title</label>
         <input type="text" placeholder="Meta Title" class="form-control" formControlName="metaTitle">
         <small class="text-danger"
-          *ngIf="jobDetails.controls['metaTitle'].hasError('required') && jobDetails.controls['metaTitle'].touched">
+          *ngIf="publish &&  !jobDetails.value['metaTitle'] && (submit || jobDetails.controls['metaTitle'].touched)">
           Please enter meta title
         </small>
       </div>
@@ -202,7 +202,7 @@
       <i class="fa fa-arrow-circle-right"></i>
     </button>
     <small class="text-danger" *ngIf="!active || !publish">
-      Only active and published job can be submitted.
+      Only active submitted.
     </small>
   </form>
 </div>

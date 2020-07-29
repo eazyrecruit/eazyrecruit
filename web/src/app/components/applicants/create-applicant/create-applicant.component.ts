@@ -221,7 +221,7 @@ export class CreateApplicantComponent implements OnInit {
       if (this.resume) {
         formData.set('resume', this.resume);
       } else if (this.currentResume) {
-        formData.set('resume', this.currentResume);
+        formData.set('resumeId', this.currentResume);
       }
 
       if (this.pipelineId) {
@@ -230,8 +230,8 @@ export class CreateApplicantComponent implements OnInit {
       if (this.jobId) {
         formData.append('jobId', this.jobId);
       }
-      
-      this.applicantService.save(formData).subscribe(result => {
+
+      this.applicantService.resume(formData).subscribe(result => {
         if (result && result['success']) {
           this.closePopup.next(result['success']);
           this.bsModelRef.hide();

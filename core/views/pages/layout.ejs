@@ -27,6 +27,7 @@
         var description = location + ' | ' + (job.minExperience ? job.minExperience + ' years' : '') +  skill;
     } %>
     <link rel="stylesheet" href="/css/akeo.css">
+    <link rel="icon" href="/<%= company && company.favIcon ? company.favIcon : 'images/short-logo.png' %>"  sizes="16x16">
     <meta property="og:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %><%= ' - ' + company.name %> " />
     <meta property="og:description" content=" <%= description %> " />
     <meta property="og:image" content="<%= locals.baseURL %><%= locals.job && job.metaImage ? '/'+job.metaImage : '/images/default-job.jpg' %>"/>

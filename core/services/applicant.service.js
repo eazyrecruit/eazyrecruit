@@ -15,7 +15,7 @@ var Histories = require('../models/history');
 var emailService = require('../services/email.service');
 var histroyService = require('../services/history.service');
 
-exports.save = async (req) => {
+exports.save = async (req, enableEmail) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (req.body.body) req.body = JSON.parse(req.body.body);
@@ -28,7 +28,7 @@ exports.save = async (req) => {
                 if (req.body._id) {
                     modelApplicant = await Applicants.findById(req.body._id);
                 } else if (email) {
-                    modelApplicant = await Applicants.findOne({ email: email });
+                    modelApplicant = await Applicants.findOne({ email: email.trim() });
                 }
                 // Create applicant if unable to find
                 if (modelApplicant == null) {
@@ -36,7 +36,7 @@ exports.save = async (req) => {
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
                 }
-                modelApplicant.email = email;
+                modelApplicant.email = email.trim();
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
                 modelApplicant.source = req.body.source ? req.body.source : '';
                 modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : '';
@@ -62,8 +62,8 @@ exports.save = async (req) => {
                 }
 
                 // Create/Update resume 
-                if (req.body.resume && req.body.resume.id && req.body.resume.id.length > 0) {
-                    modelApplicant.resume = req.body.resume.id;
+                if (req.body.resumeId && req.body.resumeId.length > 0) {
+                    modelApplicant.resume = req.body.resumeId;
                 } else {
                     if (req.files && req.files.length > 0) {
                         modelResume = await ApplicantResumes.findById(modelApplicant.resume);
@@ -101,7 +101,7 @@ exports.save = async (req) => {
                 if (req.body.currentLocation) {
                     var current = JSON.parse(req.body.currentLocation);
                     if (current && current.length > 0) {
-                        modelCurrentLocation = await Locations.findOne({ _id: current[0].id })
+                        modelCurrentLocation = await Locations.findOne({_id: current[0].id})
                         if (modelCurrentLocation == null) {
                             modelCurrentLocation = new Locations();
                             modelCurrentLocation.country = current.country || '';
@@ -126,7 +126,7 @@ exports.save = async (req) => {
                     if (preferred && preferred.length > 0) {
                         modelApplicant.preferredLocations = [];
                         for (let iPreferred = 0; iPreferred < preferred.length; iPreferred++) {
-                            modelpreferredLocation = await Locations.findOne({ _id: preferred[iPreferred].id })
+                            modelpreferredLocation = await Locations.findOne({_id: preferred[iPreferred].id})
                             if (modelpreferredLocation == null) {
                                 modelpreferredLocation = new Locations();
                                 modelpreferredLocation.country = preferred[iPreferred].country || '';
@@ -146,8 +146,8 @@ exports.save = async (req) => {
 
                 // Add Social Details
                 if (req.body.socials && req.body.socials.length > 0) {
-                    for(var iSocial = 0; iSocial < req.body.socials.length; iSocial ++) {
-                        var modelSocial = await Socials.findOne({ name: Socials[iSocial].name });
+                    for (var iSocial = 0; iSocial < req.body.socials.length; iSocial++) {
+                        var modelSocial = await Socials.findOne({name: Socials[iSocial].name});
                         if (modelSocial == null) {
                             modelSocial = new Socials();
                             modelSocial.created_by = req.user.id;
@@ -157,7 +157,7 @@ exports.save = async (req) => {
                             modelSocial.name = Socials[iSocial].name;
                             modelSocial = await modelSocial.save();
                         }
-                        var applicantSocial = await ApplicantSocials.findOne({ social: modelSocial._id });
+                        var applicantSocial = await ApplicantSocials.findOne({social: modelSocial._id});
                         if (applicantSocial == null) {
                             applicantSocial = new ApplicantSocials();
                             applicantSocial.social = modelSocial._id;
@@ -174,7 +174,7 @@ exports.save = async (req) => {
 
                 // Referral
                 if (req.body.referralEmail) {
-                    var modelUser = await Users.findOne({ email: req.body.referralEmail });
+                    var modelUser = await Users.findOne({email: req.body.referralEmail});
                     if (modelUser == null) {
                         modelUser.email = req.body.referralEmail.trim();
                         modelUser.created_by = req.user.id;
@@ -190,14 +190,14 @@ exports.save = async (req) => {
                 modelApplicant.modified_by = req.user.id;
                 modelApplicant.modified_at = new Date();
                 modelApplicant = await modelApplicant.save();
-                
+
                 // if jobid and pipelinid available then add applicant to that job
                 let jobPipeline = null;
                 let modelJobApplicant = new JobApplicant();
                 if (req.body.jobId) {
                     let modelJob = await Jobs.findById(req.body.jobId).populate('pipeline');
                     if (req.body.pipelineId) {
-                        jobPipeline = await JobPipeline.findById({ _id: req.body.pipelineId, is_deleted: { $ne: true } });
+                        jobPipeline = await JobPipeline.findById({_id: req.body.pipelineId, is_deleted: {$ne: true}});
                     } else {
                         jobPipeline = modelJob.pipelines ? modelJob.pipelines[0] : null;
                     }
@@ -221,17 +221,19 @@ exports.save = async (req) => {
                     modelJob = await modelJob.save();
                     modelJobApplicant.applicant = modelApplicant;
 
-                    await histroyService.create({ 
-                        applicant: modelApplicant._id, 
+                    await histroyService.create({
+                        applicant: modelApplicant._id,
                         pipeline: jobPipeline,
                         job: modelJob.id,
                         createdBy: req.user.id,
                         modifiedBy: req.user.id,
                     });
+                } else {
+                    console.log('job id is missing : ', req.body.jobId)
                 }
 
                 // Update HR and candidate
-                if (req.params.source && req.params.source == 'email') {
+                if (enableEmail && req.params.source && req.params.source == 'email') {
                     var candidate = {
                         id: modelApplicant._id, name: req.body.name, email: email,
                         phone: req.body.phone, source: req.params.source
@@ -239,22 +241,22 @@ exports.save = async (req) => {
                     await notifyHR(candidate);
                     //await notifyCandidate(candidate);
                 }
-                
+
                 try {
-                    if (modelApplicant.email) {
+                    if (enableEmail && modelApplicant.email) {
                         await notifyCandidate(modelApplicant);
                         console.log('email sent to : ', modelApplicant.email);
                     }
                 } catch (error) {
                     console.log('send email error : ', error);
                 }
-                
+
                 if (jobPipeline) {
                     resolve(modelJobApplicant);
                 } else {
                     resolve(modelApplicant);
                 }
-                
+
             } else {
                 console.log('save applicant : ', 'Email or Id is required');
                 reject("Email or Id is required");
@@ -267,28 +269,33 @@ exports.save = async (req) => {
 }
 
 let skillObject = {};
+
 async function findOrCreate(array, userId) {
     return new Promise(async (resolve, reject) => {
         try {
             let skills = [];
-            for(var iSkill = 0; iSkill < array.length; iSkill ++) {
-                let name = array[iSkill].name;
-                if (skillObject && skillObject.hasOwnProperty(name)) {
-                    skills.push(skillObject[name]._id);
-                } else {
-                    let skill = await Skills.findOne({ name: array[iSkill].name });
-                    if (!skill) {
-                        skill = new Skills();
-                        skill.name = name.trim();
-                        skill.is_deleted = false;
-                        skill.created_by = userId;
-                        skill.created_at = new Date();
-                        skill.modified_by = userId;
-                        skill.modified_at = new Date();
-                        skill = await skill.save();                
+            for (var iSkill = 0; iSkill < array.length; iSkill++) {
+                let name = array[iSkill].name ? array[iSkill].name : array[iSkill];
+                if (name) {
+                    if (skillObject && skillObject.hasOwnProperty(name)) {
+                        skills.push(skillObject[name]._id);
+                    } else {
+                        let skill = await Skills.findOne({name: name});
+                        if (!skill && name) {
+                            skill = new Skills();
+                            skill.name = name.trim();
+                            skill.is_deleted = false;
+                            skill.created_by = userId;
+                            skill.created_at = new Date();
+                            skill.modified_by = userId;
+                            skill.modified_at = new Date();
+                            skill = await skill.save();
+                        }
+                        skillObject[name] = skill;
+                        skills.push(skill._id);
                     }
-                    skillObject[name] = skill;
-                    skills.push(skill._id);
+                } else {
+                    console.log('error in skill name : ', array[iSkill]);
                 }
             }
             resolve(skills);
@@ -298,15 +305,42 @@ async function findOrCreate(array, userId) {
     });
 }
 
+exports.resume = async (req) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (req.files && req.files.length > 0) {
+                let modelResume = new ApplicantResumes();
+                modelResume.created_by = req.user.id;
+                modelResume.created_at = new Date();
+                modelResume.resume = req.files[0].buffer.toString('base64')
+                modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
+                modelResume.fileType = req.files[0].mimetype;
+                modelResume.modified_by = req.user.id;
+                modelResume.modified_at = new Date();
+                modelResume = await modelResume.save();
+                resolve({id: modelResume._id});
+            } else {
+                reject({status: 400, message: 'resume file is missing'});
+            }
+        } catch (error) {
+            console.log('resume save error : ', error);
+            reject({status: 500, message: 'server error'});
+        }
+    });
+}
+
 exports.getById = async (_id) => {
     return (await Applicants.findById(_id).populate('location')
-    .populate('preferredLocations')
-    .populate({path: 'skills', match: { is_deleted: { $ne: true} }})
-    .populate('referredBy'));
+        .populate('preferredLocations')
+        .populate({path: 'skills', match: {is_deleted: {$ne: true}}})
+        .populate('referredBy'));
 }
 
 exports.getjobsByApplicantId = async (_id) => {
-    return await JobApplicant.find({ applicant: _id, is_deleted: { $ne: true } }).populate({ path: 'job', select: 'title' }).populate({ path: 'pipeline', select: 'name' });
+    return await JobApplicant.find({applicant: _id, is_deleted: {$ne: true}}).populate({
+        path: 'job',
+        select: 'title'
+    }).populate({path: 'pipeline', select: 'name'});
 }
 
 exports.delete = async (_id) => {
@@ -330,7 +364,7 @@ exports.addComment = async (req) => {
         created_by: req.user.id,
         modified_at: Date.now(),
         modified_by: req.user.id
-    } 
+    }
     return await ApplicantComments.create(comment);
 }
 
@@ -339,22 +373,28 @@ exports.updateCommentsById = async (req) => {
         comment: req.body.comment,
         modified_at: Date.now(),
         modified_by: req.user.id
-    } 
+    }
     return await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
 }
 
 exports.getComments = async (req) => {
-    return await ApplicantComments.find({ applicant: req.params.id, is_deleted: false}).populate({ path: 'modified_by', select: 'email firstName lastName'});
+    return await ApplicantComments.find({applicant: req.params.id, is_deleted: false}).populate({
+        path: 'modified_by',
+        select: 'email firstName lastName'
+    });
 }
 
 exports.getCommentsByJob = async (applicantId, jobId) => {
-    return ApplicantComments.find({ job: jobId, is_deleted: false }).populate({ path: 'modified_by', select: 'email firstName lastName'});
+    return ApplicantComments.find({job: jobId, is_deleted: false}).populate({
+        path: 'modified_by',
+        select: 'email firstName lastName'
+    });
 }
 
-exports.getApplicantHistory = async (applicantId, ) => {
-    return (await Histories.find({ applicant: applicantId, is_deleted: false })
-    .populate({ path: 'job', select: 'title' })
-    .populate({ path: 'pipeline', select: 'name' }));
+exports.getApplicantHistory = async (applicantId,) => {
+    return (await Histories.find({applicant: applicantId, is_deleted: false})
+        .populate({path: 'job', select: 'title'})
+        .populate({path: 'pipeline', select: 'name'}));
 }
 
 getFirstName = (fullname) => {
@@ -398,11 +438,16 @@ getLastName = (fullname) => {
 function notifyHR(candidate) {
     return new Promise(async (resolve, reject) => {
         // Get all HR (role = 2)
-        var hrTeam = await models.User.findAll({ where: { is_deleted: false, role_id: 2 }, include: [{ model: models.UserDetail }] });
+        var hrTeam = await models.User.findAll({
+            where: {is_deleted: false, role_id: 2},
+            include: [{model: models.UserDetail}]
+        });
         if (hrTeam && hrTeam.length > 0) {
             // Get list of hr emails
             var hrEmails = "";
-            hrTeam.forEach(hr => { hrEmails = hrEmails + hr.email + "," });
+            hrTeam.forEach(hr => {
+                hrEmails = hrEmails + hr.email + ","
+            });
 
             var body = `
                 <p>Dear HR,</p>

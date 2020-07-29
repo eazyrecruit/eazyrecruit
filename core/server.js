@@ -44,7 +44,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 // Register models
 require('./models').setup();
-require('./models').initialize()
+require('./models').initialize();
 
 // setting base url for job portal page
 

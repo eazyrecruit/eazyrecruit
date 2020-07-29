@@ -1,4 +1,9 @@
 core/node_modules
+.idea
+core/.env
+core/jobs
+core/images
+core/downloadable_files
 web/node_modules
 engine/venv
 .adminpass
