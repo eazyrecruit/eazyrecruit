@@ -42,11 +42,11 @@ constructor(private http: HttpClient, private accountService: AccountService) { 
     // }
 
     reprocess(){
-        return this.http.get(this.constService.baseUrl + 'applicant/reparse/');
+        return this.http.get(this.constService.baseUrl + 'applicant/reparse');
     }
 
     resync(){
-        return this.http.get(this.constService.baseUrl + 'applicant/resync/');
+        return this.http.get(this.constService.baseUrl + 'applicant/resync');
     }
 
     getComments(id) {
@@ -60,7 +60,7 @@ constructor(private http: HttpClient, private accountService: AccountService) { 
     editComment(comment) {
         return this.http.put(this.constService.baseUrl + 'applicant/comment' , comment)
     }
-    
+
     removeApplicantFromJob(id: string) {
         return this.http.delete(`${this.constService.baseUrl}job/applicant/${id}`).subscribe();
     }
