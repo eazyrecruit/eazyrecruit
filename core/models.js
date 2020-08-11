@@ -6,6 +6,7 @@ var Applicant = require('./models/applicant');
 var Job = require('./models/job');
 var Role = require('./models/userRole');
 var locationService = require('./services/location.service');
+var esService = require('./services/es.service');
 const crypto = require('crypto');
 var fs = require('fs');
 
@@ -19,7 +20,7 @@ module.exports.setup = () => {
       reconnectInterval: 1000,
       useMongoClient: true
   });
-  // Get Mongoose to use the global promise library 
+  // Get Mongoose to use the global promise library
   mongoose.Promise = global.Promise;
   //Get the default connection
   var mongodb = mongoose.connection;
@@ -29,7 +30,7 @@ module.exports.setup = () => {
   mongodb.on('error', console.error.bind(console, 'EZ MongoDB connection error:'));
 }
 module.exports.initialize = async () => {
-  
+
   var dbRoles = await Role.find();
   if(dbRoles.length <= 0) {
     var roles = config.roles;
@@ -39,7 +40,7 @@ module.exports.initialize = async () => {
       role.is_deleted = false;
       role.created_at = new Date();
       role.modified_at = new Date();
-      await role.save(); 
+      await role.save();
     }
   }
 
@@ -62,7 +63,7 @@ module.exports.initialize = async () => {
       let states = fs.readFileSync('./states.json', 'utf8');
       if (states) {
         await locationService.location(JSON.parse(states), user.id);
-        console.log('locations added');  
+        console.log('locations added');
       } else {
         console.log('states.json file is missing!');
       }
@@ -109,6 +110,10 @@ module.exports.initialize = async () => {
     console.log('*** Test Applicant Creation ***');
     await applicant.save();
   }
+
+  esService.syncApplicants();
+  esService.syncJobs();
+  console.log( "Done")
 
   return "Done"
 }
