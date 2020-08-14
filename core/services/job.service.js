@@ -7,7 +7,7 @@ const uuidv4 = require('uuid/v4');
 var histroyService = require('../services/history.service');
 var utilService = require('../services/util.service');
 var esService = require('../services/es.service');
-
+var config = require('../config').config();
 exports.save = async (req) => {
     if (req.body) {
         var modelJob = await Jobs.findById(req.body._id);
@@ -64,11 +64,11 @@ exports.save = async (req) => {
         }
         modelJob.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
         if (req.body.is_published) {
-            modelJob.is_published = req.body.is_published == 'true' ? true : false;    
+            modelJob.is_published = req.body.is_published == 'true' ? true : false;
         } else {
             modelJob.is_published = false;
         }
-        
+
         // we are storing image with name and we are using guid as name
         if (req.files && req.files.length) {
             modelJob.metaImage = await utilService.readWriteFile(req.files[0], modelJob.guid);
@@ -98,24 +98,41 @@ exports.save = async (req) => {
     }
 }
 
+exports.archive = async (data) => {
+    if (data.id) {
+        var modelJob = await Jobs.findById(data.id);
+        if (modelJob) {
+            modelJob["active"] = (data.status === "true" || data.status === true);
+            modelJob.modified_by = data.user.id;
+            modelJob.modified_at = new Date();
+            return  await modelJob.save();
+
+        } else {
+            return new Error('job data is missing');
+        }
+    } else {
+        return new Error('job data is missing');
+    }
+
+}
 exports.getPublishedJobs = async (query, limit, offset) => {
     let count = 0;
     let jobs;
     if (query.hasOwnProperty('title')) {
         count = await Jobs.find(query).count();
         jobs = await Jobs.find(query).populate("locations").populate("skills")
-        .populate("tags").populate("categories").sort({ created_at: 'desc' });
-        
+            .populate("tags").populate("categories").sort({created_at: 'desc'});
+
     } else {
-        count = await Jobs.find(query).count()
+        count = await Jobs.find(query).count();
         jobs = await Jobs.find(query).populate("locations").populate("skills")
-        .populate("tags").populate("categories").sort({ created_at: 'desc' }).limit(limit).skip(offset);
+            .populate("tags").populate("categories").sort({created_at: 'desc'}).limit(limit).skip(offset);
     }
-    return { count, jobs };
+    return {count, jobs};
 };
 
 exports.getByGuid = async (guid) => {
-    return await Jobs.findOne({ 'guid': guid }).populate("locations").populate("skills")
+    return await Jobs.findOne({'guid': guid}).populate("locations").populate("skills")
         .populate("tags").populate("categories");
 };
 
@@ -126,20 +143,22 @@ exports.getById = async (_id) => {
 
 exports.getWithApplicantsAndPipeline = async (req) => {
     return await Jobs.findById(req.params.id)
-        .populate({path: 'pipelines', match: { is_deleted: { $ne: true} },
+        .populate({
+            path: 'pipelines', match: {is_deleted: {$ne: true}},
             populate: {
-              path: 'pipelines',
-              model: 'JobPipelines'
-            } 
+                path: 'pipelines',
+                model: 'JobPipelines'
+            }
         })
-        .populate({path: 'applicants', match: { is_deleted: { $ne: true} },
+        .populate({
+            path: 'applicants', match: {is_deleted: {$ne: true}},
             populate: {
-              path: 'applicant',
-              model: 'Applicants', 
-              match: { is_deleted: { $ne: true} },
+                path: 'applicant',
+                model: 'Applicants',
+                match: {is_deleted: {$ne: true}},
                 populate: {
-                  path: 'skills',
-                  model: 'Skills'
+                    path: 'skills',
+                    model: 'Skills'
                 }
             }
         });
@@ -147,25 +166,25 @@ exports.getWithApplicantsAndPipeline = async (req) => {
 
 exports.searchWithApplicantsAndPipeline = async (req) => {
     return await Jobs.findById(req.query.jobId).populate("pipelines")
-    .populate({
-        path: 'applicants', 
-        match: { 
-            is_deleted: { $ne: true}
-        },
-        populate: {
-            path: 'applicant',
-            model: 'Applicants',
-            match: { 
-                is_deleted: { $ne: true},
-                $or: [
-                    {firstName: new RegExp('^.*' + req.query.search + '.*$', 'i')},
-                    {middleName: new RegExp('^.*' + req.query.search + '.*$', 'i')},
-                    {lastName: new RegExp('^.*' + req.query.search + '.*$', 'i')},
-                    {email: new RegExp('^.*' + req.query.search + '.*$', 'i')},
-                ] 
+        .populate({
+            path: 'applicants',
+            match: {
+                is_deleted: {$ne: true}
+            },
+            populate: {
+                path: 'applicant',
+                model: 'Applicants',
+                match: {
+                    is_deleted: {$ne: true},
+                    $or: [
+                        {firstName: new RegExp('^.*' + req.query.search + '.*$', 'i')},
+                        {middleName: new RegExp('^.*' + req.query.search + '.*$', 'i')},
+                        {lastName: new RegExp('^.*' + req.query.search + '.*$', 'i')},
+                        {email: new RegExp('^.*' + req.query.search + '.*$', 'i')},
+                    ]
+                }
             }
-        }
-    });
+        });
 };
 
 exports.delete = async (_id) => {
@@ -193,12 +212,12 @@ let addPipeline = async (req) => {
                     }
                     modelJob.pipelines.push(jobPipeline[i]._id);
                 }
-            } catch(exception) {
+            } catch (exception) {
                 console.log(exception);
             }
-            
+
             // Link with Job
-            
+
             // if (modelJob.pipelines == null) {
             //     modelJob.pipelines = [];
             // }
@@ -229,7 +248,11 @@ exports.addPipeline = addPipeline;
 exports.addApplicant = async (req) => {
     var modelJob = await Jobs.findById(req.body.jobId);
     if (modelJob) {
-        let applicant = await JobApplicants.findOne({ applicant: req.body.applicantId, job: req.body.jobId, is_deleted: { $ne: true } });
+        let applicant = await JobApplicants.findOne({
+            applicant: req.body.applicantId,
+            job: req.body.jobId,
+            is_deleted: {$ne: true}
+        });
         if (!applicant) {
             // Create Job Applicant
             let jobApplicant = new JobApplicants();
@@ -243,7 +266,7 @@ exports.addApplicant = async (req) => {
             jobApplicant.is_deleted = false;
             jobApplicant = await jobApplicant.save();
             // Link with Job
-            if(modelJob.applicants == null) {
+            if (modelJob.applicants == null) {
                 modelJob.applicants = [];
             }
             modelJob.applicants.push(jobApplicant._id);
@@ -251,8 +274,8 @@ exports.addApplicant = async (req) => {
                 modelJob.metaImage = null;
             }
             modelJob = await modelJob.save();
-            await histroyService.create({ 
-                applicant: req.body.applicantId, 
+            await histroyService.create({
+                applicant: req.body.applicantId,
                 pipeline: req.body.pipelineId,
                 job: req.body.jobId,
                 createdBy: req.user.id,
@@ -260,23 +283,23 @@ exports.addApplicant = async (req) => {
             });
             return jobApplicant;
         } else {
-            return { status: 403, message: "already exist" };
+            return {status: 403, message: "already exist"};
         }
     }
 }
 
 exports.editApplicant = async (req) => {
 
-    let applicant = await JobApplicants.findOne({ _id: req.body.id, applicant: req.body.applicant, is_deleted: false}); 
+    let applicant = await JobApplicants.findOne({_id: req.body.id, applicant: req.body.applicant, is_deleted: false});
     if (applicant) {
         applicant.pipeline = req.body.pipeline,
-        applicant.modefied_by = req.user.id,
-        applicant.modefied_at = Date.now(),
-        applicant.is_deleted = false
+            applicant.modefied_by = req.user.id,
+            applicant.modefied_at = Date.now(),
+            applicant.is_deleted = false
         await applicant.save();
 
-        await histroyService.create({ 
-            applicant: req.body.applicant, 
+        await histroyService.create({
+            applicant: req.body.applicant,
             pipeline: req.body.pipeline,
             job: req.body.job,
             createdBy: req.user.id,
@@ -284,7 +307,7 @@ exports.editApplicant = async (req) => {
         });
         return applicant;
     } else {
-        return { status: 400, message: "invalid id" };    
+        return {status: 400, message: "invalid id"};
     }
 }
 
@@ -292,19 +315,25 @@ exports.removeApplicant = async (req) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (req.params.id) {
-                let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
+                let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, {is_deleted: true}, {new: true});
                 if (jobApplicant) {
-                    let job = await Jobs.findByIdAndUpdate(jobApplicant.job, { $pull: { applicants: req.params.id }}, { new: true });
+                    let job = await Jobs.findByIdAndUpdate(jobApplicant.job, {$pull: {applicants: req.params.id}}, {new: true});
                     let elJob = await esService.updateJob(job.id, job);
-                    let interview = await Interview.findOne({ jobId: jobApplicant.job, jobApplicant: jobApplicant.applicant });
+                    let interview = await Interview.findOne({
+                        jobId: jobApplicant.job,
+                        jobApplicant: jobApplicant.applicant
+                    });
                     if (interview) {
                         try {
-                            interview.is_deleted =  true;
+                            interview.is_deleted = true;
                             interview.modified_at = new Date();
                             interview.modified_by = req.user.id;
                             interview.save((err, data) => {
                                 if (err) {
-                                    reject({ status: 207, message: "applicant removed successfully, interview remove error" });
+                                    reject({
+                                        status: 207,
+                                        message: "applicant removed successfully, interview remove error"
+                                    });
                                 } else {
                                     console.log(data);
                                     resolve(jobApplicant);
@@ -312,20 +341,20 @@ exports.removeApplicant = async (req) => {
                             });
                         } catch (error) {
                             console.log('remove interview : ', error);
-                            reject({ status: 207, message: "applicant removed successfully, interview remove error" });
+                            reject({status: 207, message: "applicant removed successfully, interview remove error"});
                         }
                     } else {
                         resolve(jobApplicant);
                     }
                 } else {
-                    reject({ status: 400, message: "invalid id" });    
+                    reject({status: 400, message: "invalid id"});
                 }
             } else {
-                reject({ status: 400, message: "id required" });
-            }            
+                reject({status: 400, message: "id required"});
+            }
         } catch (error) {
             console.log('remove applicanr error : ', error);
-            reject({ status: 500, message: "internal server error" });
+            reject({status: 500, message: "internal server error"});
         }
     });
 }

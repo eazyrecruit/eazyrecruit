@@ -7,22 +7,22 @@ var locationService = require('../services/location.service');
 var responseService = require('../services/response.service');
 var multer = require('multer');
 
-router.get("/applicants/pipelines/:id", async(req, res) => {
+router.get("/applicants/pipelines/:id", async (req, res) => {
     try {
         var results = await jobService.getWithApplicantsAndPipeline(req);
         responseService.response(req, null, 'Job Applicants and Pipelines GET', results, res);
     } catch (err) {
         responseService.response(req, err, 'Jobs Applicants and Pipelines GET', null, res);
-    }    
+    }
 });
 
-router.get("/applicants/search", async(req, res) => {
+router.get("/applicants/search", async (req, res) => {
     try {
         var results = await jobService.searchWithApplicantsAndPipeline(req);
         responseService.response(req, null, 'Job Applicants and Pipelines GET', results, res);
     } catch (err) {
         responseService.response(req, err, 'Jobs Applicants and Pipelines GET', null, res);
-    }    
+    }
 });
 
 router.get("/:id", async (req, res) => {
@@ -33,21 +33,29 @@ router.get("/:id", async (req, res) => {
         responseService.response(req, err, 'Jobs GET', null, res);
     }
 });
+router.put("/archive/:jobId", async (req, res) => {
+    try {
+        var job = await jobService.archive({status: req.body.status, id: req.params.jobId, user: req.user});
+        responseService.response(req, null, 'Jobs Archive', job, res);
+    } catch (err) {
+        responseService.response(req, err, 'Jobs Archive', null, res);
+    }
+});
 
 router.get("/", async (req, res) => {
     try {
         var results = await esSearch.searchJobs(req);
-        if(results.hits && results.hits.total.value > 0){
+        if (results.hits && results.hits.total.value > 0) {
             var jobs = [];
-            for(var iHit = 0; iHit < results.hits.hits.length; iHit ++) {
+            for (var iHit = 0; iHit < results.hits.hits.length; iHit++) {
                 results.hits.hits[iHit]._source._id = results.hits.hits[iHit]._id;
                 results.hits.hits[iHit]._source.skills = await skillService.getAllByIds(results.hits.hits[iHit]._source.skills);
                 results.hits.hits[iHit]._source.locations = await locationService.getAllByIds(results.hits.hits[iHit]._source.locations);
                 jobs.push(results.hits.hits[iHit]._source);
             }
-            responseService.successResponse({ count: results.hits.total.value, jobs: jobs }, 'Jobs GET', res);
+            responseService.successResponse({count: results.hits.total.value, jobs: jobs}, 'Jobs GET', res);
         } else {
-            responseService.successResponse({ count: results.hits.total.value, jobs: [] }, 'Jobs GET', res);
+            responseService.successResponse({count: results.hits.total.value, jobs: []}, 'Jobs GET', res);
         }
     } catch (err) {
         let error = {
@@ -60,7 +68,7 @@ router.get("/", async (req, res) => {
 });
 
 // create new records in database
-var metaImage = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var metaImage = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/", metaImage.any(), async (req, res) => {
     try {
         var job = await jobService.save(req);
@@ -114,7 +122,7 @@ router.delete("/:id", (req, res) => {
 router.delete("/applicant/:id", async (req, res) => {
     try {
         let result = await jobService.removeApplicant(req);
-        responseService.successResponse(result, 'remove applicant', res);   
+        responseService.successResponse(result, 'remove applicant', res);
     } catch (error) {
         responseService.errorResponse(error, 'remove applicnat', res);
     }
