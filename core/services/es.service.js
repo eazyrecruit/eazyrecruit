@@ -88,16 +88,25 @@ exports.searchApplicants = async (req) => {
 exports.searchJobs = async (req) => {
     return new Promise(function (resolve, reject) {
         let offset = 0, limit = 12;
+        let active = !(req.query.active === "false" || req.query.active === false);
         if (req.query.limit) limit = parseInt(req.query.limit);
         if (req.query.offset) offset = parseInt(req.query.offset);
+        var query = {};
         if (req.query.searchText) {
-            var query = {
-                "query_string": {
-                    "query": "*" + req.query.searchText + "*"
+            query = {
+                "bool": {
+                    "must": [
+                        {"match_phrase_prefix": {"title": req.query.searchText}}, {"match_phrase": {"active": active}}]
                 }
             }
         } else {
-            var query = {"match_all": {}};
+            query = {
+                "bool": {
+                    "must": [
+                        {"match_all": {}},
+                        {"match_phrase": {"active": active}}]
+                }
+            }
         }
         if (query) {
             Jobs.search(query, {
