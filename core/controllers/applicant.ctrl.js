@@ -33,6 +33,15 @@ router.get("/search", async (req, res) => {
         responseService.response(req, err, logTypes.debug, null, res);
     }
 });
+router.get("/resync", async (req, res) => {
+    try {
+        var syncApplicants = await esService.syncApplicants();
+        responseService.response(req, null, logTypes.debug, syncApplicants, res);
+
+    } catch (err) {
+        responseService.response(req, err, logTypes.debug, null, res);
+    }
+});
 
 router.get("/:id", async (req, res) => {
     try {

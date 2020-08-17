@@ -37,14 +37,14 @@ export class CreateApplicantComponent implements OnInit {
   currentResume: any;
 
   constructor(
-    private bsModelRef: BsModalRef,
-    private accountService: AccountService,
-    private fbForm: FormBuilder,
-    private validationService: ValidationService,
-    private skillService: SkillsService,
-    private applicantService: ApplicantService,
-    private dataShared: DataShareService,
-    private locationService: LocationService) {
+      private bsModelRef: BsModalRef,
+      private accountService: AccountService,
+      private fbForm: FormBuilder,
+      private validationService: ValidationService,
+      private skillService: SkillsService,
+      private applicantService: ApplicantService,
+      private dataShared: DataShareService,
+      private locationService: LocationService) {
     this.populate(null);
   }
 
@@ -72,7 +72,7 @@ export class CreateApplicantComponent implements OnInit {
         for (let skill = 0; skill < applicant.skills.length; skill++) {
           applicant.skills[skill].value = applicant.skills[skill]._id;
           applicant.skills[skill].display = applicant.skills[skill].name;
-        }  
+        }
       }
       if (applicant.preferredLocations && applicant.preferredLocations.length) {
         for (let prefLocation = 0; prefLocation < applicant.preferredLocations.length; prefLocation++) {
@@ -111,7 +111,7 @@ export class CreateApplicantComponent implements OnInit {
       this.applicantForm = this.fbForm.group({
         resume: [null],
         dob: [null],
-        source: [null],
+        source: ['upload'],
         firstName: [null, [<any>Validators.required], this.validationService.nameValid],
         middleName: [null, [], this.validationService.nameValid],
         lastName: [null, [], this.validationService.nameValid],
@@ -144,10 +144,10 @@ export class CreateApplicantComponent implements OnInit {
     const reader = new FileReader();
     if (event && event.length) {
       if (event[0].type.includes('pdf') || event[0].type.includes('msword') ||
-        event[0].type.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) {
+          event[0].type.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) {
         reader.onload = () => {
           this.resume = event[0];
-          // this.applicantForm.get(['resume']).setValue(event[0]);          
+          // this.applicantForm.get(['resume']).setValue(event[0]);
         }
         reader.readAsDataURL(event[0]);
       } else {
@@ -188,18 +188,18 @@ export class CreateApplicantComponent implements OnInit {
       if (applicantForm.currentLocation) {
         for (let index = 0; index < applicantForm.currentLocation.length; index++) {
           if (applicantForm.currentLocation[index]._id) {
-            current.push({ 
-              id: applicantForm.currentLocation[index]._id, 
-              country: applicantForm.currentLocation[index].country, 
-              state: applicantForm.currentLocation[index].state, 
-              city: applicantForm.currentLocation[index].city, 
+            current.push({
+              id: applicantForm.currentLocation[index]._id,
+              country: applicantForm.currentLocation[index].country,
+              state: applicantForm.currentLocation[index].state,
+              city: applicantForm.currentLocation[index].city,
               zip: applicantForm.currentLocation[index].zip });
           } else {
-            current.push({ 
-              id: applicantForm.currentLocation[index]._id, 
-              country: applicantForm.currentLocation[index].country, 
-              state: applicantForm.currentLocation[index].state, 
-              city: applicantForm.currentLocation[index].city, 
+            current.push({
+              id: applicantForm.currentLocation[index]._id,
+              country: applicantForm.currentLocation[index].country,
+              state: applicantForm.currentLocation[index].state,
+              city: applicantForm.currentLocation[index].city,
               zip: applicantForm.currentLocation[index].zip });
           }
         }
@@ -208,11 +208,11 @@ export class CreateApplicantComponent implements OnInit {
 
       if (applicantForm.preferredLocation) {
         for (let index = 0; index < applicantForm.preferredLocation.length; index++) {
-          preferred.push({ 
-            id: applicantForm.preferredLocation[index]._id, 
-            country: applicantForm.preferredLocation[index].country, 
-            state: applicantForm.preferredLocation[index].state, 
-            city: applicantForm.preferredLocation[index].city, 
+          preferred.push({
+            id: applicantForm.preferredLocation[index]._id,
+            country: applicantForm.preferredLocation[index].country,
+            state: applicantForm.preferredLocation[index].state,
+            city: applicantForm.preferredLocation[index].city,
             zip: applicantForm.preferredLocation[index].zip });
         }
         formData.set('preferredLocation', JSON.stringify(preferred));

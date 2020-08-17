@@ -1,4 +1,6 @@
 var Applicants = require('../models/applicant');
+var User = require('../models/user');
+var Role = require('../models/userRole');
 var ApplicantComments = require('../models/applicantComment');
 var ApplicantResumes = require('../models/applicantResume');
 var ApplicantEducation = require('../models/applicantEducation');
@@ -28,7 +30,7 @@ exports.save = async (req, enableEmail) => {
                 if (req.body._id) {
                     modelApplicant = await Applicants.findById(req.body._id);
                 } else if (email) {
-                    modelApplicant = await Applicants.findOne({ email: email.trim() });
+                    modelApplicant = await Applicants.findOne({email: email.trim()});
                 }
                 // Create applicant if unable to find
                 if (modelApplicant == null) {
@@ -38,21 +40,20 @@ exports.save = async (req, enableEmail) => {
                 }
                 modelApplicant.email = email.trim();
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
-                modelApplicant.source = req.body.source ? req.body.source : '';
-                modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : '';
-                modelApplicant.currentCtc = req.body.currentCtc || '';
-                modelApplicant.expectedCtc = req.body.expectedCtc || '';
-                modelApplicant.noticePeriod = req.body.noticePeriod || '';
-                modelApplicant.noticePeriodNegotiable = req.body.noticePeriodNegotiable || '';
-                modelApplicant.totalExperience = req.body.experience || '';
-                modelApplicant.availability = req.body.availability || '';
+                modelApplicant.source = req.body.source || modelApplicant.source || "";
+                modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : modelApplicant.dob || "";
+                modelApplicant.currentCtc = req.body.currentCtc || modelApplicant.currentCtc || '';
+                modelApplicant.expectedCtc = req.body.expectedCtc || modelApplicant.expectedCtc || '';
+                modelApplicant.noticePeriod = req.body.noticePeriod || modelApplicant.noticePeriod || '';
+                modelApplicant.noticePeriodNegotiable = req.body.noticePeriodNegotiable || modelApplicant.noticePeriodNegotiable || '';
+                modelApplicant.totalExperience = req.body.experience || modelApplicant.totalExperience || '';
+                modelApplicant.availability = req.body.availability || modelApplicant.availability || '';
                 modelApplicant.referredBy = req.body.referredBy || null;
-                if(req.body.firstName){
+                if (req.body.firstName) {
                     modelApplicant.firstName = req.body.firstName ? req.body.firstName : '';
                     modelApplicant.middleName = req.body.middleName ? req.body.middleName : '';
                     modelApplicant.lastName = req.body.lastName ? req.body.lastName : '';
-                }
-                else if (req.body.name) {
+                } else if (req.body.name) {
                     modelApplicant.firstName = modelApplicant.firstName || getFirstName(req.body.name);
                     modelApplicant.middleName = modelApplicant.middleName || getMiddleName(req.body.name);
                     modelApplicant.lastName = modelApplicant.lastName || getLastName(req.body.name);
@@ -60,8 +61,11 @@ exports.save = async (req, enableEmail) => {
                     // If nothing found
                     modelApplicant.firstName = email;
                 }
-
-                // Create/Update resume 
+                if (req.body.resume && req.body.resume.hasOwnProperty("id")) {
+                    modelApplicant.resume = modelApplicant.resume || req.body.resume.id;
+                    modelApplicant.source = modelApplicant.source || req.body.resume.source;
+                }
+                // Create/Update resume
                 if (req.body.resumeId && req.body.resumeId.length > 0) {
                     modelApplicant.resume = req.body.resumeId;
                 } else {
@@ -96,7 +100,7 @@ exports.save = async (req, enableEmail) => {
                     modelApplicant.skills = skillsResult;
                 }
 
-                // Create/Update Address 
+                // Create/Update Address
                 var modelCurrentLocation = null;
                 if (req.body.currentLocation) {
                     var current = JSON.parse(req.body.currentLocation);
@@ -233,12 +237,12 @@ exports.save = async (req, enableEmail) => {
                 }
 
                 // Update HR and candidate
-                if (enableEmail && req.params.source && req.params.source == 'email') {
+                if (enableEmail && modelApplicant.source && modelApplicant.source === 'email') {
                     var candidate = {
                         id: modelApplicant._id, name: req.body.name, email: email,
-                        phone: req.body.phone, source: req.params.source
+                        phone: req.body.phone, source: modelApplicant.source
                     };
-                    await notifyHR(candidate);
+                    notifyHR(candidate);
                     //await notifyCandidate(candidate);
                 }
 
@@ -312,7 +316,7 @@ exports.resume = async (req) => {
                 let modelResume = new ApplicantResumes();
                 modelResume.created_by = req.user.id;
                 modelResume.created_at = new Date();
-                modelResume.resume = req.files[0].buffer.toString('base64')
+                modelResume.resume = req.files[0].buffer.toString('base64');
                 modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
                 modelResume.fileType = req.files[0].mimetype;
                 modelResume.modified_by = req.user.id;
@@ -437,19 +441,19 @@ getLastName = (fullname) => {
 
 function notifyHR(candidate) {
     return new Promise(async (resolve, reject) => {
-        // Get all HR (role = 2)
-        var hrTeam = await models.User.findAll({
-            where: {is_deleted: false, role_id: 2},
-            include: [{model: models.UserDetail}]
-        });
-        if (hrTeam && hrTeam.length > 0) {
-            // Get list of hr emails
-            var hrEmails = "";
-            hrTeam.forEach(hr => {
-                hrEmails = hrEmails + hr.email + ","
-            });
+        // Get all HR (role = 2
 
-            var body = `
+        let hrRole = await Role.findOne({name: "hr"});
+        if (hrRole) {
+            var hrTeam = await User.find({is_deleted: false, roles: {$elemMatch: {$eq: hrRole}}});
+            if (hrTeam && hrTeam.length > 0) {
+                // Get list of hr emails
+                var hrEmails = "";
+                hrTeam.forEach(hr => {
+                    hrEmails = hrEmails + hr.email + ","
+                });
+
+                var body = `
                 <p>Dear HR,</p>
                 <p>A new profile has been received </p>
                 <p> Name: ${candidate.name}<br>
@@ -459,16 +463,19 @@ function notifyHR(candidate) {
                 <p>Please click on below link to view details<p>
                 <p>https://web.easyrecruit.in/jobs/applicant/${candidate.id}</p>
             `
-            var email = {
-                toEmail: hrEmails, // list of receivers
-                subject: "Resume received", // Subject line
-                body: body
+                var email = {
+                    toEmail: hrEmails, // list of receivers
+                    subject: "Resume received", // Subject line
+                    body: body
+                }
+                emailService.sendEmail(email, (err, data) => {
+                    if (err) reject(err);
+                    else resolve(data);
+                });
             }
-            emailService.sendEmail(email, (err, data) => {
-                if (err) reject(err);
-                else resolve(data);
-            });
         }
+
+
     });
 }
 
@@ -483,7 +490,7 @@ function notifyCandidate(candidate) {
             toEmail: candidate.email, // list of receivers
             subject: "Resume received", // Subject line
             body: body
-        }
+        };
         emailService.sendEmail(email, (err, data) => {
             if (err) reject(err);
             else resolve(data);

@@ -15,6 +15,7 @@ import { JobComponent } from './job/job.component';
 })
 export class JobsComponent implements OnInit {
     url: any;
+    isArchive = false;
     jobs = [];
     limit = 10;
     offset = 0;
@@ -89,9 +90,28 @@ export class JobsComponent implements OnInit {
         this.createJob(jobId, index);
     }
 
+    setArchive(falg) {
+        this.isArchive = falg;
+        this.jobs = [];
+        this.totalItems = 0;
+        this.searchJob();
+    }
+
+
+    archiveJob(jobId, flag, index) {
+        this.jobService.archiveActiveJob(jobId, flag).subscribe(result => {
+            if (result['success'] && result['success']['data']) {
+                this.jobs.splice(index, 1);
+                this.totalItems = this.totalItems - 1;
+            }
+        }, (err) => {
+            this.jobs = [];
+        });
+    }
+
     searchJob(event: any = '') {
         this.filter.searchText = event.target ? event.target.value : event;
-        this.jobService.getJob(this.filter).subscribe(result => {
+        this.jobService.getJob(this.filter, !this.isArchive).subscribe(result => {
             if (result['success'] && result['success']['data']) {
                 this.jobs = result['success']['data']['jobs'];
                 // this.dataShared.notificationChangeMessage({ name: 'success', type: 'Success', message: 'No active job found' })
@@ -103,9 +123,9 @@ export class JobsComponent implements OnInit {
     }
 
     createJob(jobId, index) {
-        this.modalRef = this.modalService.show(JobComponent, { 
-            class: 'modal-lg', 
-            initialState: { jobId: jobId } 
+        this.modalRef = this.modalService.show(JobComponent, {
+            class: 'modal-lg',
+            initialState: { jobId: jobId }
         });
         this.modalRef.content.closePopup.subscribe(result => {
             if (result) {

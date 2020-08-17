@@ -25,7 +25,7 @@
             <% for(var jobIndex=0; jobIndex < jobs.length; jobIndex++) {%>
                 <div class="col-md-4" style="margin-bottom:10px;">
                     <div class="card">
-                        <img src="/<%= jobs[jobIndex].metaImage ? jobs[jobIndex].metaImage : 'images/default-job.jpg' %>" width="100%"></img>
+                        <img src="/<%= jobs[jobIndex].metaImage ? jobs[jobIndex].metaImage : company && company.logo ? company.logo : 'images/defaultlogo.png' %>" width="100%"></img>
                         <div class="card-body">
                             <h5 class="card-title"><%= jobs[jobIndex].title ? jobs[jobIndex].title : 'Title' %></h5>
                             <% if (locals.jobs) {
@@ -34,7 +34,7 @@
                                     let jobLocation = jobs[jobIndex].locations;
                                     for(let i = 0; i < jobLocation.length; i++) {
                                         location = jobLocation[i].city + ', ' + jobLocation[i].state;
-                                    } 
+                                    }
                                 }
                                 let skill = '';
                                 if (jobs[jobIndex].skills && jobs[jobIndex].skills.length) {
@@ -50,7 +50,7 @@
                                     description.push(location);
                                 }
                                 if (jobs[jobIndex].minExperience && jobs[jobIndex].minExperience.length) {
-                                    description.push(jobs[jobIndex].minExperience); 
+                                    description.push(jobs[jobIndex].minExperience);
                                 }
                                 if (skill.length) {
                                     description.push(skill);

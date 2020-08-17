@@ -14,7 +14,7 @@
         if (job.locations && job.locations.length) {
             for(let i = 0; i < job.locations.length; i++) {
                 location = job.locations[i].city + ', ' + job.locations[i].state;
-            } 
+            }
         }
         let skill = '';
         if (job.skills && job.skills.length) {
@@ -30,12 +30,12 @@
     <link rel="icon" href="/<%= company && company.favIcon ? company.favIcon : 'images/short-logo.png' %>"  sizes="16x16">
     <meta property="og:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %><%= ' - ' + company.name %> " />
     <meta property="og:description" content=" <%= description %> " />
-    <meta property="og:image" content="<%= locals.baseURL %><%= locals.job && job.metaImage ? '/'+job.metaImage : '/images/default-job.jpg' %>"/>
+    <meta property="og:image" content="<%= locals.baseURL %><%= locals.job && job.metaImage ? '/'+job.metaImage : company && company.logo ? '/'+ company.logo : '/images/defaultlogo.png' %>"/>
     <meta property="og:image:alt" content="<%= locals.job ? job.metaImageAltText : '' %>" />
     <meta property="twitter:card" content="summary_large_image"/>
     <meta property="twitter:title" content=" <%= locals.job ? job.metaTitle : 'Job Opening' %><%= ' - ' + company.name %> " />
     <meta property="twitter:description" content=" <%= description %> " />
-    <meta property="twitter:image" content="<%= locals.baseURL %><%= locals.job && job.metaImage ? '/'+job.metaImage : '/images/default-job.jpg' %>"/>    
+    <meta property="twitter:image" content="<%= locals.baseURL %><%= locals.job && job.metaImage ? '/'+job.metaImage : company && company.logo ? '/'+ company.logo : '/images/defaultlogo.png'%>"/>
     <meta property="twitter:image:alt" content="<%= locals.job ? job.metaImageAltText : '' %>" />
 </head>
 <body>
@@ -57,7 +57,7 @@
     </footer>
     <script src="/js/jquery-3.5.1.js"></script>
     <script src="/js/jssocials.js"></script>
-    <script>   
+    <script>
             $("#shareIcons").jsSocials({
             shares: ["facebook", "linkedin", "twitter"],
             url: "<%= locals.baseURL + locals.path %>",
