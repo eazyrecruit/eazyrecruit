@@ -25,9 +25,13 @@
             <% for(var jobIndex=0; jobIndex < jobs.length; jobIndex++) {%>
                 <div class="col-md-4" style="margin-bottom:10px;">
                     <div class="card">
-                        <img src="/<%= jobs[jobIndex].metaImage ? jobs[jobIndex].metaImage : company && company.logo ? company.logo : 'images/defaultlogo.png' %>" width="100%"></img>
-                        <div class="card-body">
-                            <h5 class="card-title"><%= jobs[jobIndex].title ? jobs[jobIndex].title : 'Title' %></h5>
+                        <div class="job-img">
+                            <img src="/<%= jobs[jobIndex].metaImage ? jobs[jobIndex].metaImage : company && company.logo ? company.logo : 'images/defaultlogo.png' %>"  class="job-logo"></img>
+                        </div>
+                        <div class="card-header-role">
+                            <h5 class="card-title mb-0"><%= jobs[jobIndex].title ? jobs[jobIndex].title : 'Title' %></h5>
+                        </div>
+                        <div class="card-body pt-0">
                             <% if (locals.jobs) {
                                 let location = '';
                                 if (jobs[jobIndex].locations && jobs[jobIndex].locations.length) {
@@ -56,8 +60,8 @@
                                     description.push(skill);
                                 }
                             } %>
-                            <div class="row custom-mg">
-                                <p class="truncate"><%= description.length ? description.join(' | ') : 'Description' %></p>
+                            <div class="">
+                                <p class="card-truncate"><%= description.length ? description.join(' | ') : 'Description' %></p>
                             </div>
                             <div class="card-text">
                                 <a href="<%= '/jobs/'+jobs[jobIndex].guid %> " class="btn btn-primary">More</a>
