@@ -12,7 +12,7 @@
         </div>
         <div class="row">
             <div class="col-sm-3">
-                <div class="card" style="width: 18rem;">
+                <div class="card mb-10">
                     <img src="/<%= locals.job && job.metaImage ? job.metaImage : company && company.logo ? company.logo : 'images/defaultlogo.png' %>" class="card-img-top" width="100%"></img>
                     <div class="card-body">
                         <h5 class="card-title"><%= locals.job ? job.title : '' %></h5>
@@ -47,7 +47,7 @@
                 </div>
             </div>
             <div class="col-sm-9">
-                <div class="card ml-5">
+                <div class="card mb-10">
                     <div class="card-header"><i class="fa fa-address-book "></i> <%= locals.job ? locals.job.title : '' %></div>
                     <div class="card-body">
                         <table class="table bg-dark-black mt-30 border-light">
