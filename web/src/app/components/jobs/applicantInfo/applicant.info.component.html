@@ -20,7 +20,7 @@
             <div class="row padding-20px-tb">
               <div class="col-sm-4">
                 <div class="profile_image-wrapper">
-                  <img class="profile-user-img img-responsive img-circle" src="/jobs/admin/assets/img/amir.png"
+                  <img class="profile-user-img img-responsive img-circle" src="/admin/assets/img/amir.png"
                     alt="User profile picture">
                 </div>
               </div>
@@ -52,7 +52,7 @@
 
             <!-- <span [innerHtml]="applicant?.job_post.description"></span> -->
             <ul class="tab-content p-0">
-              
+
               <div id="basic" class="tab-pane fade active in">
                 <strong>Resume</strong>
                 <applicant-resume *ngIf="applicant" [(applicant)]="applicant"></applicant-resume>
@@ -152,8 +152,8 @@
                 <li *ngFor="let education of applicant?.educations;">
                   <p>Degree : <span *ngIf="education.degree">{{education.degree}}</span><span *ngIf="!education">Not Available</span></p>
                   <p>Institute : <span *ngIf="education.institute">{{education.institute}}</span><span *ngIf="!education">Not Available</span></p>
-                  <p>Duration : 
-                    <span *ngIf="education.start">{{education.start}}</span><span *ngIf="!education">Not Available</span> - 
+                  <p>Duration :
+                    <span *ngIf="education.start">{{education.start}}</span><span *ngIf="!education">Not Available</span> -
                     <span *ngIf="education.end">{{education.end}}</span><span *ngIf="!education">Not Available</span>
                   </p>
                 </li>
@@ -167,7 +167,7 @@
                   <li>Current CTC   : {{applicant?.currentCtc}}</li>
                   <li>Expected CTC  : {{applicant?.expectedCtc}}</li>
                   <li>Notice Period : {{applicant?.noticePeriod}}</li>
-                </ul>  
+                </ul>
               </div>
 
               <div id="rejectApplicant" class="tab-pane fade in">
@@ -203,7 +203,7 @@
                     </p>
                     <p>{{history.created_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</p>
                     <!-- <div class="comment" *ngFor="let rejectionComment of history.rejectionHistory">
-                      <span>{{rejectionComment.comment}}</span> 
+                      <span>{{rejectionComment.comment}}</span>
                       <div class="row">
                         <div class="col-md-6 coment-info-text">{{rejectionComment.user_detail.first_name}}
                           {{rejectionComment.user_detail.last_name}}</div>

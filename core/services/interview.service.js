@@ -230,7 +230,7 @@ async function inviteInterviewer(req, title) {
         <p>Dear ${req.body.interview.interviewer.name},</p>
         <p>${req.body.interview.organizer.name} invited you to interview ${req.body.interview.candidate.name} for the profile ${req.body.interview.job.name}.
         Please click on below link to access more details about the interview.</p>
-        <p><a href="${config.website}/jobs/admin/interview/${req.body.interview.interview._id.toString()}">${config.website}/jobs/admin/interview/${req.body.interview.interview.id}</p>
+        <p><a href="${config.website}/admin/interview/${req.body.interview.interview._id.toString()}">${config.website}/admin/interview/${req.body.interview.interview.id}</p>
     `, req.body.interview.interviewer.email, req.body.interview.organizer.email);
 }
 
@@ -243,7 +243,7 @@ async function inviteOrganizer(req, title) {
         Interviewer Name: ${req.body.interview.interviewer.name}<br>
         Profile: ${req.body.interview.job.name}</p>
         <p>Please click on below link to access more details about the interview.<p>
-        <p>${config.website}/jobs/admin/interview/${req.body.interview.interview._id.toString()}</p>
+        <p>${config.website}/admin/interview/${req.body.interview.interview._id.toString()}</p>
     `, req.body.interview.organizer.email, req.body.interview.organizer.email);
 }
 
