@@ -24,3 +24,36 @@
 .ul-disc {
     list-style-type: none;
 }
+.job-img{
+    background: #efefef;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    align-items: flex-start;
+}
+.job-logo{
+    max-height: 180px;
+    width: 100%;
+    align-self: center;
+    object-fit: cover;
+}
+.card-header-role{
+    padding: 0.75rem 1.25rem;
+    background: transparent;
+    border: 0;
+}
+.card-truncate{
+    display: inline-block;
+    word-break: break-word;
+}
+.mb-10{
+    margin-bottom: 10px;
+}
+.plr-0{
+    padding-left: 0;
+    padding-right: 0;
+}
+.brd-0{
+    border: 0;
+}

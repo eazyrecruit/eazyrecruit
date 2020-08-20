@@ -53,12 +53,12 @@ setup(){
     else
       privateIP=`ip route get 1 | awk '{print $NF;exit}'`
     fi
-    
-    
+
+
     echo "############## EazyRecruit has successfully setup: #########################################"
     echo " "
-    echo "Access Url: http://${privateIP}/jobs/admin" 
-    echo "            http://0.0.0.0/jobs/admin"
+    echo "Access Url: http://${privateIP}/admin"
+    echo "            http://0.0.0.0/admin"
     echo " "
     echo "Admin User: admin@eazyrecruit.in"
     echo " "
@@ -68,7 +68,7 @@ setup(){
 
 restart(){
   sudo docker-compose down
-  
+
   sleep 1
   db_up
 
@@ -101,9 +101,9 @@ docker_compose_location=$(which docker-compose)
 
 if [ "$1" == "restart" ]; then
   restart
-elif [ "$1" == "destroy" ]; then 
+elif [ "$1" == "destroy" ]; then
   destroy
-elif [ "$1" == "update" ]; then 
+elif [ "$1" == "update" ]; then
   ez_docker_up
   # sudo docker-compose up --build -d nginx ez_web ez_engine
 else

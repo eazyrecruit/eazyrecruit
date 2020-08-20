@@ -11,7 +11,7 @@ exports.getRoles = async () => {
 
 exports.getUsers = async (req) => {
     let skip = 0, limit = 10;
-    let count = 0; 
+    let count = 0;
     let users;
     if (req.query.all == 'true') {
         users = await User.find({ is_deleted: false }, {password: 0, passwordResetToken: 0});
@@ -54,13 +54,13 @@ exports.register = async (req) => {
                     userModel.modified_by = req.user.id,
                     userModel.modified_at = new Date();
                     await userModel.save();
-        
+
                     //send email
                     let email = {};
                     email.name = userModel.firstName ? `${userModel.firstName} ${userModel.lastName}` : req.body.email;
                     email.receiverAddress = userModel.email;
                     email.subject = 'Registration successfull';
-                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/jobs/admin/resetpassword/${otp}">Reset Password</a>`;
+                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
                     try {
                         await emailService.sendEmail(email);
                         resolve(`An email has been sent to ${email.receiverAddress} for user registration.`);
@@ -70,7 +70,7 @@ exports.register = async (req) => {
                             message: 'internal server error'
                         }
                         console.log('user registration email error : ', error);
-                        reject(err); 
+                        reject(err);
                     }
                 } catch (error) {
                     let err = {
@@ -80,10 +80,10 @@ exports.register = async (req) => {
                     console.log('create user : ', error);
                     reject(err);
                 }
-            }   
+            }
         } catch (error) {
             reject(error);
-        }        
+        }
     });
 };
 
@@ -117,10 +117,10 @@ exports.update = async (req) => {
                 }
                 console.log('update user : ', error);
                 reject(err);
-            }   
+            }
         } catch (error) {
             reject(error);
-        }        
+        }
     });
 };
 
@@ -150,9 +150,9 @@ exports.delete = async (req) => {
                 }
                 console.log('delete user : ', error);
                 reject(err);
-            }   
+            }
         } catch (error) {
             reject(error);
-        }        
+        }
     });
 };

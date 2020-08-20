@@ -40,7 +40,7 @@ exports.resetPassword = (req, next) => {
                     email.name = user.firstName ? `${user.firstName} ${user.lastName}` : req.body.email;
                     email.receiverAddress = user.email;
                     email.subject = 'Reset Password';
-                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/jobs/admin/resetpassword/${otp}">Reset Password</a>`;
+                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
                     emailService.sendEmail(email, (err, data) => {
                         if (err) {
                             let err = {
@@ -67,7 +67,7 @@ exports.resetPassword = (req, next) => {
                     message: 'Google login found, password can not be reset'
                 }
                 next(err, null);
-            }            
+            }
         } else {
             let err = {
                 status: 400,
@@ -90,7 +90,7 @@ exports.getUserByOtp = (req, next) => {
 
 exports.changePassword = async (req, next) => {
     try {
-        User.findOneAndUpdate({ passwordResetToken: req.body.otp, is_deleted: false }, 
+        User.findOneAndUpdate({ passwordResetToken: req.body.otp, is_deleted: false },
             { $set: { password: bcryptNodejs.hashSync(req.body.newPassword), passwordResetToken: null } }, {new: true}, (err, doc) => {
             if (err) {
                 next(err, null);

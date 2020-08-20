@@ -19,54 +19,56 @@ const UserRoleModel = require('./models/userRole');
 const User = require('./models/user');
 
 module.exports.setup = (app) => {
-  var unprotected = [
-    pathToRegexp('/api/account/*'),
-    //yash need save api to be open
-    // pathToRegexp('/api/applicant/*'),
-    pathToRegexp('/api/user/resetpassword'),
-    pathToRegexp('/api/candidate/received/email'),
-    pathToRegexp('/jobs/*')
-  ];
-  app.use((req, res, next) => {
-    global.rootdirectory = __dirname;
-    next();
-  });
-  // Admin
-  app.use('/jobs/admin', express.static(path.resolve(__dirname, 'jobs/admin')));
-  app.get('/jobs/admin/*', function (req, res) {
-    res.sendFile('/jobs/admin/index.html', { root: '.' });
-  });
-  app.use("/api", expressJwt({ secret: secretRecruitCallBack }).unless({ path: unprotected }));
-  // Generic Implementation
-  // app.use('/api/applicant/comment', require('./services/crud.service')(ApplicantCommentModel, 'CRUDQ'));
-  app.use('/api/applicant/employer', require('./services/crud.service')(ApplicantEmployerModel, 'CRUDQ'));
-  app.use('/api/activity', require('./services/crud.service')(ActivityModels, 'CRUDQ'));
-  app.use('/api/industry', require('./services/crud.service')(IndustryModel, 'CRUDQ'));
-  // app.use('/api/interview/criteria', require('./services/crud.service')(InterviewCriteriaModel, 'CRUDQ'));
-  app.use('/api/interview/mode', require('./services/crud.service')(InterviewModeModel, 'CRUDQ'));
-  // app.use('/api/interview/result', require('./services/crud.service')(InterviewResultModel, 'CRUDQ'));
-  app.use('/api/pipeline', require('./services/crud.service')(JobPipelineModel, 'CRUDQ'));
-  app.use('/api/job/type', require('./services/crud.service')(JobTypeModel, 'CRUDQ'));
-  app.use('/api/location', require('./services/crud.service')(LocationModel, 'CRUDQ'));
-  app.use('/api/skill', require('./services/crud.service')(SkillsModel, 'CRUDQ'));
-  app.use('/api/user/getroles', require('./services/crud.service')(UserRoleModel, 'CRUDQ'));
-  // Custom Implementation
-  app.use('/api/account', require('./controllers/account.ctrl').account);
-  app.use('/api/applicant', require('./controllers/applicant.ctrl').applicant);
-  //app.use('/api/applicant/resume', require('./services/resume.ctrl').resume);
-  app.use('/api/job', require('./controllers/job.ctrl').job);
-  app.use('/api/interview', require('./controllers/interview.ctrl').interview);
-  app.use('/api/reports', require('./controllers/report.ctrl').report);
-  // Extended Services
-  app.use('/api/skills', require('./controllers/skill.ctrl').skillRoutes);
-  app.use('/api/location', require('./controllers/location.ctrl').locationRoutes);
-  app.use('/api/company', require('./controllers/company.ctrl').company);
-  // Resume
-  app.use('/api/resume', require('./controllers/resume.ctrl').resume);
-  // Views
-  app.use('/jobs', require('./views/index').pages);
-  app.use('/api/migration', require('./controllers/migrate.ctrl').migrate);
-  app.use('/api/user', require('./controllers/user.ctrl').user);
+    var unprotected = [
+        pathToRegexp('/api/account/*'),
+        //yash need save api to be open
+        // pathToRegexp('/api/applicant/*'),
+        pathToRegexp('/api/user/resetpassword'),
+        pathToRegexp('/api/candidate/received/email')
+    ];
+    app.use((req, res, next) => {
+        global.rootdirectory = __dirname;
+        next();
+    });
+    // Admin
+    app.use('/admin', express.static(path.resolve(__dirname, 'admin')));
+    app.get('/admin', function (req, res) {
+        res.sendFile('/admin/index.html', {root: '.'});
+    });
+    app.get('/admin/*', function (req, res) {
+        res.sendFile('/admin/index.html', {root: '.'});
+    });
+    app.use("/api", expressJwt({secret: secretRecruitCallBack}).unless({path: unprotected}));
+    // Generic Implementation
+    // app.use('/api/applicant/comment', require('./services/crud.service')(ApplicantCommentModel, 'CRUDQ'));
+    app.use('/api/applicant/employer', require('./services/crud.service')(ApplicantEmployerModel, 'CRUDQ'));
+    app.use('/api/activity', require('./services/crud.service')(ActivityModels, 'CRUDQ'));
+    app.use('/api/industry', require('./services/crud.service')(IndustryModel, 'CRUDQ'));
+    // app.use('/api/interview/criteria', require('./services/crud.service')(InterviewCriteriaModel, 'CRUDQ'));
+    app.use('/api/interview/mode', require('./services/crud.service')(InterviewModeModel, 'CRUDQ'));
+    // app.use('/api/interview/result', require('./services/crud.service')(InterviewResultModel, 'CRUDQ'));
+    app.use('/api/pipeline', require('./services/crud.service')(JobPipelineModel, 'CRUDQ'));
+    app.use('/api/job/type', require('./services/crud.service')(JobTypeModel, 'CRUDQ'));
+    app.use('/api/location', require('./services/crud.service')(LocationModel, 'CRUDQ'));
+    app.use('/api/skill', require('./services/crud.service')(SkillsModel, 'CRUDQ'));
+    app.use('/api/user/getroles', require('./services/crud.service')(UserRoleModel, 'CRUDQ'));
+    // Custom Implementation
+    app.use('/api/account', require('./controllers/account.ctrl').account);
+    app.use('/api/applicant', require('./controllers/applicant.ctrl').applicant);
+    //app.use('/api/applicant/resume', require('./services/resume.ctrl').resume);
+    app.use('/api/job', require('./controllers/job.ctrl').job);
+    app.use('/api/interview', require('./controllers/interview.ctrl').interview);
+    app.use('/api/reports', require('./controllers/report.ctrl').report);
+    // Extended Services
+    app.use('/api/skills', require('./controllers/skill.ctrl').skillRoutes);
+    app.use('/api/location', require('./controllers/location.ctrl').locationRoutes);
+    app.use('/api/company', require('./controllers/company.ctrl').company);
+    // Resume
+    app.use('/api/resume', require('./controllers/resume.ctrl').resume);
+    // Views
+    app.use('/', require('./views/index').pages);
+    app.use('/api/migration', require('./controllers/migrate.ctrl').migrate);
+    app.use('/api/user', require('./controllers/user.ctrl').user);
 };
 
 var secretRecruitCallBack = function (req, payload, done) {

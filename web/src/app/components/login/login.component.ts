@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit {
   constructor(private accountService: AccountService,
     private router: Router,
     private fbuilder: FormBuilder,
-    private validationService: ValidationService, 
+    private validationService: ValidationService,
     private authGuardService:AuthGuard) {
 
     this.loginForm = fbuilder.group({
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/jobs']);
           } else {
             this.router.navigate(['/user']);
-          } 
+          }
         } else {
           this.errorMessage = result['error']['data'];
         }
@@ -67,14 +67,14 @@ export class LoginComponent implements OnInit {
 
   oauthLogin(app) {
     SiteJS.oauthpopup(
-      "/jobs/admin/assets/auth.html?socialApp=" + app, () => {
+      "/admin/assets/auth.html?socialApp=" + app, () => {
         let user = this.accountService.isAuthorized();
         if(user && user.isAuthorized) {
           if (user.role == 'admin' || user.role == 'hr') {
             this.router.navigate(['/jobs']);
           } else {
             this.router.navigate(['/user']);
-          } 
+          }
         } else {
           this.router.navigate(['/login']);
         }

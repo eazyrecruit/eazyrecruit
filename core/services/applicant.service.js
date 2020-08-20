@@ -1,5 +1,6 @@
 var Applicants = require('../models/applicant');
 var User = require('../models/user');
+var config = require('../config').config();
 var Role = require('../models/userRole');
 var ApplicantComments = require('../models/applicantComment');
 var ApplicantResumes = require('../models/applicantResume');
@@ -461,7 +462,7 @@ function notifyHR(candidate) {
                 Phone: ${candidate.phone}<br>
                 Source: ${candidate.source}</p>
                 <p>Please click on below link to view details<p>
-                <p>https://web.easyrecruit.in/jobs/applicant/${candidate.id}</p>
+                <p>${config.website}/admin/applicant/${candidate.id}</p>
             `
                 var email = {
                     toEmail: hrEmails, // list of receivers
