@@ -18,7 +18,7 @@ var redisClient = require('../services/redis.service');
 router.get("", async (req, res) => {
     try {
         let pageIndex = +req.query.page || 1;
-        let totalItems = 0; 
+        let totalItems = 0;
         let limit = 12;
         let offset = (pageIndex - 1) * limit;
         let query = { is_published: true, active: true };
@@ -35,18 +35,18 @@ router.get("", async (req, res) => {
             pageIndex = 1;
         } else {
             console.log(Math.ceil(totalItems / limit));
-            pageIndex > lastPage ? pageIndex = 1 : pageIndex; 
+            pageIndex > lastPage ? pageIndex = 1 : pageIndex;
         }
         res.render('pages/jobs', {
             company: company[0],
-            search: req.query.search, 
+            search: req.query.search,
             jobs: result.jobs,
             currentPage: pageIndex,
             hasNextPage: (limit * pageIndex) < totalItems,
             hasPreviousPage: pageIndex > 1,
             nextPage: pageIndex + 1,
             previousPage: pageIndex - 1,
-            lastPage: Math.ceil(totalItems / limit) 
+            lastPage: Math.ceil(totalItems / limit)
         });
     } catch (err) {
         res.render('pages/error')
@@ -58,9 +58,14 @@ router.get("/apply/:id", async (req, res) => {
     try {
         let company = await companyService.getCompany();
         var job = await jobService.getByGuid(req.params.id);
-        res.render('pages/apply', { job: job, company: company[0] });
+        if (job) {
+            res.render('pages/apply', {job: job, company: company[0]});
+        } else {
+            res.redirect(config.website);
+        }
+
     } catch (err) {
-        res.render('pages/error')
+        res.redirect(config.website);
     }
 });
 
@@ -68,14 +73,18 @@ router.get("/:id", async (req, res) => {
     try {
         let company = await companyService.getCompany();
         var job = await jobService.getByGuid(req.params.id);
-        res.render('pages/job', { job: job, company: company[0] });
+        if (job) {
+            res.render('pages/job', {job: job, company: company[0]});
+        } else {
+            res.redirect(config.website);
+        }
     } catch (err) {
-        res.render('pages/error')
+        res.redirect(config.website);
     }
 });
 
 var resume = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
-router.post("/apply/:id", 
+router.post("/apply/:id",
 [
     // password must be at least 5 chars long
     check('name').not().isEmpty(),
@@ -87,7 +96,7 @@ router.post("/apply/:id",
     check('resume').not().isEmpty(),
     // password must be at least 5 chars long
     check('availability').not().isEmpty()
-], 
+],
 resume.any(),
 async (req, res) => {
     let log = new Log();
@@ -121,7 +130,7 @@ async (req, res) => {
         let result = await applicantService.resume(req);
         log.groupName = "execute request";
         log.data.push({title: "success response", message: JSON.stringify(result)});
-        
+
         if (result && result.hasOwnProperty('id') && result.id) {
             console.log('resume id : ', result);
             let id = result.id.toString();
@@ -133,7 +142,7 @@ async (req, res) => {
         } else {
             console.log('resume id : ', result);
         }
-        res.render('pages/thanks', { company: company[0] });      
+        res.render('pages/thanks', { company: company[0] });
     } catch (error) {
         console.log('redis error = : ', error);
         log.groupName = "execute request";

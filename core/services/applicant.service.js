@@ -41,7 +41,7 @@ exports.save = async (req, enableEmail) => {
                 }
                 modelApplicant.email = email.trim();
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
-                modelApplicant.source = req.body.source || modelApplicant.source || "";
+                modelApplicant.source = modelApplicant.source || req.body.source  || "";
                 modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : modelApplicant.dob || "";
                 modelApplicant.currentCtc = req.body.currentCtc || modelApplicant.currentCtc || '';
                 modelApplicant.expectedCtc = req.body.expectedCtc || modelApplicant.expectedCtc || '';
@@ -238,7 +238,7 @@ exports.save = async (req, enableEmail) => {
                 }
 
                 // Update HR and candidate
-                if (enableEmail && modelApplicant.source && modelApplicant.source === 'email') {
+                if (enableEmail && modelApplicant.source && (modelApplicant.source === 'email' || modelApplicant.source === 'website')) {
                     var candidate = {
                         id: modelApplicant._id, name: req.body.name, email: email,
                         phone: req.body.phone, source: modelApplicant.source
@@ -462,7 +462,7 @@ function notifyHR(candidate) {
                 Phone: ${candidate.phone}<br>
                 Source: ${candidate.source}</p>
                 <p>Please click on below link to view details<p>
-                <p>${config.website}/admin/applicant/${candidate.id}</p>
+                <p>${config.website}/admin/applicants/${candidate.id}</p>
             `
                 var email = {
                     toEmail: hrEmails, // list of receivers
