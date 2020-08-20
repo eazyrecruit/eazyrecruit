@@ -11,7 +11,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "../core/jobs/admin/",
+            "outputPath": "../core/admin/",
             "index": "src/index.html",
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
@@ -44,7 +44,7 @@
               "node_modules/admin-lte/dist/js/app.js",
               "src/assets/js/adminLTEOptions.js",
               "src/assets/js/scripts.js",
-              "src/assets/js/SiteJS.js",  
+              "src/assets/js/SiteJS.js",
               "./node_modules/fullcalendar/dist/fullcalendar.min.js",
               "./node_modules/fullcalendar-scheduler/dist/scheduler.min.js",
               "node_modules/ngx-quill/bundles/ngx-quill.umd.js",

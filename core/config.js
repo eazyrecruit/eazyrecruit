@@ -38,7 +38,7 @@ module.exports = {
             googleAuth: {
                 'clientID': process.env.GOOGLE_CLIENTID || '760504546841-0plne4g72ekra4847vvb22tilolj8oc8.apps.googleusercontent.com',
                 'clientSecret': process.env.GOOGLE_CLIENTSECRET || 'HgU2-NmRMW6Q77fh2KJeSYg2',
-                'callbackURL': process.env.GOOGLE_CALLBACK_URL || '/jobs/admin/assets/auth-callback.html'
+                'callbackURL': process.env.GOOGLE_CALLBACK_URL || '/admin/assets/auth-callback.html'
             },
             mongo: {
                 host: process.env.MONGO_URI || 'mongodb://eazyrecruit:klkjhgbvfcf@ez_mongodb/admin'
