@@ -47,8 +47,8 @@ exports.createAndInvite = async (req) => {
         });
     // Invite Participants
     await inviteCandidate(req, "Invitation: Interview scheduled with Akeo Software Solutions for " + req.body.interview.job.name + " profile");
-    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + "for " + req.body.interview.job.name + " profile");
-    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + "for " + req.body.interview.job.name + " profile");
+    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
+    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
     // Return Interview Details
     return req.body.interview;
 }
@@ -75,8 +75,8 @@ exports.rescheduleAndInvite = async (req) => {
         }, {new: true});
     // Invite Participants
     await inviteCandidate(req, "Invitation: Interview scheduled with Akeo Software Solutions for " + req.body.interview.job.name + " profile");
-    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + "for " + req.body.interview.job.name + " profile");
-    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + "for " + req.body.interview.job.name + " profile");
+    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
+    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
     // Return Interview Details
     return req.body.interview;
 }
