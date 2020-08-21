@@ -28,15 +28,15 @@ export class SchedulerComponent implements OnInit {
   organizer: any;
   close: any;
   currentDate;
-  endDateValid:boolean = true;
-  startDateValid: boolean = true;
-  submit: boolean = false;
+  endDateValid = true;
+  startDateValid = true;
+  submit = false;
   startString: string;
   endString: string;
   startTimeString: string;
   endTimeString: string;
   startConString: string;
-  endConString:string;
+  endConString: string;
   appliedJobs: any;
   appliedJob: any;
   role: any;
@@ -51,8 +51,8 @@ export class SchedulerComponent implements OnInit {
     private interviewService: InterviewService,
     private authStorage: AuthStorage,
     private datePipe: DatePipe
-  ) 
-  
+  )
+
   {
     this.currentDate = Date.now();
     this.interviewForm = this.formBuilder.group({
@@ -93,11 +93,12 @@ export class SchedulerComponent implements OnInit {
   }
 
   setFormValues() {
-    if(this.event.extendedProps.interviewer){
+    if (this.event.extendedProps.interviewer){
       if (this.event){
-
-        this.startString = this.datePipe.transform(this.event.start,'MM-dd-yyyy');
-        this.endString = this.datePipe.transform(this.event.end,'MM-dd-yyyy');
+        this.event.start = new Date(new Date(this.event.start).toString());
+        this.event.end = new Date(this.event.end).toString();
+        this.startString = this.datePipe.transform(this.event.start, 'MM-dd-yyyy');
+        this.endString = this.datePipe.transform(this.event.end, 'MM-dd-yyyy');
         this.event.start = new Date(this.startString);
         this.event.end = new Date(this.endString);
 
@@ -115,24 +116,24 @@ export class SchedulerComponent implements OnInit {
     }
     else{
       if (this.event) {
-        var startDate = new Date(this.currentDate);
-        var endDate = new Date(this.currentDate);
-        var hours=startDate.getHours()+1;
+        let startDate = new Date(this.currentDate);
+        let endDate = new Date(this.currentDate);
+        let hours = startDate.getHours() + 1;
         endDate.setHours(hours);
-        var min = startDate.getMinutes();
-        if(min>30) 
+        let min = startDate.getMinutes();
+        if (min > 30)
         {
           startDate.setMinutes(0);
-          startDate.setHours(startDate.getHours()+1);
+          startDate.setHours(startDate.getHours() + 1);
           endDate.setMinutes(0);
-          endDate.setHours(endDate.getHours()+1);
+          endDate.setHours(endDate.getHours() + 1);
         }
         else
         {
           startDate.setMinutes(30);
           endDate.setMinutes(30);
         }
-  
+
         this.interviewForm.get('id').setValue(this.event.interviewId);
         this.interviewForm.get('start').setValue(startDate);
         this.interviewForm.get('startTime').setValue(startDate);
@@ -144,7 +145,7 @@ export class SchedulerComponent implements OnInit {
           this.interviewForm.get('round').setValue(this.event.extendedProps.round);
         }
       }
-    }   
+    }
   }
 
   getAllUsers() {
@@ -163,7 +164,7 @@ export class SchedulerComponent implements OnInit {
         if (result['success'] && result['success']['data']) {
           this.candidate = result['success']['data'];
           this.interviewForm.get('candidateId').setValue(this.candidate._id);
-          var candidatename = this.getFullName(this.candidate.firstName, this.candidate.middleName, this.candidate.lastName);
+          let candidatename = this.getFullName(this.candidate.firstName, this.candidate.middleName, this.candidate.lastName);
           this.interviewForm.get('candidateName').setValue(`${candidatename}<${this.candidate.email}>`);
         }
       });
@@ -183,7 +184,7 @@ export class SchedulerComponent implements OnInit {
         if (result['success'] && result['success']['data']) {
           this.appliedJobs = result['success']['data'];
         }
-      })
+      });
     }
   }
 
@@ -193,16 +194,16 @@ export class SchedulerComponent implements OnInit {
 
   schduleInterview(interviewFormData) {
     this.submit = true;
-    this.startString = this.datePipe.transform(interviewFormData.start,'yyyy-MM-dd');
-    this.endString = this.datePipe.transform(interviewFormData.end,'yyyy-MM-dd');
-    this.startTimeString = this.datePipe.transform(interviewFormData.startTime,'HH:mm');
-    this.endTimeString = this.datePipe.transform(interviewFormData.endTime,'HH:mm');
-    this.startConString=this.startString+'T'+this.startTimeString;
-    this.endConString=this.endString+'T'+this.endTimeString;
+    this.startString = this.datePipe.transform(interviewFormData.start, 'yyyy-MM-dd');
+    this.endString = this.datePipe.transform(interviewFormData.end, 'yyyy-MM-dd');
+    this.startTimeString = this.datePipe.transform(interviewFormData.startTime, 'HH:mm');
+    this.endTimeString = this.datePipe.transform(interviewFormData.endTime, 'HH:mm');
+    this.startConString = this.startString + 'T' + this.startTimeString;
+    this.endConString = this.endString + 'T' + this.endTimeString;
     interviewFormData.start = new Date(this.startConString);
     interviewFormData.end = new Date(this.endConString);
-    
-    if(this.event.extendedProps.interviewer && this.event.extendedProps.interviewer !== '') {
+
+    if (this.event.extendedProps.interviewer && this.event.extendedProps.interviewer !== '') {
       this.interviewer = this.interviewers.find(i => i._id == interviewFormData.interviewerId);
     }
 
@@ -211,16 +212,16 @@ export class SchedulerComponent implements OnInit {
     if (interviewFormData.end > interviewFormData.start) this.endDateValid = true;
       else this.endDateValid = false;
 
-      if(this.endDateValid && this.startDateValid && this.interviewForm.valid){
-      var interview = {
-        job: { 
-          id: this.job._id, 
-          name: this.job.title 
+      if (this.endDateValid && this.startDateValid && this.interviewForm.valid){
+      let interview = {
+        job: {
+          id: this.job._id,
+          name: this.job.title
         },
-        start: interviewFormData.start,
-        end: interviewFormData.end,
-        startTime: interviewFormData.start,
-        endTime: interviewFormData.end,
+        start: interviewFormData.start.toUTCString(),
+        end: interviewFormData.end.toUTCString(),
+        startTime: interviewFormData.start.toUTCString(),
+        endTime: interviewFormData.end.toUTCString(),
         channel: interviewFormData.channel,
         note: interviewFormData.note,
         round: interviewFormData.round,
@@ -235,20 +236,21 @@ export class SchedulerComponent implements OnInit {
           name: this.interviewer.firstName ? this.getFullName(this.interviewer.firstName, null, this.interviewer.lastName) : this.interviewer.email,
           email: this.interviewer.email
         },
-        organizer: { 
-          id: this.organizer.id, 
-          name: this.organizer.displayName, 
-          email: this.organizer.email 
+        organizer: {
+          id: this.organizer.id,
+          name: this.organizer.displayName,
+          email: this.organizer.email
         },
-        created_by: { 
-          id: this.organizer.id, 
-          name: this.organizer.displayName, 
-          email: this.organizer.email 
+        created_by: {
+          id: this.organizer.id,
+          name: this.organizer.displayName,
+          email: this.organizer.email
         },
         modified_by: this.organizer.id
-      }
+      };
 
-      if(this.event.extendedProps.interviewer){
+        // tslint:disable-next-line:one-line
+      if (this.event.extendedProps.interviewer){
         this.interviewService.reschedule(interview, interviewFormData.id, this.event.extendedProps.sequence).subscribe(result => {
           if (result['success']){
             this.close(result['success'].data);
@@ -257,7 +259,7 @@ export class SchedulerComponent implements OnInit {
       }
       else{
         this.interviewService.schedule(interview, interviewFormData.id).subscribe(result => {
-          if(result['success']){
+          if (result['success']){
             this.close(result['success'].data);
           }
         });
@@ -266,9 +268,9 @@ export class SchedulerComponent implements OnInit {
   }
 
   getFullName(firstName, middleName, lastName) {
-    var name = firstName;
-    if (middleName) name = name + " " + middleName;
-    if (lastName) name = name + " " + lastName;
+    let name = firstName;
+    if (middleName) name = name + ' ' + middleName;
+    if (lastName) name = name + ' ' + lastName;
     return name;
   }
 }
