@@ -13,7 +13,9 @@
         <div class="row">
             <div class="col-sm-3">
                 <div class="card mb-10">
-                    <img src="/<%= locals.job && job.metaImage ? job.metaImage : company && company.logo ? company.logo : 'images/defaultlogo.png' %>" class="card-img-top" width="100%"></img>
+                    <div class="job-img">
+                        <img src="/<%= locals.job && job.metaImage ? job.metaImage : company && company.logo ? company.logo : 'images/defaultlogo.png' %>" class="job-logo" width="100%"></img>
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title"><%= locals.job ? job.title : '' %></h5>
                         <div class="row">
