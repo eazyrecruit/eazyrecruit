@@ -94,6 +94,16 @@ router.post("/pipeline", async (req, res) => {
 });
 
 // create new records in database
+router.put("/pipeline", async (req, res) => {
+    try {
+        var job = await jobService.editPipeLine(req.body);
+        responseService.response(req, null, 'Job Pipeline Update', job, res);
+    } catch (err) {
+        responseService.response(req, err, 'Job Pipeline Update', null, res);
+    }
+});
+
+// create new records in database
 router.post("/applicant", async (req, res) => {
     try {
         var job = await jobService.addApplicant(req);

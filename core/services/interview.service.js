@@ -9,15 +9,28 @@ var emailService = require('../services/email.service');
 let interviewCriteria = require('../models/interviewCriteria');
 let config = require('../config').config();
 let Company = require('../models/company');
-
+month = {
+    0: 'Jan',
+    1: 'Feb',
+    2: 'Mar',
+    3: 'Apr',
+    4: 'May',
+    5: 'Jun',
+    6: 'Jul',
+    7: 'Aug',
+    8: 'Sep',
+    9: 'Oct',
+    10: 'Nov',
+    11: 'Dec'
+};
 exports.createAndInvite = async (req) => {
     req.body.interview.interview = await Interview.create(
         {
             uid: uuidv1(),
             sequence: 1,
             status: "CONFIRMED",
-            start: new Date(new Date(req.body.interview.start).toUTCString()),
-            end: new Date(new Date(req.body.interview.end).toUTCString()),
+            start: new Date(new Date(req.body.interview.start)),
+            end: new Date(new Date(req.body.interview.end)),
             note: req.body.interview.note,
             round: req.body.interview.round,
             jobId: req.body.interview.job.id,
@@ -33,9 +46,9 @@ exports.createAndInvite = async (req) => {
             modified_at: Date.now()
         });
     // Invite Participants
-    await inviteCandidate(req, 'Interview scheduled');
-    await inviteInterviewer(req, 'Interview scheduled');
-    await inviteOrganizer(req, 'Interview scheduled');
+    await inviteCandidate(req, "Invitation: Interview scheduled with Akeo Software Solutions for " + req.body.interview.job.name + " profile");
+    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + "for " + req.body.interview.job.name + " profile");
+    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + "for " + req.body.interview.job.name + " profile");
     // Return Interview Details
     return req.body.interview;
 }
@@ -46,8 +59,8 @@ exports.rescheduleAndInvite = async (req) => {
         {
             sequence: req.body.sequence + 1,
             status: "CONFIRMED",
-            start: new Date(new Date(req.body.interview.start).toUTCString()),
-            end: new Date(new Date(req.body.interview.end).toUTCString()),
+            start: new Date(new Date(req.body.interview.start)),
+            end: new Date(new Date(req.body.interview.end)),
             note: req.body.interview.note,
             round: req.body.interview.round,
             jobId: req.body.interview.job.id,
@@ -61,9 +74,9 @@ exports.rescheduleAndInvite = async (req) => {
             modified_at: Date.now()
         }, {new: true});
     // Invite Participants
-    await inviteCandidate(req, 'Interview rescheduled');
-    await inviteInterviewer(req, 'Interview rescheduled');
-    await inviteOrganizer(req, 'Interview rescheduled');
+    await inviteCandidate(req, "Invitation: Interview scheduled with Akeo Software Solutions for " + req.body.interview.job.name + " profile");
+    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + "for " + req.body.interview.job.name + " profile");
+    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + "for " + req.body.interview.job.name + " profile");
     // Return Interview Details
     return req.body.interview;
 }
@@ -214,13 +227,16 @@ exports.getInterviews = async (req) => {
 }
 
 async function inviteCandidate(req, title) {
-    return await createInvitation(req, 'Interview scheduled',
+    return await createInvitation(req, title,
         `
         <p>Dear ${req.body.interview.candidate.name},</p>
         <p>You are invited to attend an interview for the following profile.</p>
-        <p>Profile: <b>${req.body.interview.job.name}<b><br/>
-        Interview date: <b>${new Date(req.body.interview.start)}<b><br/>
-        </p>
+    <p> <b>Interview details </b> <br>
+   
+        Profile: ${req.body.interview.job.name}</p>
+         Interview date: <b>${getFormattedDate(req.body.interview.start)}<b><br/>
+          Interview Time: <b>${getTime(req.body.interview.start)}<b><br/>
+          Mode : <b>${req.body.interview.channel}<b><br/></p>
     `, req.body.interview.candidate.email, req.body.interview.organizer.email);
 }
 
@@ -228,7 +244,14 @@ async function inviteInterviewer(req, title) {
     return await createInvitation(req, title,
         `
         <p>Dear ${req.body.interview.interviewer.name},</p>
-        <p>${req.body.interview.organizer.name} invited you to interview ${req.body.interview.candidate.name} for the profile ${req.body.interview.job.name}.
+        <p>${req.body.interview.organizer.name} invited you to interview
+    <p> <b>Interview details </b> <br>
+          Candidate Name: ${req.body.interview.candidate.name}<br>
+        Interviewer Name: ${req.body.interview.interviewer.name}<br>
+        Profile: ${req.body.interview.job.name}</p>
+         Interview date: <b>${getFormattedDate(req.body.interview.start)}<b><br/>
+          Interview Time: <b>${getTime(req.body.interview.start)}<b><br/>
+          Mode : <b>${req.body.interview.channel}<b><br/></p>
         Please click on below link to access more details about the interview.</p>
         <p><a href="${config.website}/admin/interview/${req.body.interview.interview._id.toString()}">${config.website}/admin/interview/${req.body.interview.interview.id}</p>
     `, req.body.interview.interviewer.email, req.body.interview.organizer.email);
@@ -239,9 +262,14 @@ async function inviteOrganizer(req, title) {
         `
         <p>Dear ${req.body.interview.organizer.name},</p>
         <p>You have successfully scheduled an interview.</p>
-        <p> Candidate Name: ${req.body.interview.candidate.name}<br>
+       
+        <p> <b>Interview details </b> <br>
+          Candidate Name: ${req.body.interview.candidate.name}<br>
         Interviewer Name: ${req.body.interview.interviewer.name}<br>
         Profile: ${req.body.interview.job.name}</p>
+         Interview date: <b>${getFormattedDate(req.body.interview.start)}<b><br/>
+          Interview Time: <b>${getTime(req.body.interview.start)}<b><br/>
+          Mode : <b>${req.body.interview.channel}<b><br/>
         <p>Please click on below link to access more details about the interview.<p>
         <p>${config.website}/admin/interview/${req.body.interview.interview._id.toString()}</p>
     `, req.body.interview.organizer.email, req.body.interview.organizer.email);
@@ -290,4 +318,27 @@ async function createInvitation(req, title, body, attendee, organizer) {
             }
         });
     });
+}
+
+function getTime(date) {
+    const newDate = new Date(date);
+    var hours = newDate.getHours();
+    var minutes = newDate.getMinutes();
+
+    // Check whether AM or PM
+    var newformat = hours >= 12 ? 'PM' : 'AM';
+
+    // Find current hour in AM-PM Format
+    hours = hours % 12;
+
+    // To display "0" as "12"
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    return hours + ':' + minutes + ' ' + newformat;
+
+}
+
+function getFormattedDate(date) {
+    const newDate = new Date(date);
+    return this.month[newDate.getMonth()] + " " + newDate.getDate() + ", " + newDate.getFullYear();
 }

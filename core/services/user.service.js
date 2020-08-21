@@ -62,7 +62,7 @@ exports.register = async (req) => {
                     email.subject = 'Registration successfull';
                     email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
                     try {
-                        await emailService.sendEmail(email);
+                        await emailService.sendEmail(email, ()=>{});
                         resolve(`An email has been sent to ${email.receiverAddress} for user registration.`);
                     } catch (error) {
                         let err = {

@@ -43,7 +43,7 @@
                       <div class="plr">
                         <div class="info-box" draggable [dragData]="applicant"
                           class="list-group-item border-radius-0 mb-15 bl-red overflow-hidden">
-                          <applicant-card [applicant]="applicant" [pipelines]="job.pipelines" (onSelect)="showApplicantDetails($event)" 
+                          <applicant-card [applicant]="applicant" [pipelines]="job.pipelines" (onSelect)="showApplicantDetails($event)"
                             (changeStatus)="changeApplicantStatus($event)" (removeApplicant)="updateJobApplicantList($event, i)">
                           </applicant-card>
                         </div>
@@ -63,7 +63,7 @@
               <div class="jobs-menu dropdown">
                 <i class="dropdown-toggle ti-more" data-toggle="dropdown"></i>
                 <ul class="dropdown-menu jobOption">
-                  <li class="dropdown-item" (click)="setpipelineId(pipeline)">
+                  <li class="dropdown-item" (click)="setpipelineId(pipeline, i)">
                     <a data-toggle="modal" data-target="#pipeModal" class="pointer">
                       <i class="fa fa-pencil"></i>Edit Title
                     </a>
