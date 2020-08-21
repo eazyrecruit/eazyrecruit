@@ -17,7 +17,7 @@ var Jobs = require('../models/job');
 var Histories = require('../models/history');
 var emailService = require('../services/email.service');
 var histroyService = require('../services/history.service');
-
+let Company = require('../models/company');
 exports.save = async (req, enableEmail) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -41,7 +41,7 @@ exports.save = async (req, enableEmail) => {
                 }
                 modelApplicant.email = email.trim();
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
-                modelApplicant.source = modelApplicant.source || req.body.source  || "";
+                modelApplicant.source = modelApplicant.source || req.body.source || "";
                 modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : modelApplicant.dob || "";
                 modelApplicant.currentCtc = req.body.currentCtc || modelApplicant.currentCtc || '';
                 modelApplicant.expectedCtc = req.body.expectedCtc || modelApplicant.expectedCtc || '';
@@ -248,8 +248,12 @@ exports.save = async (req, enableEmail) => {
                 }
 
                 try {
+                    let candidate = {
+                        id: modelApplicant._id, name: req.body.name, email: email,
+                        phone: req.body.phone, source: modelApplicant.source
+                    };
                     if (enableEmail && modelApplicant.email) {
-                        await notifyCandidate(modelApplicant);
+                        await notifyCandidate(candidate);
                         console.log('email sent to : ', modelApplicant.email);
                     }
                 } catch (error) {
@@ -457,17 +461,18 @@ function notifyHR(candidate) {
                 var body = `
                 <p>Dear HR,</p>
                 <p>A new profile has been received </p>
-                <p> Name: ${candidate.name}<br>
-                Email: ${candidate.email}<br>
-                Phone: ${candidate.phone}<br>
-                Source: ${candidate.source}</p>
+                <p> <b>Candidate Name:</b>  ${candidate.name}<br>
+               <b> Email:</b> ${candidate.email}<br>
+               <b> Phone:</b> ${candidate.phone}<br>
+               <b> Source:</b> ${candidate.source}</p>
                 <p>Please click on below link to view details<p>
                 <p>${config.website}/admin/applicants/${candidate.id}</p>
             `
                 var email = {
                     toEmail: hrEmails, // list of receivers
-                    subject: "Resume received", // Subject line
-                    body: body
+                    subject: "New profile received", // Subject line
+                    body: body,
+                    title: "Resume received"
                 }
                 emailService.sendEmail(email, (err, data) => {
                     if (err) reject(err);
@@ -482,15 +487,18 @@ function notifyHR(candidate) {
 
 function notifyCandidate(candidate) {
     return new Promise(async (resolve, reject) => {
+        let company = await getCompany();
         var body = `
-                <p>Dear Candidate,</p>
-                <p>Your profile has been successfully submitted. Our HR team will look into the profile and get back to you 
-                soon.</p>
+                <p>Dear ${candidate.name},</p>
+                <p>Thank you for applying for the job at ${company.name}. Your resume has been submitted successfully. </p>,
+                                <p>Our HR team will review your application and get back to you. </p>
+                                                                <p>Please reach out to us in case of any query. Contact details are provided below.</p>
             `;
         var email = {
             toEmail: candidate.email, // list of receivers
-            subject: "Resume received", // Subject line
-            body: body
+            subject: "Resume submitted successfully", // Subject line
+            body: body,
+            title: ""
         };
         emailService.sendEmail(email, (err, data) => {
             if (err) reject(err);
@@ -498,3 +506,12 @@ function notifyCandidate(candidate) {
         });
     });
 }
+
+async function getCompany() {
+    try {
+        return await Company.findOne()({});
+    } catch (e) {
+        return config.companyInfo
+    }
+
+};

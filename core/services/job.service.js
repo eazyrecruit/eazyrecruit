@@ -34,7 +34,7 @@ exports.save = async (req) => {
         }
 
         modelJob.title = req.body.title;
-        modelJob.guid = modelJob.guid || req.body.guid || uuidv4();
+        modelJob.guid = modelJob.guid || createSlug(req.body.title);
         modelJob.active = req.body.active ? req.body.active : true;
         modelJob.description = req.body.description ? req.body.description : null;
         modelJob.responsibilities = req.body.responsibilities ? req.body.responsibilities : null;
@@ -249,7 +249,7 @@ exports.editPipeLine = async (data) => {
         pipeLine["name"] = data.name || pipeLine["name"];
         pipeLine = await pipeLine.save();
         return pipeLine;
-    }else {
+    } else {
         return new Error('invalid pipeline id');
     }
 }
@@ -367,4 +367,13 @@ exports.removeApplicant = async (req) => {
             reject({status: 500, message: "internal server error"});
         }
     });
+}
+
+function createSlug(title) {
+    let date = new Date();
+     let month = date.getMonth()+1;
+    let day = date.getDate() > 10 ? date.getDate() : "0" + date.getDate();
+     month = month > 10 ? month +1 : "0" + month ;
+    let year = date.getFullYear() % 2000;
+    return title.replace(/[^\w\s]/gi, '').replace(/\s/g, '').toLowerCase() + "_" + date.getDate() + month + year;
 }

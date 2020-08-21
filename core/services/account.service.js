@@ -40,7 +40,8 @@ exports.resetPassword = (req, next) => {
                     email.name = user.firstName ? `${user.firstName} ${user.lastName}` : req.body.email;
                     email.receiverAddress = user.email;
                     email.subject = 'Reset Password';
-                    email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
+                    email.title = 'Reset Password';
+                    email.body = `<p>Dear ${email.name},</p><p>Please use below link to reset your password. </p><br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a><br/><p>Please reach out to us in case of any query. </p>`;
                     emailService.sendEmail(email, (err, data) => {
                         if (err) {
                             let err = {
