@@ -57,3 +57,11 @@
 .brd-0{
     border: 0;
 }
+
+
+@media only screen and (max-width: 768px) {
+    .m-text-center{
+        text-align: center !important;
+    }
+
+}
