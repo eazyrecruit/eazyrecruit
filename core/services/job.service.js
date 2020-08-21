@@ -34,7 +34,7 @@ exports.save = async (req) => {
         }
 
         modelJob.title = req.body.title;
-        modelJob.guid = req.body.guid ? req.body.guid : uuidv4();
+        modelJob.guid = modelJob.guid || createSlug(req.body.title);
         modelJob.active = req.body.active ? req.body.active : true;
         modelJob.description = req.body.description ? req.body.description : null;
         modelJob.responsibilities = req.body.responsibilities ? req.body.responsibilities : null;
@@ -73,7 +73,7 @@ exports.save = async (req) => {
         if (req.files && req.files.length) {
             modelJob.metaImage = await utilService.readWriteFile(req.files[0], modelJob.guid);
         } else {
-            modelJob.metaImage = req.body.metaImage ? req.body.metaImage : null;
+            modelJob.metaImage = modelJob.metaImage || req.body.metaImage;
         }
 
         modelJob.metaImageAltText = req.body.metaImageAltText ? req.body.metaImageAltText : null;
@@ -105,7 +105,7 @@ exports.archive = async (data) => {
             modelJob["active"] = (data.status === "true" || data.status === true);
             modelJob.modified_by = data.user.id;
             modelJob.modified_at = new Date();
-            return  await modelJob.save();
+            return await modelJob.save();
 
         } else {
             return new Error('job data is missing');
@@ -243,6 +243,16 @@ let addPipeline = async (req) => {
     }
 }
 
+exports.editPipeLine = async (data) => {
+    var pipeLine = await JobPipelines.findById(data._id);
+    if (pipeLine) {
+        pipeLine["name"] = data.name || pipeLine["name"];
+        pipeLine = await pipeLine.save();
+        return pipeLine;
+    } else {
+        return new Error('invalid pipeline id');
+    }
+}
 exports.addPipeline = addPipeline;
 
 exports.addApplicant = async (req) => {
@@ -357,4 +367,13 @@ exports.removeApplicant = async (req) => {
             reject({status: 500, message: "internal server error"});
         }
     });
+}
+
+function createSlug(title) {
+    let date = new Date();
+     let month = date.getMonth()+1;
+    let day = date.getDate() > 10 ? date.getDate() : "0" + date.getDate();
+     month = month > 10 ? month +1 : "0" + month ;
+    let year = date.getFullYear() % 2000;
+    return title.replace(/[^\w\s]/gi, '').replace(/\s/g, '').toLowerCase() + "_" + date.getDate() + month + year;
 }

@@ -7,7 +7,7 @@ exports.sendEmail = async function (emailObj, next) {
 
         // get email configuration by company
         let emailConfig = await getEmailConfig('smtp');
-        
+
         if (emailConfig && emailConfig.hasOwnProperty('user')) {
             // create reusable transporter object
             if (config.emailConfig.test === true) {
@@ -23,22 +23,23 @@ exports.sendEmail = async function (emailObj, next) {
                 port: emailConfig.port, // port for secure SMTP
                 host: emailConfig.host, // Amazon email SMTP hostname
             });
-            
+
             // setup email data with unicode symbols
             var mailOptions = {
                 from: emailConfig.fromEmail, // sender address
                 to: emailObj.toEmail, // list of receivers
                 subject: emailObj.subject, // Subject line
-                html: await getEmailBody({ title: emailObj.subject, body: emailObj.body, signature: "<b>HR team</b><br>Akeo Software Solutions Pvt Ltd<br><a href='mailto:hr@akeo.in'>hr@akeo.in</a>" }) // html body,
+                html: await getEmailBody({ title: emailObj.title, body: emailObj.body, signature: config.companyInfo.signature }) // html body,
             };
 
             if (emailObj.attachments) {
                 mailOptions.attachments = emailObj.attachments
             }
-            
+
             // send mail with defined transport object
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
+                    console.log('email config error', error);
                     next(error, null);
                 } else {
                     next(null, 'Email sent');
@@ -82,7 +83,7 @@ let getEmailConfig = async (group) => {
     }
     settings = await companyService.getSettings(req);
     let emailConfig = {};
-    for (let i =0; i < settings.length; i++) {        
+    for (let i =0; i < settings.length; i++) {
         Object.defineProperty(emailConfig, settings[i].key, {
             value: settings[i].value,
             writable: true

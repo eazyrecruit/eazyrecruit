@@ -6,7 +6,7 @@ var Role = require('../models/userRole');
 var emailService = require('../services/email.service');
 
 exports.getRoles = async () => {
-    return await Role.find({ is_deleted: false });
+    return await Role.find({is_deleted: false});
 };
 
 exports.getUsers = async (req) => {
@@ -14,20 +14,23 @@ exports.getUsers = async (req) => {
     let count = 0;
     let users;
     if (req.query.all == 'true') {
-        users = await User.find({ is_deleted: false }, {password: 0, passwordResetToken: 0});
+        users = await User.find({is_deleted: false}, {password: 0, passwordResetToken: 0});
     } else {
         if (req.query.limit) limit = parseInt(req.query.limit);
         if (req.query.offset) skip = parseInt(req.query.offset);
-        count = await User.count({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false });
-        users = await User.find({ "email": { "$regex": req.query.search, "$options": "i" }, is_deleted: false }, { password: 0, passwordResetToken: 0 }).populate('roles').skip(skip).limit(limit).exec();
+        count = await User.count({"email": {"$regex": req.query.search, "$options": "i"}, is_deleted: false});
+        users = await User.find({
+            "email": {"$regex": req.query.search, "$options": "i"},
+            is_deleted: false
+        }, {password: 0, passwordResetToken: 0}).populate('roles').skip(skip).limit(limit).exec();
     }
-    return { count, users };
+    return {count, users};
 };
 
 exports.register = async (req) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let user = await User.find({ email: req.body.email, is_deleted: false });
+            let user = await User.find({email: req.body.email, is_deleted: false});
             if (user && user.length) {
                 resolve(`${req.body.email} already exist`);
             } else {
@@ -40,19 +43,19 @@ exports.register = async (req) => {
                     userModel.firstName = req.body.firstName;
                     userModel.lastName = req.body.lastName;
                     userModel.roles = req.body.roleId,
-                    userModel.phone = [req.body.phone],
-                    userModel.passwordResetToken = otp,
-                    userModel.passwordResetExpires = new Date(),
-                    userModel.emailVerificationToken = '',
-                    userModel.emailVerified = false,
-                    userModel.google = false,
-                    userModel.tokens = [],
-                    userModel.picture = '',
-                    userModel.is_deleted = false,
-                    userModel.created_by = req.user.id,
-                    userModel.created_at = new Date(),
-                    userModel.modified_by = req.user.id,
-                    userModel.modified_at = new Date();
+                        userModel.phone = [req.body.phone],
+                        userModel.passwordResetToken = otp,
+                        userModel.passwordResetExpires = new Date(),
+                        userModel.emailVerificationToken = '',
+                        userModel.emailVerified = false,
+                        userModel.google = false,
+                        userModel.tokens = [],
+                        userModel.picture = '',
+                        userModel.is_deleted = false,
+                        userModel.created_by = req.user.id,
+                        userModel.created_at = new Date(),
+                        userModel.modified_by = req.user.id,
+                        userModel.modified_at = new Date();
                     await userModel.save();
 
                     //send email
@@ -60,9 +63,11 @@ exports.register = async (req) => {
                     email.name = userModel.firstName ? `${userModel.firstName} ${userModel.lastName}` : req.body.email;
                     email.receiverAddress = userModel.email;
                     email.subject = 'Registration successfull';
+                    email.title = 'Registration successfull';
                     email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
                     try {
-                        await emailService.sendEmail(email);
+                        await emailService.sendEmail(email, () => {
+                        });
                         resolve(`An email has been sent to ${email.receiverAddress} for user registration.`);
                     } catch (error) {
                         let err = {
@@ -90,7 +95,7 @@ exports.register = async (req) => {
 exports.update = async (req) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let userModel = await User.findById({ _id: req.params.id, is_deleted: false });
+            let userModel = await User.findById({_id: req.params.id, is_deleted: false});
             if (userModel) {
                 try {
                     // update user
@@ -98,9 +103,9 @@ exports.update = async (req) => {
                     userModel.firstName = req.body.firstName;
                     userModel.lastName = req.body.lastName;
                     userModel.roles = req.body.roleId,
-                    userModel.phone = [req.body.phone],
-                    userModel.modified_by = req.user.id,
-                    userModel.modified_at = new Date();
+                        userModel.phone = [req.body.phone],
+                        userModel.modified_by = req.user.id,
+                        userModel.modified_at = new Date();
                     resolve(await userModel.save());
                 } catch (error) {
                     let err = {
@@ -127,13 +132,13 @@ exports.update = async (req) => {
 exports.delete = async (req) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let userModel = await User.findById({ _id: req.params.id, is_deleted: false });
+            let userModel = await User.findById({_id: req.params.id, is_deleted: false});
             if (userModel) {
                 try {
                     // delete user
                     userModel.is_deleted = true,
-                    userModel.modified_by = req.user.id,
-                    userModel.modified_at = new Date();
+                        userModel.modified_by = req.user.id,
+                        userModel.modified_at = new Date();
                     resolve(await userModel.save());
                 } catch (error) {
                     let err = {

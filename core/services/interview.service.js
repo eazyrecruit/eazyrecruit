@@ -3,7 +3,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const ISODate = mongoose.Types.ISODate;
 let Interview = require('../models/interview')
 let interviewResults = mongoose.model('InterviewResults');
-const ics = require('ics')
+const ics = require('./ics').IcsService;
 const uuidv1 = require('uuid/v1');
 var emailService = require('../services/email.service');
 let interviewCriteria = require('../models/interviewCriteria');
@@ -11,13 +11,16 @@ let config = require('../config').config();
 let Company = require('../models/company');
 
 exports.createAndInvite = async (req) => {
+
+    let company = await getCompany();
+    req.body["companyName"] = company.name;
     req.body.interview.interview = await Interview.create(
         {
             uid: uuidv1(),
             sequence: 1,
             status: "CONFIRMED",
-            start: new Date(new Date(req.body.interview.start).toUTCString()),
-            end: new Date(new Date(req.body.interview.end).toUTCString()),
+            start: new Date(new Date(req.body.interview.start)),
+            end: new Date(new Date(req.body.interview.end)),
             note: req.body.interview.note,
             round: req.body.interview.round,
             jobId: req.body.interview.job.id,
@@ -32,22 +35,25 @@ exports.createAndInvite = async (req) => {
             modified_by: req.body.interview.modified_by.id,
             modified_at: Date.now()
         });
+
     // Invite Participants
-    await inviteCandidate(req, 'Interview scheduled');
-    await inviteInterviewer(req, 'Interview scheduled');
-    await inviteOrganizer(req, 'Interview scheduled');
+    await inviteCandidate(req, "Invitation: Interview scheduled with " + req.body["companyName"] + " for " + req.body.interview.job.name + " profile");
+    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
+    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
     // Return Interview Details
     return req.body.interview;
 }
 
 exports.rescheduleAndInvite = async (req) => {
     let interview = await Interview.findById({_id: req.body.id});
+    let company = await getCompany();
+    req.body["companyName"] = company.name;
     req.body.interview.interview = await Interview.findByIdAndUpdate({_id: req.body.id, is_deleted: {$ne: true}},
         {
             sequence: req.body.sequence + 1,
             status: "CONFIRMED",
-            start: new Date(new Date(req.body.interview.start).toUTCString()),
-            end: new Date(new Date(req.body.interview.end).toUTCString()),
+            start: new Date(new Date(req.body.interview.start)),
+            end: new Date(new Date(req.body.interview.end)),
             note: req.body.interview.note,
             round: req.body.interview.round,
             jobId: req.body.interview.job.id,
@@ -61,9 +67,9 @@ exports.rescheduleAndInvite = async (req) => {
             modified_at: Date.now()
         }, {new: true});
     // Invite Participants
-    await inviteCandidate(req, 'Interview rescheduled');
-    await inviteInterviewer(req, 'Interview rescheduled');
-    await inviteOrganizer(req, 'Interview rescheduled');
+    await inviteCandidate(req, "Invitation: Interview scheduled with " + req.body["companyName"] + " for " + req.body.interview.job.name + " profile");
+    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
+    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
     // Return Interview Details
     return req.body.interview;
 }
@@ -214,80 +220,107 @@ exports.getInterviews = async (req) => {
 }
 
 async function inviteCandidate(req, title) {
-    return await createInvitation(req, 'Interview scheduled',
+    return await createInvitation(req, "Interview scheduled", title,
         `
         <p>Dear ${req.body.interview.candidate.name},</p>
-        <p>You are invited to attend an interview for the following profile.</p>
-        <p>Profile: <b>${req.body.interview.job.name}<b><br/>
-        Interview date: <b>${new Date(req.body.interview.start)}<b><br/>
-        </p>
+        <p>You are invited for an interview with  ${req.body["companyName"]}. Please find your interview details below. </p>
+        <p> <b>Interview details </b> <br>
+         <b> Profile:</b> ${req.body.interview.job.name}</p>
+         <b> Interview date: </b>${req.body.interview.localStartDate}<br/>
+          <b>Interview Time: </b>${req.body.interview.localStartTime}<br/>
+         <b> Mode : </b>${req.body.interview.channel}<br/></p>
+          </p>
+       Please reach out to us in case of any query or availability issues. Contact details are provided below.</p>
     `, req.body.interview.candidate.email, req.body.interview.organizer.email);
 }
 
 async function inviteInterviewer(req, title) {
-    return await createInvitation(req, title,
+    return await createInvitation(req, "Interview scheduled", title,
         `
         <p>Dear ${req.body.interview.interviewer.name},</p>
-        <p>${req.body.interview.organizer.name} invited you to interview ${req.body.interview.candidate.name} for the profile ${req.body.interview.job.name}.
+        <p>${req.body.interview.organizer.name} has invited you for an interview.
+    <p> <b>Interview details </b> <br>
+         <b> Candidate Name: </b>${req.body.interview.candidate.name}<br>
+ 
+        <b>Profile:</b> ${req.body.interview.job.name}</p>
+      <b> Interview date: </b>${req.body.interview.localStartDate}<br/>
+          <b>Interview Time: </b>${req.body.interview.localStartTime}<br/>
+        <b>  Mode : </b>${req.body.interview.channel}<br/></p>
         Please click on below link to access more details about the interview.</p>
         <p><a href="${config.website}/admin/interview/${req.body.interview.interview._id.toString()}">${config.website}/admin/interview/${req.body.interview.interview.id}</p>
     `, req.body.interview.interviewer.email, req.body.interview.organizer.email);
 }
 
 async function inviteOrganizer(req, title) {
-    return await createInvitation(req, title,
+    return await createInvitation(req, "Interview scheduled", title,
         `
         <p>Dear ${req.body.interview.organizer.name},</p>
         <p>You have successfully scheduled an interview.</p>
-        <p> Candidate Name: ${req.body.interview.candidate.name}<br>
-        Interviewer Name: ${req.body.interview.interviewer.name}<br>
-        Profile: ${req.body.interview.job.name}</p>
+       
+        <p> 
+        <b>Interview details </b> <br>
+             <b>Candidate Name:   </b> ${req.body.interview.candidate.name}<br>
+           <b>Interviewer Name:</b>  ${req.body.interview.interviewer.name}<br>
+           <b>Profile:</b>  ${req.body.interview.job.name}</p>
+             <b> Interview date: </b>${req.body.interview.localStartDate}<br/>
+          <b>Interview Time: </b>${req.body.interview.localStartTime}<br/>
+             <b>Mode : </b>  ${req.body.interview.channel}<b><br/>
         <p>Please click on below link to access more details about the interview.<p>
         <p>${config.website}/admin/interview/${req.body.interview.interview._id.toString()}</p>
     `, req.body.interview.organizer.email, req.body.interview.organizer.email);
 }
 
-async function createInvitation(req, title, body, attendee, organizer) {
+async function createInvitation(req, title, subject, body, attendee, organizer) {
     return new Promise(async (resolve, reject) => {
-        req.body.interview.start = new Date(req.body.interview.start);
-        req.body.interview.end = new Date(req.body.interview.end);
-        const event = {
-            start: [
-                req.body.interview.start.getFullYear(),
-                req.body.interview.start.getMonth() + 1,
-                req.body.interview.start.getDate(),
-                req.body.interview.start.getHours(),
-                req.body.interview.start.getMinutes()
-            ],
-            end: [
-                req.body.interview.end.getFullYear(),
-                req.body.interview.end.getMonth() + 1,
-                req.body.interview.end.getDate(),
-                req.body.interview.end.getHours(),
-                req.body.interview.end.getMinutes()
-            ],
-            title: title,
-            description: body,
-            organizer: {email: organizer},
-            attendees: [{email: attendee, role: 'REQ-PARTICIPANT'}],
-            uid: req.body.interview.interview.uid,
-            sequence: req.body.interview.interview.sequence,
-            status: req.body.interview.interview.status
-        };
-        ics.createEvent(event, (error, value) => {
-            if (error) reject(error);
-            else {
-                var email = {
-                    toEmail: attendee, // list of receivers
-                    subject: title, // Subject line
-                    body: body,
-                    attachments: [{'filename': 'calendar.ics', 'content': value, 'type': 'text/Calendar'}]
-                }
-                emailService.sendEmail(email, (err, data) => {
-                    if (err) reject(err);
-                    else resolve(data);
-                });
+        try {
+            let inviteData = {
+                organizer: organizer,
+                title: subject,
+                start: req.body.interview.start,
+                end: req.body.interview.end,
+                sequence: req.body.interview.interview.sequence,
+                uuid: req.body.interview.interview.uid,
+                method: "REQUEST",
+                status: "CONFIRMED",
+                attendees: [{
+                    email: attendee,
+                    rsvp: true,
+                    name: req.body.interview.candidate.name || " ",
+                    partstat: "NEEDS-ACTION",
+                    role: "REQ-PARTICIPANT"
+                }],
+            };
+            let value = await ics.createInvitationIcsFile(inviteData);
+            var email = {
+                toEmail: attendee, // list of receivers
+                title: title, // Subject line
+                body: body,
+                subject: subject,
+                attachments: [{'filename': 'calendar.ics', 'content': value, 'type': 'text/Calendar'}]
             }
-        });
+            emailService.sendEmail(email, (err, data) => {
+                if (err) {
+                    console.log("emailService", err);
+                    reject(err)
+                } else
+                resolve(data);
+            });
+        } catch (err) {
+            console.log("emailServicerre", err);
+            reject(err)
+        }
+
     });
 }
+
+
+async function getCompany() {
+    try {
+        return await Company.findOne()({});
+    } catch (e) {
+        return config.companyInfo
+    }
+
+};
+
+
