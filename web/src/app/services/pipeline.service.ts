@@ -24,7 +24,7 @@ export class PipelineService {
   }
 
   updatePipelineDetails(tab) {
-    return this.http.put(this.constService.baseUrl + 'pipeline/details', tab);
+    return this.http.put(this.constService.baseUrl + 'job/pipeline', tab);
   }
 
   deletePipeline(tabId) {

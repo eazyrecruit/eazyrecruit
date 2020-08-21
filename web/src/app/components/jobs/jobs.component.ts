@@ -91,6 +91,14 @@ export class JobsComponent implements OnInit {
     }
 
     setArchive(falg) {
+        this.filter = {
+            pageIndex: 1,
+            pageSize: 12,
+            searchText: 'title',
+            sortField: '',
+            sortOrder: '1',
+            offset: 0
+        };
         this.isArchive = falg;
         this.jobs = [];
         this.totalItems = 0;
