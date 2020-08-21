@@ -27,7 +27,7 @@ module.exports = {
             emailConfig: {
                 stop: process.env.EMAIL_STOP || false,
                 test: process.env.EMAIL_TEST || true,
-                testRecepient: process.env.TEST_RECEPIENT || 'laxman@akeo.no'
+                testRecepient: process.env.TEST_RECEPIENT || 'deveazyrecruit@gmail.com'
             },
             jwt: {
                 secret: process.env.JWT_SECRET || 'SHDJHDSDSD&(**DSUDSY^D&^USDHSODISOIY&D*SYDDH',
@@ -69,4 +69,3 @@ module.exports = {
     }
 }
 ;
-
