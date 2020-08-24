@@ -24,6 +24,10 @@ services:
             - web_images:/usr/src/app/images
         environment:
             - NODE_ENV=dev
+            - EMAIL_STOP=false
+            - EMAIL_TEST=true
+            - JWT_EXPIRE_TIME=86400
+            - SERVER_CIPHER_ORDER=true
 
     ez_engine:
         container_name: ez_engine
@@ -46,7 +50,7 @@ services:
         depends_on:
             - ez_mongodb
             - ez_elastic
-   
+
     ez_worker:
         container_name: ez_worker
         build:
@@ -67,7 +71,7 @@ services:
             - ez_mongodb
         ports:
             - 5555:5555
-        
+
     ez_elastic:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
         container_name: ez_elastic
@@ -109,6 +113,6 @@ volumes:
     elastic_search_data:
     mongo_db:
     web_images:
-            
-    
-    
+
+
+

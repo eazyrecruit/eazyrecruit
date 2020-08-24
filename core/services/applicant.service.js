@@ -509,9 +509,10 @@ function notifyCandidate(candidate) {
 
 async function getCompany() {
     try {
-        return await Company.findOne()({});
-    } catch (e) {
-        return config.companyInfo
+        return await Company.findOne({});
+    } catch (error) {
+        console.log("getCompany--->", error);
+        return config.companyInfo;
     }
 
 };
