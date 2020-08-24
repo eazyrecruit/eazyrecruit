@@ -10,6 +10,10 @@ normalize = (param) => {
     return param;
 };
 
+booleanConvert = (param) => {
+    return param == 'true';
+};
+
 module.exports = {
     config: function () {
         return {
@@ -19,19 +23,19 @@ module.exports = {
                 cert: process.env.SERVER_CERT || './cer.pem',
                 key: process.env.SERVER_KEY || './key.pem',
                 ciphers: process.env.SERVER_CIPHER || 'DASDJHASJHSGASAKSAJSKAJSAKSJ',
-                honorCipherOrder: process.env.SERVER_CIPHER_ORDER || true,
+                honorCipherOrder: booleanConvert(process.env.SERVER_CIPHER_ORDER),
                 secureProtocol: process.env.SERVER_SECURE_PROTOCOL || 'TLSv1_2_method'
 
             },
             website: process.env.WEB || 'https://dev.eazyrecruit.in',
             emailConfig: {
-                stop: process.env.EMAIL_STOP || false,
-                test: process.env.EMAIL_TEST || true,
+                stop: booleanConvert(process.env.EMAIL_STOP) || false,
+                test: booleanConvert(process.env.EMAIL_TEST),
                 testRecepient: process.env.TEST_RECEPIENT || 'deveazyrecruit@gmail.com'
             },
             jwt: {
                 secret: process.env.JWT_SECRET || 'SHDJHDSDSD&(**DSUDSY^D&^USDHSODISOIY&D*SYDDH',
-                expireTime: process.env.JWT_EXPIRE_TIME || 86400, // for admin we will use 24hr
+                expireTime: Number(process.env.JWT_EXPIRE_TIME) || 86400, // for admin we will use 24hr
                 audience: process.env.JWT_AUDIENCE || 'EazyRecruitUsers',
                 issuer: process.env.JWT_ISSUER || 'https://dev-api.eazyrecruit.in'
             },

@@ -316,11 +316,12 @@ async function createInvitation(req, title, subject, body, attendee, organizer) 
 
 async function getCompany() {
     try {
-        return await Company.findOne()({});
-    } catch (e) {
+        return await Company.findOne({});
+    } catch (error) {
+        console.log("getCompany--->", error);
         return config.companyInfo
     }
 
-};
+}
 
 
