@@ -38,7 +38,7 @@ exports.resetPassword = (req, next) => {
                     user.passwordResetToken = otp;
                     await user.save();
                     email.name = user.firstName ? `${user.firstName} ${user.lastName}` : req.body.email;
-                    email.receiverAddress = user.email;
+                    email.toEmail = user.email;
                     email.subject = 'Reset Password';
                     email.title = 'Reset Password';
                     email.body = `<p>Dear ${email.name},</p><p>Please use below link to reset your password. </p><br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a><br/><p>Please reach out to us in case of any query. </p>`;
@@ -47,7 +47,7 @@ exports.resetPassword = (req, next) => {
                             let err = {
                                 status: 500,
                                 message: 'internal server error'
-                            }
+                            };
                             console.log('forget password : ', error);
                             next(err, null);
                         } else {
