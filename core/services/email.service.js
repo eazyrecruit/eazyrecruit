@@ -10,7 +10,7 @@ exports.sendEmail = async function (emailObj, next) {
 
         if (emailConfig && emailConfig.hasOwnProperty('user')) {
             // create reusable transporter object
-            if (config.emailConfig.test === true) {
+            if (emailObj.toEmail && config.emailConfig.test === true) {
                 emailObj.toEmail = config.emailConfig.testRecepient;
             }
             var transporter = nodemailer.createTransport({
@@ -29,7 +29,11 @@ exports.sendEmail = async function (emailObj, next) {
                 from: emailConfig.fromEmail, // sender address
                 to: emailObj.toEmail, // list of receivers
                 subject: emailObj.subject, // Subject line
-                html: await getEmailBody({ title: emailObj.title, body: emailObj.body, signature: config.companyInfo.signature }) // html body,
+                html: await getEmailBody({
+                    title: emailObj.title,
+                    body: emailObj.body,
+                    signature: config.companyInfo.signature
+                }) // html body,
             };
 
             if (emailObj.attachments) {
@@ -47,11 +51,11 @@ exports.sendEmail = async function (emailObj, next) {
             });
         } else {
             console.log('email config not found');
-            next({ status: 500, message: 'email config not found' }, null);
+            next({status: 500, message: 'email config not found'}, null);
         }
     } else {
         console.log(`send email service stop : ${config.emailConfig.stop}`);
-        next(null, { status: 200, message: `send email service stop : ${config.emailConfig.stop}` });
+        next(null, {status: 200, message: `send email service stop : ${config.emailConfig.stop}`});
     }
 }
 
@@ -60,8 +64,8 @@ let getEmailBody = async function (obj) {
     let emailTemplate = await getEmailConfig('template');
     var content = emailTemplate.content;
     if (content) {
-        for(var prop in obj) {
-            content = content.replace(new RegExp('{'+ prop +'}','g'), obj[prop]);
+        for (var prop in obj) {
+            content = content.replace(new RegExp('{' + prop + '}', 'g'), obj[prop]);
         }
     }
     return content;
@@ -79,11 +83,11 @@ let getEmailConfig = async (group) => {
     let settings = [];
     company = await companyService.getCompany();
     let req = {
-        query: { id: company[0].id, group }
+        query: {id: company[0].id, group}
     }
     settings = await companyService.getSettings(req);
     let emailConfig = {};
-    for (let i =0; i < settings.length; i++) {
+    for (let i = 0; i < settings.length; i++) {
         Object.defineProperty(emailConfig, settings[i].key, {
             value: settings[i].value,
             writable: true

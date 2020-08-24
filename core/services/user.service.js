@@ -61,7 +61,7 @@ exports.register = async (req) => {
                     //send email
                     let email = {};
                     email.name = userModel.firstName ? `${userModel.firstName} ${userModel.lastName}` : req.body.email;
-                    email.receiverAddress = userModel.email;
+                    email.toEmail = userModel.email;
                     email.subject = 'Registration successfull';
                     email.title = 'Registration successfull';
                     email.body = `Please use below link to reset your password.<br/><a href="${req.headers.origin}/admin/resetpassword/${otp}">Reset Password</a>`;
