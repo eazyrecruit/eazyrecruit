@@ -87,6 +87,7 @@ exports.register = async (req) => {
                 }
             }
         } catch (error) {
+            console.log('create user catch: ', error);
             reject(error);
         }
     });
@@ -99,7 +100,7 @@ exports.update = async (req) => {
             if (userModel) {
                 try {
                     // update user
-                    userModel.name = `${req.body.firstName} ${req.body.lastName}`
+                    userModel.name = `${req.body.firstName} ${req.body.lastName}`;
                     userModel.firstName = req.body.firstName;
                     userModel.lastName = req.body.lastName;
                     userModel.roles = req.body.roleId,
@@ -120,10 +121,11 @@ exports.update = async (req) => {
                     status: 404,
                     message: 'user not found'
                 }
-                console.log('update user : ', error);
+                console.log('update user : ', err);
                 reject(err);
             }
         } catch (error) {
+            console.log('update user catch: ', error);
             reject(error);
         }
     });
@@ -153,10 +155,11 @@ exports.delete = async (req) => {
                     status: 404,
                     message: 'user not found'
                 }
-                console.log('delete user : ', error);
+                console.log('delete user : ', err);
                 reject(err);
             }
         } catch (error) {
+            console.log('delete user catch: ', error);
             reject(error);
         }
     });
