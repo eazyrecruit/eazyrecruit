@@ -38,6 +38,39 @@ module.exports.setup = (app) => {
     app.get('/admin/*', function (req, res) {
         res.sendFile('/admin/index.html', {root: '.'});
     });
+
+    app.use((req, res, next) => {
+        if (req.body) {
+            if (req.body.email) {
+                if (Array.isArray(req.body.email) && req.body.email.length) {
+                    req.body.email[0] = req.body.email[0].toLowerCase().trim()
+                } else {
+                    req.body.email = req.body.email.toLowerCase().trim()
+                }
+
+
+            }
+            if(req.body.referralEmail){
+                req.body.referralEmail = req.body.referralEmail.toLowerCase().trim()
+            }
+
+            if (req.body.interview) {
+                if (req.body.interview.organizer && req.body.interview.organizer.email) {
+                    req.body.interview.organizer.email = req.body.interview.organizer.email.toLowerCase().trim()
+                }
+
+                if (req.body.interview.interviewer && req.body.interview.interviewer.email) {
+                    req.body.interview.interviewer.email = req.body.interview.interviewer.email.toLowerCase().trim();
+                }
+
+                if (req.body.interview.candidate && req.body.interview.candidate.email) {
+                    req.body.interview.candidate.email = req.body.interview.candidate.email.toLowerCase().trim();
+                }
+            }
+        }
+
+        next()
+    });
     app.use("/api", expressJwt({secret: secretRecruitCallBack}).unless({path: unprotected}));
     // Generic Implementation
     // app.use('/api/applicant/comment', require('./services/crud.service')(ApplicantCommentModel, 'CRUDQ'));
@@ -72,18 +105,17 @@ module.exports.setup = (app) => {
 };
 
 var secretRecruitCallBack = function (req, payload, done) {
-  //Generate new token for a authenticated request
-  if (payload) {
-    var token = jwt.generateToken({ username: payload.email });
-    // Set the session details for the request in the request header
-    // Add the new token to request header
-    req.headers.session = { username: payload.email };
-    req.headers['x-token'] = token;
-    //Fetch and return the secrect key for the tenant of the request
-    var sect = config.jwt.secret;
-    done(null, sect);
-  }
-  else {
-    done(null, null);
-  }
+    //Generate new token for a authenticated request
+    if (payload) {
+        var token = jwt.generateToken({username: payload.email});
+        // Set the session details for the request in the request header
+        // Add the new token to request header
+        req.headers.session = {username: payload.email};
+        req.headers['x-token'] = token;
+        //Fetch and return the secrect key for the tenant of the request
+        var sect = config.jwt.secret;
+        done(null, sect);
+    } else {
+        done(null, null);
+    }
 };

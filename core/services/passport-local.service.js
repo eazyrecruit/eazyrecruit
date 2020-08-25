@@ -10,7 +10,7 @@ exports.setup = function () {
   },
     function (req, username, password, done) {
       try {
-        User.findOne({ email: username.toLowerCase() }).populate('roles').exec((err, user) => {
+        User.findOne({ email: username.toLowerCase().trim() }).populate('roles').exec((err, user) => {
           if (err) { return done(err); }
           if (!user) {
             return done(null, false, { status: 401, message: 'Invalid email or password.' });
