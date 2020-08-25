@@ -2,8 +2,8 @@
     <head>
     </head>
     <body>
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>   
-        <script>            
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script>
             $(document).ready(function () {
                 var app = getParameterByName('socialApp');
                 window.location.href = getApiUrl() + '/account/' + app;
@@ -21,13 +21,7 @@
             }
 
             function getApiUrl() {
-                var serviceBase = 'http://localhost:8082/api';
-                if (window.location.host=='dev.eazyrecruit.in') {
-                    serviceBase = 'https://dev.eazyrecruit.in/api';
-                } else if (window.location.host =="web.eazyrecruit.in") {
-                    serviceBase = 'https://web.eazyrecruit.in/api';
-                }
-                return serviceBase;
+                return window.location.protocol + '//' + window.location.hostname + '/api';
             }
         </script>
     </body>
