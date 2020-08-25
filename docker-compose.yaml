@@ -29,7 +29,7 @@ services:
             - JWT_EXPIRE_TIME=86400
             - SERVER_CIPHER_ORDER=true
             - ALLOWED_ORIGINS=["https://dev.eazyrecruit.in"]
-            - WEB='https://dev.eazyrecruit.in'
+            - WEB=https://dev.eazyrecruit.in
 
     ez_engine:
         container_name: ez_engine

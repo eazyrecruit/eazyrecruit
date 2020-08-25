@@ -36,7 +36,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     modalRef: BsModalRef;
     scheduledInterviews: Array<any>;
     interviewers: Array<any>;
-    showComments: boolean = false;
+    showComments = false;
 
     @Input()
     applicant?: any;
@@ -64,13 +64,13 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-        //get jobId
         this.jobId = this.route.params['value'].jobId;
         this.applicant = null;
     }
 
     ngOnChanges() {
         if (this.applicant) {
+            document.getElementById('home').click();
             this.getApplicantById(this.applicant._id);
         }
     }
@@ -92,7 +92,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         this.modalRef.content.close = (data) => {
             if (data) this.scheduledInterviews.push(data);
             this.modalRef.hide();
-        }
+        };
     }
 
     openInterview(interview, index) {
@@ -110,7 +110,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
             this.scheduledInterviews[index] = data;
             this.scheduledInterviews[index].interviewer = data.interviewer.id;
             this.modalRef.hide();
-        }
+        };
     }
 
     getScheduledInterviews() {
@@ -211,16 +211,16 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
 
     getDisplayName(userId) {
         if (this.interviewers) {
-            var ivrs = this.interviewers.filter(ivr => ivr._id == userId);
+            let ivrs = this.interviewers.filter(ivr => ivr._id == userId);
             if (ivrs && ivrs.length > 0) {
                 if (ivrs[0].firstName) {
-                    return this.applicant.fullName(ivrs[0].firstName, ivrs[0].lastName)
+                    return this.applicant.fullName(ivrs[0].firstName, ivrs[0].lastName);
                 } else {
                     return this.applicant.fullName(ivrs[0].email, '', '');
                 }
             }
         }
-        return "Display name";
+        return 'Display name';
     }
 
     getAllUsers() {
@@ -252,23 +252,23 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     }
 
     getFullName(firstName, middleName, lastName) {
-        var name = firstName;
-        if (middleName && middleName != "null") name = name + " " + middleName;
-        if (lastName && lastName != "null") name = name + " " + lastName;
+        let name = firstName;
+        if (middleName && middleName != 'null') name = name + ' ' + middleName;
+        if (lastName && lastName != 'null') name = name + ' ' + lastName;
         return name;
     }
 
     updateApplicant() {
-        this.modalRef = this.modalService.show(CreateApplicantComponent, { 
-            class: 'modal-lg', 
-            initialState: { applicant: this.applicant } 
+        this.modalRef = this.modalService.show(CreateApplicantComponent, {
+            class: 'modal-lg',
+            initialState: { applicant: this.applicant }
         });
         this.modalRef.content.closePopup.subscribe(result => {
             if (result) {
                 this.getApplicantById(result['data']._id);
                 // this.onUpdate.emit(this.applicant);   // old
                 result['data'].fullName = this.getFullName.bind(this.applicant);
-                this.onUpdate.emit(result['data']);   // new testing 
+                this.onUpdate.emit(result['data']);   // new testing
             }
         });
     }

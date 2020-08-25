@@ -26,12 +26,16 @@ exports.save = async (req, enableEmail) => {
                 // Get email from body
                 var email = Array.isArray(req.body.email) ? req.body.email.length > 0
                     ? req.body.email[0] : null : req.body.email;
+
+                if (email) {
+                    email = email.toLowerCase().trim();
+                }
                 // Get if applicant already exists
                 var modelApplicant = null;
                 if (req.body._id) {
                     modelApplicant = await Applicants.findById(req.body._id);
                 } else if (email) {
-                    modelApplicant = await Applicants.findOne({email: email.trim()});
+                    modelApplicant = await Applicants.findOne({email: email});
                 }
                 // Create applicant if unable to find
                 if (modelApplicant == null) {
@@ -39,7 +43,7 @@ exports.save = async (req, enableEmail) => {
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
                 }
-                modelApplicant.email = email.trim();
+                modelApplicant.email = email;
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
                 modelApplicant.source = modelApplicant.source || req.body.source || "";
                 modelApplicant.dob = req.body.dob ? new Date(req.body.dob) : modelApplicant.dob || "";
