@@ -29,7 +29,7 @@ import { debounceTime } from 'rxjs/operators';
                     '<div class="row">' +
                         '<div class="col-sm-12">'+
                             '<ng-content>'+
-                            '</ng-content>'+                           
+                            '</ng-content>'+
                         '</div>' +
                     '</div>' +
                     '<div class="row">' +
@@ -42,7 +42,7 @@ import { debounceTime } from 'rxjs/operators';
                             '</div>' +
                         '</div>' +
                     '</div>' +
-                '</div>'    
+                '</div>'
 })
 
 export class DatatableComponent implements AfterViewInit {
@@ -62,7 +62,7 @@ export class DatatableComponent implements AfterViewInit {
     @Output()
     onFilterChange = new EventEmitter();
 
-    @ViewChild('input') 
+    @ViewChild('input')
     input;
 
     newTitle : string;
@@ -81,9 +81,12 @@ export class DatatableComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(){
-        this.input.valueChanges
-            .pipe(debounceTime(500))
-            .subscribe(model => this.updateSearchField(model));
+        if( this.input){
+            this.input.valueChanges
+                .pipe(debounceTime(500))
+                .subscribe(model => this.updateSearchField(model));
+        }
+
     }
 
     updateSearchField(value){

@@ -9,9 +9,9 @@ exports.getCompany = async () => {
     return await Company.find({});
 };
 
-exports.getSettings = async (req) => {
+exports.getSettings = getSettings = async (query) => {
     try {
-        let companySettings = await CompanySettings.find({companyId: req.query.id} && {groupName: req.query.group});
+        let companySettings = await CompanySettings.find({companyId: query.id} && {groupName: query.group});
         if (companySettings && companySettings.length) {
             for (let i = 0; i < companySettings.length; i++) {
                 companySettings[i].value = encryptService.decrypt(companySettings[i].value)
@@ -21,6 +21,18 @@ exports.getSettings = async (req) => {
     } catch (error) {
         return error;
     }
+};
+
+
+exports.getSettingObject = async (query) => {
+    let result =  await getSettings(query);
+    let data = {};
+    if (result && result.length) {
+        for (let index = 0; index < result.length; index++) {
+            data[result[index].key] = result[index].value;
+        }
+    }
+    return data;
 };
 
 exports.updateSettings = async (req, next) => {
@@ -41,7 +53,7 @@ exports.updateSettings = async (req, next) => {
                 value: encryptService.encrypt(formValues[index].toString())
             });
             if (companySetting) {
-                companySetting.value = encryptService.decrypt(companySetting.value)
+                companySetting.value = encryptService.decrypt(companySetting.value);
                 data.push(companySetting);
             }
         }

@@ -21,13 +21,20 @@ router.get("", async (req, res) => {
         let totalItems = 0;
         let limit = 12;
         let offset = (pageIndex - 1) * limit;
-        let query = { is_published: true, active: true };
+        let query = {is_published: true, active: true};
         if (req.query.search) {
             // query = { title: new RegExp(`^.*${req.query.search}.*$`, 'i') };
             query.title = new RegExp(`^.*${req.query.search}.*$`, 'i');
         }
 
         let company = await companyService.getCompany();
+        let googleAnalytics = {};
+        if (company && company.length) {
+            googleAnalytics = await companyService.getSettingObject({id: company[0]._id, group: "googleAnalytics"});
+            console.log(googleAnalytics);
+        }
+
+        console.log("googleAnalytics", googleAnalytics);
         var result = await jobService.getPublishedJobs(query, limit, offset);
         totalItems = result.count;
         let lastPage = Math.ceil(totalItems / limit);
@@ -39,6 +46,7 @@ router.get("", async (req, res) => {
         }
         res.render('pages/jobs', {
             company: company[0],
+             googleAnalytics: googleAnalytics,
             search: req.query.search,
             jobs: result.jobs,
             currentPage: pageIndex,
@@ -57,9 +65,16 @@ router.get("", async (req, res) => {
 router.get("/apply/:id", async (req, res) => {
     try {
         let company = await companyService.getCompany();
+        let googleAnalytics = {};
+        if (company && company.length) {
+            googleAnalytics = await companyService.getSettingObject({id: company[0]._id, group: "googleAnalytics"});
+        }
+
+        console.log("googleAnalytics", googleAnalytics);
+
         var job = await jobService.getByGuid(req.params.id);
         if (job) {
-            res.render('pages/apply', {job: job, company: company[0]});
+            res.render('pages/apply', {job: job, googleAnalytics: googleAnalytics, company: company[0]});
         } else {
             res.redirect(config.website);
         }
@@ -72,9 +87,15 @@ router.get("/apply/:id", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         let company = await companyService.getCompany();
+        let googleAnalytics = {};
+        if (company && company.length) {
+            googleAnalytics = await companyService.getSettingObject({id: company[0]._id, group: "googleAnalytics"});
+        }
+
+        console.log("googleAnalytics", googleAnalytics);
         var job = await jobService.getByGuid(req.params.id);
         if (job) {
-            res.render('pages/job', {job: job, company: company[0]});
+            res.render('pages/job', {job: job, googleAnalytics: googleAnalytics, company: company[0]});
         } else {
             res.redirect(config.website);
         }
@@ -83,73 +104,79 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-var resume = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var resume = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/apply/:id",
-[
-    // password must be at least 5 chars long
-    check('name').not().isEmpty(),
-    // username must be an email
-    check('email').not().isEmpty().isEmail().normalizeEmail(),
-    // password must be at least 5 chars long
-    check('phone').not().isEmpty().isLength({ min: 10 }),
-    // password must be at least 5 chars long
-    check('resume').not().isEmpty(),
-    // password must be at least 5 chars long
-    check('availability').not().isEmpty()
-],
-resume.any(),
-async (req, res) => {
-    let log = new Log();
-    // Finds the validation errors in this request and wraps them in an object with handy functions
-    const errors = validationResult(req.body);
-    if (!errors.isEmpty()) {
-        log.groupName = "error";
-        log.data.push({title: "req. validation", message: JSON.stringify(errors) });
-        await log.save();
-        return res.status(422).json({ errors: errors.array() });
-    }
-
-    let company = await companyService.getCompany();
-    try {
-        console.log('body : ', req.body);
-        log.groupName = "execute request";
-        log.data.push({title: "request body", message: JSON.stringify(req.body)});
-
-        let admin = await User.findOne({ email: config.admin.username }, { select: 'email' });
-        if (admin) {
-            req.user = {
-                id: admin.id
-            }
-        }
-
-        var applicant;
-        if (req.body && req.body.email) {
-            applicant = await applicantService.save(req);
-            console.log('applicant saved');
-        }
-        let result = await applicantService.resume(req);
-        log.groupName = "execute request";
-        log.data.push({title: "success response", message: JSON.stringify(result)});
-
-        if (result && result.hasOwnProperty('id') && result.id) {
-            console.log('resume id : ', result);
-            let id = result.id.toString();
-            let parsedData = await redisClient.parse(id);
-            console.log('redis success = : ', parsedData);
-            log.groupName = "execute request";
-            log.data.push({title: "redis success - taskid", message: parsedData.taskid });
+    [
+        // password must be at least 5 chars long
+        check('name').not().isEmpty(),
+        // username must be an email
+        check('email').not().isEmpty().isEmail().normalizeEmail(),
+        // password must be at least 5 chars long
+        check('phone').not().isEmpty().isLength({min: 10}),
+        // password must be at least 5 chars long
+        check('resume').not().isEmpty(),
+        // password must be at least 5 chars long
+        check('availability').not().isEmpty()
+    ],
+    resume.any(),
+    async (req, res) => {
+        let log = new Log();
+        // Finds the validation errors in this request and wraps them in an object with handy functions
+        const errors = validationResult(req.body);
+        if (!errors.isEmpty()) {
+            log.groupName = "error";
+            log.data.push({title: "req. validation", message: JSON.stringify(errors)});
             await log.save();
-        } else {
-            console.log('resume id : ', result);
+            return res.status(422).json({errors: errors.array()});
         }
-        res.render('pages/thanks', { company: company[0] });
-    } catch (error) {
-        console.log('redis error = : ', error);
-        log.groupName = "execute request";
-        log.data.push({title: "error", message: error.message });
-        await log.save();
-        res.render('pages/thanks', { company: company[0] });
-    }
-});
+
+        let company = await companyService.getCompany();
+        let googleAnalytics = {};
+        if (company && company.length) {
+            googleAnalytics = await companyService.getSettingObject({id: company[0]._id, group: "googleAnalytics"});
+        }
+
+        console.log("googleAnalytics", googleAnalytics);
+        try {
+            console.log('body : ', req.body);
+            log.groupName = "execute request";
+            log.data.push({title: "request body", message: JSON.stringify(req.body)});
+
+            let admin = await User.findOne({email: config.admin.username}, {select: 'email'});
+            if (admin) {
+                req.user = {
+                    id: admin.id
+                }
+            }
+
+            var applicant;
+            if (req.body && req.body.email) {
+                applicant = await applicantService.save(req);
+                console.log('applicant saved');
+            }
+            let result = await applicantService.resume(req);
+            log.groupName = "execute request";
+            log.data.push({title: "success response", message: JSON.stringify(result)});
+
+            if (result && result.hasOwnProperty('id') && result.id) {
+                console.log('resume id : ', result);
+                let id = result.id.toString();
+                let parsedData = await redisClient.parse(id);
+                console.log('redis success = : ', parsedData);
+                log.groupName = "execute request";
+                log.data.push({title: "redis success - taskid", message: parsedData.taskid});
+                await log.save();
+            } else {
+                console.log('resume id : ', result);
+            }
+            res.render('pages/thanks', {company: company[0], googleAnalytics: googleAnalytics});
+        } catch (error) {
+            console.log('redis error = : ', error);
+            log.groupName = "execute request";
+            log.data.push({title: "error", message: error.message});
+            await log.save();
+            res.render('pages/thanks', {company: company[0], googleAnalytics: googleAnalytics});
+        }
+    });
 
 module.exports.pages = router;
