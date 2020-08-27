@@ -13,7 +13,7 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { NgxFullCalendarModule } from 'ngx-fullcalendar';
 import { ChartsModule } from 'ng2-charts';
-import { QuillModule } from 'ngx-quill'
+import { QuillModule } from 'ngx-quill';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app.routing';
@@ -68,11 +68,11 @@ import { DatatableSortFieldComponent } from './components/applicants/datatable';
 import { ModalModule, BsDatepickerModule, TimepickerModule, RatingModule, TypeaheadModule } from 'ngx-bootstrap';
 import { PopupComponent } from './components/jobs/popup/popup.component';
 import { SearchApplicantComponent } from './components/applicants/search-applicant/search-applicant.component';
-import {ToasterModule, ToasterService, ToasterConfig} from 'angular2-toaster';
+import {ToasterModule, ToasterService} from 'angular2-toaster';
 import { ApplicantpageComponent } from './components/jobs/applicantpage/applicantpage.component';
 import { ApplicantDataService } from './services/applicant-data.service';
 import { CreateApplicantComponent } from './components/applicants/create-applicant/create-applicant.component';
-import {SafePipe} from './services/senatizerpipe.service'
+import {SafePipe} from './services/senatizerpipe.service';
 import { ApplicantResolver } from './resolver/applicant.resolver';
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -88,7 +88,7 @@ import { InboundComponent } from './components/settings/emailsettings/inbound/in
 import { OutboundComponent } from './components/settings/emailsettings/outbound/outbound.component';
 import { EmailTemplateComponent } from './components/settings/emailsettings/email-template/email-template.component';
 import { ColorPickerModule } from 'ngx-color-picker';
-
+import { GoogleAnalyticsComponent } from './components/settings/googleAnalytics/google.analytics.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -144,6 +144,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
     ApplicantSettingsComponent,
     EmailsettingsComponent,
     GoogleComponent,
+    GoogleAnalyticsComponent,
     InterviewListComponent,
     InboundComponent,
     OutboundComponent,

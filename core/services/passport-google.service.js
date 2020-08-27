@@ -70,11 +70,9 @@ let getGoogleConfig = async (group) => {
     let emailConfig = {};
     company = await companyService.getCompany();
     if (company && company.length) {
-        let req = {
-            query: { id: company[0].id, group }
-        }
-        settings = await companyService.getSettings(req);    
-        for (let i =0; i < settings.length; i++) {        
+        let req = { id: company[0].id, group };
+        settings = await companyService.getSettings(req);
+        for (let i =0; i < settings.length; i++) {
             Object.defineProperty(emailConfig, settings[i].key, {
                 value: settings[i].value,
                 writable: true
