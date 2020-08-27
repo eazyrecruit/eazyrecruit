@@ -112,6 +112,10 @@ exports.searchJobs = async (req) => {
             Jobs.search(query, {
                     from: offset, size: limit,
                     sort: [{
+                        "is_published": {
+                            "order": "desc"
+                        }
+                    }, {
                         "created_at": {
                             "order": "desc"
                         }

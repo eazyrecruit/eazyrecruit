@@ -82,10 +82,7 @@ let getEmailConfig = async (group) => {
     let company = [];
     let settings = [];
     company = await companyService.getCompany();
-    let req = {
-        query: {id: company[0].id, group}
-    }
-    settings = await companyService.getSettings(req);
+    settings = await companyService.getSettings({id: company[0].id, group});
     let emailConfig = {};
     for (let i = 0; i < settings.length; i++) {
         Object.defineProperty(emailConfig, settings[i].key, {

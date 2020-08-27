@@ -15,9 +15,9 @@ const History = require('../models/history');
 exports.restoreUser = async (data) => {
     let users = [];
     for (let i = 0; i < data.length; i++) {
-        let obj = data[i];        
+        let obj = data[i];
         let userResult = await User.findOne({ email: obj.email});
-        if (userResult == null) { 
+        if (userResult == null) {
             let user = new User();
             user.email = obj.email;
             user.firstName = obj.user_detail.first_name;
@@ -83,7 +83,7 @@ exports.restoreJob = async (data) => {
         job.applicants = [];
         job.pipelines = pipelines;
         job.is_published = true;
-        job.metaImage = null;
+        job.metaImage = obj.metaImage;
         job.metaImageAltText = "";
         job.metaTitle = obj.title;
         job.tags = [];
@@ -163,7 +163,7 @@ exports.restoreApplicant = async (data) => {
             modelApplicant.skills = [];
         }
 
-        // Create/Update Address 
+        // Create/Update Address
         if (obj.addresses && obj.addresses.length && obj.addresses[0].hasOwnProperty('state')) {
             let modelCurrentLocation = await Location.findOne({ state: obj.addresses[0].state })
             if (modelCurrentLocation) {
@@ -201,7 +201,7 @@ async function findOrCreate(array, userId) {
                         skill.created_at = new Date();
                         skill.modified_by = userId;
                         skill.modified_at = new Date();
-                        skill = await skill.save();                
+                        skill = await skill.save();
                     }
                     skillObject[name] = skill;
                     skills.push(skill._id);
@@ -229,7 +229,7 @@ exports.restoreResume = async (data) => {
                 modelResume.modified_by = data.user.id;
                 modelResume.modified_at = new Date();
                 modelResume = await modelResume.save();
-    
+
             if (obj && obj.personal && obj.personal.email) {
                 applicant = await Applicant.findOne({ email: obj.personal.email });
                 if (applicant) {
@@ -260,10 +260,10 @@ exports.restoreJobApplicant = async (data) => {
                 if (job.pipelines[i].name === obj.pipeline.name) {
                     jobPipeline = job.pipelines[i].id;
                     break;
-                }  
+                }
             }
         }
-        
+
         if (job && jobPipeline && applicant) {
             let modelJobApplicant = new JobApplicant();
             modelJobApplicant.pipeline = jobPipeline;
@@ -306,7 +306,7 @@ exports.restoreComments = async (data) => {
         if (obj.job_post_applicant && obj.job_post_applicant.applicant && obj.job_post_applicant.applicant.mongo_id) {
             let applicant = await Applicant.findOne({ email: obj.job_post_applicant.applicant.mongo_id });
             let user = await User.findOne({ email: obj.user.email });
-            
+
             if (applicant) {
                 let comment = new Comment();
                 comment.comment = obj.comment,
@@ -317,11 +317,11 @@ exports.restoreComments = async (data) => {
                 comment.created_by = user.id,
                 comment.modified_at = Date.now(obj.modified_by),
                 comment.modified_by = user.id
-                await comment.save(); 
+                await comment.save();
                 comments.push(comment);
             } else {
                 console.log('applicant dosent have email : ', obj.job_post_applicant.applicant.mongo_id);
-                console.log('comments not saved (id) : ', obj.id);   
+                console.log('comments not saved (id) : ', obj.id);
             }
         } else {
             console.log('comments not saved (id) : ', obj.id);
@@ -343,7 +343,7 @@ exports.restoreHistory = async (data) => {
                     if (job.pipelines[i].name === obj.pipeline.name) {
                         jobPipeline = job.pipelines[i].id;
                         break;
-                    }  
+                    }
                 }
             }
         }
@@ -352,7 +352,7 @@ exports.restoreHistory = async (data) => {
             let applicant = await Applicant.findOne({ email: obj.applicant.mongo_id });
             let user = await User.findOne({ email: obj.user.email });
 
-            if (applicant) {            
+            if (applicant) {
                 let history = new History();
                 history.applicant = applicant.id,
                 history.pipeline = jobPipeline,
@@ -362,11 +362,11 @@ exports.restoreHistory = async (data) => {
                 history.created_by = user.id,
                 history.modified_at = Date.now(obj.modified_at),
                 history.modified_by = user.id
-                await history.save(); 
+                await history.save();
                 histories.push(history);
             } else {
-                console.log('applicant dosent have email : ', obj.applicant.mongo_id); 
-                console.log('history not saved (id) : ', obj.id);   
+                console.log('applicant dosent have email : ', obj.applicant.mongo_id);
+                console.log('history not saved (id) : ', obj.id);
             }
         } else {
             console.log('history not saved (id) : ', obj.id);

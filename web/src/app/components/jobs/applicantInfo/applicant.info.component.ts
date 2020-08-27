@@ -1,19 +1,21 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, TemplateRef } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { UploadService } from '../../../services/upload.service';
-import { SearchService } from '../../../services/search.service';
-import { saveAs } from 'file-saver';
-import { ApplicantInfoService } from './applicant-info.service';
-import { ValidationService } from '../../../services/validation.service';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap';
-import { InterviewService } from '../../../services/interview.service';
-import { SchedulerComponent } from '../../interview/scheduler/scheduler.component';
-import { AccountService } from '../../../services/account.service';
-import { ActivatedRoute, Params } from '@angular/router';
-import { CreateApplicantComponent } from '../../applicants/create-applicant/create-applicant.component';
+import {Component, OnInit, Input, Output, EventEmitter, OnChanges, TemplateRef} from '@angular/core';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {UploadService} from '../../../services/upload.service';
+import {SearchService} from '../../../services/search.service';
+import {saveAs} from 'file-saver';
+import {ApplicantInfoService} from './applicant-info.service';
+import {ValidationService} from '../../../services/validation.service';
+import {BsModalService, BsModalRef} from 'ngx-bootstrap';
+import {InterviewService} from '../../../services/interview.service';
+import {SchedulerComponent} from '../../interview/scheduler/scheduler.component';
+import {AccountService} from '../../../services/account.service';
+import {ActivatedRoute, Params} from '@angular/router';
+import {CreateApplicantComponent} from '../../applicants/create-applicant/create-applicant.component';
 
 declare global {
-    interface Window { editApplicantPopup: any; }
+    interface Window {
+        editApplicantPopup: any;
+    }
 }
 
 @Component({
@@ -82,15 +84,15 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
                     start: new Date(),
                     end: new Date(),
                     extendedProps:
-                    {
-                        jobApplicant: this.applicant._id,
-                        jobId: this.jobId
-                    }
+                        {
+                            jobApplicant: this.applicant._id,
+                            jobId: this.jobId
+                        }
                 }
             }
         });
         this.modalRef.content.close = (data) => {
-            if (data) this.scheduledInterviews.push(data);
+            if (data) this.scheduledInterviews.push(data.interview || {});
             this.modalRef.hide();
         };
     }
@@ -107,7 +109,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
             }
         });
         this.modalRef.content.close = (data) => {
-            this.scheduledInterviews[index] = data;
+            this.scheduledInterviews[index] = data.interview || {};
             this.scheduledInterviews[index].interviewer = data.interviewer.id;
             this.modalRef.hide();
         };
@@ -211,7 +213,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
 
     getDisplayName(userId) {
         if (this.interviewers) {
-            let ivrs = this.interviewers.filter(ivr => ivr._id == userId);
+            const ivrs = this.interviewers.filter(ivr => ivr._id == userId);
             if (ivrs && ivrs.length > 0) {
                 if (ivrs[0].firstName) {
                     return this.applicant.fullName(ivrs[0].firstName, ivrs[0].lastName);
@@ -224,7 +226,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     }
 
     getAllUsers() {
-        this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '', all: true }).subscribe(result => {
+        this.accountService.getAllUsers({offset: 0, pageSize: 10, searchText: '', all: true}).subscribe(result => {
             if (result['success']['data']) {
                 this.interviewers = result['success']['data']['users'];
             }
@@ -261,7 +263,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     updateApplicant() {
         this.modalRef = this.modalService.show(CreateApplicantComponent, {
             class: 'modal-lg',
-            initialState: { applicant: this.applicant }
+            initialState: {applicant: this.applicant}
         });
         this.modalRef.content.closePopup.subscribe(result => {
             if (result) {
