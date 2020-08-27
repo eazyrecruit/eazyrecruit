@@ -36,7 +36,9 @@ export class GoogleAnalyticsComponent implements OnInit {
                     result => {
                         if (result['success']['data']) {
                             result['success']['data'].forEach(setting => {
-                                this.analyticsForm.get(setting.key).setValue(setting.value);
+                                // tslint:disable-next-line:triple-equals max-line-length
+                                const value = setting.value == 'true' || setting.value == true ? true : setting.value == 'false' || setting.value == false ? false : setting.value;
+                                this.analyticsForm.get(setting.key).setValue(value);
                             });
                         }
 
@@ -48,7 +50,6 @@ export class GoogleAnalyticsComponent implements OnInit {
     }
 
     editForm(form) {
-        console.log('form', form);
         if (form.analytics) {
             if (!form.trackingID) {
                 this.isTrackingIdEmpty = true;
