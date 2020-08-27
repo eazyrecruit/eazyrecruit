@@ -72,8 +72,6 @@ exports.save = async (req) => {
         // we are storing image with name and we are using guid as name
         if (req.files && req.files.length) {
             modelJob.metaImage = await utilService.readWriteFile(req.files[0], modelJob.guid);
-        } else {
-            modelJob.metaImage = modelJob.metaImage || req.body.metaImage;
         }
 
         modelJob.metaImageAltText = req.body.metaImageAltText ? req.body.metaImageAltText : null;
@@ -280,9 +278,7 @@ exports.addApplicant = async (req) => {
                 modelJob.applicants = [];
             }
             modelJob.applicants.push(jobApplicant._id);
-            if (!modelJob.hasOwnProperty("metaImage")) {
-                modelJob.metaImage = null;
-            }
+
             modelJob = await modelJob.save();
             await histroyService.create({
                 applicant: req.body.applicantId,
