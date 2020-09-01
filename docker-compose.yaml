@@ -28,8 +28,13 @@ services:
             - EMAIL_TEST=true
             - JWT_EXPIRE_TIME=86400
             - SERVER_CIPHER_ORDER=true
-            - ALLOWED_ORIGINS=["https://dev.eazyrecruit.in"]
-            - WEB=https://dev.eazyrecruit.in
+            - ALLOWED_ORIGINS=$ALLOWED_ORIGINS
+            - WEB=$WEB
+            - RADIS_URI=$REDIS_URL
+            - ELASTIC_SEARCH=ez_elastic:9200
+            - MONGO_URI=$MONGO_URL
+            - ENCRYPT_IV=$NODE_ENCRYPTION_IV
+            - ENCRYPT_KEY=$NODE_ENCRYPTION_KEY
 
     ez_engine:
         container_name: ez_engine
@@ -44,8 +49,8 @@ services:
             - MONGO_DB=$MONGO_DB
             - MONGO_URL=$MONGO_URL
             - REDIS_URL=$REDIS_URL
-            - NODE_DECRYPTION_IV=$NODE_DECRYPTION_IV
-            - NODE_DECRYPTION_KEY=$NODE_DECRYPTION_KEY
+            - NODE_DECRYPTION_IV=$NODE_ENCRYPTION_IV
+            - NODE_DECRYPTION_KEY=$NODE_ENCRYPTION_KEY
             - PYTHONUNBUFFERED=TRUE
         expose:
             - "8000"
