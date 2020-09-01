@@ -22,3 +22,4 @@ engine/helpers/__pycache__/*
 
 engine/config/__pycache__/*
 mongo_db/
+.env
