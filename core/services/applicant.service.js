@@ -133,7 +133,7 @@ exports.save = async (req, enableEmail) => {
                 if (req.body.preferredLocation) {
                     var preferred = JSON.parse(req.body.preferredLocation);
                     if (preferred && preferred.length > 0) {
-                        modelApplicant.preferredLocations = [];
+                        var preferredLocations = [];
                         for (let iPreferred = 0; iPreferred < preferred.length; iPreferred++) {
                             modelpreferredLocation = await Locations.findOne({_id: preferred[iPreferred].id})
                             if (modelpreferredLocation == null) {
@@ -148,8 +148,9 @@ exports.save = async (req, enableEmail) => {
                                 modelpreferredLocation.modified_at = new Date();
                                 modelpreferredLocation = await modelpreferredLocation.save();
                             }
-                            modelApplicant.preferredLocations.push(modelpreferredLocation._id);
+                            preferredLocations.push(modelpreferredLocation._id);
                         }
+                        modelApplicant.preferredLocations = preferredLocations;
                     }
                 }
 
