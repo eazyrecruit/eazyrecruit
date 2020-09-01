@@ -34,7 +34,7 @@ module.exports = {
                 testRecepient: process.env.TEST_RECEPIENT || 'testeazyrecruit@gmail.com'
             },
             jwt: {
-                secret: process.env.JWT_SECRET || 'ATDHPTGPSF&(**DSFDFY^L&^USGHSODISOIY&D*SYDDH',
+                secret: 'SHDJHDSDSD&(**DSUDSY^D&^USDHSODISOIY&D*SYDDH',
                 expireTime: Number(process.env.JWT_EXPIRE_TIME) || 86400, // for admin we will use 24hr
                 audience: process.env.JWT_AUDIENCE || 'EazyRecruitUsers',
                 issuer: process.env.JWT_ISSUER || 'https://www.eazyrecruit.in'
