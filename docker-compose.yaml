@@ -70,8 +70,8 @@ services:
             - MONGO_DB=$MONGO_DB
             - MONGO_URL=$MONGO_URL
             - REDIS_URL=$REDIS_URL
-            - NODE_DECRYPTION_IV=$NODE_DECRYPTION_IV
-            - NODE_DECRYPTION_KEY=$NODE_DECRYPTION_KEY
+            - NODE_DECRYPTION_IV=$NODE_ENCRYPTION_IV
+            - NODE_DECRYPTION_KEY=$NODE_ENCRYPTION_KEY
             - PYTHONUNBUFFERED=TRUE
         depends_on:
             - ez_redis
