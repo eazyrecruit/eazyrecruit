@@ -7,6 +7,7 @@ class EazyrecruitAPI:
 
     def __init__(self):
         self.baseurl = config.get_config()['api_Url']
+        self.clientSecret = config.get_config()['clientSecret']
         # self.email = config['destEmail']
         # self.password = config['destPassword']
 
@@ -39,11 +40,11 @@ class EazyrecruitAPI:
             return
 
 
-    def uploadResumeWithData(self, attachment, data, url, token):
+    def uploadResumeWithData(self, attachment, data, url):
         print("44","uploading file")
         try:
             bodyData = json.dumps(data)
-            headers = {'Authorization': "Bearer "+token}
+            headers = {'clientSecret': self.clientSecret}
             multipart_form_data = {'resumeData': (
                 attachment.split('/')[-1], open(attachment, 'rb'))}
             payload = {'body': json.dumps(data)}

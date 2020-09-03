@@ -12,7 +12,7 @@ let mammoth = require("mammoth");
 var redisClient = require('../services/redis.service');
 var logTypes = require('../helpers/logType');
 var resumeService = require('../services/resume.service');
-
+var config = require('../config').config();
 router.get("/search", async (req, res) => {
     try {
         var results = await esService.searchApplicants(req);
@@ -25,7 +25,10 @@ router.get("/search", async (req, res) => {
                 results.hits.hits[iHit]._source.preferredLocations = await locationService.getAllByIds(results.hits.hits[iHit]._source.preferredLocations);
                 applicants.push(results.hits.hits[iHit]._source);
             }
-            responseService.response(req, null, 'Applicants GET', { applicants: applicants, total: results.hits.total.value }, res);
+            responseService.response(req, null, 'Applicants GET', {
+                applicants: applicants,
+                total: results.hits.total.value
+            }, res);
         } else {
             responseService.response(req, null, 'Applicants GET', null, res);
         }
@@ -63,7 +66,29 @@ router.post("/", applicantResumeUpload.any(), async (req, res) => {
     }
 });
 
-var resumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var applicantResumeParse = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
+router.post("/resume/parse", applicantResumeParse.any(), async (req, res) => {
+    try {
+        //console.log("req.headers", req.headers);
+        if (req.headers["clientSecret"] === config.coreClientSecret || req.headers["clientsecret"] === config.coreClientSecret) {
+            req["user"] = {
+                id: null
+            };
+            var applicant = await applicantService.save(req, true);
+            responseService.response(req, null, logTypes.debug, applicant, res);
+        } else {
+            responseService.response(req, {
+                status: 500,
+                message: 'invalid clientSecret'
+            }, logTypes.debug, null, res);
+        }
+
+    } catch (err) {
+        responseService.response(req, err, logTypes.debug, null, res);
+    }
+});
+
+var resumeUpload = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/resume", resumeUpload.any(), async (req, res) => {
     try {
         var applicant;
@@ -87,7 +112,7 @@ router.post("/resume", resumeUpload.any(), async (req, res) => {
     }
 });
 
-var applicantResumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var applicantResumeUpload = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.put("/", applicantResumeUpload.any(), async (req, res) => {
     try {
         var applicant = await applicantService.saveAndUpdate(req);
@@ -106,7 +131,7 @@ router.delete("/:id", applicantResumeUpload.any(), async (req, res) => {
     }
 });
 
-var uploadService = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var uploadService = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/upload", uploadService.any(), (req, res) => {
     applicantService.uploadResume(req, (errorResume, dataResume) => {
         if (errorResume) responseService.response(req, errorResume, 'Upload resume', null, res);
@@ -210,7 +235,7 @@ router.post("/comment", async (req, res) => {
     try {
         var comment = await applicantService.addComment(req);
         responseService.response(req, null, 1, comment, res);
-    } catch(err){
+    } catch (err) {
         responseService.response(req, err, 1, false, res);
     }
 });
@@ -219,7 +244,7 @@ router.get("/comment/:id", async (req, res) => {
     try {
         var comments = await applicantService.getComments(req);
         responseService.response(req, null, 1, comments, res);
-    } catch(err){
+    } catch (err) {
         responseService.response(req, err, 1, false, res);
     }
 });
@@ -228,7 +253,7 @@ router.put("/comment", async (req, res) => {
     try {
         var comment = await applicantService.updateCommentsById(req);
         responseService.response(req, null, 1, comment, res);
-    } catch(err){
+    } catch (err) {
         responseService.response(req, err, 1, false, res);
     }
 });
@@ -268,7 +293,7 @@ router.get("/resume", (req, res, next) => {
             // docx2html(destination).then((html) => {
             //     html.toString()
             // })
-            mammoth.convertToHtml({ path: destination }, "p[style-name='Section Title'] => h1:fresh")
+            mammoth.convertToHtml({path: destination}, "p[style-name='Section Title'] => h1:fresh")
                 .then(function (result) {
                     var html = result.value; // The generated HTML
                     var messages = result.messages; // Any messages, such as warnings during conversion
@@ -278,21 +303,21 @@ router.get("/resume", (req, res, next) => {
     });
 });
 
-router.get("/job/:applicantId",  async (req, res) => {
+router.get("/job/:applicantId", async (req, res) => {
     try {
         let result = await applicantService.getjobsByApplicantId(req.params.applicantId);
         responseService.response(req, null, 'get applicant applied job', result, res);
-    } catch(error) {
+    } catch (error) {
         responseService.response(req, error, 'get applicant applied job', null, res);
     }
 });
 
 // getCommentsByJob
-router.get("/comment/:applicant/:job",  async (req, res) => {
+router.get("/comment/:applicant/:job", async (req, res) => {
     try {
         let result = await applicantService.getCommentsByJob(req.params.applicant, req.params.job);
         responseService.response(req, null, 'get applicant applied job', result, res);
-    } catch(error) {
+    } catch (error) {
         responseService.response(req, error, 'get applicant applied job', null, res);
     }
 });

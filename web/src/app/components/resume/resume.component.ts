@@ -12,7 +12,7 @@ import { ValidationService } from '../../services/validation.service';
   selector: 'applicant-resume',
   templateUrl: './resume.component.html',
   styleUrls: ['./resume.component.css'],
-  providers: [SearchService, UploadService,ValidationService]
+  providers: [SearchService, UploadService, ValidationService]
 })
 export class ResumeComponent implements DoCheck {
 
@@ -88,7 +88,8 @@ export class ResumeComponent implements DoCheck {
   }
 
   open() {
-    if ((this.resume.fileName).includes('.pdf')) {
+    const fileExtension = this.resume.fileName.split('.').pop();
+    if (fileExtension === 'pdf') {
       const blob = this.converBase64toBlob(this.resume.resume, 'application/pdf');
       const blobURL = window.URL.createObjectURL(blob);
       this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
