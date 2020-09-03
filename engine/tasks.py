@@ -58,8 +58,7 @@ def resumeparser_task(tempFile, fileName, resumeId, source):
         if data:
             data['resume'] = {'file': fileName, 'id': resumeId, "source": source}
             #this token is valid for 10 years from 8 Apr, 2020
-            token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlOGM0NTcxYmNhNjZkZWMxMmUwOTliMyIsImVtYWlsIjoidmlja3lAYWtlby5ubyIsInJvbGVzIjpbXSwiaWF0IjoxNTg2MzM5MDQyLCJleHAiOjE5MDE2OTkwNDIsImF1ZCI6IkVhenlSZWNydWl0VXNlcnMiLCJpc3MiOiJodHRwczovL2Rldi1hcGkuZWF6eXJlY3J1aXQuaW4ifQ.J1RhGZwarEhhFreOc91NK9Ag9Gfa3GCc8YLfH15Frls"
-            eazyrecruitAPI.uploadResumeWithData( tempFile, data, "/api/applicant", token)
+            eazyrecruitAPI.uploadResumeWithData( tempFile, data, "/api/applicant/resume/parse")
     except Exception as xf:
         print(xf)
     finally:

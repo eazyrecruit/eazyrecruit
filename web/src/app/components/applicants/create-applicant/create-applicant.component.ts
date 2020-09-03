@@ -95,7 +95,7 @@ export class CreateApplicantComponent implements OnInit {
         lastName: [applicant.lastName, [], this.validationService.nameValid],
         email: [applicant.email, [<any>Validators.required], this.validationService.emailValid],
         phone: [applicant.phones.toString(), [], this.validationService.mobileValid],
-        referredBy: [applicant.referredBy ? applicant.referredBy._id : ''],
+        referredBy: [applicant.referredBy || ''],
         noticePeriod: [applicant.noticePeriod],
         noticePeriodNegotiable: [applicant.noticePeriodNegotiable],
         skills: [applicant.skills, []],

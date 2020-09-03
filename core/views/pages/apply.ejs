@@ -1,3 +1,79 @@
+<script>
+    function isFormValid(formData) {
+        // console.log(formData)
+        var flag = true
+        if (!formData['name']) {
+            document.getElementById('nameError').innerText = "Name is required";
+            flag = false
+        }
+        if (!formData['email']) {
+            document.getElementById('emailError').innerText = "Email is required";
+            flag = false
+        }
+
+        if (!formData['phone']) {
+            document.getElementById('phoneError').innerText = "Phone is required";
+            flag = false
+        }
+        if (!formData['expectedCtc']) {
+            document.getElementById('expectedCtcError').innerText = "Expected CTC is required";
+            flag = false
+        }
+        if (!formData['currentCtc']) {
+            document.getElementById('currentCtcError').innerText = "Current CTC is required";
+            flag = false
+        }
+        if (formData['availability'] === "Select time") {
+            document.getElementById('availabilityError').innerText = "Availability is required";
+            flag = false
+        }
+
+        return flag;
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        document.getElementById('nameError').innerText = "";
+        document.getElementById('emailError').innerText = "";
+        document.getElementById('phoneError').innerText = "";
+        document.getElementById('expectedCtcError').innerText = "";
+        document.getElementById('currentCtcError').innerText = "";
+        document.getElementById('availabilityError').innerText = "";
+        document.getElementById('resumeError').innerText = "";
+
+        let data = {}
+        const formData = new FormData(document.getElementById('form-id'));
+        for (var pair of formData.entries()) {
+            data[pair[0]] = pair[1];
+        }
+        console.log(data, "data");
+        if (isFormValid(data)) {
+            if (data.resume && data.resume.name) {
+                var fileExtension = data.resume.name.split('.').pop();
+
+                if (["pdf", "doc", "docx"].indexOf(fileExtension) >= 0) {
+                    const formSendData = new FormData();
+                    for (let key in data) {
+                        formSendData.append(key, data[key]);
+                    }
+                    fetch(window.location.pathname, {
+                        method: 'POST',
+                        body: formSendData
+                    }).then(res => {
+                        document.write(res);
+                    })
+                }
+
+            } else {
+                document.getElementById('resumeError').innerText = "Only .pdf .doc or .docx support";
+            }
+
+        } else {
+            document.getElementById('resumeError').innerText = "Resume is require";
+        }
+    }
+</script>
+
 <div class="album py-3 bg-light">
     <div class="container">
         <div class="row">
@@ -15,26 +91,27 @@
             <div class="col-sm-3 col-md-3 mb-10">
                 <div class="card">
                     <div class="job-img">
-                        <img src="/<%= locals.job && job.metaImage ? job.metaImage :company && company.logo ? company.logo : 'images/defaultlogo.png' %>" class="job-logo" width="100%"></img>
+                        <img src="/<%= locals.job && job.metaImage ? job.metaImage : company && company.logo ? company.logo : 'images/defaultlogo.png' %>"
+                             class="job-logo" width="100%"></img>
                     </div>
                     <div class="card-body">
                         <h5 class="card-title"><%= job.title %></h5>
                         <div class="row">
                             <span class="col-sm-12">
-                                <%  if (locals.job && job.locations && job.locations.length) { %>
+                                <% if (locals.job && job.locations && job.locations.length) { %>
                                     <% for(let i = 0; i < job.locations.length; i++) { %>
-                                    <%= job.locations[i].city %>, <%= job.locations[i].state %>
-                                    <%  } %>
+                                        <%= job.locations[i].city %>, <%= job.locations[i].state %>
+                                    <% } %>
                                 <% } else { %>
                                     N/A
-                                <%  } %>
+                                <% } %>
                             </span>
                             <span class="col-sm-12">
                                 <% if (locals.job && job.minExperience) { %>
                                     <%= job.minExperience %> Year experience
-                                    <% } else { %>
+                                <% } else { %>
                                     N/A
-                                    <% } %>
+                                <% } %>
                             </span>
                             <span class="col-sm-12">
                                 <% if (locals.job && job.type) { %>
@@ -51,10 +128,11 @@
                 <div class="card">
                     <div class="card-header"><i class="fa fa-address-book "></i> <%= job.title %></div>
                     <div class="card-body">
-                        <form method="post" action="#" enctype="multipart/form-data">
+                        <form method="post" id="form-id" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <input type="hidden" class="form-control" name="jobId" value="<%= job.id%>" required>
+                                    <input type="hidden" class="form-control" name="jobId" value="<%= job.id %>"
+                                           required>
                                     <input type="hidden" class="form-control" name="source" value="website" required>
                                 </div>
                             </div>
@@ -62,18 +140,21 @@
                                 <div class="form-group col-md-12">
                                     <label for="name" class="required">Name</label>
                                     <input type="text" placeholder="Name" class="form-control" name="name" required>
+                                    <small id="nameError" class="text-danger"></small>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-6 taggingBox">
                                     <label for="alterEgo" class="required">Email address</label>
                                     <input type="text" placeholder="Email address" class="form-control" name="email"
-                                        required>
+                                           required>
+                                    <small id="emailError" class="text-danger"></small>
                                 </div>
                                 <div class="form-group col-sm-6">
                                     <label for="contact" class="required">Phone number</label>
                                     <input type="text" placeholder="Phone number" class="form-control" name="phone"
-                                        required>
+                                           required>
+                                    <small id="phoneError" class="text-danger"></small>
                                 </div>
                             </div>
 
@@ -81,6 +162,7 @@
                                 <div class="form-group col-md-12">
                                     <label for="name" class="required">Resume</label>
                                     <input type="file" placeholder="Resume" class="form-control" name="resume" required>
+                                    <small id="resumeError" class="text-danger"></small>
                                 </div>
                             </div>
                             <div class="row">
@@ -93,20 +175,25 @@
                                         <option value="Two months">Two months</option>
                                         <option value="More than 2 months">More than 2 months</option>
                                     </select>
+                                    <small id="availabilityError" class="text-danger"></small>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-6 taggingBox">
                                     <label for="contact" class="required">Current CTC (Annually in lacs)</label>
                                     <input type="text" placeholder="Current CTC" class="form-control" name="currentCtc">
+                                    <small id="currentCtcError" class="text-danger"></small>
                                 </div>
                                 <div class="form-group col-md-6 taggingBox">
                                     <label for="contact" class="required">Expected CTC (Annually in lacs)</label>
                                     <input type="text" placeholder="Expected CTC" class="form-control"
-                                        name="expectedCtc">
+                                           name="expectedCtc">
+                                    <small id="expectedCtcError" class="text-danger"></small>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary mt-10 mb-10 border-radius-30">Submit</button>
+                            <button type="submit" onclick="handleSubmit(event)"
+                                    class="btn btn-primary mt-10 mb-10 border-radius-30">Submit
+                            </button>
                         </form>
                     </div>
                 </div>

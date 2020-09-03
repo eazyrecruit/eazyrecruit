@@ -59,10 +59,7 @@ var applicantSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'ApplicantResumes'
     },
-    referredBy: {
-        type: Schema.Types.ObjectId,
-        ref: 'Users'
-    },
+    referredBy: String,
     source: String,
     is_deleted: Boolean,
     created_by: {
