@@ -42,6 +42,7 @@ module.exports = {
             googleAuth: {
                 'callbackURL': process.env.GOOGLE_CALLBACK_URL || '/admin/assets/auth-callback.html'
             },
+            coreClientSecret: process.env.CORE_CLIENT_SECRET|| "secret",
             mongo: {
                 host: process.env.MONGO_URI || 'mongodb://userName:password@ez_mongodb/admin'
             },
