@@ -24,7 +24,8 @@ module.exports.setup = (app) => {
         //yash need save api to be open
         // pathToRegexp('/api/applicant/*'),
         pathToRegexp('/api/user/resetpassword'),
-        pathToRegexp('/api/candidate/received/email')
+        pathToRegexp('/api/candidate/received/email'),
+        "/api/applicant/resume/parse"
     ];
     app.use((req, res, next) => {
         global.rootdirectory = __dirname;
