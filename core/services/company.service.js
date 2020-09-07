@@ -25,7 +25,7 @@ exports.getSettings = getSettings = async (query) => {
 
 
 exports.getSettingObject = async (query) => {
-    let result =  await getSettings(query);
+    let result = await getSettings(query);
     let data = {};
     if (result && result.length) {
         for (let index = 0; index < result.length; index++) {
@@ -41,6 +41,11 @@ exports.updateSettings = async (req, next) => {
     var data = [];
     var formKeys = [];
     var formValues = [];
+    if (req.files && req.files.gaConfigurationFile) {
+        let gaConfigurationFileData = JSON.parse(req.files.gaConfigurationFile.data.toString());
+        settings["privateKey"] = gaConfigurationFileData["private_key"] || "";
+        settings["clientEmail"] = gaConfigurationFileData["client_email"] || ""
+    }
     formKeys = Object.keys(settings);
     formValues = Object.values(settings);
     var dbCompanySettings = await CompanySettings.find({companyId: req.query.id, groupName: req.query.group});
@@ -68,7 +73,13 @@ exports.updateSettings = async (req, next) => {
                     groupName: req.query.group,
                     key: formKeys[index]
                 },
-                {value: encryptService.encrypt(formValues[index].toString())}, {new: true});
+                {
+                    value: encryptService.encrypt(formValues[index].toString()),
+                    companyId: req.query.id,
+                    groupName: req.query.group,
+                    key: formKeys[index]
+                },
+                {upsert: true});
             if (companySettings) {
                 companySettings.value = encryptService.decrypt(companySettings.value)
                 data.push(companySettings);

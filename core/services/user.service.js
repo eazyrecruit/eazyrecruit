@@ -4,7 +4,11 @@ var bcrypt = require('bcrypt-nodejs');
 var User = require('../models/user');
 var Role = require('../models/userRole');
 var emailService = require('../services/email.service');
-
+var bcryptNodejs = require("bcrypt-nodejs");
+var config = require('../config').config();
+const fs = require("fs");
+var Readable = require('stream').Readable;
+let path = require("path");
 exports.getRoles = async () => {
     return await Role.find({is_deleted: false});
 };
@@ -27,6 +31,9 @@ exports.getUsers = async (req) => {
     return {count, users};
 };
 
+exports.getUser = async (ownerId) => {
+    return await User.findOne({_id: ownerId, is_deleted: false}, {password: 0, passwordResetToken: 0, picture: 0});
+};
 exports.register = async (req) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -92,7 +99,6 @@ exports.register = async (req) => {
         }
     });
 };
-
 exports.update = async (req) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -130,6 +136,170 @@ exports.update = async (req) => {
         }
     });
 };
+
+/**
+ * we are sending file data in stream
+ * @param ownerId
+ * @param res
+ */
+exports.fileStream = async (ownerId, res) => {
+    try {
+        let userModel = await User.findById({_id: ownerId, is_deleted: false});
+        if (userModel && userModel.picture) {
+            const imgBuffer = Buffer.from(userModel.picture, 'base64');
+            res.writeHead(200, {
+                'Cache-Control': 'max-age=3600, private',
+                'Content-Length': imgBuffer.length,
+                'Content-Type': 'image/png'
+            });
+            return res.end(imgBuffer);
+        } else {
+            return res.sendStatus(404);
+        }
+
+    } catch (error) {
+        console.log("accountService-->fileStream-->", error);
+        return res.sendStatus(404);
+    }
+};
+
+exports.updateUser = async (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let userModel = await User.findById({_id: data.ownerId, is_deleted: false});
+            if (userModel) {
+                try {
+                    if (data.newPassword) {
+                        if (!data.oldPassword) {
+                            let err = {
+                                status: 200,
+                                message: 'old password is incorrect'
+                            };
+                            console.log('update user : ', error);
+                            return reject(err);
+                        }
+                        userModel.comparePassword(data.oldPassword, async (isMatch) => {
+                            if (isMatch) {
+                                userModel.password = data.newPassword;
+                                return resolve(await userModel.save());
+                            } else {
+                                let err = {
+                                    status: 200,
+                                    message: 'old password is incorrect'
+                                };
+                                console.log('update user : ', err);
+                                return reject(err);
+                            }
+                        });
+                    } else {
+                        if (data.isRemovePhoto) {
+                            userModel["picture"] = null;
+                        }
+                        if (data.files) {
+                            userModel["picture"] = await updateUserProfilePicture(data.files, "profilePicture");
+                        }
+
+                        // update user
+                        userModel.name = `${data.firstName} ${data.lastName}`;
+                        userModel.firstName = data.firstName || userModel.firstName;
+                        userModel.lastName = data.lastName || userModel.lastName;
+                        userModel.phone = [data.phoneNo];
+                        userModel.modified_by = data.ownerId;
+                        userModel.modified_at = new Date();
+                        resolve(await userModel.save());
+                    }
+
+                } catch (error) {
+                    let err = {
+                        status: 500,
+                        message: 'internal server error'
+                    }
+                    console.log('update user : ', error);
+                    reject(err);
+                }
+            } else {
+                let err = {
+                    status: 404,
+                    message: 'user not found'
+                }
+                console.log('update user : ', err);
+                reject(err);
+            }
+        } catch (error) {
+            console.log('update user catch: ', error);
+            reject(error);
+        }
+    });
+};
+
+async function updateUserProfilePicture(files, key) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (files && files[key]) {
+                let file = files[key];
+                if (config.profileSupportFileType.indexOf(file.mimetype) < 0) {
+                    return reject({message: "This file type not supported", status: 400})
+                }
+                if (config.profileSupportFileSize < file.size) {
+                    return reject({message: "file size limit exceed", status: 400})
+                }
+                let fileFullPath = await getTempFilePath(file);
+                resolve(await base64_encode(fileFullPath));
+            } else {
+                return reject({message: "internal server error", status: 500})
+            }
+        } catch (error) {
+            console.log("accountService-->updateUserProfilePicture-->", error);
+            return reject({message: "internal server error", status: 500})
+        }
+    });
+}
+
+/**
+ * keep the file in temp storage and get temp file path
+ * @param file
+ * @returns
+ */
+async function getTempFilePath(file) {
+    return new Promise(async (resolve, reject) => {
+        let fileName = file.name.split(" ").join("");
+        let tempFilePath = "profile/" + Date.now() + '_' + fileName;
+        let fileFullPath = path.join(config.rootPath, tempFilePath);
+        file.mv(fileFullPath, async (err, data) => {
+            if (err) {
+                console.log("getFileData->", err);
+                reject(err);
+            } else {
+                resolve(fileFullPath)
+            }
+        });
+    });
+}
+
+/**
+ * convert img into base 64
+ * @param fileName
+ * @returns {Promise<unknown>}
+ */
+async function base64_encode(fileName) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let bitmap = fs.readFileSync(fileName);
+            let data = new Buffer(bitmap).toString('base64');
+            fs.unlink(fileName, (_err) => {
+                if (_err) {
+                    console.log("unlink-->", _err);
+                }
+            });
+
+            resolve(data);
+            // convert binary data to base64 encoded string
+        } catch (error) {
+            console.log("catch-->base64_encode", error);
+            resolve(null)
+        }
+    });
+}
 
 exports.delete = async (req) => {
     return new Promise(async (resolve, reject) => {
