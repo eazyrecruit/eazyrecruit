@@ -48,7 +48,7 @@ exports.resetPassword = (req, next) => {
                                 status: 500,
                                 message: 'internal server error'
                             };
-                            console.log('forget password : ', error);
+                            console.log('forget password : ', err);
                             next(err, null);
                         } else {
                             next(null, `An email has been sent to ${email.receiverAddress} for reset your password.`);

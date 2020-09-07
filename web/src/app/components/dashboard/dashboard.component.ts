@@ -29,8 +29,12 @@ export class DashboardComponent implements OnInit {
 
     public lineChartData: ChartDataSets[] = [];
     public lineChartLabels: Label[] = [];
+
+
+    public lineChartUserData: ChartDataSets[] = [];
+    public lineChartUserLabels: Label[] = [];
     public lineChartType = 'line';
-    public lineChartColors: Color[] = [{borderColor: 'red'},]
+    public lineChartColors: Color[] = [{borderColor: 'red'}];
 
     interviews: any;
     role: any;
@@ -45,6 +49,7 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit() {
         this.options = {editable: true};
+        this.getAnalyticsData();
         this.loadResumeByDay();
         this.role = this.accountService.getRole();
     }
@@ -52,14 +57,14 @@ export class DashboardComponent implements OnInit {
     loadCalendar(start, end) {
         this.interviewService.getEventBetweenDates(start, end).subscribe(res => {
             if (res['success']) {
-                let allevents = this.fullCalendarElement.calendar.getEvents();
+                const allevents = this.fullCalendarElement.calendar.getEvents();
                 allevents.forEach(el => {
                     el.remove();
                 });
                 res['success'].data.forEach(interview => {
 
-                    var startDate = new Date(new Date(interview.start).toString());
-                    var endDate = new Date(interview.end).toString();
+                    const startDate = new Date(new Date(interview.start).toString());
+                    const endDate = new Date(interview.end).toString();
                     this.fullCalendarElement.calendar.addEvent({
                         id: interview._id,
                         title: this.getFullName(interview.jobApplicant.firstName, interview.jobApplicant.middleName, interview.jobApplicant.lastName),
@@ -81,19 +86,19 @@ export class DashboardComponent implements OnInit {
             if (res['success'] && res['success'].data && res['success'].data.aggregations) {
                 if (res['success'].data.aggregations.byday && res['success'].data.aggregations.byday.buckets
                     && res['success'].data.aggregations.byday.buckets.length > 0) {
-                    console.log("res['success'].data", res['success'].data.aggregations.byday.buckets);
-                    var labels = [], totals = [], emails = [], websites = [], uploads = [], dbs = [];
+                    console.log('res[\'success\'].data', res['success'].data.aggregations.byday.buckets);
+                    const labels = [], totals = [], emails = [], websites = [], uploads = [], dbs = [];
                     res['success'].data.aggregations.byday.buckets.forEach(bucket => {
                         labels.push(new Date(bucket.key_as_string).toLocaleDateString());
                         totals.push(bucket.doc_count);
                         if (bucket.value && bucket.value.buckets && bucket.value.buckets.length > 0) {
-                            var upload = bucket.value.buckets.find(buk => buk.key == 'upload');
+                            const upload = bucket.value.buckets.find(buk => buk.key == 'upload');
                             if (upload) uploads.push(upload.doc_count); else uploads.push(0);
-                            var email = bucket.value.buckets.find(buk => buk.key == 'email');
+                            const email = bucket.value.buckets.find(buk => buk.key == 'email');
                             if (email) emails.push(email.doc_count); else emails.push(0);
-                            var website = bucket.value.buckets.find(buk => buk.key == 'website');
+                            const website = bucket.value.buckets.find(buk => buk.key == 'website');
                             if (website) websites.push(website.doc_count); else websites.push(0);
-                            var db = bucket.value.buckets.find(buk => buk.key == 'db');
+                            const db = bucket.value.buckets.find(buk => buk.key == 'db');
                             if (db) dbs.push(db.doc_count); else dbs.push(0);
                         } else {
                             uploads.push(0);
@@ -102,13 +107,33 @@ export class DashboardComponent implements OnInit {
                             dbs.push(0);
                         }
                     });
-                    var reportData = [{data: totals, label: "Total"}, {data: uploads, label: "Upload"},
-                        {data: emails, label: "Email"}, {data: websites, label: "Website"}, {data: dbs, label: "DB"}
+                    const reportData = [{data: totals, label: 'Total'}, {data: uploads, label: 'Upload'},
+                        {data: emails, label: 'Email'}, {data: websites, label: 'Website'}, {data: dbs, label: 'DB'}
                     ];
                     this.lineChartLabels = labels;
                     this.lineChartData = reportData;
                 }
             }
+        });
+    }
+
+    getAnalyticsData() {
+        this.reportService.getAnalyticsData().subscribe(res => {
+            const labels = [], totals = [];
+            if (res['success'] && res['success'].data && res['success'].data
+                && res['success'].data.rows && res['success'].data.rows.length > 0) {
+                const result = res['success'].data.rows;
+                for (let index = 0; index < result.length; index++) {
+                    labels.push(result[index][0].substring(0, 4) + '/' +
+                        result[index][0].substring(4, 6) + '/' + result[index][0].substring(6, 8));
+                    totals.push(result[index][1]);
+                }
+            }
+            const reportData = [{data: totals, label: 'Users'}];
+            this.lineChartUserLabels = labels;
+            this.lineChartUserData = reportData;
+        }, () => {
+
         });
     }
 
@@ -135,9 +160,9 @@ export class DashboardComponent implements OnInit {
         });
         this.modalRef.content.close = (data) => {
             if (data) {
-                let updatedEvent = this.fullCalendarElement.calendar.getEventById(data.interview._id);
-                var startDate = new Date(data.start);
-                var endDate = new Date(data.end);
+                const updatedEvent = this.fullCalendarElement.calendar.getEventById(data.interview._id);
+                const startDate = new Date(data.start);
+                const endDate = new Date(data.end);
                 data.jobApplicant = updatedEvent.extendedProps.jobApplicant;
                 this.fullCalendarElement.calendar.addEvent({
                     id: data._id,
@@ -149,19 +174,19 @@ export class DashboardComponent implements OnInit {
                 updatedEvent.remove();
                 this.modalRef.hide();
             }
-        }
+        };
     }
 
     getFullName(firstName, middleName, lastName) {
-        var name = firstName;
-        if (middleName) name = name + " " + middleName;
-        if (lastName) name = name + " " + lastName;
+        let name = firstName;
+        if (middleName) name = name + ' ' + middleName;
+        if (lastName) name = name + ' ' + lastName;
         return name;
     }
 
     public lineChartOptions: (ChartOptions & { annotation: any }) = {
         responsive: true,
-        scales: {xAxes: [{}], yAxes: [{id: 'y-axis-0', position: 'left',}]},
+        scales: {xAxes: [{}], yAxes: [{id: 'y-axis-0', position: 'left', }]},
         annotation: {
             annotations: [{
                 type: 'line', mode: 'vertical', scaleID: 'x-axis-0', borderWidth: 2,

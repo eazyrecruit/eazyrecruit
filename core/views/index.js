@@ -34,6 +34,7 @@ router.get("", async (req, res) => {
             console.log(googleAnalytics);
         }
 
+        console.log("googleAnalytics", googleAnalytics);
         var result = await jobService.getPublishedJobs(query, limit, offset);
         totalItems = result.count;
         let lastPage = Math.ceil(totalItems / limit);
@@ -69,6 +70,7 @@ router.get("/apply/:id", async (req, res) => {
             googleAnalytics = await companyService.getSettingObject({id: company[0]._id, group: "googleAnalytics"});
         }
 
+     /*   console.log("googleAnalytics", googleAnalytics);*/
 
         var job = await jobService.getByGuid(req.params.id);
         if (job) {
@@ -90,7 +92,7 @@ router.get("/:id", async (req, res) => {
             googleAnalytics = await companyService.getSettingObject({id: company[0]._id, group: "googleAnalytics"});
         }
 
-
+        console.log("googleAnalytics", googleAnalytics);
         var job = await jobService.getByGuid(req.params.id);
         if (job) {
             res.render('pages/job', {job: job, googleAnalytics: googleAnalytics, company: company[0]});
