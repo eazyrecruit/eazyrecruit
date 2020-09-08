@@ -41,8 +41,8 @@ exports.updateSettings = async (req, next) => {
     var data = [];
     var formKeys = [];
     var formValues = [];
-    if (req.files && req.files.gaConfigurationFile) {
-        let gaConfigurationFileData = JSON.parse(req.files.gaConfigurationFile.data.toString());
+    if (req.files && req.files.length > 0) {
+        let gaConfigurationFileData = JSON.parse(req.files[0].buffer.toString());
         settings["privateKey"] = gaConfigurationFileData["private_key"] || "";
         settings["clientEmail"] = gaConfigurationFileData["client_email"] || ""
     }

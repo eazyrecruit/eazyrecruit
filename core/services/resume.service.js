@@ -30,7 +30,7 @@ exports.getHtmlForReumeBase64 = async (base64_string, file_extension) => {
         response.data = new Buffer(matches[2], 'base64');
         let imageBuffer = response;
         let uid = generateRandomString();
-        let destination = './downloadable_files'
+        let destination = './downloadable_files';
 
 
         if (!fs.existsSync(destination)) {

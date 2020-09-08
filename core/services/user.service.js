@@ -195,8 +195,8 @@ exports.updateUser = async (data) => {
                         if (data.isRemovePhoto === true || data.isRemovePhoto === "true") {
                             userModel["picture"] = null;
                         }
-                        if (data.files) {
-                            userModel["picture"] = await updateUserProfilePicture(data.files, "profilePicture");
+                        if (data.files && data.files.length) {
+                            userModel["picture"] = data.files[0].buffer.toString('base64');
                         }
 
                         // update user
@@ -235,8 +235,8 @@ exports.updateUser = async (data) => {
 async function updateUserProfilePicture(files, key) {
     return new Promise(async (resolve, reject) => {
         try {
-            if (files && files[key]) {
-                let file = files[key];
+            if (files && files.length) {
+                let file = files[0];
                 if (config.profileSupportFileType.indexOf(file.mimetype) < 0) {
                     return reject({message: "This file type not supported", status: 400})
                 }

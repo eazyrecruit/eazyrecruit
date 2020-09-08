@@ -69,7 +69,6 @@ router.post("/", applicantResumeUpload.any(), async (req, res) => {
 var applicantResumeParse = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/resume/parse", applicantResumeParse.any(), async (req, res) => {
     try {
-        //console.log("req.headers", req.headers);
         if (req.headers["clientSecret"] === config.coreClientSecret || req.headers["clientsecret"] === config.coreClientSecret) {
             req["user"] = {
                 id: null
