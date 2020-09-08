@@ -5,13 +5,15 @@ let router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        let users = await userService.getUsers(req);
-        responseService.successResponse(users, 'get users', res);
-    } catch (err) {
-        let error = {
-            status: 500,
-            message: 'internal server error',
+        let result = {};
+        if (req.query.single) {
+            result = await userService.getUser(req.user.id)
+        } else {
+            result = await userService.getUsers(req);
         }
+
+        responseService.successResponse(result, 'get users', res);
+    } catch (err) {
         console.log('get users - error : ', err);
         responseService.errorResponse(error, 'get users', res);
     }
@@ -25,7 +27,7 @@ router.get('/roles', async (req, res) => {
         let error = {
             status: 500,
             message: 'internal server error',
-        }
+        };
         console.log('get roles - error : ', err);
         responseService.errorResponse(error, 'get roles', res);
     }
@@ -45,6 +47,10 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.get('/profile/:id', async (req, res) => {
+    return  await userService.fileStream(req.params.id, res);
+});
+
 router.put('/:id', async (req, res) => {
     try {
         let users = await userService.update(req);
@@ -53,9 +59,21 @@ router.put('/:id', async (req, res) => {
         let error = {
             status: 500,
             message: 'internal server error',
-        }
+        };
         console.log('update users - error : ', err);
         responseService.errorResponse(error, 'update users', res);
+    }
+});
+
+router.put('', async (req, res) => {
+    try {
+        req.body["ownerId"] = req.user.id;
+        req.body["files"] = req.files;
+        let users = await userService.updateUser(req.body);
+        responseService.successResponse(users, 'update users', res);
+    } catch (err) {
+        console.log('update users - error : ', err);
+        responseService.errorResponse(err, 'update users', res);
     }
 });
 
@@ -67,7 +85,7 @@ router.delete('/:id', async (req, res) => {
         let error = {
             status: 500,
             message: 'internal server error',
-        }
+        };
         console.log('delete users - error : ', err);
         responseService.errorResponse(error, 'delete users', res);
     }

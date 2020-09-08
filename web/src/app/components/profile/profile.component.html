@@ -1,0 +1,156 @@
+<section class="content content-wrapper">
+    <div class="box box-info">
+        <div class="box-header">
+            <i class="fa fa-inbox"></i>
+            <h3 class="box-title"> Profile</h3>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <form [formGroup]="profileForm" novalidate (ngSubmit)="submit(profileForm.value)">
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" placeholder="First name" class="form-control"
+                                       formControlName="firstName" required>
+                                <small class="text-danger"
+                                       *ngIf="profileForm.controls['firstName'].hasError('required') && profileForm.controls['firstName'].touched">
+                                    Please enter First Name
+                                </small>
+                                <small class="text-danger"
+                                       *ngIf="profileForm.controls['firstName'].hasError('nameValid')">
+                                    Please enter correct first name
+                                </small>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" placeholder="Last name" class="form-control"
+                                       formControlName="lastName" required>
+                                <small class="text-danger"
+                                       *ngIf="profileForm.controls['lastName'].hasError('required') && profileForm.controls['lastName'].touched">
+                                    Please enter Last Name
+                                </small>
+                                <small class="text-danger"
+                                       *ngIf="profileForm.controls['lastName'].hasError('nameValid')">
+                                    Please enter correct last name
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-6 taggingBox">
+                                <label for="email">Email Address</label>
+                                <input type="text" id="email" placeholder="Email address" class="form-control"
+                                       formControlName="email" readonly>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label for="phone">Contact No.</label>
+                                <input id="phone" type="text" placeholder="Contact No" class="form-control"
+                                       formControlName="phoneNo" required>
+                                <small class="text-danger"
+                                       *ngIf="profileForm.controls['phoneNo'].hasError('required') && profileForm.controls['phoneNo'].touched">
+                                    Please enter Contact No.
+                                </small>
+                                <small class="text-danger"
+                                       *ngIf="profileForm.controls['phoneNo'].hasError('mobileValid')&& profileForm.controls['phoneNo'].touched">
+                                    Please enter correct contact no.
+                                </small>
+                            </div>
+                        </div>
+
+                        <button [disabled]="profileSubmit" type="submit"
+                                class="btn btn-primary mt-10 mb-10 border-radius-30">
+                            Submit
+                            <span *ngIf="!profileSubmit">
+            <i class="fa fa-arrow-circle-right"></i>
+          </span></button>
+
+                    </form>
+                </div>
+                <div class="col-sm-2">
+                    <div style="margin: 6px;">
+                        <label for="">Profile Picture </label>
+                    </div>
+
+                    <div class="profile-pic mb-3">
+                        <ng-container *ngIf="!userPicUrl">
+                            <img src="/admin/assets/img/amir.png" alt="user"/>
+                        </ng-container>
+                        <ng-container *ngIf="userPicUrl">
+                            <img id="userPicUrl" [src]="userPicUrl" alt="user"/>
+                        </ng-container>
+                    </div>
+                    <div class="custom-file">
+
+                        <input type="file" class="custom-file-input"   id="file" accept=".png, .jpg, .jpeg" (change)="onFileChange($event)">
+                        <small class="text-danger" *ngIf="profileError">
+                            Please upload only png/jpeg/jpg file
+                        </small>
+                    </div>
+                    <a [routerLink]="" (click)="onRemovePhoto()" class="link d-block"> Remove photo </a>
+
+
+                </div>
+                <div class="col-sm-1"></div>
+                <div class="col-sm-4">
+                    <form [formGroup]="passwordForm" (ngSubmit)="updatePassword(passwordForm.value)">
+                        <div style="margin: 6px;">
+                            <label><h4>Update Password </h4></label>
+                        </div>
+                        <div style="margin: 6px;">
+                            <label for="oldPassword">Old Password</label>
+                            <input type="password" id="oldPassword" placeholder="Old Password" required
+                                   class="form-control"
+                                   formControlName="oldPassword">
+                            <small class="text-danger"
+                                   *ngIf="passwordForm.controls['oldPassword'].hasError('required') && passwordForm.controls['oldPassword'].touched">
+                                Please enter old Password
+                            </small>
+                        </div>
+                        <div style="margin: 6px;">
+                            <label for="password">New Password*</label>
+                            <input type="password" id="password" placeholder="New Password" required
+                                   class="form-control"
+                                   formControlName="newPassword">
+                            <small class="text-danger"
+                                   *ngIf="passwordForm.controls['newPassword'].hasError('required') && passwordForm.controls['newPassword'].touched">
+                                Please enter new password
+                            </small>
+                            <small class="text-danger"
+                                   *ngIf="passwordForm.controls['newPassword'].hasError('minlength') && passwordForm.controls['newPassword'].touched">
+                                Password must be minimum 6 character long
+                            </small>
+
+                        </div>
+                        <div style="margin: 6px;">
+                            <label for="confirmPassword">Conform Password*</label>
+                            <input type="password" id="confirmPassword" placeholder="Conform Password" required
+                                   class="form-control"
+                                   formControlName="confirmPassword">
+                            <small class="text-danger"
+                                   *ngIf="submitted && passwordForm.value['newPassword']!=passwordForm.value['confirmPassword']">
+                                Conform Password not match
+                            </small>
+
+                        </div>
+                        <div class="col-sm-6" style="margin: 6px;">
+                            <button [disabled]="passwordSubmit" type="submit"
+                                    class="btn btn-primary mt-10 mb-10 border-radius-30">
+                                Change Password
+                                <span *ngIf="passwordSubmit">
+            <i class="fa fa-arrow-circle-right"></i>
+          </span></button>
+                            <!--  <button [disabled]="loading" type="submit" class="btn btn-success">Change Password
+                                  <i class="fa fa-arrow-circle-right"></i>
+                              </button>-->
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

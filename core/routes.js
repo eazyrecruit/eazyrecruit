@@ -25,7 +25,8 @@ module.exports.setup = (app) => {
         // pathToRegexp('/api/applicant/*'),
         pathToRegexp('/api/user/resetpassword'),
         pathToRegexp('/api/candidate/received/email'),
-        "/api/applicant/resume/parse"
+        "/api/applicant/resume/parse",
+        pathToRegexp('/api/user/profile/*'),
     ];
     app.use((req, res, next) => {
         global.rootdirectory = __dirname;
@@ -51,7 +52,7 @@ module.exports.setup = (app) => {
 
 
             }
-            if(req.body.referralEmail){
+            if (req.body.referralEmail) {
                 req.body.referralEmail = req.body.referralEmail.toLowerCase().trim()
             }
 
@@ -102,6 +103,7 @@ module.exports.setup = (app) => {
     // Views
     app.use('/', require('./views/index').pages);
     app.use('/api/migration', require('./controllers/migrate.ctrl').migrate);
+    app.use('/api/analytics', require('./controllers/analytics.ctrl').analyticsRoutes);
     app.use('/api/user', require('./controllers/user.ctrl').user);
 };
 

@@ -7,7 +7,8 @@ var multer = require('multer');
 router.get("/:id",
     async (req, res, next) => {
         try {
-            let resume_id = req.params.id;
+            let filenamearray = []
+            let resume_id = req.params.id
 
             //fetch resume by id
             let resume = await resumeService.getResumeById(resume_id);
@@ -15,7 +16,7 @@ router.get("/:id",
                 var fileExtension = resume.fileName.split('.').pop();
                 console.log("fileExtension", fileExtension);
                 if (resume && (fileExtension == "docx" || fileExtension == "doc")) {
-                    html_response = await resumeService.getHtmlForReumeBase64(resume.resume, fileExtension);
+                    html_response = await resumeService.getHtmlForReumeBase64(resume.resume, filenamearray[1]);
                     resume.resume = fileExtension == "doc" ? html_response.html.match(/<body[^>]*>[\s\S]*<\/body>/gi) : html_response.html;
                     file_path = html_response.destination;
                     html_file_path = html_response.html_file_path;

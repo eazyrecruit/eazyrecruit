@@ -14,13 +14,18 @@ export class GoogleAnalyticsComponent implements OnInit {
     analyticsForm: FormGroup;
     company: any;
     isTrackingIdEmpty: any = false;
+    json: any;
 
     constructor(private companyService: CompanyService,
                 private validationService: ValidationService,
                 private fbForm: FormBuilder) {
         this.analyticsForm = this.fbForm.group({
             analytics: [true],
-            trackingID: [null]
+            trackingID: [null],
+            clientEmail: [null],
+            privateKey: [null],
+            viewId: [null],
+            json: []
         });
     }
 
@@ -49,14 +54,32 @@ export class GoogleAnalyticsComponent implements OnInit {
         });
     }
 
+    onFileChange(event) {
+        const reader = new FileReader();
+        if (event[0].type.includes('json')) {
+            reader.onload = () => {
+                this.json = event[0];
+            };
+            reader.readAsDataURL(event[0]);
+        }
+    }
+
     editForm(form) {
+        const formData = new FormData();
+        formData.append('analytics', form.analytics);
         if (form.analytics) {
-            if (!form.trackingID) {
+            if (!form.trackingID || !form.viewId) {
                 this.isTrackingIdEmpty = true;
                 return;
             }
+            if (this.json) {
+                formData.append('gaConfigurationFile', this.json);
+            }
+            formData.append('trackingID', form.trackingID);
+            formData.append('viewId', form.viewId);
+
         }
-        this.companyService.editSettings(form, this.company._id, 'googleAnalytics').subscribe(result => {
+        this.companyService.editSettings(formData, this.company._id, 'googleAnalytics').subscribe(result => {
             if (result['success']) {
                 this.setForm();
             }

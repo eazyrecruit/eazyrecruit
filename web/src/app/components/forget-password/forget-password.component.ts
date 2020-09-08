@@ -46,7 +46,7 @@ export class ForgetPasswordComponent implements OnInit {
           SiteJS.stopLoader();
         }
       }, (err) => {
-        this.errorMessage = err.error.error.message
+        this.errorMessage = err.error.error.message;
         SiteJS.stopLoader();
       });
     }
