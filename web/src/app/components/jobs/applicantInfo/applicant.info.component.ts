@@ -36,6 +36,9 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     appliedJob = [];
     applicantDetails: any;
     modalRef: BsModalRef;
+    jobsSkils = {};
+    matchedSkills: any[] = [];
+    unMatchSkills: any[] = [];
     scheduledInterviews: Array<any>;
     interviewers: Array<any>;
     showComments = false;
@@ -74,6 +77,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         if (this.applicant) {
             document.getElementById('home').click();
             this.getApplicantById(this.applicant._id);
+            this.getJobsByApplicantId();
         }
     }
 
@@ -244,13 +248,42 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     }
 
     getJobsByApplicantId() {
-        if (this.applicant && this.applicant._id) {
+        if (this.applicant._id) {
             this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
-                if (result) {
+                if (result && result['success'] && result['success']['data'] && result['success']['data'].length) {
                     this.applicant.jobs = result['success']['data'];
+                    this.getJobsSkils(result['success']['data']);
+                    /*  console.log("this.applicant.jobs", this.applicant.jobs);*/
                 }
             });
         }
+    }
+
+    getJobsSkils(jobsApplicants) {
+        this.jobsSkils = {};
+        this.matchedSkills = [];
+        this.unMatchSkills = [];
+        for (let index = 0; index < jobsApplicants.length; index++) {
+            const job = jobsApplicants[index].job || {};
+            if (job.skills && job.skills.length) {
+                for (let count = 0; count < job.skills.length; count++) {
+                    console.log(job.skills[count].name);
+                    this.jobsSkils[job.skills[count].name.toUpperCase()] = job.skills[count].name;
+                }
+            }
+        }
+        if (this.applicant && this.applicant.skills && this.applicant.skills.length) {
+            for (let index = 0; index < this.applicant.skills.length; index++) {
+                if (this.jobsSkils.hasOwnProperty(this.applicant.skills[index].name.toUpperCase())) {
+                    this.matchedSkills.push(this.applicant.skills[index].name);
+                } else {
+                    this.unMatchSkills.push(this.applicant.skills[index].name);
+                }
+
+            }
+        }
+
+
     }
 
     getFullName(firstName, middleName, lastName) {

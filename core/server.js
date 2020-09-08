@@ -6,7 +6,6 @@ var app = express();
 const fs = require("fs");// define our app using express
 var bodyParser = require('body-parser');
 var partials = require('express-partials');
-var fileUpload = require("express-fileupload");
 var config = require('./config').config(); // get our config file
 // // Add headers
 app.use(function (req, res, next) {
@@ -49,9 +48,6 @@ app.use(expressValidator());
 // this will let us get the data from a POST
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-app.use(fileUpload({
-    limits: {fileSize: 1024 * 1024 * 1024},
-}));
 // Register models
 require('./models').setup();
 require('./models').initialize();
