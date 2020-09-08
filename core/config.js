@@ -60,6 +60,10 @@ module.exports = {
             admin: {
                 username: process.env.ADMIN_USER_NAME || "admin@eazyrecruit.in"
             },
+            rootPath: __dirname,
+            profileSupportFileType: ['image/jpeg', 'image/png'],
+            profileSupportFileSize: 1024 * 1024 * 2,
+            googleAnalyticsApi: process.env.GOOGLE_ANALYTICS_API || "https://www.googleapis.com/auth/analytics.readonly",
             roles: ['admin', 'hr', 'interviewer'],
             companyInfo: {
                 signature: process.env.COMPANY_SIGNATURE || "<b>HR team</b><br>Akeo Software Solutions Pvt Ltd<br><a href='mailto:hr@akeo.in'>hr@akeo.in</a>",

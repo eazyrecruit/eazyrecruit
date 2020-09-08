@@ -6,8 +6,6 @@
     <div class="box-body">
 
         <fieldset class="col-sm-6">
-
-
             <form [formGroup]="analyticsForm" novalidate (ngSubmit)="editForm(analyticsForm.value)">
 
                 <div style="margin: 6px;">
@@ -17,21 +15,80 @@
                 </div>
 
                 <div>
+                    <ng-container *ngIf="!analyticsForm.value.analytics">
 
-                    <div style="margin: 6px;">
-                        <label for="trackingID">Tracking ID*</label>
-                        <input type="text" placeholder="Tracking ID"
-                               *ngIf="!analyticsForm.value.analytics" class="form-control" readonly
-                               formControlName="trackingID">
-                        <input type="text" id="trackingID" placeholder="Tracking ID"
-                               *ngIf="analyticsForm.value.analytics" required class="form-control"
-                               formControlName="trackingID">
-                        <small class="text-danger"
-                               *ngIf="analyticsForm.value.analytics &&  !analyticsForm.value['trackingID'] && (isTrackingIdEmpty || analyticsForm.controls['trackingID'].touched)">
-                            Please enter Tracking ID
-                        </small>
+                        <div style="margin: 6px;">
+                            <label for="trackingID1">Tracking ID*</label>
+                            <input type="text" id="trackingID1" placeholder="Tracking ID" readonly class="form-control"
+                                   formControlName="trackingID">
 
-                    </div>
+                        </div>
+
+                        <div style="margin: 6px;">
+                            <label for="clientEmail1">Client Email*</label>
+                            <input type="text" id="clientEmail1" placeholder="Client Email" readonly
+                                   class="form-control"
+                                   formControlName="clientEmail">
+                        </div>
+
+                        <div style="margin: 6px;">
+                            <label for="privateKey1">Private Key*</label>
+                            <input type="text" id="privateKey1" placeholder="Private Key" readonly class="form-control"
+                                   formControlName="privateKey">
+
+                        </div>
+
+                        <div style="margin: 6px;">
+                            <label for="viewId1">View ID*</label>
+                            <input type="text" id="viewId1" placeholder="View ID" readonly class="form-control"
+                                   formControlName="viewId">
+
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="analyticsForm.value.analytics">
+                        <div style="margin: 6px;">
+                            <label for="trackingID">Tracking ID*</label>
+                            <input type="text" id="trackingID" placeholder="Tracking ID" required class="form-control"
+                                   formControlName="trackingID">
+                            <small class="text-danger"
+                                   *ngIf="analyticsForm.value.analytics &&  !analyticsForm.value['trackingID'] && (isTrackingIdEmpty || analyticsForm.controls['trackingID'].touched)">
+                                Please enter Tracking ID
+                            </small>
+
+                        </div>
+
+                        <div style="margin: 6px;">
+                            <label for="clientEmail">Client Email*</label>
+                            <input type="text" id="clientEmail" placeholder="Client Email" readonly class="form-control"
+                                   formControlName="clientEmail">
+
+                        </div>
+                        <div style="margin: 6px;">
+                            <label for="privateKey">Private Key*</label>
+                            <input type="text" id="privateKey" placeholder="Private Key" readonly class="form-control"
+                                   formControlName="privateKey">
+
+                        </div>
+                        <div style="margin: 6px;">
+                            <label for="trackingID">View ID*</label>
+                            <input type="text" id="viewId" placeholder="View ID" required class="form-control"
+                                   formControlName="viewId">
+                            <small class="text-danger"
+                                   *ngIf="analyticsForm.value.analytics &&  !analyticsForm.value['viewId'] && (isTrackingIdEmpty || analyticsForm.controls['viewId'].touched)">
+                                Please enter View ID
+                            </small>
+
+                        </div>
+
+                        <div style="margin: 6px;">
+                            <label for="json" class="not-required"></label>
+                            <input type="file" id="json" class="form-control" formControlName="json" #file
+                                   (change)="onFileChange(file.files)" multiple="" accept=".json">
+                        </div>
+
+                    </ng-container>
+
 
                 </div>
 

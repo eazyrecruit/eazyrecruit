@@ -1,76 +1,66 @@
 <div class="mt-60">
-  <section class="content">
-    <div class="row">
-      <div class="col-sm-7">
-        <div class="row" *ngIf="role == 'admin'">
-          <div class="col-sm-12" *ngIf="lineChartData && lineChartData.length > 0">
-            <div class="box box-info">
-              <div class="box-header">
-                <h4>Resume</h4>
-              </div>
-              <div class="box body">
-                <div class="flex">
-                  <div class="flex-item">
-                    <div style="display: block;">
-                      <canvas baseChart height="200px" [datasets]="lineChartData" [labels]="lineChartLabels" [colors]="lineChartColors"
-                        [options]="lineChartOptions" [chartType]="lineChartType" [plugins]="lineChartPlugins"></canvas>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <section class="content">
         <div class="row">
-          <div class="col-sm-12">
-            <div class="box box-info">
-              <div class="box-header">
-                <h4>Interview Schedule</h4>
-              </div>
-              <div class="box-body">
-                <ngx-fullcalendar #fullCalendar defaultView="month" (onDatesRender)="onDatesRender($event)" 
-                  (onEventClick)="onEventClick($event)" [events]="events" [options]="options"></ngx-fullcalendar>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-5">
-        <div class="row" >
-          <div class="col-sm-12">
-            <div class="box box-info">
-              <div class="box-header">
-                <h4>Profiles</h4>
-              </div>
-              <div class="box body">
-                <div class="flex">
-                  <div class="flex-item">
-                    <div style="display: block; height: 200px">
+            <div class="col-sm-7">
+                <div class="box box-info">
+                    <div class="box-header">
+                        <h4>Interview Schedule</h4>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="box box-info">
-              <div class="box-header">
-                <h4>Recent Activities</h4>
-              </div>
-              <div class="box body">
-                <div class="flex">
-                  <div class="flex-item">
-                    <div style="display: block; height: 450px">
+                    <div class="box-body">
+                        <ngx-fullcalendar #fullCalendar defaultView="month"
+                                          (onDatesRender)="onDatesRender($event)"
+                                          (onEventClick)="onEventClick($event)" [events]="events"
+                                          [options]="options"></ngx-fullcalendar>
                     </div>
-                  </div>
                 </div>
-              </div>
             </div>
-          </div>
+            <div class="col-sm-5">
+                <ng-container *ngIf="role == 'admin'">
+                    <div class="row">
+                        <div class="col-sm-12" *ngIf="lineChartUserData && lineChartUserData.length > 0">
+                            <div class="box box-info">
+                                <div class="box-header">
+                                    <h4>User Visit</h4>
+                                </div>
+                                <div class="box body">
+                                    <div class="flex">
+                                        <div class="flex-item">
+                                            <div style="display: block;">
+                                                <canvas baseChart height="200px" [datasets]="lineChartUserData"
+                                                        [labels]="lineChartUserLabels" [colors]="lineChartColors"
+                                                        [options]="lineChartOptions" [chartType]="lineChartType"
+                                                        [plugins]="lineChartPlugins"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="role == 'admin'">
+                        <div class="col-sm-12" *ngIf="lineChartData && lineChartData.length > 0">
+                            <div class="box box-info">
+                                <div class="box-header">
+                                    <h4>Resume</h4>
+                                </div>
+                                <div class="box body">
+                                    <div class="flex">
+                                        <div class="flex-item">
+                                            <div style="display: block;">
+                                                <canvas baseChart height="200px" [datasets]="lineChartData"
+                                                        [labels]="lineChartLabels" [colors]="lineChartColors"
+                                                        [options]="lineChartOptions" [chartType]="lineChartType"
+                                                        [plugins]="lineChartPlugins"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 </div>
