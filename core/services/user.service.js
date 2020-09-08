@@ -192,7 +192,7 @@ exports.updateUser = async (data) => {
                             }
                         });
                     } else {
-                        if (data.isRemovePhoto) {
+                        if (data.isRemovePhoto === true || data.isRemovePhoto === "true") {
                             userModel["picture"] = null;
                         }
                         if (data.files) {

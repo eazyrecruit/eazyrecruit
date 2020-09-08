@@ -4,6 +4,7 @@ import {Router, Params, ActivatedRoute} from '@angular/router';
 import {ValidationService} from '../../services/validation.service';
 import {AccountService, AuthStorage} from '../../services/account.service';
 import {ConstService} from '../../services/const.service';
+import {ToasterService} from "angular2-toaster";
 
 declare var SiteJS: any;
 
@@ -33,6 +34,7 @@ export class ProfileComponent implements OnInit {
                 private validationService: ValidationService,
                 private fbuilder: FormBuilder,
                 private constService: ConstService,
+                private toasterService: ToasterService,
                 private route: ActivatedRoute) {
         this.passwordForm = this.fbuilder.group({
             oldPassword: ['', [<any>Validators.required]],
@@ -82,7 +84,6 @@ export class ProfileComponent implements OnInit {
         this.accountService.getUser().subscribe(result => {
             if (result['success']['data']) {
                 const authData = this.authStorage.getAuthData();
-                console.log('authData', authData['data']);
                 if (authData['data'].isPicture) {
                     this.userPicUrl = this.constService.publicUrl + '/api/user/profile/' + authData['data'].id;
                 }
@@ -132,9 +133,8 @@ export class ProfileComponent implements OnInit {
                 if (result['success'] && result['success']['data']) {
                     const authData = this.authStorage.getAuthData();
                     authData['data']['displayName'] = result['success']['data']['name'];
-                    if (result['success']['data']['picture']) {
-                        authData['data']['isPicture'] = true;
-                    }
+                    authData['data']['isPicture'] = !!result['success']['data']['picture'];
+                    this.toasterService.pop('success', 'Profile updated', 'Profile updated successfully');
                     this.authStorage.setAuthorizationHeader(authData);
                 } else if (result['error']) {
                     alert(result['error']['message']);
@@ -159,14 +159,17 @@ export class ProfileComponent implements OnInit {
                 this.passwordSubmit = true;
                 this.accountService.updateUserData(passwordFormDetail).subscribe(result => {
                     if (result['success'] && result['success']['data']) {
+                        this.toasterService.pop('success', 'Password updated', 'Password updated successfully');
                     } else if (result['error']) {
                         alert(result['error']['message']);
                     } else {
                         alert('Error! Please try again later.');
                     }
+                    this.passwordForm.reset();
                     this.submitted = false;
                     this.passwordSubmit = false;
                 }, error => {
+                    this.passwordForm.reset();
                     this.submitted = false;
                     this.passwordSubmit = false;
                     console.log(error);
