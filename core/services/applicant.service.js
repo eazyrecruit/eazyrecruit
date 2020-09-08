@@ -81,7 +81,7 @@ exports.save = async (req, enableEmail) => {
                             modelResume.created_by = req.user.id;
                             modelResume.created_at = new Date();
                         }
-                        modelResume.resume = req.files[0].buffer.toString('base64')
+                        modelResume.resume = req.files[0].buffer.toString('base64');
                         modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
                         modelResume.fileType = req.files[0].mimetype;
                         modelResume.modified_by = req.user.id;
@@ -89,7 +89,7 @@ exports.save = async (req, enableEmail) => {
                         modelResume = await modelResume.save();
                         modelApplicant.resume = modelResume._id;
                     } else {
-                        modelApplicant.resume = req.body.resume;
+                        modelApplicant.resume = req.body.resumeId;
                     }
                 }
 
@@ -352,7 +352,11 @@ exports.getById = async (_id) => {
 exports.getjobsByApplicantId = async (_id) => {
     return await JobApplicant.find({applicant: _id, is_deleted: {$ne: true}}).populate({
         path: 'job',
-        select: 'title'
+        select: 'title skills',
+        populate: {
+            path: 'skills',
+            select: 'name',
+        }
     }).populate({path: 'pipeline', select: 'name'});
 }
 

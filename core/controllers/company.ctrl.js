@@ -30,8 +30,8 @@ router.get("/settings/", async (req, res) => {
     }
 
 });
-
-router.put("/settings/", async (req, res) => {
+var gaConfigurationFileUpload = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
+router.put("/settings/" ,gaConfigurationFileUpload.any(), async (req, res) => {
     try {
         let result = await companyService.updateSettings(req);
         responseService.response(req, null, 'settings', result, res);

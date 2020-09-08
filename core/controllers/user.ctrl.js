@@ -2,7 +2,7 @@ const express = require('express');
 var responseService = require('../services/response.service');
 var userService = require('../services/user.service');
 let router = express.Router();
-
+var multer = require('multer');
 router.get('/', async (req, res) => {
     try {
         let result = {};
@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/profile/:id', async (req, res) => {
-    return  await userService.fileStream(req.params.id, res);
+    return await userService.fileStream(req.params.id, res);
 });
 
 router.put('/:id', async (req, res) => {
@@ -64,8 +64,8 @@ router.put('/:id', async (req, res) => {
         responseService.errorResponse(error, 'update users', res);
     }
 });
-
-router.put('', async (req, res) => {
+var profileFileUpload = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
+router.put('', profileFileUpload.any(), async (req, res) => {
     try {
         req.body["ownerId"] = req.user.id;
         req.body["files"] = req.files;
