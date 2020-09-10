@@ -243,6 +243,14 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
             if (result) {
                 this.applicant = result['success']['data'];
                 this.applicant.fullName = this.getFullName.bind(this.applicant);
+                this.matchedSkills = [];
+                this.unMatchSkills = [];
+                if (this.applicant && this.applicant.skills && this.applicant.skills.length) {
+                    for (let index = 0; index < this.applicant.skills.length; index++) {
+                        this.unMatchSkills.push(this.applicant.skills[index].name);
+
+                    }
+                }
             }
         });
     }
