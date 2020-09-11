@@ -237,9 +237,9 @@ body {
 
 .applicant-info{
     position: fixed;
-    right: -410px;
+    right: -440px;
     top:0px;
-    width: 400px;
+    width: 440px;
     height: 100vh;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.5s;
@@ -824,6 +824,7 @@ tag-input {
 .pipeline {
     display: flex;
     width: 260px;
+    max-height: 95vh;
 }
 
 .pipeline-box-body {
@@ -1109,3 +1110,37 @@ tag-input {
     height: 40px;
     object-fit: cover;
 }
+
+#pipline-custom-box.padding-20px-tb{
+    max-height: calc(100vh - 100px);
+}
+
+.pipeline-box, .box{
+    margin-bottom: 0px;
+}
+
+ 
+.skills-block{
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.skill-box{
+    max-height: 300px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+ 
+
+@media screen and (min-width:1200px) and (max-width:4000px){
+   #jobs-custom.padding-20px-tb{
+        max-height: 88vh;
+    }
+    
+    .scroll-pipeline {        
+        max-height: calc(100vh - 100px);
+    }
+
+}
+
+ 
