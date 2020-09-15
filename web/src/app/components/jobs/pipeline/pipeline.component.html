@@ -26,7 +26,7 @@
         </div>
       </div>
     </div>
-    <div class="main-content padding-20px-tb plr-15" style="overflow: scroll;">
+    <div class="main-content padding-20px-tb plr-15" id="jobs-custom" style="overflow: scroll;">
       <div class="pipeline plr">
         <div droppable *ngFor="let pipeline of job.pipelines; let i = index;"
           (onDrop)="onColumnDrop($event, pipeline, i)">

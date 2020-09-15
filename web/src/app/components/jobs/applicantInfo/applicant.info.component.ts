@@ -28,7 +28,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     resume: any;
     resumeId: any;
     defaultColor = 'label label-default';
-    matchedColor = 'label label-success';
+    matchedColor = 'label label-info';
     rejectionDetails: FormGroup;
     applicantHistory: any = [];
     jobPostApplicantId: any;
