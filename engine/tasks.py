@@ -57,7 +57,6 @@ def resumeparser_task(tempFile, fileName, resumeId, source):
         resume_text, data = ResumeParser.parse(tempFile)
         if data:
             data['resume'] = {'file': fileName, 'id': resumeId, "source": source}
-            #this token is valid for 10 years from 8 Apr, 2020
             eazyrecruitAPI.uploadResumeWithData( tempFile, data, "/api/applicant/resume/parse")
     except Exception as xf:
         print(xf)
