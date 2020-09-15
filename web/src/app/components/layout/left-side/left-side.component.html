@@ -12,12 +12,12 @@
     <section class="sidebar">
         <!-- Sidebar user panel -->
         <div class="user-panel">
-            <div class="pull-left image">
+            <div class="pull-left image" id="left-side-userPicUrl">
                 <ng-container *ngIf="!userPicUrl">
                     <img src="/admin/assets/img/amir.png" class="img-circle" alt="User Image">
                 </ng-container>
                 <ng-container *ngIf="userPicUrl">
-                    <img id="userPicUrl" [src]="userPicUrl" alt="user"/>
+                    <img [src]="userPicUrl" class="img-circle" alt="User Image" />
                 </ng-container>
             </div>
 

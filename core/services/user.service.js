@@ -32,7 +32,7 @@ exports.getUsers = async (req) => {
 };
 
 exports.getUser = async (ownerId) => {
-    return await User.findOne({_id: ownerId, is_deleted: false}, {password: 0, passwordResetToken: 0, picture: 0});
+    return await User.findOne({_id: ownerId, is_deleted: false}, {passwordResetToken: 0, picture: 0});
 };
 exports.register = async (req) => {
     return new Promise(async (resolve, reject) => {

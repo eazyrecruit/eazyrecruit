@@ -28,6 +28,7 @@ export class ProfileComponent implements OnInit {
     submitted = false;
     authStorage = new AuthStorage();
     profileError = false;
+    isLoginWithGoogle = true;
 
     constructor(private accountService: AccountService,
                 private router: Router,
@@ -84,6 +85,10 @@ export class ProfileComponent implements OnInit {
         this.accountService.getUser().subscribe(result => {
             if (result['success']['data']) {
                 const authData = this.authStorage.getAuthData();
+
+                if (result['success']['data']['password']) {
+                    this.isLoginWithGoogle = false;
+                }
                 if (authData['data'].isPicture) {
                     this.userPicUrl = this.constService.publicUrl + '/api/user/profile/' + authData['data'].id;
                 }
@@ -135,7 +140,19 @@ export class ProfileComponent implements OnInit {
                     authData['data']['displayName'] = result['success']['data']['name'];
                     authData['data']['isPicture'] = !!result['success']['data']['picture'];
                     this.toasterService.pop('success', 'Profile updated', 'Profile updated successfully');
+                    localStorage.removeItem('auth_data');
                     this.authStorage.setAuthorizationHeader(authData);
+                    if (authData['data']['isPicture']) {
+                        this.userPicUrl = this.constService.publicUrl + '/api/user/profile/' + authData['data'].id;
+                        document.getElementById('left-side-userPicUrl').innerHTML =
+                            '<img src=' + this.userPicUrl + ' class="img-circle" alt="User Image">';
+                    } else {
+                        document.getElementById('left-side-userPicUrl').innerHTML =
+                            '<img src="/admin/assets/img/amir.png" class="img-circle" alt="User Image">';
+                    }
+
+
+                    // this.router.navigate(['/']);
                 } else if (result['error']) {
                     alert(result['error']['message']);
                 } else {
