@@ -1,0 +1,129 @@
+version: "3"
+
+services:
+    nginx:
+        image: nginx:alpine
+        container_name: ez_ngx
+        ports:
+            - "80:8000"
+        volumes:
+            - ./nginx:/etc/nginx/conf.d
+        depends_on:
+            - ez_web
+            # - ez_engine
+
+    ez_web:
+        container_name: ez_web
+        image: ez_web
+        build:
+            context: .
+            dockerfile: web.dockerfile
+        # ports:
+        #     - "8082:8082"
+        volumes:
+            - web_images:/usr/src/app/images
+        environment:
+            - NODE_ENV=dev
+            - JWT_EXPIRE_TIME=86400
+            - SERVER_CIPHER_ORDER=true
+            - ALLOWED_ORIGINS=$ALLOWED_ORIGINS
+            - WEB=$WEB
+            - RADIS_URI=$REDIS_URL
+            - ELASTIC_SEARCH=ez_elastic:9200
+            - MONGO_URI=$MONGO_URL
+            - ENCRYPT_IV=$NODE_ENCRYPTION_IV
+            - ENCRYPT_KEY=$NODE_ENCRYPTION_KEY
+            - EMAIL_STOP=$EMAIL_STOP
+            - EMAIL_TEST=$EMAIL_TEST
+            - TEST_RECEPIENT=$TEST_RECEPIENT
+            - CORE_CLIENT_SECRET=$CORE_CLIENT_SECRET
+
+    ez_engine:
+        container_name: ez_engine
+        image: ez-engine
+        build:
+            context: .
+            dockerfile: engine.dockerfile
+        command: [ "gunicorn", "api.wsgi:application", "--bind","0.0.0.0:8000", "--workers", "3" ]
+        environment:
+            - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
+            - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT
+            - MONGO_DB=$MONGO_DB
+            - MONGO_URL=$MONGO_URL
+            - REDIS_URL=$REDIS_URL
+            - NODE_DECRYPTION_IV=$NODE_ENCRYPTION_IV
+            - NODE_DECRYPTION_KEY=$NODE_ENCRYPTION_KEY
+            - PYTHONUNBUFFERED=TRUE
+            - CORE_CLIENT_SECRET=$CORE_CLIENT_SECRET
+        expose:
+            - "8000"
+        depends_on:
+            - ez_mongodb
+            - ez_elastic
+
+    ez_worker:
+        container_name: ez_worker
+        build:
+            context: .
+            dockerfile: engine.dockerfile
+        command: sh -c "supervisord && celery worker -A tasks -B -s /usr/src/celery"
+        environment:
+            - CORE_SERVICE_PATH=$CORE_SERVICE_PATH
+            - DJANGO_DEVELOPMENT=$DJANGO_DEVELOPMENT
+            - MONGO_DB=$MONGO_DB
+            - MONGO_URL=$MONGO_URL
+            - REDIS_URL=$REDIS_URL
+            - NODE_DECRYPTION_IV=$NODE_ENCRYPTION_IV
+            - NODE_DECRYPTION_KEY=$NODE_ENCRYPTION_KEY
+            - PYTHONUNBUFFERED=TRUE
+            - CORE_CLIENT_SECRET=$CORE_CLIENT_SECRET
+        depends_on:
+            - ez_redis
+            - ez_mongodb
+        ports:
+            - 5555:5555
+
+    ez_elastic:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+        container_name: ez_elastic
+        environment:
+            - discovery.type=single-node
+        volumes:
+            - elastic_search_data:/usr/share/elasticsearch/data
+        ports:
+            - 9500:9300
+            - 9400:9200
+        depends_on:
+            - ez_mongodb
+
+    ez_mongodb:
+        image: mongo:latest
+        container_name: ez_mongodb
+        environment:
+            - MONGO_DATA_DIR=/data/db
+            - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+            - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
+        volumes:
+            - mongo_db:/data/db
+        ports:
+            - 27019:27017
+
+    ez_redis:
+        image: bitnami/redis:latest
+        container_name: ez_redis
+        environment:
+            - REDIS_PASSWORD=$REDIS_PASSWORD
+            - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+        ports:
+            - 6379:6379
+        volumes:
+            - redis_data:/bitnami/redis/data
+
+volumes:
+    redis_data:
+    elastic_search_data:
+    mongo_db:
+    web_images:
+
+
+

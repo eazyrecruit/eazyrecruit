@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eazyrecruit-dev-api
+  labels:
+    app: eazyrecruit-dev-api
+spec:
+  selector:
+    matchLabels:
+      app: eazyrecruit-dev-api
+  template:
+    metadata:
+      labels:
+        app: eazyrecruit-dev-api
+    spec:
+      containers:
+      - image: dev-eazyrecruit-api-image
+        name: eazyrecruit-dev-api
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NODE_ENV
+          value: dev
+        ports:
+        - containerPort: 8082
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eazyrecruit-dev-api-svc
+spec:
+  ports:
+  - name: eazyrecruit-dev-api
+    targetPort: 8082
+    port: 8082
+    nodePort: 30065
+  selector:
+    app: eazyrecruit-dev-api
+  type: NodePort

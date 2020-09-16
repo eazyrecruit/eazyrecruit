@@ -1,0 +1,6 @@
+	
+# ignore all *.class files in all folders, including build root
+node_modules
+.git
+.cache
+

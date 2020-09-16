@@ -1,0 +1,84 @@
+<section class="content content-wrapper">
+  <!--<div class="content-header mt-60 mb-30 border-none">
+    <h1>
+      Dashboard
+      <small>Control panel</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li>
+        <a href="#">
+          <i class="fa fa-dashboard"></i> Home</a>
+      </li>
+      <li class="active">Search</li>
+    </ol>
+  </div>-->
+  <div class="bg-white main-content border-radius-3">
+    <div class="sec-header bg-white pd-5">
+      <h2>
+        <i class="fa fa-inbox"></i> Search filter</h2>
+    </div>
+    <div class="main-content padding-20px-tb plr-15">
+      <form [formGroup]="searchForm" novalidate (ngSubmit)="searchDetail(searchForm.value)">
+        <div class="row">
+          <div class="col-md-5">
+            <div class="form-group">
+              <input type="text" class="form-control" id="search" formControlName="search" placeholder="search" ng-trim="false">
+            </div>
+          </div>
+          <div class="col-md-5">
+            <div class="form-group">
+              <select class="form-control" formControlName="category" id="category">
+                <option selected>Name</option>
+                <option>Email</option>
+                <option>Phone</option>
+                <option>Technology</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary width-100 border-radius-0 height-42">search</button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="">
+        <table class="table bg-dark-black mt-30 border-light">
+          <thead>
+            <tr class="font-weight-bold">
+              <th class="col-sm-2">Firstname</th>
+              <th class="col-sm-2">Lastname</th>
+              <th class="col-sm-2">Email</th>
+              <th class="col-sm-2">Contact No.</th>
+              <th class="col-sm-2">Technology</th>
+              <th class="col-sm-2">Resume</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let candidate of searchList;">
+              <td>{{candidate.first_name}}</td>
+              <td>{{candidate.last_name}}</td>
+              <td>{{candidate.email}}</td>
+              <td>{{candidate.phone}}</td>
+              <td>no data</td>
+              <td>
+                <a class="pointer" (click)="downloadResume(candidate.resume_id)">{{candidate.resume}}</a>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="5"></td>
+              <td>
+                <label class="pointer" (click)="previous()">
+                  <h5>previous</h5>
+                </label> |
+                <label class="pointer" (click)="next()">
+                  <h5>next</h5>
+                </label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

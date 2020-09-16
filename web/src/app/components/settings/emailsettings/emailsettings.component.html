@@ -1,0 +1,87 @@
+<section>
+  <toaster-container [toasterconfig]="config"></toaster-container>
+</section>
+<div class="box box-info">
+  <div class="box-header">
+    <i class="fa fa-inbox"></i>
+    <h3 class="box-title">Email Settings</h3>
+  </div>
+  <div class="box-body">
+    <div class="row">
+      <fieldset class="col-sm-6">
+        <legend>
+          Inbound :
+        </legend>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <table class="table table-dark">
+              <tbody>
+                <tr *ngFor="let setting of inboundSettings">
+                  <td *ngIf="setting.key == 'host' || setting.key == 'user'">{{setting.key}}</td>
+                  <td *ngIf="setting.key == 'host' || setting.key == 'user'">{{setting.value}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-sm-12">
+            <button type="button" class="btn btn-success" (click)="editInbound()">Edit
+              <i class="fa fa-arrow-circle-right"></i>
+            </button>
+          </div>
+        </div>
+
+      </fieldset>
+
+      <fieldset class="col-sm-6">
+        <legend>
+          Outbound :
+        </legend>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <table class="table table-dark">
+              <tbody>
+                <tr *ngFor="let setting of outboundSettings">
+                  <td *ngIf="setting.key == 'host' || setting.key == 'user'">{{setting.key}}</td>
+                  <td *ngIf="setting.key == 'host' || setting.key == 'user'">{{setting.value}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-sm-12">
+            <button type="button" class="btn btn-success" (click)="editOutbound()">Edit
+              <i class="fa fa-arrow-circle-right"></i>
+            </button>
+          </div>
+        </div>
+
+      </fieldset>
+    </div>
+
+    <br>
+    
+    <div class="row">
+      <fieldset class="col-sm-12">
+        <legend>
+          Preview :
+        </legend>
+        <div class="row">
+          <div class="col-sm-12" *ngIf="htmlPreview">
+            <div class="box">
+              <div class="box-body">
+                <div [innerHTML]="htmlPreview | sanitizeHtml">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <button type="button" class="btn btn-success"  (click)="editTemplate()">Edit
+              <i class="fa fa-arrow-circle-right"></i>
+            </button>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</div>

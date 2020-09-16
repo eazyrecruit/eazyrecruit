@@ -1,0 +1,91 @@
+<div class="modal-header">
+  <button id="closeButton" type="button" (click)="modalRef.hide()" class="close" data-dismiss="modal">&times;</button>
+  <h4 class="modal-title">Schedule interview
+  <a (click)="modalRef.hide()" [routerLink]="['/interview',interviewForm.value.id]"><i class="fa fa-external-link"></i></a>
+  </h4>
+</div>
+<div class="modal-body content-move">
+  <form novalidate [formGroup]="interviewForm" (ngSubmit)="schduleInterview(interviewForm.value)">
+    <div class="row">
+      <div *ngIf="appliedJobs && appliedJobs.length; then dropdownBlock else titleBlock"></div>
+      <ng-template #titleBlock>
+        <div class="col-sm-12">
+          <label for="name">Job title</label>
+          <input type="text" formControlName="title" placeholder="Job title" class="form-control" readonly>
+        </div>
+      </ng-template>
+      <ng-template #dropdownBlock>
+        <div class="col-sm-12">
+          <label for="name">Job Title</label>
+          <select formControlName="title" class="form-control" (change)="onJobChange($event)">
+            <option value="null" disabled selected>Select Job</option>
+            <option *ngFor="let jobApplicant of appliedJobs;" value="{{jobApplicant.job._id}}">{{jobApplicant.job.title}}</option>
+          </select>
+          <small class="text-danger" *ngIf="interviewForm.controls['title'].hasError('required') && (interviewForm.controls['title'].touched || submit)">
+            Please select a job
+          </small>
+        </div>
+      </ng-template>
+      <div class="col-sm-6 mt-10">
+        <label for="name">Candidate name</label>
+        <input type="text" formControlName="candidateName" placeholder="Candidate name" class="form-control" readonly>
+      </div>
+      <div class="col-sm-6 mt-10">
+        <label for="name">Interviewer</label>
+        <select formControlName="interviewerId" class="form-control" (change)="onInterviwerChange($event)">
+          <option value="" disabled selected>Select Interviwer</option>
+          <option *ngFor="let interviewer of interviewers;" value="{{interviewer._id}}"> {{interviewer.name}}{{'<' + interviewer.email + '>'}}</option>
+        </select>
+        <small class="text-danger" *ngIf="interviewForm.controls['interviewerId'].hasError('required') && (interviewForm.controls['interviewerId'].touched || submit)">
+          Please select an interviewer
+        </small>
+      </div>
+      <div class="col-sm-8 mt-10">
+        <label for="start">Start</label>
+        <small class="text-danger" *ngIf="interviewForm.controls['start'].hasError('required') && interviewForm.controls['start'].touched">
+          Please select a starting date
+        </small>
+        <small class="text-danger" *ngIf="!startDateValid">
+          Please select a valid starting date
+        </small>
+        <div class="datepicker-box">
+          <input type="text" [bsConfig]='bsConfig' formControlName="start" class="form-control datepicker-date" placeholder="Datepicker" bsDatepicker>
+          <timepicker class="datepicker-time" formControlName="startTime"></timepicker>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <label for="end">End</label>
+        <small class="text-danger" *ngIf="interviewForm.controls['end'].hasError('required') && interviewForm.controls['end'].touched">
+          Please select an ending date
+        </small>
+        <small class="text-danger" *ngIf="!endDateValid">
+          Please select a valid ending date
+        </small>
+        <div class="datepicker-box">
+          <input type="text" [bsConfig]='bsConfig' formControlName="end" class="form-control datepicker-date" placeholder="Datepicker" bsDatepicker>
+          <timepicker class="datepicker-time" formControlName="endTime"></timepicker>
+        </div>
+      </div>
+      <!-- ============================ -->
+      <div class="col-sm-6">
+        <label for="end">Round name (1st/2nd/HR)</label>
+        <input type="text" placeholder="Round name" formControlName="round" class="form-control">
+      </div>
+      <div class="col-sm-6">
+        <label for="end">Channel (Skype/Online/F2F/Telephonic)</label>
+        <input type="text" placeholder="Channel" formControlName="channel" class="form-control">
+      </div>
+      <div class="col-sm-12 mt-10">
+        <label for="end">Note</label>
+        <textarea rows="3" placeholder="Note" formControlName="note" class="form-control"></textarea>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="form-group col-sm-12">
+
+        <button type="submit" class="btn btn-primary" *ngIf="['admin','hr'].indexOf(role)>=0">Submit</button>
+      </div>
+    </div>
+  </form>
+</div>

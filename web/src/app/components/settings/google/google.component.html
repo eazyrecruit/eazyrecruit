@@ -1,0 +1,52 @@
+<div class="box box-info">
+  <div class="box-header">
+    <i class="fa fa-inbox"></i>
+    <h3 class="box-title">Authentication</h3>
+  </div>
+  <div class="box-body">
+      
+      <fieldset class="col-sm-6">
+
+        
+
+        <form [formGroup]="authenticateForm" novalidate (ngSubmit)="editForm(authenticateForm.value)">
+
+          <div style="margin: 6px;">
+            <label for="authenticate"><h4>Google : </h4></label>
+            <input [(ngModel)]="checked" type="checkbox" formControlName="authenticate" style="margin-left: 25px; vertical-align: sub;">
+          </div>
+
+          <div>
+
+            <div style="margin: 6px;">
+              <label for="clientId">ClientId*</label>
+              <input type="text" placeholder="ClientId" class="form-control" formControlName="clientId" *ngIf="!checked" readonly>
+              <input type="text" placeholder="ClientId" class="form-control" formControlName="clientId" *ngIf="checked" required>
+              <small class="text-danger" *ngIf="authenticateForm.controls['clientId'].hasError('required') && authenticateForm.controls['clientId'].touched && checked">
+                Please enter ClientId
+              </small>
+            </div>
+
+            <div style="margin: 6px;">
+              <label for="clientSecret">ClientSecret*</label>
+              <input type="text" placeholder="ClientSecret" class="form-control" formControlName="clientSecret" *ngIf="!checked" readonly>
+              <input type="text" placeholder="ClientSecret" class="form-control" formControlName="clientSecret" *ngIf="checked" required>
+              <small class="text-danger" *ngIf="authenticateForm.controls['clientSecret'].hasError('required') && authenticateForm.controls['clientSecret'].touched && checked">
+                Please enter ClientSecret
+              </small>
+            </div>
+
+          </div>
+
+          <div class="col-sm-6" style="margin: 6px;">
+            <button type="submit" class="btn btn-success">Submit
+              <i class="fa fa-arrow-circle-right"></i>
+            </button>
+          </div>
+
+        </form>
+
+      </fieldset>
+ 
+  </div>
+</div>

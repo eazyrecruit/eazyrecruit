@@ -1,0 +1,117 @@
+<form [formGroup]="searchDetails" novalidate (ngSubmit)="search()" >
+  <div class="row">
+    <div class="form-group col-md-6 form-group-advance-search">
+      <label for="name">Skills</label>
+      <input type="text" placeholder="Skills" class="form-control" formControlName="skills">
+    </div>
+    <div class="form-group col-md-6 form-group-advance-search">
+      <label for="name">Location</label>
+      <input type="text" placeholder="location" class="form-control" formControlName="location" required>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3 form-group-advance-search taggingBox">
+      <label for="contact">Min Experience</label>
+      <small class="text-danger" *ngIf="searchDetails.controls['minExperience'].hasError('experienceValid')">
+        Please enter min experience in numbers
+      </small>
+      <input type="text" placeholder="Experience" class="form-control" formControlName="minExperience" required>
+    </div>
+    <div class="form-group col-md-3 form-group-advance-search taggingBox">
+      <label for="contact">Max Experience</label>
+      <small class="text-danger" *ngIf="searchDetails.controls['maxExperience'].hasError('experienceValid')">
+        Please enter min experience in numbers
+      </small>
+      <input type="text" placeholder="Experience" class="form-control" formControlName="maxExperience" required>
+    </div>
+    <div class="form-group col-md-3 form-group-advance-search taggingBox">
+      <label for="contact">Current CTC</label>
+      <small class="text-danger" *ngIf="searchDetails.controls['currentPackage'].hasError('ctcValid')">
+        Please enter ctc in numbers
+      </small>
+      <input type="text" placeholder="Current CTC" class="form-control" formControlName="currentPackage" required>
+    </div>
+    <div class="form-group col-md-3 form-group-advance-search taggingBox">
+      <label for="contact">Expected CTC</label>
+      <small class="text-danger" *ngIf="searchDetails.controls['expectedPackage'].hasError('ctcValid')">
+        Please enter ctc in numbers
+      </small>
+      <input type="text" placeholder="Expected CTC" class="form-control" formControlName="expectedPackage" required>
+    </div>
+  </div>
+  <div class="align-btn-right">
+    <button type="submit" class="btn btn-primary mt-10 mb-10 border-radius-30">Search
+      <i class="fa fa-arrow-circle-right"></i>
+    </button>
+  </div>
+</form>
+<div class="clear"></div>
+<div *ngIf="isSearchTerm == 2">
+  <p class="text-danger" align="center">Please enter any search string</p>
+</div>
+<div class="mgt-datatable">
+  <form [formGroup]="applicantForm" (ngSubmit)="submitData(applicantForm.value)" *ngIf="isSearchResultAvail!=0">
+      <data-table pageSize='10' sortField='first_name' sortOrder='1' (onFilterChange)="onFilterChange($event)">
+          <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+            <thead>
+              <tr class="font-weight-bold">
+                <th class="col-sm-1">Acton</th>
+                <th class="col-sm-1">Match Score</th>
+                <th class="col-sm-2">Name</th>
+                <th class="col-sm-1">Contact No.</th>
+                <th class="col-sm-2">Email</th>
+                <th class="col-sm-1">Experience</th>
+                <th class="col-sm-2">Current CTC</th>
+                <th class="col-sm-2">Expected CTC</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr formArrayName="items" *ngFor="let result of advanceSearchResult; let i = index;">
+                <td [formGroupName]="i">
+                  <input type="checkbox" *ngIf="result.email.length==0 || result.applied == true" disabled="disabled"  formControlName="selectedResult" />
+                  <input type="checkbox" *ngIf="result.email.length > 0 && !result.applied" (change)="onCheck($event)" formControlName="selectedResult" />
+                </td>
+                <td>
+                  <circle-progress
+                    [percent]="result.matchScore"
+                    [radius]="35"
+                    [outerStrokeWidth]="2"
+                    [innerStrokeWidth]="1"
+                    [outerStrokeColor]="'#78C000'"
+                    [innerStrokeColor]="'#C7E596'"
+                    [animation]="true"
+                    [animationDuration]="300">
+                  </circle-progress>
+                </td>
+                <td>
+                  <a class="pointer" (click)="name_clicked(result._id)">{{result.name}}</a>
+                </td>
+                <td>
+                  <span *ngFor="let phone of result.phone">{{phone}}</span>
+                </td>
+                <td>
+                  <span *ngFor="let email of result.email">{{email}}</span>
+                </td>
+                <td>
+                  {{result.totalExperience}}
+                </td>
+                <td>
+                  <span></span>
+                </td>
+                <td>
+                    <span></span>
+                </td>
+              </tr>
+              <tr *ngIf="isSearchResultAvail==2">
+                <td colspan="7" align="center">
+                    <b>No Match Found</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </data-table>
+        <button [disabled]="!isCheckBoxCheked || isLoading" class="btn btn-primary mt-10 mb-10 border-radius-30" type="submit">Save
+          <span *ngIf="isLoading"><i class="fa fa-spinner fa-spin"></i></span>
+        </button>
+  </form>
+</div>

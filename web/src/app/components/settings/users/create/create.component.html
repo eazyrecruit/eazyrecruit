@@ -1,0 +1,99 @@
+<section class="content content-wrapper">
+  <!--<div class="content-header mt-60 mb-30 border-none">
+    <h1>
+      Create User
+    </h1>
+    <ol class="breadcrumb">
+      <li>
+        <a routerLink="/settings/users/view">
+          <i class="fa fa-dashboard"></i> Users</a>
+      </li>
+      <li>
+        <a routerLink="/settings/users/create">
+          <i class="fa fa-dashboard"></i> Admin</a>
+      </li>
+      <li class="active">Create Admin</li>
+    </ol>
+  </div>-->
+  <div class="box box-info">
+    <div class="box-header">
+      <i class="fa fa-inbox"></i>
+      <h3 class="box-title"> Users</h3>
+    </div>
+    <div class="main-content padding-20px-tb plr-15">
+      <form [formGroup]="adminDetails" novalidate (ngSubmit)="details(adminDetails.value)">
+
+        <div class="row">
+          <div class="form-group col-md-6">
+            <label for="name">First Name</label>
+            <input type="text" placeholder="First name" class="form-control" formControlName="firstName" required>
+            <small class="text-danger" *ngIf="adminDetails.controls['firstName'].hasError('required') && adminDetails.controls['firstName'].touched">
+              Please enter First Name
+            </small>
+            <small class="text-danger" *ngIf="adminDetails.controls['firstName'].hasError('nameValid')">
+              Please enter correct first name
+            </small>
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="name">Last Name</label>
+            <input type="text" placeholder="Last name" class="form-control" formControlName="lastName">
+            <small class="text-danger" *ngIf="adminDetails.controls['lastName'].hasError('required') && adminDetails.controls['lastName'].touched">
+              Please enter Last Name
+            </small>
+            <small class="text-danger" *ngIf="adminDetails.controls['lastName'].hasError('nameValid')">
+              Please enter correct last name
+            </small>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-md-6 taggingBox">
+            <label for="alterEgo">Email Address</label>
+            <input type="text" placeholder="Email address" class="form-control" formControlName="email" required>
+            <small class="text-danger" *ngIf="adminDetails.controls['email'].hasError('required') && adminDetails.controls['email'].touched">
+              Please enter Email
+            </small>
+            <small class="text-danger" *ngIf="adminDetails.controls['email'].hasError('emailValid')">
+              Please enter correct email
+            </small>
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="contact">Contact No.</label>
+            <input type="text" placeholder="+919123456789" class="form-control" formControlName="phoneNo">
+            <small class="text-danger" *ngIf="adminDetails.controls['phoneNo'].hasError('required') && adminDetails.controls['phoneNo'].touched">
+              Please enter Contact No.
+            </small>
+            <small class="text-danger" *ngIf="adminDetails.controls['phoneNo'].hasError('mobileValid')">
+              Please enter correct contact no.
+            </small>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="name">User Role</label>
+            <select placeholder="Company" class="form-control" formControlName="roleId" (change)="onRoleChnage($event)">
+              <option value="0" selected>Select Role</option>
+              <option *ngFor="let role of roles;" value="role.id"> {{role.name}}</option>
+            </select>
+            <small class="text-danger" *ngIf="isRoleSelect">
+              Please select User Role
+            </small>
+          </div>
+        </div>
+
+        <button [disabled]="isSubmitDisabled" type="submit" class="btn btn-primary mt-10 mb-10 border-radius-30">Submit
+          <span *ngIf="!isDetailsUploading">
+            <i class="fa fa-arrow-circle-right"></i>
+          </span>
+          <span *ngIf="isDetailsUploading">
+            <i class="fa fa-spinner fa-spin"></i>
+          </span>
+        </button>
+
+      </form>
+    </div>
+  </div>
+</section>
