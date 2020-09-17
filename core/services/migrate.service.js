@@ -123,8 +123,6 @@ exports.restoreApplicant = async (data) => {
     let applicantsArray = [];
     for (let i = 0; i < data.length; i++) {
         let obj = data[i];
-        console.log("applicant i : ", i);
-        console.log("applicant email : ", obj.personal.email.trim());
         let modelApplicant = await Applicant.findOne({ email: obj.personal.email.trim() });
         if (modelApplicant == null) {
             modelApplicant = new Applicant();
@@ -188,7 +186,6 @@ async function findOrCreate(array, userId) {
             let skills = [];
             for(var iSkill = 0; iSkill < array.length; iSkill ++) {
                 let name = array[iSkill].trim();
-                console.log('skill i : ' + iSkill + ' name : ' + name);
                 if (skillObject && skillObject.hasOwnProperty(name)) {
                     skills.push(skillObject[name]._id);
                 } else {
@@ -284,9 +281,6 @@ exports.restoreJobApplicant = async (data) => {
             modelJobApplicant.applicant = applicant;
             result.push(modelJobApplicant);
         } else {
-            console.log('job : ', job.title);
-            console.log('job : ', job.guid);
-            console.log('jobapplicants : ', obj.applicant.mongo_id);
             unsaved.push({ title: job.title, guid: job.guid, mongo_id: obj.applicant.mongo_id});
             console.log('unsaved : ', unsaved.length);
         }

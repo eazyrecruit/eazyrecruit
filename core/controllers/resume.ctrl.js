@@ -13,7 +13,6 @@ router.get("/:id",
             let resume = await resumeService.getResumeById(resume_id);
             if (resume) {
                 var fileExtension = resume.fileName.split('.').pop();
-                console.log("fileExtension", fileExtension);
                 if (resume && (fileExtension == "docx" || fileExtension == "doc")) {
                     html_response = await resumeService.getHtmlForReumeBase64(resume.resume, fileExtension);
                     resume.resume = fileExtension == "doc" ? html_response.html.match(/<body[^>]*>[\s\S]*<\/body>/gi) : html_response.html;
