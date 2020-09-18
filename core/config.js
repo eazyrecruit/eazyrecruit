@@ -66,7 +66,7 @@ module.exports = {
             googleAnalyticsApi: process.env.GOOGLE_ANALYTICS_API || "https://www.googleapis.com/auth/analytics.readonly",
             roles: ['admin', 'hr', 'interviewer'],
             companyInfo: {
-                signature: process.env.COMPANY_SIGNATURE || "<b>HR team</b><br>Akeo Software Solutions Pvt Ltd<br><a href='mailto:hr@akeo.in'>hr@akeo.in</a>",
+                signature: process.env.COMPANY_SIGNATURE || "<b>HR team</b><br>Eazyrecruit<br><a href='mailto:hr@eazyrecruit.in'>hr@eazyrecruit.in</a>",
                 name: process.env.COMPANY_NAME || 'Eazyrecruit',
                 website: process.env.COMPANY_WEBSITE || 'https://www.eazsyrecruit.in/',
                 email: process.env.COMPANY_EMAIL || 'info@eazyrecruist.in',

@@ -175,7 +175,7 @@ exports.updateUser = async (data) => {
                                 status: 200,
                                 message: 'old password is incorrect'
                             };
-                            console.log('update user : ', error);
+                            console.log('update user : ', err);
                             return reject(err);
                         }
                         userModel.comparePassword(data.oldPassword, async (isMatch) => {
