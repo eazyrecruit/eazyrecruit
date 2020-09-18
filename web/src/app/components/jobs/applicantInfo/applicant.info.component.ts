@@ -275,6 +275,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
             const job = jobsApplicants[index].job || {};
             if (job.skills && job.skills.length) {
                 for (let count = 0; count < job.skills.length; count++) {
+                    console.log(job.skills[count].name);
                     this.jobsSkils[job.skills[count].name.toUpperCase()] = job.skills[count].name;
                 }
             }

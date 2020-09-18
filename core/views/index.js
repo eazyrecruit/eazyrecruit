@@ -31,7 +31,10 @@ router.get("", async (req, res) => {
         let googleAnalytics = {};
         if (company && company.length) {
             googleAnalytics = await companyService.getSettingObject({id: company[0]._id, group: "googleAnalytics"});
+            console.log(googleAnalytics);
         }
+
+        console.log("googleAnalytics", googleAnalytics);
         var result = await jobService.getPublishedJobs(query, limit, offset);
         totalItems = result.count;
         let lastPage = Math.ceil(totalItems / limit);
@@ -89,6 +92,7 @@ router.get("/:id", async (req, res) => {
             googleAnalytics = await companyService.getSettingObject({id: company[0]._id, group: "googleAnalytics"});
         }
 
+        console.log("googleAnalytics", googleAnalytics);
         var job = await jobService.getByGuid(req.params.id);
         if (job) {
             res.render('pages/job', {job: job, googleAnalytics: googleAnalytics, company: company[0]});
@@ -132,7 +136,9 @@ router.post("/apply/:id",
             googleAnalytics = await companyService.getSettingObject({id: company[0]._id, group: "googleAnalytics"});
         }
 
+        console.log("googleAnalytics", googleAnalytics);
         try {
+            console.log('body : ', req.body);
             log.groupName = "execute request";
             log.data.push({title: "request body", message: JSON.stringify(req.body)});
 
