@@ -19,10 +19,9 @@ exports.getAnalyticsData = async (req) => {
                     'start-date': '7daysAgo',
                     'end-date': 'today',
                     'dimensions': 'ga:date',
-                    'metrics': 'ga:Pageviews'
+                    'metrics': 'ga:users'
                 };
                 return await getAnalytics(object);
-
             } else {
                 throw "please add correct information";
             }

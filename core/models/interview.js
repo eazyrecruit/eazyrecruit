@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
- 
+
 var interview = new Schema({
     uid: String,
     sequence: Number,
@@ -12,21 +12,22 @@ var interview = new Schema({
     channel: String,
     comment: String,
     round: String,
+    score: { type: Number, default: 0 },
     jobId: {
-        type:Schema.Types.ObjectId,
-        ref:'Jobs'
+        type: Schema.Types.ObjectId,
+        ref: 'Jobs'
     },
     jobApplicant: {
-        type:Schema.Types.ObjectId,
-        ref:'JobApplicants'
+        type: Schema.Types.ObjectId,
+        ref: 'JobApplicants'
     },
     interviewer: {
-        type:Schema.Types.ObjectId,
-        ref:'Users'
+        type: Schema.Types.ObjectId,
+        ref: 'Users'
     },
     organizer: {
-        type:Schema.Types.ObjectId,
-        ref:'Users'
+        type: Schema.Types.ObjectId,
+        ref: 'Users'
     },
     result: String,
     is_deleted: Boolean,
