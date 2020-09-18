@@ -204,6 +204,7 @@ let addPipeline = async (req) => {
             try {
                 let jobPipeline = await JobPipelines.create(req.body.pipeline);
                 for (let i = 0; i < jobPipeline.length; i++) {
+                    console.log('jobPipeline', jobPipeline[i]._id);
                     if (modelJob.pipelines == null) {
                         modelJob.pipelines = [];
                     }
@@ -340,6 +341,7 @@ exports.removeApplicant = async (req) => {
                                         message: "applicant removed successfully, interview remove error"
                                     });
                                 } else {
+                                    console.log(data);
                                     resolve(jobApplicant);
                                 }
                             });
