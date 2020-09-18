@@ -14,11 +14,8 @@
           <div class="col-md-12">
             <div class="col-md-12">
               <ul class="rating">
-                <li><span class="fa fa-star"></span></li>
-                <li><span class="fa fa-star"></span></li>
-                <li><span class="fa fa-star"></span></li>
-                <li><span class="fa fa-star-half-o"></span></li>
-                <li><span class="fa fa-star-o"></span></li>
+                <rating [customTemplate]="rating" name="Userratting" [readonly]="isReadonly" class="card-body"
+                        [(ngModel)]="applicant.score" [max]="10"></rating>
               </ul>
             </div>
           </div>
@@ -258,3 +255,8 @@
     </div>
   </div>
 </section>
+<ng-template #rating let-i="index" let-v="value">
+  <button disabled style="margin-right:5px;" class="btn btn-xs btn-rating btn-{{i < v ? 'warning' : 'default'}}">
+    {{i < v ? '&#9733;' : '&#9734;'}}
+  </button>
+</ng-template>

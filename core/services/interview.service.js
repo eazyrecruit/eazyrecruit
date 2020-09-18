@@ -7,6 +7,7 @@ const ics = require('./ics').IcsService;
 const uuidv1 = require('uuid/v1');
 var emailService = require('../services/email.service');
 let interviewCriteria = require('../models/interviewCriteria');
+let Applicant = require('../models/applicant');
 let config = require('../config').config();
 let Company = require('../models/company');
 
@@ -130,6 +131,7 @@ exports.deleteResult = async (req) => {
 exports.saveResult = async (req) => {
     let createInterviewResults = [];
     let results = [];
+    let totalScore = 0;
     for (let index = 0; index < req.body.length; index++) {
         const criteria = req.body[index];
         if (!criteria._id) {
@@ -143,7 +145,9 @@ exports.saveResult = async (req) => {
                 modified_at: Date.now(),
                 modified_by: criteria.modified_by
             });
+            totalScore = totalScore + criteria.score;
         } else {
+            totalScore = totalScore + criteria.score;
             // updates.push(criteria);
             let updatedCriteria = await interviewResults.findByIdAndUpdate({_id: criteria._id}, {
                 score: criteria.score,
@@ -160,12 +164,52 @@ exports.saveResult = async (req) => {
     if (createInterviewResults.length > 0) {
         let criteria = await interviewResults.create(createInterviewResults);
         results = results.concat(criteria);
+
+    }
+
+    if (req.body && req.body.length > 0) {
+        let score = totalScore / req.body.length;
+        updateInterviewScore(req.body[0].interview, {
+            modified_at: new Date(),
+            score: score,
+            modified_by: req.body[0].modified_by
+        })
     }
     // updates.push(await interviewResults.create(results));
     return results;
     // await interviews.findOneAndUpdate({ _id: req.body.interview }, {
     //     result: req.body.result, comment: req.body.comment
     // }, { upsert: true });
+}
+
+async function updateInterviewScore(id, request) {
+    await Interview.findByIdAndUpdate({_id: id}, request);
+    await updateApplicantScore(id, request);
+}
+
+async function updateApplicantScore(id, request) {
+    let interview = await Interview.findOne({_id: id});
+    if (interview) {
+        var allInterview = await Interview.find({jobApplicant: interview.jobApplicant});
+        if (allInterview && allInterview.length) {
+            let InterviewCounter = 0;
+            let totalScore = 0;
+            let index = 1;
+            for (let index = 0; index < allInterview.length; index++) {
+                if (allInterview[index].result !== "PENDING") {
+                    totalScore = totalScore + allInterview[index]['score'];
+                    InterviewCounter++;
+                }
+
+            }
+            if (InterviewCounter) {
+                request["score"] = totalScore / InterviewCounter;
+                await Applicant.findByIdAndUpdate({_id: interview.jobApplicant}, request);
+            }
+
+        }
+
+    }
 }
 
 exports.addCriteria = async (req) => {
@@ -303,7 +347,7 @@ async function createInvitation(req, title, subject, body, attendee, organizer) 
                     console.log("emailService", err);
                     reject(err)
                 } else
-                resolve(data);
+                    resolve(data);
             });
         } catch (err) {
             console.log("emailServicerre", err);

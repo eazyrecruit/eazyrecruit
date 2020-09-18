@@ -24,7 +24,7 @@ declare global {
     providers: [UploadService, SearchService, ApplicantInfoService, ValidationService, InterviewService, AccountService]
 })
 export class ApplicantInfoComponent implements OnInit, OnChanges {
-
+    isReadonly = true;
     resume: any;
     resumeId: any;
     defaultColor = 'label label-default';

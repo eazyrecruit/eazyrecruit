@@ -31,6 +31,7 @@ declare var SiteJS: any;
 
 export class ApplicantpageComponent implements OnInit, OnDestroy {
     applicantId: string;
+    isReadonly = true;
     applicant: any;
     fullName: string;
     personalInfo: any;
