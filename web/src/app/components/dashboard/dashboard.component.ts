@@ -123,8 +123,8 @@ export class DashboardComponent implements OnInit {
                 && res['success'].data.rows && res['success'].data.rows.length > 0) {
                 const result = res['success'].data.rows;
                 for (let index = 0; index < result.length; index++) {
-                    labels.push(result[index][0].substring(0, 4) + '/' +
-                        result[index][0].substring(4, 6) + '/' + result[index][0].substring(6, 8));
+                    labels.push(result[index][0].substring(6, 8) + '/' +
+                        result[index][0].substring(4, 6) + '/' + result[index][0].substring(0, 4));
                     totals.push(result[index][1]);
                 }
             }
@@ -185,7 +185,7 @@ export class DashboardComponent implements OnInit {
 
     public lineChartOptions: (ChartOptions & { annotation: any }) = {
         responsive: true,
-        scales: {xAxes: [{}], yAxes: [{id: 'y-axis-0', position: 'left', }]},
+        scales: {xAxes: [{}], yAxes: [{id: 'y-axis-0', position: 'left',}]},
         annotation: {
             annotations: [{
                 type: 'line', mode: 'vertical', scaleID: 'x-axis-0', borderWidth: 2,

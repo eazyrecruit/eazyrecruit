@@ -50,8 +50,16 @@
                                                     class="fa fa-times"></i></a>
                                         </dt>
                                         <dd>
-                                            <rating class="card-body" name="{{i}}" [(ngModel)]="criteria.score"
-                                                    [customTemplate]="rating" [max]="10"></rating>
+                                            <ng-container *ngIf="interview.result && interview.result != 'SELECTED' && interview.result != 'REJECTED' " >
+                                                <rating class="card-body" name="{{i}}" [(ngModel)]="criteria.score"
+                                                        [customTemplate]="rating" [max]="10"></rating>
+                                            </ng-container>
+
+                                            <ng-container *ngIf="interview.result && interview.result == 'SELECTED' || interview.result == 'REJECTED' " >
+                                                <rating  class="card-body" name="{{i}}" [(ngModel)]="criteria.score"
+                                                        [customTemplate]="disableRatting" [readonly]="isReadonly" [max]="10"></rating>
+                                            </ng-container>
+
                                         </dd>
                                     </dl>
                                     <div class="input-group input-group-sm"
@@ -111,6 +119,12 @@
 </div>
 <ng-template #rating let-i="index" let-v="value">
     <button style="margin-right:5px;" class="btn btn-xs btn-rating btn-{{i < v ? 'warning' : 'default'}}">
+        {{i < v ? '&#9733;' : '&#9734;'}}
+    </button>
+</ng-template>
+
+<ng-template #disableRatting let-i="index" let-v="value">
+    <button disabled style="margin-right:5px;" class="btn btn-xs btn-rating btn-{{i < v ? 'warning' : 'default'}}">
         {{i < v ? '&#9733;' : '&#9734;'}}
     </button>
 </ng-template>

@@ -33,7 +33,7 @@ export class LeftSideComponent implements OnInit {
 
         const authData = this.authStorage.getAuthData();
         if (authData['data'].isPicture) {
-            this.userPicUrl = this.constService.publicUrl + '/api/user/profile/' + authData['data'].id;
+            this.userPicUrl = this.constService.publicUrl + '/api/user/profile/' + authData['data'].id + '?' + + new Date().getTime()  ;
         }
     }
 

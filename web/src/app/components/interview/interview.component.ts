@@ -18,7 +18,7 @@ export class InterviewComponent implements OnInit {
     resume: any;
     resume_html: any;
     newCriteria: String;
-
+    isReadonly = true;
     constructor(
         private route: ActivatedRoute,
         private interviewService: InterviewService,
