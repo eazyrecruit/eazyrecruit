@@ -168,7 +168,7 @@ exports.saveResult = async (req) => {
     }
 
     if (req.body && req.body.length > 0) {
-        let score = totalScore / req.body.length;
+        let score = Math.floor(totalScore / req.body.length);
         updateInterviewScore(req.body[0].interview, {
             modified_at: new Date(),
             score: score,
@@ -203,7 +203,7 @@ async function updateApplicantScore(id, request) {
 
             }
             if (InterviewCounter) {
-                request["score"] = totalScore / InterviewCounter;
+                request["score"] = Math.floor(totalScore / InterviewCounter);
                 await Applicant.findByIdAndUpdate({_id: interview.jobApplicant}, request);
             }
 

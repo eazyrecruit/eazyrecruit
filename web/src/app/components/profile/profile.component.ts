@@ -84,17 +84,16 @@ export class ProfileComponent implements OnInit {
     ngOnInit() {
         this.accountService.getUser().subscribe(result => {
             if (result['success']['data']) {
-                const authData = this.authStorage.getAuthData();
-
                 if (result['success']['data']['password']) {
                     this.isLoginWithGoogle = false;
                 }
-                if (authData['data'].isPicture) {
-                    this.userPicUrl = this.constService.publicUrl + '/api/user/profile/' + authData['data'].id;
+                if (result['success']['data'].picture) {
+                    this.userPicUrl = this.constService.publicUrl + '/api/user/profile/' + result['success']['data']._id +
+                        '?' + +new Date().getTime();
                 }
                 this.profileForm = this.fbuilder.group({
                     firstName: [result['success']['data'].firstName || '', [<any>Validators.required], this.validationService.nameValid],
-                    lastName: [result['success']['data'].firstName || '', [], this.validationService.nameValid],
+                    lastName: [result['success']['data'].lastName || '', [], this.validationService.nameValid],
                     email: [result['success']['data'].email],
                     phoneNo: [result['success']['data'].phone || '', [], this.validationService.mobileValid]
                 });
@@ -136,14 +135,16 @@ export class ProfileComponent implements OnInit {
             this.profileSubmit = true;
             this.accountService.updateUserData(formData).subscribe(result => {
                 if (result['success'] && result['success']['data']) {
+                    this.fileToUpload = null;
                     const authData = this.authStorage.getAuthData();
                     authData['data']['displayName'] = result['success']['data']['name'];
                     authData['data']['isPicture'] = !!result['success']['data']['picture'];
                     this.toasterService.pop('success', 'Profile updated', 'Profile updated successfully');
                     localStorage.removeItem('auth_data');
                     this.authStorage.setAuthorizationHeader(authData);
-                    if (authData['data']['isPicture']) {
-                        this.userPicUrl = this.constService.publicUrl + '/api/user/profile/' + authData['data'].id;
+                    if (result['success']['data']['picture']) {
+                        this.userPicUrl = this.constService.publicUrl + '/api/user/profile/' + result['success']['data']._id +
+                            '?' + +new Date().getTime();
                         document.getElementById('left-side-userPicUrl').innerHTML =
                             '<img src=' + this.userPicUrl + ' class="img-circle" alt="User Image">';
                     } else {
