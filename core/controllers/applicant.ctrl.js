@@ -16,7 +16,7 @@ var config = require('../config').config();
 router.get("/search", async (req, res) => {
     try {
         var results = await esService.searchApplicants(req);
-        if (results.hits && results.hits.total.value > 0) {
+        if (results.hits && results.hits.hits && results.hits.hits.length) {
             var applicants = [];
             for (var iHit = 0; iHit < results.hits.hits.length; iHit++) {
                 results.hits.hits[iHit]._source._id = results.hits.hits[iHit]._id;
@@ -27,7 +27,7 @@ router.get("/search", async (req, res) => {
             }
             responseService.response(req, null, 'Applicants GET', {
                 applicants: applicants,
-                total: results.hits.total.value
+                total: results.hits.hits.length
             }, res);
         } else {
             responseService.response(req, null, 'Applicants GET', null, res);

@@ -45,7 +45,7 @@ router.put("/archive/:jobId", async (req, res) => {
 router.get("/", async (req, res) => {
     try {
         var results = await esSearch.searchJobs(req);
-        if (results.hits && results.hits.total.value > 0) {
+        if (results.hits && results.hits.hits && results.hits.hits.length) {
             var jobs = [];
             for (var iHit = 0; iHit < results.hits.hits.length; iHit++) {
                 results.hits.hits[iHit]._source._id = results.hits.hits[iHit]._id;
@@ -53,9 +53,9 @@ router.get("/", async (req, res) => {
                 results.hits.hits[iHit]._source.locations = await locationService.getAllByIds(results.hits.hits[iHit]._source.locations);
                 jobs.push(results.hits.hits[iHit]._source);
             }
-            responseService.successResponse({count: results.hits.total.value, jobs: jobs}, 'Jobs GET', res);
+            responseService.successResponse({count: results.hits.hits.length, jobs: jobs}, 'Jobs GET', res);
         } else {
-            responseService.successResponse({count: results.hits.total.value, jobs: []}, 'Jobs GET', res);
+            responseService.successResponse({count: 0, jobs: []}, 'Jobs GET', res);
         }
     } catch (err) {
         let error = {
