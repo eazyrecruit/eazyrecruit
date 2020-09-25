@@ -53,7 +53,7 @@ router.get("/", async (req, res) => {
                 results.hits.hits[iHit]._source.locations = await locationService.getAllByIds(results.hits.hits[iHit]._source.locations);
                 jobs.push(results.hits.hits[iHit]._source);
             }
-            responseService.successResponse({count: results.hits.hits.length, jobs: jobs}, 'Jobs GET', res);
+            responseService.successResponse({count: results.hits.total, jobs: jobs}, 'Jobs GET', res);
         } else {
             responseService.successResponse({count: 0, jobs: []}, 'Jobs GET', res);
         }

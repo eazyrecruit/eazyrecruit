@@ -27,7 +27,7 @@ router.get("/search", async (req, res) => {
             }
             responseService.response(req, null, 'Applicants GET', {
                 applicants: applicants,
-                total: results.hits.hits.length
+                total: results.hits.total
             }, res);
         } else {
             responseService.response(req, null, 'Applicants GET', null, res);
