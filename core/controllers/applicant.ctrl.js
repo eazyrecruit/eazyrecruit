@@ -8,7 +8,7 @@ var esService = require('../services/es.service');
 var skillService = require('../services/skill.service');
 var locationService = require('../services/location.service');
 var fs = require("fs");
-let mammoth = require("mammoth");
+/*let mammoth = require("mammoth");*/
 var redisClient = require('../services/redis.service');
 var logTypes = require('../helpers/logType');
 var resumeService = require('../services/resume.service');
@@ -269,7 +269,7 @@ router.post("/reject", (req, res) => {
     });
 });
 
-router.get("/resume", (req, res, next) => {
+/*router.get("/resume", (req, res, next) => {
     let datastring = "data:application/msword;base64," + req.body.docbase64;
     var matches = datastring.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
         response = {};
@@ -300,7 +300,7 @@ router.get("/resume", (req, res, next) => {
                 .done();
         }
     });
-});
+});*/
 
 router.get("/job/:applicantId", async (req, res) => {
     try {

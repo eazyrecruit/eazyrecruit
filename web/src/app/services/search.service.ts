@@ -48,4 +48,8 @@ export class SearchService {
   getApplicant(search) {
     return this.http.post(this.constService.baseUrl + 'candidate/getProfile', search);
   }
+
+  getResumeFile(resume_id) {
+    return this.http.get(this.constService.baseUrl + 'resume/file/' + resume_id, {responseType: 'arraybuffer'});
+  }
 }

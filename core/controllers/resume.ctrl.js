@@ -12,7 +12,7 @@ router.get("/:id",
             //fetch resume by id
             let resume = await resumeService.getResumeById(resume_id);
             if (resume) {
-                var fileExtension = resume.fileName.split('.').pop();
+      /*          var fileExtension = resume.fileName.split('.').pop();
                 if (resume && (fileExtension == "docx" || fileExtension == "doc")) {
                     html_response = await resumeService.getHtmlForReumeBase64(resume.resume, fileExtension);
                     resume.resume = fileExtension == "doc" ? html_response.html.match(/<body[^>]*>[\s\S]*<\/body>/gi) : html_response.html;
@@ -23,7 +23,7 @@ router.get("/:id",
                 if (fileExtension == "doc" || fileExtension == "docx")
                     resumeService.deleteFileFromLocal(file_path);
                 if (fileExtension == "doc")
-                    resumeService.deleteFileFromLocal(html_file_path);
+                    resumeService.deleteFileFromLocal(html_file_path);*/
             } else {
                 let err = {
                     status: 200,
@@ -36,6 +36,15 @@ router.get("/:id",
         }
     }
 )
+
+router.get('/file/:id', async (req, res) => {
+    try {
+        let resume = await resumeService.fileStream(req.params.id, res);
+        responseService.successResponse(resume, 'update resume', res);
+    } catch (error) {
+        responseService.errorResponse(error, 'get resume error', res);
+    }
+});
 
 var resume = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.put("/:id", resume.any(), async (req, res) => {

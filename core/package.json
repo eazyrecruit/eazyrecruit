@@ -21,7 +21,7 @@
     "googleapis": "^59.0.0",
     "ics": "^2.23.0",
     "jsonwebtoken": "^8.1.0",
-    "mammoth": "^1.4.8",
+    "libreoffice-convert": "^1.1.2",
     "moment": "^2.27.0",
     "mongoosastic": "^4.5.1",
     "mongoose": "^4.13.14",
