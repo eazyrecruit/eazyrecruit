@@ -30,19 +30,14 @@ export class ResumeComponent implements DoCheck {
   version: any;
   updatedApplicant: any;
 
-  @Input()
-  set applicant(_applicant) {
-    this.applicant_Id = _applicant._id;
-    this.updatedApplicant = _applicant;
-    this.version = _applicant.version;
-
-    // console.log(_applicant);
-    if (_applicant && typeof _applicant.resume === 'string' && _applicant.resume.length) {
-      this.getResume(_applicant.resume);
-    } else {
-      this.resume = '';
+    @Input()
+    set applicant(_applicant) {
+        this.applicant_Id = _applicant._id;
+        this.updatedApplicant = _applicant;
+        this.version = _applicant.version;
+        this.resume = _applicant.resume;
+        SiteJS.stopLoader();
     }
-  }
 
   constructor(
     private applicantDataService: ApplicantDataService,
@@ -63,43 +58,43 @@ export class ResumeComponent implements DoCheck {
     }
   }
 
-  getResume(_resumeId) {
-    if (_resumeId) {
-      this.applicantDataService.getResume(_resumeId).subscribe((result) => {
-        if (result && result['success'] && result['success']['data'])
-        this.resume = result['success']['data'];
-      }, (error) => {
-        SiteJS.stopLoader();
-      });
+    getResume(_resume) {
+        this.resume = _resume;
     }
-  }
 
-  download(id) {
-    if (id) {
-      this.searchService.downloadPdf(id).subscribe(
-        (res) => {
-          saveAs(res, this.resume.fileName);
-        },
-        (error) => {
-          SiteJS.stopLoader();
+    download(id) {
+        if (id) {
+            this.searchService.downloadPdf(id).subscribe(
+                (res) => {
+                    const url = window.URL.createObjectURL(res);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = this.resume.fileName;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                },
+                (error) => {
+                    SiteJS.stopLoader();
+                }
+            );
         }
-      );
     }
-  }
 
-  open() {
-    const fileExtension = this.resume.fileName.split('.').pop();
-    if (fileExtension === 'pdf') {
-      const blob = this.converBase64toBlob(this.resume.resume, 'application/pdf');
-      const blobURL = window.URL.createObjectURL(blob);
-      this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
-      // console.log(this.resume_html);
-      this.modalRef = this.modalService.show(this.template, { class: 'modal-lg' });
-    } else {
-      this.resume_html = this.resume.resume;
-      this.modalRef = this.modalService.show(this.template, { class: 'modal-lg' });
+    open() {
+        this.searchService.getResumeFile(this.resume._id).subscribe(
+            (res: any) => {
+                const blob = new Blob([res], {
+                    type: 'application/pdf'
+                });
+                const blobURL = window.URL.createObjectURL(blob);
+                this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
+                this.modalRef = this.modalService.show(this.template, {class: 'modal-lg'});
+            },
+            (error) => {
+                SiteJS.stopLoader();
+            }
+        );
     }
-  }
 
   upload() {
     const formData = new FormData();

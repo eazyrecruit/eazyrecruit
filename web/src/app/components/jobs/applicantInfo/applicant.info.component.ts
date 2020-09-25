@@ -76,8 +76,9 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     ngOnChanges() {
         if (this.applicant) {
             document.getElementById('home').click();
-            this.getApplicantById(this.applicant._id);
             this.getJobsByApplicantId();
+            this.getApplicantById(this.applicant._id);
+
         }
     }
 
@@ -241,6 +242,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     getApplicantById(id: string) {
         this.applicantInfoService.getApplicantById(id).subscribe(result => {
             if (result) {
+                SiteJS.startLoader();
                 this.applicant = result['success']['data'];
                 this.applicant.fullName = this.getFullName.bind(this.applicant);
                 this.matchedSkills = [];
@@ -258,6 +260,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     getJobsByApplicantId() {
         if (this.applicant._id) {
             this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
+                SiteJS.startLoader();
                 if (result && result['success'] && result['success']['data'] && result['success']['data'].length) {
                     this.applicant.jobs = result['success']['data'];
                     this.getJobsSkils(result['success']['data']);

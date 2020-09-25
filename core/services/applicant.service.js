@@ -345,7 +345,7 @@ exports.resume = async (req) => {
 
 exports.getById = async (_id) => {
     return (await Applicants.findById(_id).populate('location')
-        .populate('preferredLocations')
+        .populate('preferredLocations').populate('resume', ["fileName", "fileType"])
         .populate({path: 'skills', match: {is_deleted: {$ne: true}}}));
 }
 

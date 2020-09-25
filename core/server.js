@@ -32,10 +32,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-if (!fs.existsSync("profile")) {
-    // Create the directory if it does not exist
-    fs.mkdirSync("profile");
-}
 // Initial Passport
 var passport = require("passport");
 app.use(passport.initialize());
