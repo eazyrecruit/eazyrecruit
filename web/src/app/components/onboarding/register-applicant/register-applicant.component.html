@@ -1,0 +1,215 @@
+<div class="modal-header">
+  <button type="button" class="close" (click)="closePopup()">&times;</button>
+  <h4 class="modal-title">Create Applicant</h4>
+</div>
+
+<div class="modal-body">
+  <form novalidate [formGroup]="resumeForm" (ngSubmit)="uploadResume()">
+    <div class="row">
+      <!-- <div class="form-group col-sm-12">
+  <label for="name">Resume</label>
+  <div class="upload_wrpper c-pointer">
+  <input type="file" class="resume_upload-input" multiple="" accept=".doc, .docx, .pdf" name="resume" #file (change)="onFileChange(file.files)">
+  <div class="upload_center-content text-center">
+  <img class="cloud_img" src="assets/img/upload.png" alt="">
+  <p>Upload your file here</p>
+  </div>
+  </div>
+  <small class="text-danger" *ngIf="errInvalidFile">
+  Please upload only pdf/doc/docx file
+  </small>
+  </div> -->
+      <div class="form-group col-sm-12">
+        <label for="name" *ngIf="!resumeUploadSuccess" class="required">Resume</label>
+        <label for="name" class="text-success" *ngIf="resumeUploadSuccess">Resume Uploaded Successfully!</label>
+
+        <input *ngIf="!isUploadDisabled" type="file" class="form-control" formControlName="resume" multiple=""
+          accept=".doc, .docx, .pdf" name="resume" #file (change)="onFileChange(file.files)">
+        <input *ngIf="isUploadDisabled" type="file" class="form-control" formControlName="resume" multiple=""
+          accept=".doc, .docx, .pdf" name="resume" #file (change)="onFileChange(file.files)" disabled>
+
+        <small class="text-danger" *ngIf="errInvalidFile">
+          Please upload only pdf/doc/docx file
+        </small>
+      </div>
+    </div>
+    <button [disabled]="isUploadDisabled" type="submit" class="btn btn-success">Upload
+      <span *ngIf="!isResumeUploading">
+        <i class="fa fa-arrow-circle-right"></i>
+      </span>
+      <span *ngIf="isResumeUploading">
+        <i class="fa fa-spinner fa-spin"></i>
+      </span>
+    </button>
+  </form>
+
+  <form [formGroup]="registrationDetails" novalidate (ngSubmit)="details(registrationDetails.value)">
+    <div class="row">
+      <div class="form-group col-md-6">
+        <label for="name" class="required">First Name</label>
+        <input type="text" placeholder="First name" class="form-control" formControlName="firstName" required>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['firstName'].hasError('required') && registrationDetails.controls['firstName'].touched">
+          Please enter First Name
+        </small>
+        <small class="text-danger" *ngIf="registrationDetails.controls['firstName'].hasError('nameValid')">
+          Please enter correct first name
+        </small>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="name" class="required">Last Name</label>
+        <input type="text" placeholder="Last name" class="form-control" formControlName="lastName" required>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['lastName'].hasError('required') && registrationDetails.controls['lastName'].touched">
+          Please enter Last Name
+        </small>
+        <small class="text-danger" *ngIf="registrationDetails.controls['lastName'].hasError('nameValid')">
+          Please enter correct last name
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-md-6 taggingBox">
+        <label for="alterEgo" class="required">Email Address</label>
+        <input type="text" placeholder="Email address" class="form-control" formControlName="email" required>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['email'].hasError('required') && registrationDetails.controls['email'].touched">
+          Please enter Email
+        </small>
+        <small class="text-danger" *ngIf="registrationDetails.controls['email'].hasError('emailValid')">
+          Please enter correct email
+        </small>
+      </div>
+
+      <div class="form-group col-sm-6">
+        <label for="contact" class="required">Contact No.</label>
+        <input type="text" placeholder="900000000" class="form-control" formControlName="phoneNo" required>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['phoneNo'].hasError('required') && registrationDetails.controls['phoneNo'].touched">
+          Please enter Contact No.
+        </small>
+        <small class="text-danger" *ngIf="registrationDetails.controls['phoneNo'].hasError('mobileValid')">
+          Please enter correct contact no.
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-md-12 taggingBox">
+        <label for="name" class="required">Skills</label>
+        <!-- <tag-input [ngModel]="[]" [onlyFromAutocomplete]="true" formControlName="skill">
+  <tag-input-dropdown [showDropdownIfEmpty]="true" [autocompleteItems]="skills">
+  </tag-input-dropdown>
+  </tag-input> -->
+        <app-select-dropdown [skill]="true" (data)="eventHandler($event)"></app-select-dropdown>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['skill'].hasError('required') && registrationDetails.controls['skill'].touched">
+          Please add skills.
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+
+    </div>
+
+    <div class="row">
+      <!-- <div class="form-group col-md-6 taggingBox">
+  <label for="contact" class="required">Title</label>
+  <input type="text" placeholder="Node Developer" class="form-control" formControlName="title" required>
+  <small class="text-danger" *ngIf="registrationDetails.controls['title'].hasError('required') && registrationDetails.controls['title'].touched">
+  Please enter Title.
+  </small>
+  </div> -->
+      <div class="form-group col-md-6">
+        <label for="contact" class="required">Availability</label>
+        <select class="form-control" formControlName="availability" required>
+          <option>Select time</option>
+          <option *ngFor="let avail of availArray;" value="{{avail.id}},{{avail.name}}">{{avail.name}}</option>
+        </select>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['availability'].hasError('required') && registrationDetails.controls['availability'].touched">
+          Please Select time.
+        </small>
+      </div>
+
+      <div class="form-group col-md-6 taggingBox">
+        <label for="contact" class="required">Experience (Year)</label>
+        <input type="text" placeholder="Experience" class="form-control" formControlName="experience" required>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['experience'].hasError('required') && registrationDetails.controls['experience'].touched">
+          Please enter Experience.
+        </small>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['experience'].hasError('experienceValid') && registrationDetails.controls['experience'].touched">
+          Please enter correct Experience.
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-md-6 taggingBox">
+        <label for="contact" class="required">Current CTC (P.A.)</label>
+        <input type="text" placeholder="Current CTC" class="form-control" formControlName="currentCtc" required>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['currentCtc'].hasError('required') && registrationDetails.controls['currentCtc'].touched">
+          Please enter Current CTC.
+        </small>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['currentCtc'].hasError('ctcValid') && registrationDetails.controls['currentCtc'].touched">
+          Please enter correct Current CTC.
+        </small>
+      </div>
+
+      <div class="form-group col-md-6 taggingBox">
+        <label for="contact" class="required">Expected CTC (P.A.)</label>
+        <input type="text" placeholder="Expected CTC" class="form-control" formControlName="expectedCtc" required>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['expectedCtc'].hasError('required') && registrationDetails.controls['expectedCtc'].touched">
+          Please enter Expected CTC.
+        </small>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['expectedCtc'].hasError('ctcValid') && registrationDetails.controls['expectedCtc'].touched">
+          Please enter correct Expected CTC.
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-md-6 taggingBox">
+        <label for="contact" class="required">State</label>
+        <select class="form-control" formControlName="state" (change)="getCities($event)" required>
+          <option>Select State</option>
+          <option *ngFor="let state of stateList;" value="{{state.id}},{{state.state}}">{{state.state}}</option>
+        </select>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['state'].hasError('required') && registrationDetails.controls['state'].touched">
+          Please Select State.
+        </small>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="contact" class="required">City</label>
+        <select class="form-control" formControlName="city" required>
+          <option>Select City</option>
+          <option *ngFor="let city of cityList;" value="{{city.city}}">{{city.city}}</option>
+        </select>
+        <small class="text-danger"
+          *ngIf="registrationDetails.controls['city'].hasError('required') && registrationDetails.controls['city'].touched">
+          Please Select City.
+        </small>
+      </div>
+    </div>
+    <button [disabled]="isSubmitDisabled" type="submit" class="btn btn-primary mt-10 mb-10 border-radius-30">Submit
+      <span *ngIf="!isDetailsUploading">
+        <i class="fa fa-arrow-circle-right"></i>
+      </span>
+      <span *ngIf="isDetailsUploading">
+        <i class="fa fa-spinner fa-spin"></i>
+      </span>
+    </button>
+
+  </form>
+</div>

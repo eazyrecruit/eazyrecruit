@@ -1,0 +1,61 @@
+<section class="content">
+  <div class="box box-info">
+    <div class="box-header">
+      <i class="fa fa-inbox"></i>
+      <h3 class="box-title"> Interviews</h3>
+      <div class="pull-right box-tools">
+        <div class="btn-group form-group margin-right-10px" role="group" aria-label="Basic example">
+          <div class="btn-group">
+            <button type="button" class="btn btn-info" (click)="changeType('PENDING')"> Pending </button>
+            <button type="button" class="btn btn-info" (click)="changeType('COMPLETED')">Completed</button>
+          </div>
+        </div>
+    </div>
+    </div>
+    <div class="main-content padding-20px-tb plr-15">
+      <data-table pageSize='10' sortField='name' sortOrder='1' [showSearchFeild]='false' [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
+          <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+              <thead>
+                  <tr class="font-weight-bold">
+                      <th class="col-sm-4">Applicant Name</th>
+                      <th class="col-sm-2">Job Title</th>
+                      <th class="col-sm-2">Start Time</th>
+                      <th class="col-sm-2">Round</th>
+                      <th class="col-sm-2">Channel</th>
+                      <th class="col-sm-2">Result</th>
+                    </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let interview of interviews; let i = index;">
+                    <td >
+                      <a class="c-pointer" (click)="openInterviewPage(interview._id)">
+                        {{getFullName(interview.jobApplicant.firstName, interview.jobApplicant.middleName, interview.jobApplicant.lastName)}}
+                      </a>
+                    </td>
+                    <td>
+                      {{interview.jobId.title}}
+                    </td>
+                    <td>
+                      {{interview.start | amDateFormat:'DD/MM/YYYY, hh:mmA'}}
+                    </td>
+                    <td>
+                      {{interview.round}}
+                    </td>
+                    <td>
+                      {{interview.channel}}
+                    </td>
+                    <td>
+                      {{interview.result}}
+                    </td>
+                  </tr>
+                  <tr *ngIf="totalRecords==0">
+                    <td colspan="6" align="center">
+                        <b>No interviews found</b>
+                    </td>
+                  </tr>
+              </tbody>
+          </table>
+      </data-table>
+    </div>
+  </div>
+</section>

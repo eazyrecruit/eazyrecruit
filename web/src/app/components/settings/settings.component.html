@@ -1,0 +1,42 @@
+<section class="content content-wrapper">
+  <div class="row">
+    <div class="col-md-2 no-padding-right">
+      <div class="box box-solid">
+        <div class="box-header with-border">
+          <h3 class="box-title">Settings</h3>
+        </div>
+        <div class="box-body no-padding">
+          <ul class="nav nav-pills nav-stacked">
+            <li>
+              <a routerLinkActive="active" routerLink="/settings">Details</a>
+            </li>
+            <li>
+              <a routerLinkActive="active" routerLink="/settings/users">Users</a>
+            </li>
+            <li>
+              <a routerLinkActive="active" routerLink="/settings/skills">Skills</a>
+            </li>
+            <li>
+              <a routerLinkActive="active" routerLink="/settings/applicants">Applicants</a>
+            </li>
+            <li>
+              <a routerLinkActive="active" routerLink="/settings/email">Email</a>
+            </li>
+            <li>
+              <a routerLinkActive="active" routerLink="/settings/google">Authentication</a>
+            </li>
+            <li>
+              <a routerLinkActive="active" routerLink="/settings/analytics">Analytics</a>
+            </li>
+          </ul>
+        </div>
+        <!-- /.box-body -->
+      </div>
+    </div>
+    <div class="col-md-10">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</section>
+
+

@@ -1,0 +1,154 @@
+<div class="box box-info">
+    <div class="box-header">
+        <i class="fa fa-inbox"></i>
+        <h3 class="box-title"> Company Details</h3>
+    </div>
+    <div class="box-body">
+        <form [formGroup]="companyDetails" novalidate (ngSubmit)="edit(companyDetails.value)">
+
+
+            <ng-container *ngIf="logo">
+                <div class="col-sm-6">
+                    <img class="img-responsive" style="max-height: 60px " [src]="logo" alt="Company Logo">
+                </div>
+            </ng-container>
+            <ng-container *ngIf="!logo">
+                <div class="col-sm-6">
+                    <img class="img-responsive" style="max-height: 60px " src="/admin/assets/img/logo.png"
+                         alt="Company Logo">
+                </div>
+            </ng-container>
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="logo">Logo</label>
+                <input type="file" class="form-control" formControlName="logo" #file (change)="onFileChange($event)"
+                       multiple="" accept=".png, .jpg, .jpeg">
+                <small class="text-danger" *ngIf="errInvalidLogo">
+                    Please upload only png/jpeg/jpg file
+                </small>
+            </div>
+
+            <ng-container *ngIf="favIcon">
+                <div class="col-sm-6">
+                    <img class="img-responsive" style="max-height: 30px " [src]="favIcon" alt="Company Logo">
+                </div>
+            </ng-container>
+            <ng-container *ngIf="!favIcon">
+                <div class="col-sm-6">
+                    <img class="img-responsive" style="max-height: 30px " src="/admin/assets/img/short-logo.png"
+                         alt="Company Fav Icon">
+                </div>
+            </ng-container>
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="logo">Fav Icon</label>
+                <input type="file" class="form-control" formControlName="favIcon" #file
+                       (change)="onFavIconChange($event)" multiple="" accept=".png, .jpg, .jpeg">
+                <small class="text-danger" *ngIf="errInvalidFavIcon">
+                    Please upload only png/jpeg file
+                </small>
+            </div>
+
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="name">Company Name</label>
+                <input type="text" placeholder="Company name" class="form-control" formControlName="name" required>
+                <small class="text-danger"
+                       *ngIf="companyDetails.controls['name'].hasError('required') && companyDetails.controls['name'].touched">
+                    Please enter Company Name
+                </small>
+                <small class="text-danger" *ngIf="companyDetails.controls['name'].hasError('nameValid')">
+                    Please enter correct Company name
+                </small>
+            </div>
+
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="website">Company Website</label>
+                <input type="text" placeholder="Company Website" class="form-control" formControlName="website"
+                       required>
+                <small class="text-danger"
+                       *ngIf="companyDetails.controls['website'].hasError('required') && companyDetails.controls['website'].touched">
+                    Please enter Company Website
+                </small>
+            </div>
+            <br><br>
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="address">Address Line 1</label>
+                <input type="text" placeholder="Address Line 1" class="form-control" formControlName="address_line_1"
+                       required>
+                <small class="text-danger"
+                       *ngIf="companyDetails.controls['address_line_1'].hasError('required') && companyDetails.controls['address_line_1'].touched">
+                    Please enter Company Address
+                </small>
+            </div>
+            <br><br>
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="address">Address Line 2</label>
+                <input type="text" placeholder="Address Line 2" class="form-control" formControlName="address_line_2">
+            </div>
+
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="address">Address Line 3</label>
+                <input type="text" placeholder="Address Line 3" class="form-control" formControlName="address_line_3">
+            </div>
+            <br><br>
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="alterEgo">Company Email Address</label>
+                <input type="text" placeholder="Email address" class="form-control" formControlName="email" required>
+                <small class="text-danger"
+                       *ngIf="companyDetails.controls['email'].hasError('required') && companyDetails.controls['email'].touched">
+                    Please enter Email
+                </small>
+                <small class="text-danger" *ngIf="companyDetails.controls['email'].hasError('emailValid')">
+                    Please enter correct email
+                </small>
+            </div>
+
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="contact">Company Phone No.</label>
+                <input type="text" placeholder="9876543210" class="form-control" formControlName="phone" required>
+                <small class="text-danger"
+                       *ngIf="companyDetails.controls['phone'].hasError('required') && companyDetails.controls['phone'].touched">
+                    Please enter Contact No.
+                </small>
+                <small class="text-danger" *ngIf="companyDetails.controls['phone'].hasError('mobileValid')">
+                    Please enter correct contact no.
+                </small>
+            </div>
+
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="contact">Company Header Description</label>
+                <textarea type="text" placeholder="company header description" class="form-control"
+                          formControlName="headerDescription"></textarea>
+                <small class="text-danger"
+                       *ngIf="companyDetails.controls['headerDescription'].hasError('required') && companyDetails.controls['headerDescription'].touched">
+                    Please company header
+                </small>
+            </div>
+
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="contact">Company Header Color</label>
+                <input type="text" formControlName="headerBgColor"
+                       (colorPickerChange)="onBgColorChange($event)"
+                       [value]="headerBgColor"
+                       class="form-control"
+                       [style.background]="headerBgColor"
+                       [(colorPicker)]="headerBgColor"/>
+            </div>
+
+            <div class="col-sm-6" style="margin: 8px;">
+                <label for="contact">Company Header Text Color</label>
+                <input type="text" formControlName="headerTextColor"
+                       (onTextColorChange)="onTextColorChange($event)"
+                       [value]="headerTextColor"
+                       class="form-control"
+                       [style.background]="headerTextColor"
+                       [(colorPicker)]="headerTextColor"/>
+            </div>
+            <br><br>
+            <div class="col-sm-6" style="margin: 8px;">
+                <button type="submit" class="btn btn-success">Submit
+                    <i class="fa fa-arrow-circle-right"></i>
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>

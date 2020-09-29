@@ -1,0 +1,81 @@
+<div class="album py-3 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Jobs</a></li>
+                        <li class="breadcrumb-item"><%= locals.job ? locals.job.title : '' %></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="card mb-10">
+                    <div class="job-img">
+                        <img src="/<%= locals.job && job.metaImage ? job.metaImage : company && company.logo ? company.logo : 'images/defaultlogo.png' %>" class="job-logo" width="100%"></img>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"><%= locals.job ? job.title : '' %></h5>
+                        <div class="row">
+                            <span class="col-sm-12">
+                                <%  if (locals.job && job.locations && job.locations.length) { %>
+                                    <% for(let i = 0; i < job.locations.length; i++) { %>
+                                    <%= job.locations[i].city %>, <%= job.locations[i].state %>
+                                    <%  } %>
+                                <% } else { %>
+                                    N/A
+                                <%  } %>
+                            </span>
+                            <span class="col-sm-12">
+                                <% if (locals.job && job.minExperience) { %>
+                                    <%= job.minExperience %> years experience
+                                    <% } else { %>
+                                    N/A
+                                    <% } %>
+                            </span>
+                            <span class="col-sm-12">
+                                <% if (locals.job && job.type) { %>
+                                    <%= job.type %>
+                                <% } else { %>
+                                    N/A
+                                <% } %>
+                            </span>
+                        </div>
+                        <br>
+                        <div id="shareIcons" class="col-sm-12"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="card mb-10">
+                    <div class="card-header"><i class="fa fa-address-book "></i> <%= locals.job ? locals.job.title : '' %></div>
+                    <div class="card-body">
+                        <table class="table bg-dark-black mt-30 border-light">
+                            <tr>
+                                <td class="font-weight-bold">Required Experience</td>
+                                <td>
+                                    <div class="row">
+                                        <span class="col-sm-6">Minimum : <%= locals.job && job.minExperience ? job.minExperience + ' years' : 'N/A' %></span>
+                                        <span class="col-sm-6">Maximum : <%= locals.job && job.maxExperience ? job.maxExperience + ' years' : 'N/A' %></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold">Job Description</td>
+                                <td><%- locals.job && job.description ? job.description : 'N/A' %></td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold">Job Responsibility</td>
+                                <td><%- locals.job && job.responsibilities ? job.responsibilities : 'N/A' %></td>
+                            </tr>
+                        </table>
+                        <a class="btn btn-primary" href="/apply/<%= locals.job && job.guid ? job.guid : '' %>"><i class="ti-bag"></i>
+                            Apply</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+
+/* Draggable*/
+.pipeline{
+    height: 100vh;
+}
+
+.nav-tabs-custom{
+    height: 100vh;
+}
+
+.nav-tabs-content{
+    height: 100vh;
+}
+
+.pipeline-item{
+    height: 100vh;
+}
+
+.drag-border {
+    border: #908ee7 solid 1px;
+}
+
+.drag-handle {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+.drag-handle:active { 
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+/* Droppable */
+
+.drag-hint-border {
+    border:none !important;
+}
+
+.drag-over-border {
+    border: none solid 1px !important;
+}
+
+.drag-transit {
+    border: none !important;
+}

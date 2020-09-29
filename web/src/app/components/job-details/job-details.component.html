@@ -1,0 +1,44 @@
+<section class="content content-wrapper">
+
+  <div class="bg-white main-content border-radius-3">
+    <div class="sec-header bg-white pd-5">
+      <h2>
+        <i class="fa fa-inbox"></i> {{job.title}}</h2>
+    </div>
+
+    <div class="main-content padding-20px-tb plr-15">
+
+      <div class="">
+        <table class="table bg-dark-black mt-30 border-light">
+          <tr>
+            <td class="font-weight-bold">Job Title</td>
+            <td>{{job.title}}</td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">Company Name</td>
+            <td>{{job.company_name}}</td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">Experiance Required</td>
+            <td>{{job.experiance}}</td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">Anual CTC Offered</td>
+            <td>{{job.ctc}}</td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">Job Description</td>
+            <td>{{job.description}}</td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">Job Responsibility</td>
+            <td>{{job.responsibilities}}</td>
+          </tr>
+        </table>
+      </div>
+      <div>
+        <button class="btn btn-info" (click)="goToRegistration(job.guid)">-Next</button>
+      </div>
+    </div>
+  </div>
+</section>

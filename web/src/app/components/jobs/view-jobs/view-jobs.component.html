@@ -1,0 +1,56 @@
+<div class="box box-info">
+  <div class="box-header">
+    <i class="fa fa-envelope"></i>
+
+    <h3 class="box-title"> Jobs</h3>
+    <!-- tools box -->
+    <div class="pull-right box-tools">
+      <button type="button" class="btn btn-info btn-sm" data-widget="remove" data-toggle="tooltip" title="Remove">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    <!-- /. tools -->
+  </div>
+  <div class="box-body">
+    <table class="table">
+      <thead>
+        <tr class="font-weight-bold">
+          <th>Sr. No.</th>
+          <th>Job Title</th>
+          <th>Department</th>
+          <th>experiance</th>
+          <th>Anual CTC</th>
+          <th>Description</th>
+          <th>Responsibilities</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let job of jobs; let i = index;">
+          <td>{{i + 1}}</td>
+          <td>{{job.title}}</td>
+          <td>{{job.department}}</td>
+          <td>{{job.experiance}}</td>
+          <td>{{job.ctc}}</td>
+          <td>{{job.description}}</td>
+          <td>{{job.responsibilities}}</td>
+          <td>
+            <a (click)="setjobId(job.id)" class="pointer">Edit</a> |
+            <a (click)="deleteJob(job.id)" class="pointer">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="7"></td>
+          <td>
+            <label class="pointer" (click)="previous()">
+              <h5>previous</h5>
+            </label> |
+            <label class="pointer" (click)="next()">
+              <h5>next</h5>
+            </label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
