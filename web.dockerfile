@@ -1,5 +1,5 @@
 ##DockerFile
-FROM akeodocker/eazyrecruit-public AS build
+FROM eazyrecruit/nodejs AS build
 
 # Setting working directory. All the path will be relative to WORKDIR
 WORKDIR /usr/src/app
@@ -15,7 +15,7 @@ COPY ./web .
 RUN npm run build
 
 ##DockerFile
-FROM akeodocker/eazyrecruit-public
+FROM eazyrecruit/nodejs
 
 # Setting working directory. All the path will be relative to WORKDIR
 WORKDIR /usr/src/app

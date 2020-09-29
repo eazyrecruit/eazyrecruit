@@ -1,5 +1,5 @@
 # set the base image 
-FROM akeodocker/python3.5:v1
+FROM eazyrecruit/python
 
 #installing required packages
 
