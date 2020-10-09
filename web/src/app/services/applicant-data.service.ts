@@ -30,9 +30,9 @@ export class ApplicantDataService {
     return this.http.get(`${this.constService.baseUrl}applicant/id/${id}`);
   }
 
-    getResume(resume_id: string): Observable<any> {
-        return this.http.get(`${this.constService.baseUrl}resume/${resume_id}`);
-    }
+  getResumeFile(resume_id) {
+    return this.http.get(`${this.constService.baseUrl}resume/file/${resume_id}`, {responseType: 'arraybuffer'});
+  }
 
     getResumeDocFile(resume_id: string): Observable<any> {
         return this.http.get(`${this.constService.baseUrl}resume/file/${resume_id}`);

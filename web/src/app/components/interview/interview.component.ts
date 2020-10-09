@@ -19,6 +19,7 @@ export class InterviewComponent implements OnInit {
     resume_html: any;
     newCriteria: String;
     isReadonly = true;
+
     constructor(
         private route: ActivatedRoute,
         private interviewService: InterviewService,
@@ -40,17 +41,12 @@ export class InterviewComponent implements OnInit {
                     this.applicantDataService.getApplicantCompleteData(this.interview.jobApplicant).subscribe(result => {
                         if (result['success']['data']) {
                             this.applicant = result['success']['data'];
-                            this.applicantDataService.getResume(this.applicant.resume).subscribe((result) => {
-                                if (result['success'] && result['success']['data']) {
-                                    this.resume = result['success']['data'];
-                                    if ((this.resume.fileName).includes('.pdf')) {
-                                        const blob = this.converBase64toBlob(this.resume.resume, 'application/pdf');
-                                        const blobURL = window.URL.createObjectURL(blob);
-                                        this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
-                                    } else {
-                                        this.resume_html = this.resume.resume;
-                                    }
-                                }
+                            this.applicantDataService.getResumeFile(this.applicant.resume._id).subscribe((res) => {
+                                const blob = new Blob([res], {
+                                    type: 'application/pdf'
+                                });
+                                const blobURL = window.URL.createObjectURL(blob);
+                                this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
                             }, error => {
                                 this.resume = null;
                             });
