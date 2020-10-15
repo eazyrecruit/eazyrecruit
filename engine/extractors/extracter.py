@@ -10,7 +10,7 @@ import helpers.utilities as utilities
 from collections import Counter
 from nltk.tokenize import TweetTokenizer
 #import os
-#import csv
+import csv
 #import numpy as np
 import nltk
 #from nltk.tag.stanford import StanfordNERTagger
@@ -18,11 +18,13 @@ from nltk.corpus import stopwords
 #from nltk.stem.snowball import SnowballStemmer
 
 # Function to extract names from the string using nltk
+
+
 def extract_name(resume_text):
     sent_list = sent_tokenize(resume_text)
     for sent in sent_list:
         for sent_part in sent.split("\n"):
-            if any(word in sent_part.lower().strip() for word in ['curriculam','vitae','bio-data','resume']):
+            if any(word in sent_part.lower().strip() for word in ['curriculam', 'vitae', 'bio-data', 'resume']):
                 pass
             else:
                 return sent_part
@@ -33,6 +35,8 @@ def extract_name(resume_text):
     #         return ent.text
 
 # Function to extract Phone Numbers from string using regular expressions
+
+
 def extract_phone_numbers(resume_text):
     r = re.compile(
         r'(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4})')
@@ -40,7 +44,7 @@ def extract_phone_numbers(resume_text):
     y = [re.sub(r'\D', '', number) for number in phone_numbers]
     y1 = []
     for i in range(len(y)):
-        if(len(y[i])>9):
+        if(len(y[i]) > 9):
             y1.append(y[i])
     return y1
 
@@ -61,6 +65,8 @@ def extract_email_addresses(resume_text):
     return []
 
 # Function to extract Email address from a string using regular expressions
+
+
 def extract_skills(resume_text):
     resume_text = resume_text.lower()
     skill_string = ''
@@ -91,6 +97,7 @@ def extract_information(resume_text):
     for item in soup.find_all('div', attrs={'id': "mw-content-text"}):
         print(item.find('p').get_text())
         print('\n')
+
 
 def extract_address(resume_text):
     pincode_input_path = 'data/address/pincodes'
@@ -150,7 +157,7 @@ def extract_address(resume_text):
     district_pos = len(resume_text)
     for state in states:
         pos = resume_text.find(state)
-        if (pos != -1) and(pos < state_pos) and if_separate_word(pos, state):
+        if (pos != -1) and (pos < state_pos) and if_separate_word(pos, state):
             state_pos = pos
             result_state = state
     for district in district_states.keys():
@@ -166,9 +173,10 @@ def extract_address(resume_text):
     result_address['state'] = result_state.title()
     return result_address
 
+
 def calculate_experience(resume_text):
     def get_month_index(month):
-        month_dict = {'jan':1, 'feb':2, 'mar':3, 'apr':4, 'may':5, 'jun':6, 'jul':7, 'aug':8, 'sep':9, 'oct':10, 'nov':11, 'dec':12}
+        month_dict = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6, 'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12}
         return month_dict[month.lower()]
     try:
         experience = 0
@@ -191,8 +199,8 @@ def calculate_experience(resume_text):
                     if (start_month == -1) or (current_month < start_month):
                         start_month = current_month
             if date_range.lower().find('present') != -1:
-                end_month = date.today().month # current month
-                end_year = date.today().year # current year
+                end_month = date.today().month  # current month
+                end_year = date.today().year  # current year
             else:
                 year_result = re.search(year_regex, date_range[year_result.end():])
                 if (end_year == -1) or (int(year_result.group()) >= end_year):
@@ -210,12 +218,15 @@ def calculate_experience(resume_text):
     except Exception as exception_instance:
         return 'Issue calculating experience: '+str(exception_instance)
 
+
 """
 Utility function that fetches Job Position from the resume.
 Params: cleaned_resume Type: string
 returns: job_positions Type:List"""
+
+
 def extract_jobs(cleaned_resume):
-    positions_path =  'data/job_positions/positions'
+    positions_path = 'data/job_positions/positions'
     with open(positions_path, 'rb') as fp:
         jobs = pickle.load(fp)
     job_positions = []
@@ -240,7 +251,8 @@ def extract_jobs(cleaned_resume):
     if 'Student' in hash_jobs.keys():
         hash_jobs['Student'] = 0
     hash_jobs['Other'] = -1
-    return job_positions #(, max(hash_jobs, key=hash_jobs.get).capitalize())
+    return job_positions  # (, max(hash_jobs, key=hash_jobs.get).capitalize())
+
 
 """
 Utility function that fetches degree and degree-info from the resume.
@@ -249,8 +261,10 @@ returns:
 degree Type: List of strings
 info Type: List of strings
 """
+
+
 def extract_qualifications(resume_text):
-    degree_path ='data/qualifications/degree'
+    degree_path = 'data/qualifications/degree'
     with open(degree_path, 'rb') as fp:
         qualifications = pickle.load(fp)
     degrees = []
@@ -264,12 +278,13 @@ def extract_qualifications(resume_text):
             degree['info'] = []
             resume_text = resume_text[regex_result.end():]
             lines = [line.rstrip().lstrip()
-            for line in resume_text.split('\n') if line.rstrip().lstrip()]
+                     for line in resume_text.split('\n') if line.rstrip().lstrip()]
             if lines:
                 degree['info'].append(lines[0])
             regex_result = re.search(regular_expression, resume_text)
             degrees.append(degree)
     return degrees
+
 
 """
 Util function for fetch_employers module to get employers
@@ -281,38 +296,41 @@ Params: resume_text Type:String
 Output: current_employers Type: List of strings
         all_employers Type: List of strings
 """
+
+
 def fetch_employers_util(resume_text, job_positions, organizations):
-  employers = []
-  for job in job_positions:
-    employer = {}
-    job_regex = r'[^a-zA-Z]'+job+r'[^a-zA-Z]'
-    regular_expression = re.compile(job_regex, re.IGNORECASE)
-    temp_resume = resume_text
-    regex_result = re.search(regular_expression, temp_resume)
-    while regex_result:
-      # start to end point to a line before and after the job positions line
-      # along with the job line
-      start = regex_result.start()
-      end = regex_result.end()
-      lines_front = utilities.LINES_FRONT
-      lines_back = utilities.LINES_BACK
-      while lines_front != 0 and start != 0:
-        if temp_resume[start] == '.':
-          lines_front -= 1
-        start -= 1
-      while lines_back != 0 and end < len(temp_resume):
-        if temp_resume[end] == '.':
-          lines_back -= 1
-        end += 1
-      # Read from temp_resume with start and end as positions
-      line = temp_resume[start:end].lower()
-      for org in organizations:
-        if org.lower() in line and org.lower() not in job_positions:
-            employer['company'] = org
-            employers.append(employer)
-      temp_resume = temp_resume[end:]
-      regex_result = re.search(regular_expression, temp_resume)
-  return employers
+    employers = []
+    for job in job_positions:
+        employer = {}
+        job_regex = r'[^a-zA-Z]'+job+r'[^a-zA-Z]'
+        regular_expression = re.compile(job_regex, re.IGNORECASE)
+        temp_resume = resume_text
+        regex_result = re.search(regular_expression, temp_resume)
+        while regex_result:
+            # start to end point to a line before and after the job positions line
+            # along with the job line
+            start = regex_result.start()
+            end = regex_result.end()
+            lines_front = utilities.LINES_FRONT
+            lines_back = utilities.LINES_BACK
+            while lines_front != 0 and start != 0:
+                if temp_resume[start] == '.':
+                    lines_front -= 1
+                start -= 1
+            while lines_back != 0 and end < len(temp_resume):
+                if temp_resume[end] == '.':
+                    lines_back -= 1
+                end += 1
+            # Read from temp_resume with start and end as positions
+            line = temp_resume[start:end].lower()
+            for org in organizations:
+                if org.lower() in line and org.lower() not in job_positions:
+                    employer['company'] = org
+                    employers.append(employer)
+            temp_resume = temp_resume[end:]
+            regex_result = re.search(regular_expression, temp_resume)
+    return employers
+
 
 """
 Utility function that fetches the employers from resume
@@ -320,6 +338,8 @@ Params: resume_text Type: String
         job_positions Type: List of Strings
 returns: employers Type: List of string
 """
+
+
 def extract_employers(resume_text):
     # Cleaning up the text.
     # 1. Initially convert all punctuations to '\n'
@@ -327,7 +347,7 @@ def extract_employers(resume_text):
     # 3. join the temp_resume using dot-space
     job_positions = extract_jobs(resume_text)
     for punctuation in string.punctuation:
-        resume_text = resume_text.replace(punctuation, '\n')    
+        resume_text = resume_text.replace(punctuation, '\n')
     temp_resume = []
     for x in resume_text.split('\n'):
         # append only if there is text
@@ -336,7 +356,7 @@ def extract_employers(resume_text):
     # joined with dot-space
     resume_text = '. '.join(temp_resume)
     employers = []
-    emps = fetch_employers_util(resume_text, job_positions, utilities.get_organizations())    
+    emps = fetch_employers_util(resume_text, job_positions, utilities.get_organizations())
     employers.extend(emps)
     # emps = fetch_employers_util(resume_text, job_positions, fetch_all_organizations(resume_text))
     # employers.extend([emp for emp in emps if emp not in employers])
@@ -350,17 +370,35 @@ Params: resume_text Type: string
 returns: extra_information Type: List of strings
 
 """
-def extract_extra(resume_text):
-  with open('data/extra/extra', 'rb') as fp:
-    extra = pickle.load(fp)
 
-  extra_information = []
-  for info in extra:
-    extra_regex = r'[^a-zA-Z]'+info+r'[^a-zA-Z]'
-    regular_expression = re.compile(extra_regex, re.IGNORECASE)
-    regex_result = re.search(regular_expression, resume_text)
-    while regex_result:
-      extra_information.append(info)
-      resume_text = resume_text[regex_result.end():]
-      regex_result = re.search(regular_expression, resume_text)
-  return extra_information
+
+def extract_extra(resume_text):
+    with open('data/extra/extra', 'rb') as fp:
+        extra = pickle.load(fp)
+
+    extra_information = []
+    for info in extra:
+        extra_regex = r'[^a-zA-Z]'+info+r'[^a-zA-Z]'
+        regular_expression = re.compile(extra_regex, re.IGNORECASE)
+        regex_result = re.search(regular_expression, resume_text)
+        while regex_result:
+            extra_information.append(info)
+            resume_text = resume_text[regex_result.end():]
+            regex_result = re.search(regular_expression, resume_text)
+    return extra_information
+
+
+def extract_roles(resume_text):
+    filename = 'data/unique_roles.csv'
+    matched_roles = []
+    with open(filename, 'r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        for rows in csvreader:
+            role_regex = r'[^a-zA-Z]'+str(rows[0])+r'[^a-zA-Z]'
+            regular_expression = re.compile(role_regex, re.IGNORECASE)
+            regex_result = re.search(regular_expression, resume_text)
+
+            if(regex_result):
+                matched_roles.append(rows[0])
+
+    return matched_roles
