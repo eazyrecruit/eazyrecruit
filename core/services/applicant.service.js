@@ -35,7 +35,7 @@ exports.save = async (req, enableEmail) => {
                 if (req.body._id) {
                     modelApplicant = await Applicants.findById(req.body._id);
                 } else if (email) {
-                    modelApplicant = await Applicants.findOne({email: email});
+                    modelApplicant = await Applicants.findOne({ email: email });
                 }
                 // Create applicant if unable to find
                 if (modelApplicant == null) {
@@ -53,6 +53,7 @@ exports.save = async (req, enableEmail) => {
                 modelApplicant.noticePeriodNegotiable = req.body.noticePeriodNegotiable || modelApplicant.noticePeriodNegotiable || '';
                 modelApplicant.totalExperience = req.body.experience || modelApplicant.totalExperience || '';
                 modelApplicant.availability = req.body.availability || modelApplicant.availability || '';
+                modelApplicant.roles = req.body.roles || modelApplicant.roles || '';
                 modelApplicant.referredBy = req.body.referredBy || null;
                 if (req.body.firstName) {
                     modelApplicant.firstName = req.body.firstName ? req.body.firstName : '';
@@ -110,7 +111,7 @@ exports.save = async (req, enableEmail) => {
                 if (req.body.currentLocation) {
                     var current = JSON.parse(req.body.currentLocation);
                     if (current && current.length > 0) {
-                        modelCurrentLocation = await Locations.findOne({_id: current[0].id})
+                        modelCurrentLocation = await Locations.findOne({ _id: current[0].id })
                         if (modelCurrentLocation == null) {
                             modelCurrentLocation = new Locations();
                             modelCurrentLocation.country = current.country || '';
@@ -135,7 +136,7 @@ exports.save = async (req, enableEmail) => {
                     if (preferred && preferred.length > 0) {
                         var preferredLocations = [];
                         for (let iPreferred = 0; iPreferred < preferred.length; iPreferred++) {
-                            modelpreferredLocation = await Locations.findOne({_id: preferred[iPreferred].id})
+                            modelpreferredLocation = await Locations.findOne({ _id: preferred[iPreferred].id })
                             if (modelpreferredLocation == null) {
                                 modelpreferredLocation = new Locations();
                                 modelpreferredLocation.country = preferred[iPreferred].country || '';
@@ -157,7 +158,7 @@ exports.save = async (req, enableEmail) => {
                 // Add Social Details
                 if (req.body.socials && req.body.socials.length > 0) {
                     for (var iSocial = 0; iSocial < req.body.socials.length; iSocial++) {
-                        var modelSocial = await Socials.findOne({name: Socials[iSocial].name});
+                        var modelSocial = await Socials.findOne({ name: Socials[iSocial].name });
                         if (modelSocial == null) {
                             modelSocial = new Socials();
                             modelSocial.created_by = req.user.id;
@@ -167,7 +168,7 @@ exports.save = async (req, enableEmail) => {
                             modelSocial.name = Socials[iSocial].name;
                             modelSocial = await modelSocial.save();
                         }
-                        var applicantSocial = await ApplicantSocials.findOne({social: modelSocial._id});
+                        var applicantSocial = await ApplicantSocials.findOne({ social: modelSocial._id });
                         if (applicantSocial == null) {
                             applicantSocial = new ApplicantSocials();
                             applicantSocial.social = modelSocial._id;
@@ -184,7 +185,7 @@ exports.save = async (req, enableEmail) => {
 
                 // Referral
                 if (req.body.referralEmail) {
-                    var modelUser = await Users.findOne({email: req.body.referralEmail});
+                    var modelUser = await Users.findOne({ email: req.body.referralEmail });
                     if (modelUser == null) {
                         modelUser.email = req.body.referralEmail.trim();
                         modelUser.created_by = req.user.id;
@@ -207,7 +208,7 @@ exports.save = async (req, enableEmail) => {
                 if (req.body.jobId) {
                     let modelJob = await Jobs.findById(req.body.jobId).populate('pipeline');
                     if (req.body.pipelineId) {
-                        jobPipeline = await JobPipeline.findById({_id: req.body.pipelineId, is_deleted: {$ne: true}});
+                        jobPipeline = await JobPipeline.findById({ _id: req.body.pipelineId, is_deleted: { $ne: true } });
                     } else {
                         jobPipeline = modelJob.pipelines ? modelJob.pipelines[0] : null;
                     }
@@ -294,7 +295,7 @@ async function findOrCreate(array, userId) {
                     if (skillObject && skillObject.hasOwnProperty(name)) {
                         skills.push(skillObject[name]._id);
                     } else {
-                        let skill = await Skills.findOne({name: name});
+                        let skill = await Skills.findOne({ name: name });
                         if (!skill && name) {
                             skill = new Skills();
                             skill.name = name.trim();
@@ -332,13 +333,13 @@ exports.resume = async (req) => {
                 modelResume.modified_by = req.user.id;
                 modelResume.modified_at = new Date();
                 modelResume = await modelResume.save();
-                resolve({id: modelResume._id});
+                resolve({ id: modelResume._id });
             } else {
-                reject({status: 400, message: 'resume file is missing'});
+                reject({ status: 400, message: 'resume file is missing' });
             }
         } catch (error) {
             console.log('resume save error : ', error);
-            reject({status: 500, message: 'server error'});
+            reject({ status: 500, message: 'server error' });
         }
     });
 }
@@ -346,18 +347,18 @@ exports.resume = async (req) => {
 exports.getById = async (_id) => {
     return (await Applicants.findById(_id).populate('location')
         .populate('preferredLocations').populate('resume', ["fileName", "fileType"])
-        .populate({path: 'skills', match: {is_deleted: {$ne: true}}}));
+        .populate({ path: 'skills', match: { is_deleted: { $ne: true } } }));
 }
 
 exports.getjobsByApplicantId = async (_id) => {
-    return await JobApplicant.find({applicant: _id, is_deleted: {$ne: true}}).populate({
+    return await JobApplicant.find({ applicant: _id, is_deleted: { $ne: true } }).populate({
         path: 'job',
         select: 'title skills',
         populate: {
             path: 'skills',
             select: 'name',
         }
-    }).populate({path: 'pipeline', select: 'name'});
+    }).populate({ path: 'pipeline', select: 'name' });
 }
 
 exports.delete = async (_id) => {
@@ -391,27 +392,27 @@ exports.updateCommentsById = async (req) => {
         modified_at: Date.now(),
         modified_by: req.user.id
     }
-    return await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
+    return await ApplicantComments.findByIdAndUpdate({ _id: req.body._id }, comment);
 }
 
 exports.getComments = async (req) => {
-    return await ApplicantComments.find({applicant: req.params.id, is_deleted: false}).populate({
+    return await ApplicantComments.find({ applicant: req.params.id, is_deleted: false }).populate({
         path: 'modified_by',
         select: 'email firstName lastName'
     });
 }
 
 exports.getCommentsByJob = async (applicantId, jobId) => {
-    return ApplicantComments.find({job: jobId, is_deleted: false}).populate({
+    return ApplicantComments.find({ job: jobId, is_deleted: false }).populate({
         path: 'modified_by',
         select: 'email firstName lastName'
     });
 }
 
 exports.getApplicantHistory = async (applicantId,) => {
-    return (await Histories.find({applicant: applicantId, is_deleted: false})
-        .populate({path: 'job', select: 'title'})
-        .populate({path: 'pipeline', select: 'name'}));
+    return (await Histories.find({ applicant: applicantId, is_deleted: false })
+        .populate({ path: 'job', select: 'title' })
+        .populate({ path: 'pipeline', select: 'name' }));
 }
 
 getFirstName = (fullname) => {
@@ -456,9 +457,9 @@ function notifyHR(candidate) {
     return new Promise(async (resolve, reject) => {
         // Get all HR (role = 2
 
-        let hrRole = await Role.findOne({name: "hr"});
+        let hrRole = await Role.findOne({ name: "hr" });
         if (hrRole) {
-            var hrTeam = await User.find({is_deleted: false, roles: {$elemMatch: {$eq: hrRole}}});
+            var hrTeam = await User.find({ is_deleted: false, roles: { $elemMatch: { $eq: hrRole } } });
             if (hrTeam && hrTeam.length > 0) {
                 // Get list of hr emails
                 var hrEmails = "";

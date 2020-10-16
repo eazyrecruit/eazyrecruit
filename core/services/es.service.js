@@ -54,25 +54,26 @@ exports.searchApplicants = async (req) => {
             query = {
                 "bool": {
                     "should": [
-                        {"match_phrase": {"email": req.query.search}},
-                        {"match_phrase": {"firstName": req.query.search}},
-                        {"match_phrase": {"middleName": req.query.search}},
-                        {"match_phrase": {"lastName": req.query.search}},
-                        {"match": {"phones": req.query.search}},
-                        {"match": {"skills.name": req.query.search}}]
+                        { "match_phrase": { "email": req.query.search } },
+                        { "match_phrase": { "firstName": req.query.search } },
+                        { "match_phrase": { "middleName": req.query.search } },
+                        { "match_phrase": { "lastName": req.query.search } },
+                        { "match": { "roles": req.query.search } },
+                        { "match": { "phones": req.query.search } },
+                        { "match": { "skills.name": req.query.search } }]
                 }
             }
         } else {
-            query = {"match_all": {}}
+            query = { "match_all": {} }
         }
         if (query) {
             Applicants.search(query, {
-                    hydrate: false, size: size, from: from, sort: [{
-                        "created_at": {
-                            "order": "desc"
-                        }
-                    }]
-                },
+                hydrate: false, size: size, from: from, sort: [{
+                    "created_at": {
+                        "order": "desc"
+                    }
+                }]
+            },
                 function (err, results) {
                     if (err)
                         reject(err);
@@ -96,31 +97,31 @@ exports.searchJobs = async (req) => {
             query = {
                 "bool": {
                     "must": [
-                        {"match_phrase_prefix": {"title": req.query.searchText}}, {"match_phrase": {"active": active}}]
+                        { "match_phrase_prefix": { "title": req.query.searchText } }, { "match_phrase": { "active": active } }]
                 }
             }
         } else {
             query = {
                 "bool": {
                     "must": [
-                        {"match_all": {}},
-                        {"match_phrase": {"active": active}}]
+                        { "match_all": {} },
+                        { "match_phrase": { "active": active } }]
                 }
             }
         }
         if (query) {
             Jobs.search(query, {
-                    from: offset, size: limit,
-                    sort: [{
-                        "is_published": {
-                            "order": "desc"
-                        }
-                    }, {
-                        "created_at": {
-                            "order": "desc"
-                        }
-                    }]
-                },
+                from: offset, size: limit,
+                sort: [{
+                    "is_published": {
+                        "order": "desc"
+                    }
+                }, {
+                    "created_at": {
+                        "order": "desc"
+                    }
+                }]
+            },
                 function (err, results) {
                     if (err)
                         reject(err);
@@ -153,7 +154,7 @@ exports.updateJob = async (id, job) => {
                     }
                 );
         } else {
-            reject({status: 400, message: "job id is missing"});
+            reject({ status: 400, message: "job id is missing" });
         }
     });
 }
