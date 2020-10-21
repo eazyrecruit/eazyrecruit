@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 var pathToRegexp = require('path-to-regexp');
 const fs = require('fs');
-dotenv.config({path: "./.env"});
+dotenv.config({ path: "./.env" });
 normalize = (param) => {
     if (typeof (param) == 'string') {
         param = param.replace(/\s+/g, '');
@@ -42,9 +42,9 @@ module.exports = {
             googleAuth: {
                 'callbackURL': process.env.GOOGLE_CALLBACK_URL || '/admin/assets/auth-callback.html'
             },
-            coreClientSecret: process.env.CORE_CLIENT_SECRET|| "secret",
+            coreClientSecret: process.env.CORE_CLIENT_SECRET || "secret",
             mongo: {
-                host: process.env.MONGO_URI || 'mongodb://userName:password@ez_mongodb/admin'
+                host: process.env.MONGO_URI || 'mongodb://localhost:27017/ez_rec'
             },
             redis: {
                 host: process.env.RADIS_URI || "redis://:userName@ez_redis:6379/0"
