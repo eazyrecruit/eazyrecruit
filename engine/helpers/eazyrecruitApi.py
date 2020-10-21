@@ -41,17 +41,21 @@ class EazyrecruitAPI:
     def uploadResumeWithData(self, attachment, data, url):
         print("44", "uploading file")
         try:
-            bodyData = json.dumps(data)
-            headers = {'clientSecret': self.clientSecret}
-            multipart_form_data = {'resumeData': (
-                attachment.split('/')[-1], open(attachment, 'rb'))}
-            payload = {'body': json.dumps(data)}
-            print(self.baseurl + url)
-            response = requests.post(self.baseurl + url, files=multipart_form_data, data=payload, headers=headers)
-            print("52", response.json())
-            if (response.status_code == 200):
-                return response.json()
+            if(not data.get('error')):
+                bodyData = json.dumps(data)
+                headers = {'clientSecret': self.clientSecret}
+                multipart_form_data = {'resumeData': (
+                    attachment.split('/')[-1], open(attachment, 'rb'))}
+                payload = {'body': json.dumps(data)}
+                print(self.baseurl + url)
+                response = requests.post(self.baseurl + url, files=multipart_form_data, data=payload, headers=headers)
+                print("52", response)
+                if (response.status_code == 200):
+                    return response.json()
+                else:
+                    return
             else:
+                print("Error occured, resume not parsed 58")
                 return
         except Exception as err:
             print(err)

@@ -20,6 +20,9 @@ var applicantSchema = new Schema({
     noticePeriodNegotiable: String,
     totalExperience: Number,
     availability: String,
+    roles: [{
+        type: 'String',
+    }],
     socials: [{
         type: Schema.Types.ObjectId,
         ref: 'ApplicantSocials',
