@@ -46,22 +46,7 @@ exports.syncJobs = async () => {
 }
 
 
-exports.searchApplicantByJob = async (req) => {
-    return new Promise((resolve, reject) => {
-        let query;
-        const size = parseInt(req.query.limit) || 10;
-        const from = parseInt(req.query.offset) || 0;
-        if (req.query.search) {
-            query = {
-
-            }
-        }
-
-    })
-}
-
 exports.searchApplicants = async (req) => {
-    // console.log("her here")
     return new Promise(function (resolve, reject) {
         let query;
         let from = 0, size = 10;
