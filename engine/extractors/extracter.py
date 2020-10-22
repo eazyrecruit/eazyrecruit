@@ -394,11 +394,10 @@ def extract_roles(resume_text):
     with open(filename, 'r') as csvfile:
         csvreader = csv.reader(csvfile)
         for rows in csvreader:
-            role_regex = r'[^a-zA-Z]'+str(rows[0])+r'[^a-zA-Z]'
+            role_regex = r'[^a-zA-Z]'+rows[0]+r'[^a-zA-Z]'
             regular_expression = re.compile(role_regex, re.IGNORECASE)
             regex_result = re.search(regular_expression, resume_text)
 
             if(regex_result):
                 matched_roles.append(rows[0])
-
     return matched_roles

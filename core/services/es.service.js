@@ -67,29 +67,33 @@ exports.searchApplicants = async (req) => {
         let from = 0, size = 10;
         if (req.query.limit) size = parseInt(req.query.limit);
         if (req.query.offset) from = parseInt(req.query.offset);
-        if (req.query.search) {
-            if (typeof req.query.search === 'object') {
-                query = {
-                    "bool": {
-                        "should": [
-                            { "match": { "email": "" } }
-                        ]
-                    }
-                }
-            } else {
-                query = {
-                    "bool": {
-                        "should": [
-                            { "match_phrase": { "email": req.query.search } },
-                            { "match_phrase": { "firstName": req.query.search } },
-                            { "match_phrase": { "middleName": req.query.search } },
-                            { "match_phrase": { "lastName": req.query.search } },
-                            { "match": { "phones": req.query.search } },
-                            { "match": { "skills.name": req.query.search } }]
-                    }
+        if (req.query.searchJob) {
+            const searchJob = JSON.parse(req.query.searchJob);
+            query = {
+                "bool": {
+                    "should": [
+                        { "match": { "roles": searchJob.role } },
+                        { "term": { "totalExperience": searchJob.experience } },
+
+                    ]
                 }
             }
-
+            for (const skill of searchJob.skills) {
+                query.bool.should.append({ "match": { "skills": skill } })
+            }
+        } else if (req.query.search) {
+            query = {
+                "bool": {
+                    "should": [
+                        { "match_phrase": { "email": req.query.search } },
+                        { "match_phrase": { "firstName": req.query.search } },
+                        { "match_phrase": { "middleName": req.query.search } },
+                        { "match_phrase": { "lastName": req.query.search } },
+                        { "match": { "roles": req.query.search } },
+                        { "match": { "phones": req.query.search } },
+                        { "match": { "skills.name": req.query.search } }]
+                }
+            }
         } else {
             query = { "match_all": {} }
         }

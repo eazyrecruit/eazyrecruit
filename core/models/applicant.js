@@ -18,10 +18,14 @@ var applicantSchema = new Schema({
     expectedCtc: Number,
     noticePeriod: String,
     noticePeriodNegotiable: String,
-    totalExperience: Number,
+    totalExperience: {
+        type: Number,
+        es_index: true
+    },
     availability: String,
     roles: [{
         type: 'String',
+        es_index: true
     }],
     socials: [{
         type: Schema.Types.ObjectId,
