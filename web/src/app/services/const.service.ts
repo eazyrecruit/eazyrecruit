@@ -10,7 +10,7 @@ export class ConstService {
             this.publicUrl = 'http://localhost:8082';
         }
 
-        this.baseUrl = 'http://localhost:8082/api/';
+        this.baseUrl = '/api/';
         this.pyUrl = '/api/engine/';
         this.roles = ['admin', 'user', 'hr'];
     }

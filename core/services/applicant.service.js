@@ -53,7 +53,7 @@ exports.save = async (req, enableEmail) => {
                 modelApplicant.noticePeriodNegotiable = req.body.noticePeriodNegotiable || modelApplicant.noticePeriodNegotiable || '';
                 modelApplicant.totalExperience = req.body.experience || modelApplicant.totalExperience || '';
                 modelApplicant.availability = req.body.availability || modelApplicant.availability || '';
-                modelApplicant.roles = req.body.roles || modelApplicant.roles || '';
+                modelApplicant.roles = req.body.roles || modelApplicant.roles || [];
                 modelApplicant.referredBy = req.body.referredBy || null;
                 if (req.body.firstName) {
                     modelApplicant.firstName = req.body.firstName ? req.body.firstName : '';
