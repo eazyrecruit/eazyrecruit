@@ -28,6 +28,7 @@
                             <th sort-field="first_name" class="col-sm-2">Name</th>
                             <th sort-field="last_name" class="col-sm-2">Email</th>
                             <th class="col-sm-2">Contact No.</th>
+                            <th class="col-sm-1">Source</th>
                             <th class="col-sm-1">Experience</th>
                             <th class="col-sm-4"> Skills</th>
                         </tr>
@@ -53,6 +54,9 @@
                                         {{phone}}<span *ngIf="i < candidate.phones.length - 1">, </span>
                                     </span>
                                 </div>
+                            </td>
+                            <td>
+                                {{candidate.source}}
                             </td>
                             <td>
                                 {{candidate.totalExperience}}
