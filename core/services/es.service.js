@@ -45,15 +45,15 @@ exports.syncJobs = async () => {
     });
 }
 
-
-exports.searchApplicants = async (req) => {
+exports.searchApplicantsByJob = async (req) => {
     return new Promise(function (resolve, reject) {
         let query;
         let from = 0, size = 10;
-        if (req.query.limit) size = parseInt(req.query.limit);
-        if (req.query.offset) from = parseInt(req.query.offset);
-        if (req.query.searchJob) {
-            const searchJob = JSON.parse(req.query.searchJob);
+        const requestBody = req.body;
+        if (requestBody.limit) size = parseInt(requestBody.limit);
+        if (requestBody.offset) from = parseInt(requestBody.offset);
+        if (requestBody.searchJob) {
+            const searchJob = JSON.parse(requestBody.searchJob);
             query = {
                 "bool": {
                     "should": [
@@ -64,9 +64,37 @@ exports.searchApplicants = async (req) => {
                 }
             }
             for (const skill of searchJob.skills) {
-                query.bool.should.append({ "match": { "skills": skill } })
+                query.bool.should.push({ "match": { "skills.name": skill.name } })
             }
-        } else if (req.query.search) {
+        }
+        if (query) {
+            Applicants.search(query, {
+                hydrate: false, size: size, from: from, sort: [{
+                    "created_at": {
+                        "order": "desc"
+                    }
+                }]
+            },
+                function (err, results) {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(results);
+                });
+        } else {
+            reject("No data found");
+        }
+    })
+}
+
+
+exports.searchApplicants = async (req) => {
+    return new Promise(function (resolve, reject) {
+        let query;
+        let from = 0, size = 10;
+        if (req.query.limit) size = parseInt(req.query.limit);
+        if (req.query.offset) from = parseInt(req.query.offset);
+        if (req.query.search) {
             query = {
                 "bool": {
                     "should": [

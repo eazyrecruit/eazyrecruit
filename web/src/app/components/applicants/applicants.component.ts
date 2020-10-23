@@ -161,7 +161,6 @@ export class ApplicantsComponent implements OnInit {
 
     onFilterChange(filter: any) {
         if (this.job && this.jobId && !this.filter.searchText) {
-            console.log("addming searchJob")
             this.filter.searchJob = JSON.stringify({
                 "role": this.job.title,
                 "experience": this.job.minExperience,
