@@ -18,6 +18,9 @@ export class SearchService {
     return this.http.post(this.constService.baseUrl + 'applicant/', filter);
   }
   getData(filter) {
+    if (filter.searchJob) {
+      return this.http.get(`${this.constService.baseUrl}applicant/search?limit=${filter.pageSize}&offset=${filter.offset}&searchJob=${filter.searchJob}`);
+    }
     return this.http.get(`${this.constService.baseUrl}applicant/search?limit=${filter.pageSize}&offset=${filter.offset}&search=${filter.searchText}`);
   }
   getHeaders() {
@@ -50,6 +53,6 @@ export class SearchService {
   }
 
   getResumeFile(resume_id) {
-    return this.http.get(this.constService.baseUrl + 'resume/file/' + resume_id, {responseType: 'arraybuffer'});
+    return this.http.get(this.constService.baseUrl + 'resume/file/' + resume_id, { responseType: 'arraybuffer' });
   }
 }
