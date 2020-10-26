@@ -89,6 +89,7 @@ import {EmailTemplateComponent} from './components/settings/emailsettings/email-
 import {ColorPickerModule} from 'ngx-color-picker';
 import {GoogleAnalyticsComponent} from './components/settings/googleAnalytics/google.analytics.component';
 import {ProfileComponent} from './components/profile/profile.component';
+import {DatabaseComponent} from './components/database/database.component';
 
 @NgModule({
     declarations: [
@@ -114,6 +115,7 @@ import {ProfileComponent} from './components/profile/profile.component';
         ViewJobsComponent,
         SkillComponent,
         ProfileComponent,
+        DatabaseComponent,
         ApplicantCardComponent,
         ApplicantInfoComponent,
         JobsComponent,
