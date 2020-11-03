@@ -4,8 +4,87 @@
             <i class="fa fa-inbox"></i>
             <h3 class="box-title"> Database</h3>
         </div>
-        <div class="box-body">
+        <div id="database" class="main-content padding-20px-tb plr-15">
 
+            <div class="row">
+
+                <div class='col-lg-4'>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="search...">
+                    </div>
+                </div>
+
+                <div class='col-lg-2'>
+                    <div class="form-group">
+                        <div id="filterDate2">
+                            <!-- Datepicker as text field -->
+                            <div class="input-group">
+                                <input type="date" class="form-control" placeholder="dd.mm.yyyy">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2">
+                    <select class="form-control ng-pristine ng-valid ng-touched">
+                        <option value="5" ng-reflect-value="5">Source</option>
+                        <option value="10" ng-reflect-value="10">Applied by linkedin</option>
+                        <option value="15" ng-reflect-value="15">Applied by mail</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-1 col-lg-offset-3">
+                    <select class="form-control ng-pristine ng-valid ng-touched">
+                        <option value="5" ng-reflect-value="5">5</option>
+                        <option value="10" ng-reflect-value="10">10</option>
+                        <option value="15" ng-reflect-value="15">15</option>
+                        <option value="20" ng-reflect-value="20">20</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+                        <thead>
+                            <tr class="font-weight-bold">
+
+                                <th>
+                                    <div class="sorting">Name</div>
+                                </th>
+                                <th>
+                                    <div class="sorting">Source</div>
+                                </th>
+                                <th>Word Exp.</th>
+                                <th>Notice Period</th>
+                                <th> Location</th>
+                                <th> Update date/Update by</th>
+                                <th> Skills</th>
+                            </tr>
+
+                            <tr class="font-weight-bold">
+
+                                <th>
+                                    <div class="sorting">Laxman singh mali</div>
+                                </th>
+                                <th>
+                                    <span class="badge badge-secondary">Applied by Linkedin</span>
+                                </th>
+                                <th> 8 years </th>
+                                <th> 2 months </th>
+                                <th> Jaipur</th>
+                                <th> 24-10-2020/Mali ram</th>
+                                <th> Skills</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
 
         </div>
     </div>

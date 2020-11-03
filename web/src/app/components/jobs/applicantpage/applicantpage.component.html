@@ -3,15 +3,28 @@
     <div class="col-sm-12">
       <div class="box box-solid mb-0 padding-one">
         <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6">
-              <h1 class="mt-0 text-navy">{{applicant.fullName(applicant?.firstName, applicant?.middleName, applicant?.lastName)}}</h1>
+         
+      
+           
+          <div class="col-md-12 d-flex">
+
+            <div class="profile_image-profilepage mr-4">
+              <img _ngcontent-c3="" alt="User Image" class="img-circle ng-star-inserted w-100" src="/admin/assets/img/amir.png">
             </div>
-            <div class="col-md-6">
+            <div>
+            <div>
+              <h2 class="mt-0 text-navy titel-header">{{applicant.fullName(applicant?.firstName, applicant?.middleName, applicant?.lastName)}}</h2>
+            </div>
+            <div>
               <i class="fa fa-pencil editApplcant" (click)="updateApplicant()"></i>
             </div>
+            <ul class="rating">
+              <rating [customTemplate]="rating" name="Userratting" [readonly]="isReadonly" class="card-body"
+                      [(ngModel)]="applicant.score" [max]="10"></rating>
+            </ul>
           </div>
-          <div class="col-md-12">
+          </div>
+          <!-- <div class="col-md-12">
             <div class="col-md-12">
               <ul class="rating">
                 <li><span class="fa fa-star"></span></li>
@@ -20,8 +33,9 @@
                 <li><span class="fa fa-star-half-o"></span></li>
                 <li><span class="fa fa-star-o"></span></li>
               </ul>
+        
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -30,153 +44,9 @@
   <div class="row">
     <div class="col-md-12">
       <div class="box box-info mt-30">
-        <div class="main-content padding-20px-tb plr-15">
-          <div>
-            <h4 class="text-dark-blue">Personal Information</h4>
-            <div>
-              <table class="table bg-dark-black mt-30 border-light">
-                <tr>
-                  <td class="font-weight-600"> First Name :</td>
-                  <td> {{applicant?.firstName}}</td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600"> Middle Name :</td>
-                  <td> {{applicant?.middleName}}</td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600"> Last Name :</td>
-                  <td> {{applicant?.lastName}}</td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600"> Mobile Number :</td>
-                  <td><span *ngFor="let phone of applicant?.phones">{{phone }}</span></td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600"> Email :</td>
-                  <td> {{applicant?.email}}</td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600"> Availability :</td>
-                  <td>
-                    {{availability[applicant?.availability]}}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600"> Current Location :</td>
-                  <td>
-                    <span *ngIf="applicant?.location">{{applicant?.location?.city}},&nbsp;{{applicant?.location?.state}}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600"> Description :</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600"> Designation :</td>
-                  <td> {{applicant?.designation}}</td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600">DOB :</td>
-                  <td> {{applicant?.dob | date}}</td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600">
-                    Preferred Location :
-                  </td>
-                  <td>
-                    <span *ngFor="let location of applicant.preferredLocations;">
-                      <span  class="display-inline-block {{defaultColor}}"  *ngIf="location.state">{{location.city}},&nbsp;{{location.state}}</span>
-                    </span>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box box-info">
-        <div class="main-content padding-20px-tb plr-15">
-          <div *ngIf="applicant">
-            <h4 class="text-dark-blue">Contract Information</h4>
-            <table class="table bg-dark-black mt-30 border-light">
-              <tr>
-                <td class="font-weight-600"> Notice Period :</td>
-                <td>{{applicant?.noticePeriod}}</td>
-              </tr>
-              <tr>
-                <td class="font-weight-600"> Notice Period Negotiable :</td>
-                <td>{{applicant?.noticePeriodNegotiable}}</td>
-              </tr>
-              <tr>
-                <td class="font-weight-600"> Refered By :</td>
-                <td>
-                  <div class="row">
-                    <div class="col-md-6">Name: {{applicant.fullName(applicant?.referredBy, null, null)}}</div>
-                  </div>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box box-info">
-        <div class="main-content padding-20px-tb plr-15">
-          <div>
-            <h4 class="text-dark-blue">Experiences information</h4>
-            <table class="table bg-dark-black mt-30 border-light">
-              <tr>
-                <td class="font-weight-600"> Total Experience :</td>
-                <td>{{applicant?.totalExperience}}</td>
-              </tr>
-              <tr>
-                <td class="font-weight-600"> Current CTC :</td>
-                <td>{{applicant?.currentCtc}}</td>
-              </tr>
-              <tr>
-                <td class="font-weight-600"> Expected CTC :</td>
-                <td>{{applicant?.expectedCtc}}</td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box box-info">
-        <div class="main-content padding-20px-tb plr-15">
-          <div>
-            <h4 class="text-dark-blue">Skills</h4>
-            <table class="table bg-dark-black mt-30 border-light" *ngIf="applicant && applicant.skills.length > 0">
-              <tr>
-                <td>
-                  <span class="pads-small" *ngFor="let skill of applicant.skills">
-                    {{skill.name}}
-                  </span>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box box-info">
+        <div class="row">
+          <div class="col-lg-6">
+        
         <div class="main-content padding-20px-tb plr-15">
           <h4>Resume</h4>
           <applicant-resume [(applicant)]="applicant"></applicant-resume>
@@ -188,10 +58,10 @@
                   <div class="upload_wrpper c-pointer">
                     <input type="file" class="resume_upload-input" multiple="" accept=".doc, .docx, .pdf" name="resume"
                       #file (change)="onFileChange(file.files)" formControlName="resume">
-                    <div class="upload_center-content text-center">
+                    <!-- <div class="upload_center-content text-center">
                       <img class="cloud_img" src="/admin/assets/img/cloud.png" alt="cloude image">
                       <p>Upload your file here</p>
-                    </div>
+                    </div> -->
                   </div>
                   <small class="text-danger"
                     *ngIf="resumeForm.controls['resume'].hasError('required') && resumeForm.controls['resume'].touched">
@@ -213,48 +83,213 @@
             </form>
         </div>
       </div>
+      </div>
+      </div>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box box-info">
-        <div class="main-content padding-20px-tb plr-15">
-            <h4 class="text-dark-blue">Applied Jobs</h4>
-            <hr>
-            <div class="row" *ngIf="applicant && applicant.jobs && applicant.jobs.length;">
-              <div class="col-sm-2 col-md-2 col-lg-2" *ngFor="let jobApplicant of applicant.jobs; let i = index;">
-                <div class="c-pointer {{jobApplicant.background}}" *ngIf="jobApplicant.job && jobApplicant.job.title" (click)="getCommentsByJobId(jobApplicant.job._id, i)">
-                  <div>Title: {{jobApplicant.job.title}}</div>
-                  <div>Status: {{jobApplicant.pipeline.name}}</div>
-                </div>
-              </div>
-            </div>
-            <div class="row" *ngIf="comments && comments.length; else noComments">
-              <div class="col-sm-12 col-md-12 col-lg-12" *ngFor="let commentObj of comments">
-                <div class="comment-box">
-                  <p>{{commentObj.comment}}</p>
-                  <div class="row">
-                    <div class="col-md-6" align="left">
-                        <span *ngIf="commentObj.modified_by.firstName">{{commentObj.modified_by.firstName}} {{commentObj.modified_by.lastName}}</span>
-                        <span *ngIf="!commentObj.modified_by.firstName">{{commentObj.modified_by.email}}</span>
-                    </div>
-                    <div class="col-md-6" align="right">
-                        {{commentObj.modified_at | date}}
-                    </div>
+  <div class="box box-info mt-30">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-6">
+            
+              <div class="main-content padding-20px-tb plr-15">
+                <div>
+                  <h4 class="text-dark-blue">Personal Information</h4>
+                  <div>
+                    <table class="table bg-dark-black mt-30 border-light">
+                      <tr>
+                        <td class="font-weight-600"> First Name :</td>
+                        <td> {{applicant?.firstName}}</td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600"> Middle Name :</td>
+                        <td> {{applicant?.middleName}}</td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600"> Last Name :</td>
+                        <td> {{applicant?.lastName}}</td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600"> Mobile Number :</td>
+                        <td><span *ngFor="let phone of applicant?.phones">{{phone }}</span></td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600"> Email :</td>
+                        <td> {{applicant?.email}}</td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600"> Availability :</td>
+                        <td>
+                          {{availability[applicant?.availability]}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600"> Current Location :</td>
+                        <td>
+                          <span *ngIf="applicant?.location">{{applicant?.location?.city}},&nbsp;{{applicant?.location?.state}}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600"> Description :</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600"> Designation :</td>
+                        <td> {{applicant?.designation}}</td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600">DOB :</td>
+                        <td> {{applicant?.dob | date}}</td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-600">
+                          Preferred Location :
+                        </td>
+                        <td>
+                          <span *ngFor="let location of applicant.preferredLocations;">
+                            <span  class="display-inline-block {{defaultColor}}"  *ngIf="location.state">{{location.city}},&nbsp;{{location.state}}</span>
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
                   </div>
                 </div>
               </div>
             </div>
-            <ng-template #noComments>
-              <div class="row" *ngIf="comments">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                  <div class="comment-box" align="center">No comments found.</div>
+          
+      
+          <div class="col-md-6">
+           
+              <div class="main-content padding-20px-tb plr-15">
+                <div *ngIf="applicant">
+                  <h4 class="text-dark-blue">Contract Information</h4>
+                  <table class="table bg-dark-black mt-30 border-light">
+                    <tr>
+                      <td class="font-weight-600"> Notice Period :</td>
+                      <td>{{applicant?.noticePeriod}}</td>
+                    </tr>
+                    <tr>
+                      <td class="font-weight-600"> Notice Period Negotiable :</td>
+                      <td>{{applicant?.noticePeriodNegotiable}}</td>
+                    </tr>
+                    <tr>
+                      <td class="font-weight-600"> Refered By :</td>
+                      <td>
+                        <div class="row">
+                          <div class="col-md-6">Name: {{applicant.fullName(applicant?.referredBy, null, null)}}</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
                 </div>
               </div>
-            </ng-template>
+            
+          </div>
+        </div>
+ </div></div>     
+  </div>
+ 
+  <div class="box box-info mt-30">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-6">
+            
+              <div class="main-content padding-20px-tb plr-15">
+                <div>
+                  <h4 class="text-dark-blue">Experiences information</h4>
+                  <table class="table bg-dark-black mt-30 border-light">
+                    <tr>
+                      <td class="font-weight-600"> Total Experience :</td>
+                      <td>{{applicant?.totalExperience}}</td>
+                    </tr>
+                    <tr>
+                      <td class="font-weight-600"> Current CTC :</td>
+                      <td>{{applicant?.currentCtc}}</td>
+                    </tr>
+                    <tr>
+                      <td class="font-weight-600"> Expected CTC :</td>
+                      <td>{{applicant?.expectedCtc}}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+             
+          </div>
+      
+          <div class="col-md-6">
+           
+              <div class="main-content padding-20px-tb plr-15">
+                  <h4 class="text-dark-blue">Applied Jobs</h4>
+                   
+                  <div class="row mt-30" *ngIf="applicant && applicant.jobs && applicant.jobs.length;">
+                    <div class="col-sm-2 col-md-2 col-lg-12" *ngFor="let jobApplicant of applicant.jobs; let i = index;">
+                      <div class="c-pointer {{jobApplicant.background}} text-left" *ngIf="jobApplicant.job && jobApplicant.job.title" (click)="getCommentsByJobId(jobApplicant.job._id, i)">
+                        <div>Title: {{jobApplicant.job.title}}</div>
+                        <div>Status: {{jobApplicant.pipeline.name}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="comments && comments.length; else noComments">
+                    <div class="col-sm-12 col-md-12 col-lg-12" *ngFor="let commentObj of comments">
+                      <div class="comment-box">
+                        <p>{{commentObj.comment}}</p>
+                        <div class="row">
+                          <div class="col-md-6" align="left">
+                              <span *ngIf="commentObj.modified_by.firstName">{{commentObj.modified_by.firstName}} {{commentObj.modified_by.lastName}}</span>
+                              <span *ngIf="!commentObj.modified_by.firstName">{{commentObj.modified_by.email}}</span>
+                          </div>
+                          <div class="col-md-6" align="right">
+                              {{commentObj.modified_at | date}}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #noComments>
+                    <div class="row" *ngIf="comments">
+                      <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="comment-box" align="center">No comments found.</div>
+                      </div>
+                    </div>
+                  </ng-template>
+              </div>
+            
+          </div>
+        </div>
+      
+  </div>
+</div>
+</div>
+ 
+
+
+  
+
+ 
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-info mt-30">
+        <div class="main-content padding-20px-tb plr-15">
+          <div>
+            <h4 class="text-dark-blue">Skills</h4>
+            <table class="table bg-dark-black mt-30 border-light" *ngIf="applicant && applicant.skills.length > 0">
+              <tr>
+                <td>
+                  <span class="pads-small" *ngFor="let skill of applicant.skills">
+                    {{skill.name}}
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+
 </section>

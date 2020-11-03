@@ -82,8 +82,13 @@
                         <ng-container *ngIf="userPicUrl">
                             <img id="userPicUrl" [src]="userPicUrl" class="img-circle" alt="user"/>
                         </ng-container>
+                        <a [routerLink]="" (click)="onRemovePhoto()" class="link d-block cross" title="Remove photo"> <i class="fa fa-times" aria-hidden="true"></i>  </a>
                     </div>
-                    <div class="custom-file">
+
+
+                    
+
+                    <div class="custom-file mt-3">
 
                         <input type="file" class="custom-file-input" id="file" accept=".png, .jpg, .jpeg"
                                (change)="onFileChange($event)">
@@ -91,7 +96,7 @@
                             Please upload only png/jpeg/jpg file
                         </small>
                     </div>
-                    <a [routerLink]="" (click)="onRemovePhoto()" class="link d-block"> Remove photo </a>
+                   
 
 
                 </div>
@@ -99,10 +104,10 @@
                 <ng-container *ngIf="!isLoginWithGoogle">
                     <div class="col-sm-4">
                         <form [formGroup]="passwordForm" (ngSubmit)="updatePassword(passwordForm.value)">
-                            <div style="margin: 6px;">
+                            <div >
                                 <label><h4>Update Password </h4></label>
                             </div>
-                            <div style="margin: 6px;">
+                            <div class="form-group">
                                 <label for="oldPassword">Old Password</label>
                                 <input type="password" id="oldPassword" placeholder="Old Password" required
                                        class="form-control"
@@ -112,7 +117,7 @@
                                     Please enter old Password
                                 </small>
                             </div>
-                            <div style="margin: 6px;">
+                            <div class="form-group">
                                 <label for="password">New Password*</label>
                                 <input type="password" id="password" placeholder="New Password" required
                                        class="form-control"
@@ -127,8 +132,10 @@
                                 </small>
 
                             </div>
-                            <div style="margin: 6px;">
-                                <label for="confirmPassword">Conform Password*</label>
+                             
+                                 
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm Password*</label>
                                 <input type="password" id="confirmPassword" placeholder="Conform Password" required
                                        class="form-control"
                                        formControlName="confirmPassword">
@@ -138,7 +145,7 @@
                                 </small>
 
                             </div>
-                            <div class="col-sm-6" style="margin: 6px;">
+                            <div class="form-group" >
                                 <button [disabled]="passwordSubmit" type="submit"
                                         class="btn btn-primary mt-10 mb-10 border-radius-30">
                                     Change Password

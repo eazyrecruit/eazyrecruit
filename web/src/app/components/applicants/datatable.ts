@@ -34,7 +34,7 @@ import { debounceTime } from 'rxjs/operators';
                     '</div>' +
                     '<div class="row">' +
                         '<div class="col-sm-6 full_page_counter">' +
-                            '<div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing <strong>{{(filter.pageIndex - 1) * filter.pageSize + 1}}</strong>-<strong>{{filter.pageIndex * filter.pageSize > totalItems ? totalItems : filter.pageIndex * filter.pageSize}}</strong> of <strong>{{totalItems}}</strong></div>' +
+                            '<div class="dataTables_info mt-3" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing <strong>{{(filter.pageIndex - 1) * filter.pageSize + 1}}</strong>-<strong>{{filter.pageIndex * filter.pageSize > totalItems ? totalItems : filter.pageIndex * filter.pageSize}}</strong> of <strong>{{totalItems}}</strong></div>' +
                         '</div>' +
                         '<div class="col-sm-6 main_pageing text-right">' +
                             '<div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">' +

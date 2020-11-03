@@ -4,7 +4,7 @@
         <div class="row ">
             <div class="col-sm-12">
                 <!-- Profile Image -->
-                <div class="box">
+                <div class="box d-flex">
                     <ul class="sidebar-panel-icon">
                         <li class="closed-panel" id="closed-panel"><a><i class="fa fa-close"></i></a></li>
                         <li><a data-toggle="tab" id="home" title="Details" href="#basic"><i class="fa fa-home"></i></a>
@@ -24,13 +24,13 @@
                     </ul>
                     <div class="box-body box-profile">
                         <div class="row padding-20px-tb">
-                            <div class="col-sm-4">
+                            <div class="col-sm-3">
                                 <div class="profile_image-wrapper">
                                     <img class="profile-user-img img-responsive img-circle"
                                         src="/admin/assets/img/amir.png" alt="User profile picture">
                                 </div>
                             </div>
-                            <div class="col-sm-7 text-left padding-left-5px" *ngIf="applicant && applicant.fullName">
+                            <div class="col-sm-8 text-left padding-left-5px" *ngIf="applicant && applicant.fullName">
                                 <h3 class="profile-username mb-5 mt-0 text-18">
                                     <a [routerLink]="['/applicants',applicant?._id]">
                                         {{applicant.fullName(applicant?.firstName, applicant?.middleName, applicant?.lastName)}}
@@ -66,11 +66,11 @@
                                 <applicant-resume *ngIf="applicant" [(applicant)]="applicant"></applicant-resume>
                                 <hr>
                                 <strong><i class="fas fa-user-graduate"></i> Contract</strong>
-                                <ul class="bg-box list-style-none padding-six" *ngIf="applicant">
-                                    <li>Referred By : <span
+                                <ul class="todo-list list-style-none" *ngIf="applicant">
+                                    <li class="">Referred By : <span
                                             *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
-                                    <li>Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
-                                    <li>Notice Period(negotiable) :
+                                    <li class="">Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
+                                    <li class="">Notice Period(negotiable) :
                                         <span>{{applicant?.noticePeriodNegotiable}}</span></li>
                                 </ul>
                                 <hr>
@@ -142,7 +142,7 @@
 
                             <div id="job-applied" class="tab-pane fade in">
                                 <strong><i class="fas fa-user-graduate"></i> Contract</strong>
-                                <ul class="bg-box list-style-none padding-six" *ngIf="applicant">
+                                <ul class="bg-box list-style-none padding-six contract-custom" *ngIf="applicant">
                                     <li>Referred By : <span
                                             *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
                                     <li>Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
