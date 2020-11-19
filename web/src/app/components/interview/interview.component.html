@@ -26,9 +26,14 @@
                                 </div>
                                 <div class="col-sm-9 text-left padding-left-5px" *ngIf="applicant">
                                     <h3 class="profile-username mb-5 mt-0 text-18">
-                                        <a routerLink="/applicant/{{applicant._id}}">
+                                        <ng-container *ngIf="['admin', 'hr'].indexOf(role)>=0">
+                                            <a class="c-pointer"
+                                               (click)="openCandidate(applicant._id)"> {{getFullName(applicant.firstName, applicant.middleName, applicant.lastName)}}</a>
+                                        </ng-container>
+                                        <ng-container *ngIf="['admin', 'hr'].indexOf(role)<0">
                                             {{getFullName(applicant.firstName, applicant.middleName, applicant.lastName)}}
-                                        </a>
+                                        </ng-container>
+
                                     </h3>
                                     <p class="text-12 font-weight-500 mb-5">{{applicant.email}}</p>
                                     <p class="text-12 font-weight-500 mb-5">{{applicant.phones}}</p>
@@ -50,14 +55,17 @@
                                                     class="fa fa-times"></i></a>
                                         </dt>
                                         <dd>
-                                            <ng-container *ngIf="interview.result && interview.result != 'SELECTED' && interview.result != 'REJECTED' " >
+                                            <ng-container
+                                                    *ngIf="interview.result && interview.result != 'SELECTED' && interview.result != 'REJECTED' ">
                                                 <rating class="card-body" name="{{i}}" [(ngModel)]="criteria.score"
                                                         [customTemplate]="rating" [max]="10"></rating>
                                             </ng-container>
 
-                                            <ng-container *ngIf="interview.result && interview.result == 'SELECTED' || interview.result == 'REJECTED' " >
-                                                <rating  class="card-body" name="{{i}}" [(ngModel)]="criteria.score"
-                                                        [customTemplate]="disableRatting" [readonly]="isReadonly" [max]="10"></rating>
+                                            <ng-container
+                                                    *ngIf="interview.result && interview.result == 'SELECTED' || interview.result == 'REJECTED' ">
+                                                <rating class="card-body" name="{{i}}" [(ngModel)]="criteria.score"
+                                                        [customTemplate]="disableRatting" [readonly]="isReadonly"
+                                                        [max]="10"></rating>
                                             </ng-container>
 
                                         </dd>
@@ -128,3 +136,5 @@
         {{i < v ? '&#9733;' : '&#9734;'}}
     </button>
 </ng-template>
+
+<applicant-info id="applicant-info" (onUpdate)="onUpdate($event)" [applicant]="openApplicant"></applicant-info>

@@ -36,6 +36,22 @@ class IcsService {
         return await this.createInvitation(inviteData);
 
     }
+
+    async createCancelEventIcsFile(meeting, events, organizerEmail, attendees) {
+        let inviteData = {
+            organizer: organizerEmail,
+            title: meeting.name,
+            meetingStart: events.meetingStart,
+            meetingEnd: events.meetingEnd,
+            sequence: events.sequence,
+            uuid: events.uuid,
+            repeating: events.repeating,
+            method: "CANCEL",
+            status: "CANCELLED",
+            attendees: attendees,
+        };
+        return await this.createInvitation(inviteData);
+    }
 }
 
 module.exports.IcsService = new IcsService();

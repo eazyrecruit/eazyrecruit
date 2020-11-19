@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {InterviewService} from '../../services/interview.service';
 import {ApplicantDataService} from '../../services/applicant-data.service';
 import {FormGroup, FormBuilder} from '@angular/forms';
+import {AccountService} from "../../services/account.service";
 
 @Component({
     selector: 'app-interview',
@@ -15,23 +16,27 @@ export class InterviewComponent implements OnInit {
     interview: any;
     results: any;
     applicant: any;
+    openApplicant: any;
     resume: any;
     resume_html: any;
     newCriteria: String;
     isReadonly = true;
-
+    role: any;
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
         private interviewService: InterviewService,
+        private accountService: AccountService,
         private applicantDataService: ApplicantDataService,
         private formBuilder: FormBuilder,
     ) {
     }
 
     ngOnInit() {
+        this.role = this.accountService.getRole();
         this.route.params.subscribe((params: Params) => {
             this.interviewService.getInterview(params.interviewId).subscribe(res => {
-                if (res['success']) {
+                if (res['success'] && res['success'].data && res['success'].data.length) {
                     this.interview = res['success'].data[0];
                     this.interviewService.getResults(this.interview._id).subscribe(res => {
                         if (res['success'] && res['success']['data']) {
@@ -52,7 +57,11 @@ export class InterviewComponent implements OnInit {
                             });
                         }
                     });
+                } else {
+                    this.router.navigate([`interview`]);
                 }
+            }, () => {
+                this.router.navigate([`interview`]);
             });
         });
     }
@@ -139,5 +148,14 @@ export class InterviewComponent implements OnInit {
         if (middleName && middleName != "null") name = name + " " + middleName;
         if (lastName && lastName != "null") name = name + " " + lastName;
         return name;
+    }
+
+    openCandidate(applicantId: any) {
+        this.openApplicant = {_id: applicantId, isApplicantList: true};
+        SiteJS.slideOpen('applicant-info');
+    }
+
+    onUpdate($event) {
+        console.log('$event', $event);
     }
 }
