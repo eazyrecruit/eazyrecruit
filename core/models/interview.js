@@ -10,6 +10,7 @@ var interview = new Schema({
     end: Date,
     note: String,
     channel: String,
+    channelLink: String,
     comment: String,
     round: String,
     score: { type: Number, default: 0 },

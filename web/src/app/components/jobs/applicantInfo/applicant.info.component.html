@@ -17,248 +17,255 @@
                         <li><a data-toggle="tab" title="History" href="#history" (click)="getApplicantHistory()"><i
                                 class="fa fa-history"></i></a></li>
                     </ul>
-                    <div class="box-body box-profile">
-                        <div class="row padding-20px-tb">
-                            <div class="col-sm-4">
-                                <div class="profile_image-wrapper">
-                                    <img class="profile-user-img img-responsive img-circle"
-                                         src="/admin/assets/img/amir.png" alt="User profile picture">
+                    <ng-container *ngIf="gettingApplicant">
+                        <div class="box-body box-profile"><i *ngIf="gettingApplicant" class="fa fa-spinner fa-spin"></i>
+                        </div>
+
+                    </ng-container>
+                    <ng-container *ngIf="!gettingApplicant">
+                        <div class="box-body box-profile">
+                            <div class="row padding-20px-tb">
+                                <div class="col-sm-4">
+                                    <div class="profile_image-wrapper">
+                                        <img class="profile-user-img img-responsive img-circle"
+                                             src="/admin/assets/img/amir.png" alt="User profile picture">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-sm-7 text-left padding-left-5px" *ngIf="applicant && applicant.fullName">
-                                <h3 class="profile-username mb-5 mt-0 text-18">
-                                    <a [routerLink]="['/applicants',applicant?._id]">
-                                        {{applicant.fullName(applicant?.firstName, applicant?.middleName, applicant?.lastName)}}
-                                    </a>
-                                </h3>
-                                <p class="text-12 font-weight-500 mb-5">{{applicant?.email}}</p>
-                                <p class="text-12 font-weight-500 mb-5"
-                                   *ngIf="applicant && applicant.phones && applicant.phones.length">
-                                    <span *ngFor="let phone of applicant.phones">{{phone }}</span>
-                                </p>
-                                <ul class="rating">
-                                    <rating [customTemplate]="rating" name="Userratting" [readonly]="isReadonly" class="card-body"
-                                            [(ngModel)]="applicant.score" [max]="10"></rating>
-                                </ul>
-                                <p class="text-muted" *ngIf="applicant && applicant.location">
+                                <div class="col-sm-7 text-left padding-left-5px"
+                                     *ngIf="applicant && applicant.fullName">
+                                    <h3 class="profile-username mb-5 mt-0 text-18">
+                                        <a [routerLink]="['/applicants',applicant?._id]">
+                                            {{applicant.fullName(applicant?.firstName, applicant?.middleName, applicant?.lastName)}}
+                                        </a>
+                                    </h3>
+                                    <p class="text-12 font-weight-500 mb-5">{{applicant?.email}}</p>
+                                    <p class="text-12 font-weight-500 mb-5"
+                                       *ngIf="applicant && applicant.phones && applicant.phones.length">
+                                        <span *ngFor="let phone of applicant.phones">{{phone }}</span>
+                                    </p>
+                                    <ul class="rating">
+                                        <rating [customTemplate]="rating" name="Userratting" [readonly]="isReadonly"
+                                                class="card-body"
+                                                [(ngModel)]="applicant.score" [max]="10"></rating>
+                                    </ul>
+                                    <p class="text-muted" *ngIf="applicant && applicant.location">
                                     <span *ngIf="applicant.location.state">{{applicant.location.city}}
                                         ,&nbsp;{{applicant.location.state}}</span>
-                                </p>
-                                <i class="fa fa-pencil editApplcant" (click)="updateApplicant()"></i>
+                                    </p>
+                                    <i class="fa fa-pencil editApplcant" (click)="updateApplicant()"></i>
+                                </div>
+                                <!-- working on it -->
                             </div>
-                            <!-- working on it -->
-                        </div>
-                        <!-- <strong>Decprition</strong> -->
+                            <!-- <strong>Decprition</strong> -->
 
-                        <!-- <span [innerHtml]="applicant?.job_post.description"></span> -->
-                        <ul class="tab-content p-0">
+                            <!-- <span [innerHtml]="applicant?.job_post.description"></span> -->
+                            <ul class="tab-content p-0">
 
-                            <div id="basic" class="tab-pane fade active in">
-                                <strong>Resume</strong>
-                                <applicant-resume *ngIf="applicant" [(applicant)]="applicant"></applicant-resume>
-                                <hr>
-                                <strong><i class="fas fa-user-graduate"></i> Contract</strong>
-                                <ul class="bg-box list-style-none padding-six" *ngIf="applicant">
-                                    <li>Referred By : <span
-                                            *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
-                                    <li>Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
-                                    <li>Notice Period(negotiable) :
-                                        <span>{{applicant?.noticePeriodNegotiable}}</span></li>
-                                </ul>
-                                <hr>
-                                <strong class="display-block mb-10">Experience</strong>
-                                <ul class="todo-list ui-sortable">
-                                    <li>Total Experience : {{applicant?.totalExperience}} Years</li>
-                                    <li>Current CTC : {{applicant?.currentCtc}}</li>
-                                    <li>Expected CTC : {{applicant?.expectedCtc}}</li>
-                                    <li>Notice Period : {{applicant?.noticePeriod}}</li>
-                                </ul>
-                                <hr>
-                                <strong class="display-block mb-10">Jobs Applied</strong>
-                                <ul class="padding-six bg-box list-inline"
-                                    *ngIf="applicant && applicant.jobs && applicant.jobs.length">
-                                    <li *ngFor="let jobApplicant of applicant.jobs">
-                                        <span class="text">Title: </span>
-                                        <span class="text-info">
-                                            {{jobApplicant.job ? jobApplicant.job.title : 'N/A'}}
+                                <div id="basic" class="tab-pane fade active in">
+                                    <strong>Resume</strong>
+                                    <applicant-resume *ngIf="applicant" [(applicant)]="applicant"></applicant-resume>
+                                    <hr>
+                                    <strong><i class="fas fa-user-graduate"></i> Contract</strong>
+                                    <ul class="bg-box list-style-none padding-six" *ngIf="applicant">
+                                        <li>Referred By : <span
+                                                *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
+                                        <li>Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
+                                        <li>Notice Period(negotiable) :
+                                            <span>{{applicant?.noticePeriodNegotiable}}</span></li>
+                                    </ul>
+                                    <hr>
+                                    <strong class="display-block mb-10">Experience</strong>
+                                    <ul class="todo-list ui-sortable">
+                                        <li>Total Experience : {{applicant?.totalExperience}} Years</li>
+                                        <li>Current CTC : {{applicant?.currentCtc}}</li>
+                                        <li>Expected CTC : {{applicant?.expectedCtc}}</li>
+                                        <li>Notice Period : {{applicant?.noticePeriod}}</li>
+                                    </ul>
+                                    <hr>
+                                    <strong class="display-block mb-10">Jobs Applied</strong>
+                                    <ul class="padding-six bg-box list-inline"
+                                        *ngIf="applyJobs.length">
+                                        <li *ngFor="let job of applyJobs">
+                                            <span class="text">Title: </span>
+                                            <span class="text-info">
+                                            {{job || 'N/A'}}
                                         </span>
-                                        <!-- <br>
-                                        <span class="text">Stage: </span>
-                                        <span class="text-warning">
-                                          {{job.pipeline.name}}
-                                        </span> -->
-                                    </li>
-                                </ul>
-                                <!-- <strong><i class="fas fa-user-graduate"></i> Description</strong>
-                                <p class="text-muted" *ngIf="applicant?.summary">{{applicant?.summary}}</p>
-                                <hr> -->
-                                <hr>
-                                <strong>Preferred Locations </strong>
-                                <p class="text-muted"
-                                   *ngIf="applicant && applicant.preferredLocations && applicant.preferredLocations.length">
+                                            <!-- <br>
+                                            <span class="text">Stage: </span>
+                                            <span class="text-warning">
+                                              {{job.pipeline.name}}
+                                            </span> -->
+                                        </li>
+                                    </ul>
+                                    <!-- <strong><i class="fas fa-user-graduate"></i> Description</strong>
+                                    <p class="text-muted" *ngIf="applicant?.summary">{{applicant?.summary}}</p>
+                                    <hr> -->
+                                    <hr>
+                                    <strong>Preferred Locations </strong>
+                                    <p class="text-muted"
+                                       *ngIf="applicant && applicant.preferredLocations && applicant.preferredLocations.length">
                                     <span *ngFor="let location of applicant.preferredLocations;">
                                         <span class="display-inline-block {{defaultColor}}"
                                               *ngIf="location.state">{{location.city}}
                                             ,&nbsp;{{location.state}}</span>
                                     </span>
-                                </p>
-                                <hr>
-                                <strong>Skills </strong>
-                                <p class="skill-box">
-                                    <span class="display-inline-block" *ngFor="let matchedSkill of matchedSkills">
-                                        <span class="{{matchedColor}}">{{matchedSkill}}</span>
-                                    </span>
-                                    <span class="display-inline-block" *ngFor="let unMatchSkill of unMatchSkills">
-                                        <span class="{{defaultColor}}">{{unMatchSkill}}</span>
-                                    </span>
-                                </p>
+                                    </p>
+                                    <hr>
+                                    <strong>Skills </strong>
+                                    <p class="skill-box" [innerHTML]="SkillDiv | sanitizeHtml">
+                                    </p>
 
-                            </div>
+                                </div>
 
-                            <div id="comments" class="tab-pane fade in">
-                                <app-comment *ngIf="applicant && showComments" [applicant]="applicant" [job]="jobId">
-                                </app-comment>
-                            </div>
+                                <div id="comments" class="tab-pane fade in">
+                                    <app-comment *ngIf="applicant && showComments" [applicant]="applicant"
+                                                 [job]="jobId">
+                                    </app-comment>
+                                </div>
 
-                            <div id="interview" class="tab-pane fade in">
-                                <a class="btn btn-block btn-info" (click)="schduleInterview()"><i
-                                        class="fa fa-calendar"></i> Schedule Interview</a>
-                                <ul class="products-list product-list-in-box"
-                                    *ngIf="scheduledInterviews && scheduledInterviews.length > 0">
-                                    <li class="item"
-                                        *ngFor="let scheduledInterview of scheduledInterviews; let i=index;">
-                                        <div class="product-info interview-result">
-                                            <a [routerLink]="['/interview',scheduledInterview._id]"
-                                               class="product-title">{{getDisplayName(scheduledInterview.interviewer)}}
-                                                <span *ngIf="scheduledInterview.result" class="label pull-right"
-                                                      [ngClass]="{'label-warning': scheduledInterview.result == 'HOLD', 'label-success': scheduledInterview.result == 'SELECTED', 'label-danger': scheduledInterview.result == 'REJECTED', 'label-defualt': scheduledInterview.result == 'PENDING'}">{{scheduledInterview.result}}</span></a>
-                                            <span class="product-description">
+                                <div id="interview" class="tab-pane fade in">
+                                    <a class="btn btn-block btn-info" (click)="schduleInterview()"><i
+                                            class="fa fa-calendar"></i> Schedule Interview</a>
+                                    <ul class="products-list product-list-in-box"
+                                        *ngIf="scheduledInterviews && scheduledInterviews.length > 0">
+                                        <li class="item"
+                                            *ngFor="let scheduledInterview of scheduledInterviews; let i=index;">
+                                            <div class="product-info interview-result">
+                                                <a [routerLink]="['/interview',scheduledInterview._id]"
+                                                   class="product-title">{{getDisplayName(scheduledInterview.interviewer)}}
+                                                    <span *ngIf="scheduledInterview.result" class="label pull-right"
+                                                          [ngClass]="{'label-warning': scheduledInterview.result == 'HOLD', 'label-success': scheduledInterview.result == 'SELECTED', 'label-danger': scheduledInterview.result == 'REJECTED', 'label-defualt': scheduledInterview.result == 'PENDING'}">{{scheduledInterview.result}}</span></a>
+                                                <span class="product-description">
                                                 <i class="fa fa-clock-o"></i>
-                                                {{scheduledInterview.start | date :'medium'}}
+                                                    {{scheduledInterview.start | date :'medium'}}
                                             </span>
-                                            <rating disabled [customTemplate]="rating" readonly class="card-body"
-                                                    name="Interviewratting"  [readonly]="isReadonly"  [(ngModel)]="scheduledInterview.score"
-                                                    [max]="10"></rating>
-                                            <p class="message mt-10">{{scheduledInterview.comment}}</p>
-                                            <button
-                                                    *ngIf="scheduledInterview.result && scheduledInterview.result != 'SELECTED' && scheduledInterview.result != 'REJECTED' "
-                                                    (click)="openInterview(scheduledInterview, i)"><i
-                                                    class="fa fa-calendar"></i> Reschedule
+                                                <rating disabled [customTemplate]="rating" readonly class="card-body"
+                                                        name="Interviewratting" [readonly]="isReadonly"
+                                                        [(ngModel)]="scheduledInterview.score"
+                                                        [max]="10"></rating>
+                                                <p class="message mt-10">{{scheduledInterview.comment}}</p>
+                                                <button
+                                                        *ngIf="scheduledInterview.result && scheduledInterview.result != 'SELECTED' && scheduledInterview.result != 'REJECTED' "
+                                                        (click)="openInterview(scheduledInterview, i)"><i
+                                                        class="fa fa-calendar"></i> Reschedule
+                                                </button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div id="job-applied" class="tab-pane fade in">
+                                    <strong><i class="fas fa-user-graduate"></i> Contract</strong>
+                                    <ul class="bg-box list-style-none padding-six" *ngIf="applicant">
+                                        <li>Referred By : <span
+                                                *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
+                                        <li>Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
+                                        <li>Notice Period(negotiable)
+                                            :<span>{{applicant?.noticePeriodNegotiable}}</span>
+                                        </li>
+                                    </ul>
+                                    <hr>
+
+                                </div>
+
+                                <div id="education" class="tab-pane fade in">
+                                    <strong class="display-block mb-10">Education</strong>
+
+                                    <div *ngFor="let education of applicant?.educations;">
+                                        <div class="bg-box padding-six" *ngIf="education.degree">
+                                            <p>Degree : <span *ngIf="education.degree">{{education.degree}}</span><span
+                                                    *ngIf="!education.degree">Not Available</span></p>
+                                            <p>Institute : <span
+                                                    *ngIf="education.institute">{{education.institute}}</span><span
+                                                    *ngIf="!education.degree">Not Available</span></p>
+                                            <p>Duration :
+                                                <span *ngIf="education.start">{{education.start}}</span><span
+                                                        *ngIf="!education.degree">Not
+                                                Available</span> -
+                                                <span *ngIf="education.end">{{education.end}}</span><span
+                                                        *ngIf="!education.degree">Not
+                                                Available</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="bg-box padding-six" *ngIf="!applicant?.educations">
+                                        <p>Not Available</p>
+                                    </div>
+                                    <!-- <ul class="todo-list ui-sortable">
+                                    <li *ngFor="let education of applicant?.educations;">
+                                      <p>Degree : <span *ngIf="education.degree">{{education.degree}}</span><span *ngIf="!education">Not Available</span></p>
+                                      <p>Institute : <span *ngIf="education.institute">{{education.institute}}</span><span *ngIf="!education">Not Available</span></p>
+                                      <p>Duration :
+                                        <span *ngIf="education.start">{{education.start}}</span><span *ngIf="!education">Not Available</span> -
+                                        <span *ngIf="education.end">{{education.end}}</span><span *ngIf="!education">Not Available</span>
+                                      </p>
+                                    </li>
+                                  </ul> -->
+                                </div>
+
+                                <div id="experience" class="tab-pane fade in">
+                                    <strong class="display-block mb-10">Experience</strong>
+                                    <ul class="todo-list ui-sortable">
+                                        <li>Total Experience : {{applicant?.totalExperience}} Years</li>
+                                        <li>Current CTC : {{applicant?.currentCtc}}</li>
+                                        <li>Expected CTC : {{applicant?.expectedCtc}}</li>
+                                        <li>Notice Period : {{applicant?.noticePeriod}}</li>
+                                    </ul>
+                                </div>
+
+                                <div id="rejectApplicant" class="tab-pane fade in">
+                                    <form [formGroup]="rejectionDetails" novalidate
+                                          (ngSubmit)="rejectCandidate(rejectionDetails.value)">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <small class="text-danger required"
+                                                       *ngIf="rejectionDetails.controls['comment'].hasError('required') && rejectionDetails.controls['comment'].touched">
+                                                    Please enter comment
+                                                </small>
+                                                <textarea rows="6" type="text" placeholder="Please enter Comment Here."
+                                                          id="txtDescriptionAp" class="form-control"
+                                                          formControlName="comment"></textarea>
+                                            </div>
+                                            <button type="submit" [disabled]="applicant?.disableReject"
+                                                    class="btn btn-success form-control">Reject Applicant
                                             </button>
                                         </div>
-                                    </li>
-                                </ul>
-                            </div>
 
-                            <div id="job-applied" class="tab-pane fade in">
-                                <strong><i class="fas fa-user-graduate"></i> Contract</strong>
-                                <ul class="bg-box list-style-none padding-six" *ngIf="applicant">
-                                    <li>Referred By : <span
-                                            *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
-                                    <li>Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
-                                    <li>Notice Period(negotiable) :<span>{{applicant?.noticePeriodNegotiable}}</span>
-                                    </li>
-                                </ul>
-                                <hr>
-
-                            </div>
-
-                            <div id="education" class="tab-pane fade in">
-                                <strong class="display-block mb-10">Education</strong>
-
-                                <div *ngFor="let education of applicant?.educations;">
-                                    <div class="bg-box padding-six" *ngIf="education.degree">
-                                        <p>Degree : <span *ngIf="education.degree">{{education.degree}}</span><span
-                                                *ngIf="!education.degree">Not Available</span></p>
-                                        <p>Institute : <span
-                                                *ngIf="education.institute">{{education.institute}}</span><span
-                                                *ngIf="!education.degree">Not Available</span></p>
-                                        <p>Duration :
-                                            <span *ngIf="education.start">{{education.start}}</span><span
-                                                    *ngIf="!education.degree">Not
-                                                Available</span> -
-                                            <span *ngIf="education.end">{{education.end}}</span><span
-                                                    *ngIf="!education.degree">Not
-                                                Available</span>
-                                        </p>
-                                    </div>
+                                    </form>
                                 </div>
-                                <div class="bg-box padding-six" *ngIf="!applicant?.educations">
-                                    <p>Not Available</p>
-                                </div>
-                                <!-- <ul class="todo-list ui-sortable">
-                                <li *ngFor="let education of applicant?.educations;">
-                                  <p>Degree : <span *ngIf="education.degree">{{education.degree}}</span><span *ngIf="!education">Not Available</span></p>
-                                  <p>Institute : <span *ngIf="education.institute">{{education.institute}}</span><span *ngIf="!education">Not Available</span></p>
-                                  <p>Duration :
-                                    <span *ngIf="education.start">{{education.start}}</span><span *ngIf="!education">Not Available</span> -
-                                    <span *ngIf="education.end">{{education.end}}</span><span *ngIf="!education">Not Available</span>
-                                  </p>
-                                </li>
-                              </ul> -->
-                            </div>
 
-                            <div id="experience" class="tab-pane fade in">
-                                <strong class="display-block mb-10">Experience</strong>
-                                <ul class="todo-list ui-sortable">
-                                    <li>Total Experience : {{applicant?.totalExperience}} Years</li>
-                                    <li>Current CTC : {{applicant?.currentCtc}}</li>
-                                    <li>Expected CTC : {{applicant?.expectedCtc}}</li>
-                                    <li>Notice Period : {{applicant?.noticePeriod}}</li>
-                                </ul>
-                            </div>
-
-                            <div id="rejectApplicant" class="tab-pane fade in">
-                                <form [formGroup]="rejectionDetails" novalidate
-                                      (ngSubmit)="rejectCandidate(rejectionDetails.value)">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <small class="text-danger required"
-                                                   *ngIf="rejectionDetails.controls['comment'].hasError('required') && rejectionDetails.controls['comment'].touched">
-                                                Please enter comment
-                                            </small>
-                                            <textarea rows="6" type="text" placeholder="Please enter Comment Here."
-                                                      id="txtDescriptionAp" class="form-control"
-                                                      formControlName="comment"></textarea>
+                                <div id="history" class="tab-pane fade in">
+                                    <strong class="display-block mb-10">Job History</strong>
+                                    <div *ngFor="let history of applicantHistory; let i=index;">
+                                        <div class="bg-box padding-six mb-10" *ngIf="history">
+                                            <p>
+                                                <!-- <a class="cursor pointer" (click)="getRejectHistory(history.applicant_id, history.job_post_id, i)">
+                                                  <span *ngIf="history.job_post">{{history.job_post.title}}</span>
+                                                </a> -->
+                                                <span *ngIf="history.job">Job : {{history.job.title}}</span>
+                                            </p>
+                                            <p>Status :
+                                                <span *ngIf="history.pipeline">{{history.pipeline.name}}</span>
+                                            </p>
+                                            <p>{{history.created_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</p>
+                                            <!-- <div class="comment" *ngFor="let rejectionComment of history.rejectionHistory">
+                                              <span>{{rejectionComment.comment}}</span>
+                                              <div class="row">
+                                                <div class="col-md-6 coment-info-text">{{rejectionComment.user_detail.first_name}}
+                                                  {{rejectionComment.user_detail.last_name}}</div>
+                                                <div class="col-md-6 align-text-right coment-info-text">
+                                                  {{rejectionComment.created_at | amTimeAgo}}</div>
+                                              </div>
+                                            </div> -->
                                         </div>
-                                        <button type="submit" [disabled]="applicant?.disableReject"
-                                                class="btn btn-success form-control">Reject Applicant
-                                        </button>
-                                    </div>
-
-                                </form>
-                            </div>
-
-                            <div id="history" class="tab-pane fade in">
-                                <strong class="display-block mb-10">Job History</strong>
-                                <div *ngFor="let history of applicantHistory; let i=index;">
-                                    <div class="bg-box padding-six mb-10" *ngIf="history">
-                                        <p>
-                                            <!-- <a class="cursor pointer" (click)="getRejectHistory(history.applicant_id, history.job_post_id, i)">
-                                              <span *ngIf="history.job_post">{{history.job_post.title}}</span>
-                                            </a> -->
-                                            <span *ngIf="history.job">Job : {{history.job.title}}</span>
-                                        </p>
-                                        <p>Status :
-                                            <span *ngIf="history.pipeline">{{history.pipeline.name}}</span>
-                                        </p>
-                                        <p>{{history.created_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</p>
-                                        <!-- <div class="comment" *ngFor="let rejectionComment of history.rejectionHistory">
-                                          <span>{{rejectionComment.comment}}</span>
-                                          <div class="row">
-                                            <div class="col-md-6 coment-info-text">{{rejectionComment.user_detail.first_name}}
-                                              {{rejectionComment.user_detail.last_name}}</div>
-                                            <div class="col-md-6 align-text-right coment-info-text">
-                                              {{rejectionComment.created_at | amTimeAgo}}</div>
-                                          </div>
-                                        </div> -->
                                     </div>
                                 </div>
-                            </div>
 
-                        </ul>
+                            </ul>
 
-                    </div>
+                        </div>
+                    </ng-container>
+
                     <!-- /.box-body -->
                 </div>
                 <!-- /.box -->

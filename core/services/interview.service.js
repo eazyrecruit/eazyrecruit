@@ -29,6 +29,7 @@ exports.createAndInvite = async (req) => {
             interviewer: req.body.interview.interviewer.id,
             organizer: req.body.interview.organizer.id,
             channel: req.body.interview.channel,
+            channelLink: req.body.interview.channelLink,
             result: "PENDING",
             is_deleted: false,
             created_by: req.body.interview.created_by.id,
@@ -62,6 +63,7 @@ exports.rescheduleAndInvite = async (req) => {
             interviewer: req.body.interview.interviewer.id,
             organizer: req.body.interview.organizer.id,
             channel: req.body.interview.channel,
+            channelLink: req.body.interview.channelLink,
             result: interview.result,
             is_deleted: false,
             modified_by: req.body.interview.modified_by.id,
@@ -126,6 +128,28 @@ exports.deleteResult = async (req) => {
     return await interviewResults.findByIdAndUpdate({_id: req.body.id}, {
         is_deleted: true
     }, {new: true});
+}
+
+exports.deleteInterview = async (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let interview = await Interview.findOne({_id: id}).populate("interviewer", ['email', "name", "firstName", "lastName"]).populate([{
+                path: 'jobApplicant',
+                model: 'Applicants'
+            }, {
+                path: 'jobId',
+                model: 'Jobs',
+                select: ['title']
+            }]).populate("organizer", ['email', "name", "firstName", "lastName"]);
+            interview["is_deleted"] = true;
+            await interview.save();
+            SendDeleteInterviewNotification(interview);
+            resolve(true);
+        } catch (error) {
+            return reject(error);
+        }
+    });
+
 }
 
 exports.saveResult = async (req) => {
@@ -231,7 +255,7 @@ exports.addCriteria = async (req) => {
 }
 
 exports.getInterviews = async (req) => {
-    let limit = 10, offset = 0, sortOrder = -1;
+    let limit = 10, offset = 0, sortOrder = 1;
     let type = 'PENDING';
     if (req.query.limit) limit = parseInt(req.query.limit);
     if (req.query.offset) offset = parseInt(req.query.offset);
@@ -252,14 +276,14 @@ exports.getInterviews = async (req) => {
         query.result = {$ne: 'PENDING'}
     }
     let count = await Interview.count(query);
-    let interviews = await Interview.find(query).populate([{
+    let interviews = await Interview.find(query).populate("interviewer", ['email', "name", "firstName", "lastName"]).populate([{
         path: 'jobApplicant',
         model: 'Applicants'
     }, {
         path: 'jobId',
         model: 'Jobs',
         select: ['title']
-    }]).sort([['start', sortOrder]]).skip(offset).limit(limit).exec();
+    }]).sort({start: -1}).skip(offset).limit(limit).exec();
     return {count, interviews};
 }
 
@@ -272,7 +296,7 @@ async function inviteCandidate(req, title) {
          <b> Profile:</b> ${req.body.interview.job.name}</p>
          <b> Interview date: </b>${req.body.interview.localStartDate}<br/>
           <b>Interview Time: </b>${req.body.interview.localStartTime}<br/>
-         <b> Mode : </b>${req.body.interview.channel}<br/></p>
+         <b> Mode : </b>${req.body.interview.channel}  <a href="${req.body.interview.channelLink}">${req.body.interview.channelLink}</a><br/></p>
           </p>
        Please reach out to us in case of any query or availability issues. Contact details are provided below.</p>
     `, req.body.interview.candidate.email, req.body.interview.organizer.email);
@@ -289,7 +313,7 @@ async function inviteInterviewer(req, title) {
         <b>Profile:</b> ${req.body.interview.job.name}</p>
       <b> Interview date: </b>${req.body.interview.localStartDate}<br/>
           <b>Interview Time: </b>${req.body.interview.localStartTime}<br/>
-        <b>  Mode : </b>${req.body.interview.channel}<br/></p>
+        <b>  Mode : </b>${req.body.interview.channel}  <a href="${req.body.interview.channelLink}">${req.body.interview.channelLink}</a> <br/></p>
         Please click on below link to access more details about the interview.</p>
         <p><a href="${config.website}/admin/interview/${req.body.interview.interview._id.toString()}">${config.website}/admin/interview/${req.body.interview.interview.id}</p>
     `, req.body.interview.interviewer.email, req.body.interview.organizer.email);
@@ -308,7 +332,7 @@ async function inviteOrganizer(req, title) {
            <b>Profile:</b>  ${req.body.interview.job.name}</p>
              <b> Interview date: </b>${req.body.interview.localStartDate}<br/>
           <b>Interview Time: </b>${req.body.interview.localStartTime}<br/>
-             <b>Mode : </b>  ${req.body.interview.channel}<b><br/>
+             <b>Mode : </b>  ${req.body.interview.channel}    <a href="${req.body.interview.channelLink}">${req.body.interview.channelLink}</a> <b><br/>
         <p>Please click on below link to access more details about the interview.<p>
         <p>${config.website}/admin/interview/${req.body.interview.interview._id.toString()}</p>
     `, req.body.interview.organizer.email, req.body.interview.organizer.email);
@@ -326,6 +350,7 @@ async function createInvitation(req, title, subject, body, attendee, organizer) 
                 uuid: req.body.interview.interview.uid,
                 method: "REQUEST",
                 status: "CONFIRMED",
+                body: "Please Join On " + req.body.interview.channel + " " + req.body.interview.channelLink,
                 attendees: [{
                     email: attendee,
                     rsvp: true,
@@ -357,6 +382,72 @@ async function createInvitation(req, title, subject, body, attendee, organizer) 
     });
 }
 
+async function SendDeleteInterviewNotification(data) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let company = await getCompany();
+            let request = {
+                organizer: data.organizer.email,
+                start: data.start,
+                end: data.end,
+                sequence: data.sequence,
+                uuid: data.uid,
+                name: data.jobApplicant.name
+            };
+            console.log(data.jobApplicant);
+            await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + company.name + " for " + data.jobId.title + " profile", data.jobApplicant.email);
+            await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + data.jobApplicant.name + " for " + data.jobId.title + " profile", data.interviewer.email);
+            await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + data.jobApplicant.name + " for " + data.jobId.title + " profile", data.organizer.email);
+        } catch (err) {
+            console.log("SendDeleteInterviewNotifaction", err);
+            //reject(err)
+        }
+
+    });
+}
+
+async function createDeleteInvitation(req, title, subject, attendee) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let inviteData = {
+                organizer: req.organizer,
+                title: subject,
+                start: req.start,
+                end: req.end,
+                sequence: req.sequence,
+                uuid: req.uid,
+                method: "CANCEL",
+                status: "CANCELLED",
+                attendees: [{
+                    email: attendee,
+                    rsvp: true,
+                    name: req.name || " ",
+                    partstat: "NEEDS-ACTION",
+                    role: "REQ-PARTICIPANT"
+                }],
+            };
+            let value = await ics.createInvitationIcsFile(inviteData);
+            var email = {
+                toEmail: attendee, // list of receivers
+                title: title, // Subject line
+                body: "",
+                subject: subject,
+                attachments: [{'filename': 'calendar.ics', 'content': value, 'type': 'text/Calendar'}]
+            }
+            emailService.sendEmail(email, (err, data) => {
+                if (err) {
+                    console.log("emailService", err);
+                    reject(err)
+                } else
+                    resolve(data);
+            });
+        } catch (err) {
+            console.log("emailServicerre", err);
+            reject(err)
+        }
+
+    });
+}
 
 async function getCompany() {
     try {
