@@ -11,6 +11,7 @@ import {SchedulerComponent} from '../../interview/scheduler/scheduler.component'
 import {AccountService} from '../../../services/account.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {CreateApplicantComponent} from '../../applicants/create-applicant/create-applicant.component';
+import {CancelConformComponent} from "../../interview/cancelConfromBox/cancel.conform.component";
 
 declare global {
     interface Window {
@@ -53,6 +54,8 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
 
     @Output()
     onUpdate: EventEmitter<any> = new EventEmitter();
+    @Output()
+    onCancelInterview: EventEmitter<any> = new EventEmitter();
 
     applicantData?: any;
 
@@ -86,6 +89,22 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
             this.getApplicantById(this.applicant._id);
             this.getJobsByApplicantId();
         }
+    }
+
+    openDeleteModel(deleteInterViewId) {
+        this.modalRef = this.modalService.show(CancelConformComponent, {
+            initialState: {
+                deleteInterViewId: deleteInterViewId,
+            }
+        });
+        this.modalRef.content.close = (data) => {
+            if (data) {
+                this.getScheduledInterviews();
+                this.onCancelInterview.emit({});
+            }
+
+            this.modalRef.hide();
+        };
     }
 
     schduleInterview() {

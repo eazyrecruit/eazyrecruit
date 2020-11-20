@@ -33,7 +33,7 @@ router.get("/:interviewId", async (req, res) => {
 
 router.delete("/:interviewId", async (req, res) => {
     try {
-        var interviews = await interviewService.deleteInterview(req.params.interviewId);
+        var interviews = await interviewService.cancelInterview(req.params.interviewId, req.user.id);
         responseService.response(req, null, 1, interviews, res);
     } catch(err){
         responseService.response(req, err, 1, false, res);

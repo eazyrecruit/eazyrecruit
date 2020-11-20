@@ -97,7 +97,11 @@ exports.getAllBetweenDates = async (req) => {
 }
 
 exports.getAllByCandidate = async (req) => {
-    return await Interview.find({jobApplicant: req.params.candidateId, is_deleted: {$ne: true}}).sort([['start', -1]]);
+    return await Interview.find({
+        jobApplicant: req.params.candidateId,
+        result: {$ne: "CANCEL"},
+        is_deleted: {$ne: true}
+    }).sort([['start', -1]]);
 }
 
 exports.getAllByInterview = async (req) => {
@@ -130,7 +134,7 @@ exports.deleteResult = async (req) => {
     }, {new: true});
 }
 
-exports.deleteInterview = async (id) => {
+exports.cancelInterview = async (id, user) => {
     return new Promise(async (resolve, reject) => {
         try {
             let interview = await Interview.findOne({_id: id}).populate("interviewer", ['email', "name", "firstName", "lastName"]).populate([{
@@ -141,7 +145,9 @@ exports.deleteInterview = async (id) => {
                 model: 'Jobs',
                 select: ['title']
             }]).populate("organizer", ['email', "name", "firstName", "lastName"]);
-            interview["is_deleted"] = true;
+            interview["result"] = "CANCEL";
+            interview["modified_by"] = user;
+            interview["modified_at"] = new Date();
             await interview.save();
             SendDeleteInterviewNotification(interview);
             resolve(true);
@@ -272,11 +278,13 @@ exports.getInterviews = async (req) => {
     }
     if (type.toUpperCase() === 'PENDING') {
         query.result = type
+    } else if (type.toUpperCase() === 'CANCEL') {
+        query.result = type
     } else {
-        query.result = {$ne: 'PENDING'}
+        query.result = {$nin: ["PENDING", "CANCEL"]}
     }
     let count = await Interview.count(query);
-    let interviews = await Interview.find(query).populate("interviewer", ['email', "name", "firstName", "lastName"]).populate([{
+    let interviews = await Interview.find(query).populate("modified_by", ['email', "name"]).populate("interviewer", ['email', "name", "firstName", "lastName"]).populate([{
         path: 'jobApplicant',
         model: 'Applicants'
     }, {
@@ -394,7 +402,6 @@ async function SendDeleteInterviewNotification(data) {
                 uuid: data.uid,
                 name: data.jobApplicant.name
             };
-            console.log(data.jobApplicant);
             await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + company.name + " for " + data.jobId.title + " profile", data.jobApplicant.email);
             await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + data.jobApplicant.name + " for " + data.jobId.title + " profile", data.interviewer.email);
             await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + data.jobApplicant.name + " for " + data.jobId.title + " profile", data.organizer.email);

@@ -2,6 +2,9 @@ import {Component, OnInit, Input, OnChanges} from '@angular/core';
 import {Router} from '@angular/router';
 import {InterviewService} from '../../../../services/interview.service';
 import {AccountService} from "../../../../services/account.service";
+import {SchedulerComponent} from "../../scheduler/scheduler.component";
+import {CancelConformComponent} from "../../cancelConfromBox/cancel.conform.component";
+import {BsModalRef, BsModalService} from "ngx-bootstrap";
 
 @Component({
     selector: 'interview-list',
@@ -15,10 +18,11 @@ export class InterviewListComponent implements OnInit, OnChanges {
     interviews = [];
     totalRecords = 0;
     applicant: any;
-    deleteInterViewId;
-    conformDeleteForm = false;
     role: any;
+    modalRef: BsModalRef;
+
     constructor(private router: Router,
+                private modalService: BsModalService,
                 private interviewService: InterviewService, private accountService: AccountService) {
     }
 
@@ -71,6 +75,20 @@ export class InterviewListComponent implements OnInit, OnChanges {
         });
     }
 
+    openDeleteModel(deleteInterViewId) {
+        this.modalRef = this.modalService.show(CancelConformComponent, {
+            initialState: {
+                deleteInterViewId: deleteInterViewId,
+            }
+        });
+        this.modalRef.content.close = (data) => {
+            if (data) {
+                this.getAllInterviews(this.filter);
+            }
+            this.modalRef.hide();
+        };
+    }
+
     getLocalDate(date: any): String {
         return new Date(date).toLocaleString();
     }
@@ -86,34 +104,14 @@ export class InterviewListComponent implements OnInit, OnChanges {
         if (type && type === 'COMPLETED') {
             this.filter.type = 'COMPLETED'
             this.filter.sortOrder = -1;
+        } else if (type && type === 'CANCEL') {
+            this.filter.type = 'CANCEL'
+            this.filter.sortOrder = 1;
         } else {
             this.filter.type = 'PENDING'
             this.filter.sortOrder = 1;
         }
         this.getAllInterviews(this.filter);
-    }
-
-    closeDeleteModel() {
-        this.deleteInterViewId = '';
-        this.conformDeleteForm = false;
-        document.getElementById('deleteCancel').click(); // for model close
-    }
-
-    deleteInterView() {
-        this.conformDeleteForm = true;
-        this.interviewService.deleteInterview(this.deleteInterViewId).subscribe(result => {
-            if (result['success']) {
-                this.getAllInterviews(this.filter);
-                this.closeDeleteModel();
-            }
-        }, error => {
-            this.closeDeleteModel();
-        });
-
-    }
-
-    openDeleteModel(deleteInterViewId) {
-        this.deleteInterViewId = deleteInterViewId;
     }
 
 
