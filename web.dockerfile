@@ -1,5 +1,5 @@
 ##DockerFile
-FROM node:10.22.1-stretch AS build
+FROM eazyrecruit/nodejs AS build
 
 # Setting working directory. All the path will be relative to WORKDIR
 WORKDIR /usr/src/app
@@ -15,7 +15,7 @@ COPY ./web .
 RUN npm run build
 
 ##DockerFile
-FROM node:10.22.1-stretch
+FROM eazyrecruit/nodejs
 
 # Setting working directory. All the path will be relative to WORKDIR
 WORKDIR /usr/src/app
