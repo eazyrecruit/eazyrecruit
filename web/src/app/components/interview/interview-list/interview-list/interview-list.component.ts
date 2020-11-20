@@ -1,6 +1,7 @@
 import {Component, OnInit, Input, OnChanges} from '@angular/core';
 import {Router} from '@angular/router';
 import {InterviewService} from '../../../../services/interview.service';
+import {AccountService} from "../../../../services/account.service";
 
 @Component({
     selector: 'interview-list',
@@ -16,15 +17,16 @@ export class InterviewListComponent implements OnInit, OnChanges {
     applicant: any;
     deleteInterViewId;
     conformDeleteForm = false;
-
+    role: any;
     constructor(private router: Router,
-                private interviewService: InterviewService) {
+                private interviewService: InterviewService, private accountService: AccountService) {
     }
 
     ngOnChanges(): void {
     }
 
     ngOnInit() {
+        this.role = this.accountService.getRole();
         this.filter = {
             pageIndex: 1,
             pageSize: 10,

@@ -58,12 +58,16 @@
                         </td>
 
                         <td>
-                            <ng-container *ngIf="interview.result==='PENDING'">
-                                <button class="icons" data-toggle="modal"
-                                        data-target="#deleteInterviewModel" (click)="openDeleteModel(interview._id)">
-                                    <i class="fa fa-trash text-danger"></i>
-                                </button>
+                            <ng-container *ngIf="['admin', 'hr'].indexOf(role)>=0">
+                                <ng-container *ngIf="interview.result==='PENDING'">
+                                    <button class="icons" data-toggle="modal"
+                                            data-target="#deleteInterviewModel"
+                                            (click)="openDeleteModel(interview._id)">
+                                        <i class="fa fa-trash text-danger"></i>
+                                    </button>
+                                </ng-container>
                             </ng-container>
+
 
                         </td>
                     </tr>
