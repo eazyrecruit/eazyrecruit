@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 4201 --host 192.168.1.114",
+    "start": "ng serve --port 4201 --host 0.0.0.0",
     "build": "ng build --deploy-url=/admin/",
     "test": "ng test",
     "lint": "ng lint",

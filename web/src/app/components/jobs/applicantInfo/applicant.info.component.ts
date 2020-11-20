@@ -27,6 +27,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     isReadonly = true;
     resume: any;
     resumeId: any;
+    gettingApplicant = false;
     defaultColor = 'label label-default';
     matchedColor = 'label label-info';
     rejectionDetails: FormGroup;
@@ -39,10 +40,11 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     jobsSkils = {};
     matchedSkills: any[] = [];
     unMatchSkills: any[] = [];
+    SkillDiv = '';
     scheduledInterviews: Array<any>;
     interviewers: Array<any>;
     showComments = false;
-
+    applyJobs: any = [];
     @Input()
     applicant?: any;
 
@@ -51,6 +53,8 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
 
     @Output()
     onUpdate: EventEmitter<any> = new EventEmitter();
+
+    applicantData?: any;
 
     constructor(
         private route: ActivatedRoute,
@@ -71,14 +75,16 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     ngOnInit() {
         this.jobId = this.route.params['value'].jobId;
         this.applicant = null;
+        this.applicantData = null;
     }
 
     ngOnChanges() {
         if (this.applicant) {
+            this.SkillDiv = '';
+            this.gettingApplicant = true;
             document.getElementById('home').click();
-            this.getJobsByApplicantId();
             this.getApplicantById(this.applicant._id);
-
+            this.getJobsByApplicantId();
         }
     }
 
@@ -242,56 +248,67 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     getApplicantById(id: string) {
         this.applicantInfoService.getApplicantById(id).subscribe(result => {
             if (result) {
-                SiteJS.startLoader();
+
                 this.applicant = result['success']['data'];
+                this.applicantData = result['success']['data'];
                 this.applicant.fullName = this.getFullName.bind(this.applicant);
                 this.matchedSkills = [];
-                this.unMatchSkills = [];
-                if (this.applicant && this.applicant.skills && this.applicant.skills.length) {
-                    for (let index = 0; index < this.applicant.skills.length; index++) {
-                        this.unMatchSkills.push(this.applicant.skills[index].name);
+                this.unMatchSkills = this.applicant.skills;
+                this.setMatchSkils();
 
-                    }
-                }
             }
+            this.gettingApplicant = false;
+        }, () => {
+            this.gettingApplicant = false;
         });
     }
 
     getJobsByApplicantId() {
         if (this.applicant._id) {
             this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
-                SiteJS.startLoader();
                 if (result && result['success'] && result['success']['data'] && result['success']['data'].length) {
                     this.applicant.jobs = result['success']['data'];
-                    this.getJobsSkils(result['success']['data']);
-                    /*  console.log("this.applicant.jobs", this.applicant.jobs);*/
+                    this.setJobsSkils(result['success']['data']);
                 }
+            }, () => {
             });
         }
     }
 
-    getJobsSkils(jobsApplicants) {
-        this.jobsSkils = {};
+    setMatchSkils() {
         this.matchedSkills = [];
         this.unMatchSkills = [];
+        let matchSkillDiv = '';
+        let unMatchSkillDiv = '';
+        if (this.applicantData && this.applicantData.skills) {
+            this.SkillDiv = '';
+            for (let index = 0; index < this.applicantData.skills.length; index++) {
+                if (this.jobsSkils.hasOwnProperty(this.applicantData.skills[index].name.toUpperCase())) {
+                    matchSkillDiv = matchSkillDiv + this.getSkilsDiv(this.applicantData.skills[index].name, this.matchedColor);
+                } else {
+                    unMatchSkillDiv = unMatchSkillDiv + this.getSkilsDiv(this.applicantData.skills[index].name, this.defaultColor);
+                }
+
+            }
+            this.SkillDiv = matchSkillDiv + unMatchSkillDiv;
+        }
+
+
+    }
+
+    setJobsSkils(jobsApplicants) {
+        this.jobsSkils = {};
+        this.applyJobs = [];
         for (let index = 0; index < jobsApplicants.length; index++) {
             const job = jobsApplicants[index].job || {};
+            this.applyJobs.push(job.title);
             if (job.skills && job.skills.length) {
                 for (let count = 0; count < job.skills.length; count++) {
                     this.jobsSkils[job.skills[count].name.toUpperCase()] = job.skills[count].name;
                 }
             }
         }
-        if (this.applicant && this.applicant.skills && this.applicant.skills.length) {
-            for (let index = 0; index < this.applicant.skills.length; index++) {
-                if (this.jobsSkils.hasOwnProperty(this.applicant.skills[index].name.toUpperCase())) {
-                    this.matchedSkills.push(this.applicant.skills[index].name);
-                } else {
-                    this.unMatchSkills.push(this.applicant.skills[index].name);
-                }
-
-            }
-        }
+        this.setMatchSkils();
 
 
     }
@@ -316,6 +333,10 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
                 this.onUpdate.emit(result['data']);   // new testing
             }
         });
+    }
+
+    getSkilsDiv(name, color) {
+        return '<span class="display-inline-block"> <span class="' + color + '">' + name + '</span></span>';
     }
 
     getComments() {

@@ -77,6 +77,7 @@ export class SchedulerComponent implements OnInit {
             candidateName: [null],
             interviewerId: [null, [<any>Validators.required]],
             channel: [null],
+            channelLink: [null],
             note: [null],
             round: [null],
             id: [null]
@@ -120,6 +121,7 @@ export class SchedulerComponent implements OnInit {
                 this.interviewForm.get('end').setValue(this.event.end);
                 this.interviewForm.get('endTime').setValue(this.event.extendedProps.end);
                 if (this.event.extendedProps) {
+                    this.interviewForm.get('channelLink').setValue(this.event.extendedProps.channelLink);
                     this.interviewForm.get('note').setValue(this.event.extendedProps.note);
                     this.interviewForm.get('channel').setValue(this.event.extendedProps.channel);
                     this.interviewForm.get('round').setValue(this.event.extendedProps.round);
@@ -148,6 +150,7 @@ export class SchedulerComponent implements OnInit {
                 this.interviewForm.get('end').setValue(endDate);
                 this.interviewForm.get('endTime').setValue(endDate);
                 if (this.event.extendedProps) {
+                    this.interviewForm.get('channelLink').setValue(this.event.extendedProps.channelLink || "");
                     this.interviewForm.get('note').setValue(this.event.extendedProps.note);
                     this.interviewForm.get('channel').setValue(this.event.extendedProps.channel);
                     this.interviewForm.get('round').setValue(this.event.extendedProps.round);
@@ -233,6 +236,7 @@ export class SchedulerComponent implements OnInit {
                 startTime: interviewFormData.start.toUTCString(),
                 endTime: interviewFormData.end.toUTCString(),
                 channel: interviewFormData.channel,
+                channelLink: interviewFormData.channelLink,
                 note: interviewFormData.note,
                 round: interviewFormData.round,
                 candidate: {

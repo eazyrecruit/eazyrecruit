@@ -1,17 +1,17 @@
-import {Component, OnInit, Output, EventEmitter, TemplateRef} from '@angular/core';
-import {FormGroup, FormBuilder, Validators, FormArray} from '@angular/forms';
-import {SearchService} from '../../services/search.service';
-import {JobService} from '../../services/job.service';
-import {saveAs} from 'file-saver';
-import {ApplyJobService} from '../../services/apply-job.service';
-import {Router, ActivatedRoute} from '@angular/router';
-import {ApplicantService} from '../../services/applicant.service';
-import {ApplicantDataService} from '../../services/applicant-data.service';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
-import {RegisterApplicantComponent} from '../onboarding/register-applicant/register-applicant.component';
-import {ToasterModule, ToasterService, ToasterConfig} from 'angular2-toaster';
-import {UploadResumeComponent} from './upload-resume/upload-resume.component';
-import {CreateApplicantComponent} from './create-applicant/create-applicant.component';
+import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { SearchService } from '../../services/search.service';
+import { JobService } from '../../services/job.service';
+import { saveAs } from 'file-saver';
+import { ApplyJobService } from '../../services/apply-job.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ApplicantService } from '../../services/applicant.service';
+import { ApplicantDataService } from '../../services/applicant-data.service';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { RegisterApplicantComponent } from '../onboarding/register-applicant/register-applicant.component';
+import { ToasterModule, ToasterService, ToasterConfig } from 'angular2-toaster';
+import { UploadResumeComponent } from './upload-resume/upload-resume.component';
+import { CreateApplicantComponent } from './create-applicant/create-applicant.component';
 
 @Component({
     selector: 'app-applicants',
@@ -47,14 +47,14 @@ export class ApplicantsComponent implements OnInit {
     onSelect: EventEmitter<any> = new EventEmitter();
 
     constructor(private searchService: SearchService,
-                private fb: FormBuilder,
-                private jobService: JobService,
-                private applyJobService: ApplyJobService,
-                private router: Router,
-                private activateRoute: ActivatedRoute,
-                private applicantService: ApplicantService,
-                private applicantDataService: ApplicantDataService,
-                private modalService: BsModalService) {
+        private fb: FormBuilder,
+        private jobService: JobService,
+        private applyJobService: ApplyJobService,
+        private router: Router,
+        private activateRoute: ActivatedRoute,
+        private applicantService: ApplicantService,
+        private applicantDataService: ApplicantDataService,
+        private modalService: BsModalService) {
         this.searchForm = fb.group({
             search: [null, [<any>Validators.required]],
             category: [null, [<any>Validators.required]]
@@ -94,7 +94,7 @@ export class ApplicantsComponent implements OnInit {
     }
 
     openCandidate(applicantId: any) {
-        this.applicant = {_id: applicantId, isApplicantList: true};
+        this.applicant = { _id: applicantId, isApplicantList: true };
         SiteJS.slideOpen('applicant-info');
     }
 
@@ -160,8 +160,16 @@ export class ApplicantsComponent implements OnInit {
     }
 
     onFilterChange(filter: any) {
+        if (this.job && this.jobId && !this.filter.searchText) {
+            this.filter.searchJob = JSON.stringify({
+                "role": this.job.title,
+                "experience": this.job.minExperience,
+                "skills": this.job.skills
+            })
+        } else {
+            this.filter.searchText = filter.searchText;
+        }
         this.filter.offset = (filter.pageIndex - 1) * filter.pageSize;
-        this.filter.searchText = filter.searchText;
         this.filter.pageSize = filter.pageSize;
         if (filter.searchName || filter.searchExperience || filter.searchLocation) {
             this.filter.advanceSearch = filter;

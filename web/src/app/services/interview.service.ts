@@ -1,71 +1,80 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ConstService } from './const.service';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {ConstService} from './const.service';
 
 @Injectable()
 export class InterviewService {
 
-  constructor(private http: HttpClient, private constService: ConstService) { }
+    constructor(private http: HttpClient, private constService: ConstService) {
+    }
 
-  getInterviewer(jobPostId) {
-    return this.http.get(this.constService.baseUrl + 'user/search/' + jobPostId);
-  }
+    getInterviewer(jobPostId) {
+        return this.http.get(this.constService.baseUrl + 'user/search/' + jobPostId);
+    }
 
-  assignInterviewerToApplicant(interviewer) {
-    return this.http.post(this.constService.baseUrl + 'interviewschedule/', interviewer);
-  }
+    assignInterviewerToApplicant(interviewer) {
+        return this.http.post(this.constService.baseUrl + 'interviewschedule/', interviewer);
+    }
 
-  assignInterviewerTojob(interviewer) {
-    return this.http.post(this.constService.baseUrl + 'interviewer/', interviewer);
-  }
+    assignInterviewerTojob(interviewer) {
+        return this.http.post(this.constService.baseUrl + 'interviewer/', interviewer);
+    }
 
-  getInterviewerByJobId(jobPostId) {
-    return this.http.get(this.constService.baseUrl + 'interviewer/' + jobPostId);
-  }
+    getInterviewerByJobId(jobPostId) {
+        return this.http.get(this.constService.baseUrl + 'interviewer/' + jobPostId);
+    }
 
-  schedule(interview, id) {
-    return this.http.post(this.constService.baseUrl + 'interview', {interview: interview, id: id});
-  }
+    schedule(interview, id) {
+        return this.http.post(this.constService.baseUrl + 'interview', {interview: interview, id: id});
+    }
 
-  reschedule(interview, id, sequence) {
-    return this.http.put(this.constService.baseUrl + 'interview', {interview: interview, id: id, sequence: sequence});
-  }
+    reschedule(interview, id, sequence) {
+        return this.http.put(this.constService.baseUrl + 'interview', {
+            interview: interview,
+            id: id,
+            sequence: sequence
+        });
+    }
 
-  getEventBetweenDates(start, end) {
-    return this.http.get(`${this.constService.baseUrl}interview/dates/${start}/${end}`);
-  }
+    getEventBetweenDates(start, end) {
+        return this.http.get(`${this.constService.baseUrl}interview/dates/${start}/${end}`);
+    }
 
-  getInterviewsByCandidate(candidateId) {
-    return this.http.get(this.constService.baseUrl + 'interview/candidate/' + candidateId);
-  }
+    getInterviewsByCandidate(candidateId) {
+        return this.http.get(this.constService.baseUrl + 'interview/candidate/' + candidateId);
+    }
 
-  getInterview(interviewId) {
-    return this.http.get(this.constService.baseUrl + 'interview/' + interviewId);
-  }
-  
-  getResults(interviewId) {
-    return this.http.get(this.constService.baseUrl + 'interview/result/' + interviewId);
-  }
+    getInterview(interviewId) {
+        return this.http.get(this.constService.baseUrl + 'interview/' + interviewId);
+    }
 
-  saveResult(results){
-    return this.http.post(this.constService.baseUrl + 'interview/result', results);
-  }
+    getResults(interviewId) {
+        return this.http.get(this.constService.baseUrl + 'interview/result/' + interviewId);
+    }
 
-  deleteResult(id){
-    return this.http.put(this.constService.baseUrl + 'interview/result', {id});
-  }
+    saveResult(results) {
+        return this.http.post(this.constService.baseUrl + 'interview/result', results);
+    }
 
-  comment(interview){
-    return this.http.put(this.constService.baseUrl + 'interview/comment', interview);
-  }
+    deleteResult(id) {
+        return this.http.put(this.constService.baseUrl + 'interview/result', {id});
+    }
 
-  addCriteria(criteria) {
-    return this.http.post(`${this.constService.baseUrl}interview/criteria`, criteria);
-  }
+    deleteInterview(id) {
+        return this.http.delete(`${this.constService.baseUrl}interview/${id}`);
+    }
 
-  getAllInterviews(filter) {
-    return this.http.get(`${this.constService.baseUrl}interview?limit=${filter.pageSize}
+    comment(interview) {
+        return this.http.put(this.constService.baseUrl + 'interview/comment', interview);
+    }
+
+    addCriteria(criteria) {
+        return this.http.post(`${this.constService.baseUrl}interview/criteria`, criteria);
+    }
+
+    getAllInterviews(filter) {
+        return this.http.get(`${this.constService.baseUrl}interview?limit=${filter.pageSize}
       &offset=${filter.offset}&search=${filter.searchText}&sortOrder=${filter.sortOrder}
       &type=${filter.type}`);
-  }
+    }
 }
