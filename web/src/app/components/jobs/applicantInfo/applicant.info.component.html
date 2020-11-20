@@ -145,9 +145,15 @@
                                                         [max]="10"></rating>
                                                 <p class="message mt-10">{{scheduledInterview.comment}}</p>
                                                 <button
-                                                        *ngIf="scheduledInterview.result && scheduledInterview.result != 'SELECTED' && scheduledInterview.result != 'REJECTED' "
+                                                        *ngIf="scheduledInterview.result &&   ['HOLD', 'PENDING'].indexOf(scheduledInterview.result)>=0"
                                                         (click)="openInterview(scheduledInterview, i)"><i
                                                         class="fa fa-calendar"></i> Reschedule
+                                                </button>
+
+                                                <button
+                                                        *ngIf="scheduledInterview.result && ['HOLD', 'PENDING'].indexOf(scheduledInterview.result)>=0"
+                                                        (click)="openDeleteModel(scheduledInterview._id)"><i
+                                                        class="fa fa-close"></i> Cancel
                                                 </button>
                                             </div>
                                         </li>

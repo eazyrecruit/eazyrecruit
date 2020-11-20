@@ -17,11 +17,13 @@ export class InterviewComponent implements OnInit {
     results: any;
     applicant: any;
     openApplicant: any;
+    interviewId;
     resume: any;
     resume_html: any;
     newCriteria: String;
     isReadonly = true;
     role: any;
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -32,37 +34,58 @@ export class InterviewComponent implements OnInit {
     ) {
     }
 
+    getApplicantCompleteData() {
+        if (this.interview) {
+            this.applicantDataService.getApplicantCompleteData(this.interview.jobApplicant).subscribe(result => {
+                if (result['success']['data']) {
+                    this.applicant = result['success']['data'];
+                    this.applicantDataService.getResumeFile(this.applicant.resume._id).subscribe((res) => {
+                        const blob = new Blob([res], {
+                            type: 'application/pdf'
+                        });
+                        const blobURL = window.URL.createObjectURL(blob);
+                        this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
+                    }, error => {
+                        this.resume = null;
+                    });
+                }
+            });
+        }
+    }
+
+    getResults() {
+        if (this.interview) {
+            this.interviewService.getResults(this.interview._id).subscribe(res => {
+                if (res['success'] && res['success']['data']) {
+                    this.results = res['success']['data'];
+                }
+            });
+        }
+
+    }
+
+    getInterview(isLoadAllData = false) {
+        this.interviewService.getInterview(this.interviewId).subscribe(res => {
+            if (res['success'] && res['success'].data && res['success'].data.length) {
+                this.interview = res['success'].data[0];
+                if (isLoadAllData) {
+                    this.getResults();
+                    this.getApplicantCompleteData();
+                }
+            } else {
+                this.router.navigate([`interview`]);
+            }
+        }, () => {
+            this.router.navigate([`interview`]);
+        });
+    }
+
     ngOnInit() {
         this.role = this.accountService.getRole();
         this.route.params.subscribe((params: Params) => {
-            this.interviewService.getInterview(params.interviewId).subscribe(res => {
-                if (res['success'] && res['success'].data && res['success'].data.length) {
-                    this.interview = res['success'].data[0];
-                    this.interviewService.getResults(this.interview._id).subscribe(res => {
-                        if (res['success'] && res['success']['data']) {
-                            this.results = res['success']['data'];
-                        }
-                    });
-                    this.applicantDataService.getApplicantCompleteData(this.interview.jobApplicant).subscribe(result => {
-                        if (result['success']['data']) {
-                            this.applicant = result['success']['data'];
-                            this.applicantDataService.getResumeFile(this.applicant.resume._id).subscribe((res) => {
-                                const blob = new Blob([res], {
-                                    type: 'application/pdf'
-                                });
-                                const blobURL = window.URL.createObjectURL(blob);
-                                this.resume_html = `<div><iframe  type="application/pdf" width="100%" height="800px" style="overflow: auto;" src="${blobURL}"></iframe></div>`;
-                            }, error => {
-                                this.resume = null;
-                            });
-                        }
-                    });
-                } else {
-                    this.router.navigate([`interview`]);
-                }
-            }, () => {
-                this.router.navigate([`interview`]);
-            });
+            this.interviewId = params.interviewId;
+            this.getInterview(true);
+
         });
     }
 
@@ -155,7 +178,12 @@ export class InterviewComponent implements OnInit {
         SiteJS.slideOpen('applicant-info');
     }
 
-    onUpdate($event) {
+    onCancelInterview($event) {
         console.log('$event', $event);
+        this.getInterview();
+    }
+
+    onUpdate($event) {
+        this.getApplicantCompleteData();
     }
 }

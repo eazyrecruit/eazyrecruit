@@ -89,6 +89,7 @@ import {EmailTemplateComponent} from './components/settings/emailsettings/email-
 import {ColorPickerModule} from 'ngx-color-picker';
 import {GoogleAnalyticsComponent} from './components/settings/googleAnalytics/google.analytics.component';
 import {ProfileComponent} from './components/profile/profile.component';
+import {CancelConformComponent} from "./components/interview/cancelConfromBox/cancel.conform.component";
 
 @NgModule({
     declarations: [
@@ -141,6 +142,7 @@ import {ProfileComponent} from './components/profile/profile.component';
         DashboardComponent,
         ResumeComponent,
         SchedulerComponent,
+        CancelConformComponent,
         InterviewComponent,
         SettingsComponent,
         ApplicantSettingsComponent,
@@ -189,6 +191,7 @@ import {ProfileComponent} from './components/profile/profile.component';
         SchedulerComponent,
         UploadResumeComponent,
         InboundComponent,
+        CancelConformComponent,
         OutboundComponent,
         EmailTemplateComponent
     ],
