@@ -1,6 +1,6 @@
 import {Component, OnInit, TemplateRef} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {PipelineService} from './../../../services/pipeline.service';
+import {PipelineService} from '../../../services/pipeline.service';
 import {SharedService} from '../../../services/shared.service';
 import {DataShareService} from '../../../services/data-share.service';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
@@ -20,19 +20,27 @@ declare var SiteJS: any;
 })
 export class PipelineComponent implements OnInit {
 
-    job: any;
 
-    items = [];
-    selectedApplicant: any;
+    isGridView = false;
     jobId: any;
-    parameter: any = {};
-    event: any;
-    emails = [];
-    jobTitle: any;
-    companyName: any;
-    form: FormGroup;
-    draggedItem: any;
-    start: any;
+    filter = {
+        pageIndex: 1, pageSize: 20, offset: 0, sortBy: 'modified_at', isGridView: false,
+        order: -1, searchText: '', startDate: '', endDate: '', source: '', jobId: '',
+    };
+    pipeLines = [];
+    totalRecords = 1;
+    JobApplicants = [];
+
+    bsConfig = Object.assign({}, {containerClass: 'theme-red'});
+    gettingApplicant = true;
+    searchText = '';
+    sourceType = ['Email', 'Upload', 'Website', 'Db'];
+    job: any;
+    startDate = new Date();
+    endDate = new Date();
+    startMaxDate = new Date();
+    endMinDate = new Date();
+    endMaxDate = new Date();
     errorMessage: any;
     pipelineDialogTitle = 'Create';
     pipeline: any = {};
@@ -48,269 +56,159 @@ export class PipelineComponent implements OnInit {
                 private applicantDataService: ApplicantDataService,
                 private jobService: JobService,
                 private modalService: BsModalService) {
-        this.form = fb.group({
-            name: [null, [<any>Validators.required], validationService.jobTitleValid]
+    }
+
+
+    ngOnInit() {
+        this.startDate.setMonth(new Date().getMonth() - 2);
+        this.endMinDate = this.startDate;
+        this.filter.startDate = this.getDate(this.startDate);
+        this.filter.endDate = this.getDate(this.endDate);
+        this.route.params.subscribe((params) => {
+            this.jobId = params['jobId'];
+            this.getPipeLine(this.jobId);
+            this.getCandidate(this.jobId);
         });
     }
 
-    onItemDrop(event: any, pipeline: any) {
-        if (event.dragData.pipeline_id !== pipeline.id) {
-            event.dragData.pipeline_id = pipeline.id;
-            // change status
-            this.changeStatus(event);
+
+    changeStatus(obj) {
+        console.log('obj', obj);
+        this.pipelineService.updateApplicantStatus(obj).subscribe((result) => {
+            if (result['success']['data']) {
+                this.getCandidate(this.jobId);
+            }
+        });
+    }
+
+    changeViewStatus(value) {
+        if (this.filter.isGridView !== value) {
+            this.filter.isGridView = value;
+            this.isGridView = value;
+            this.getCandidate(this.jobId);
         }
     }
 
-    showApplicantDetails(applicant: any) {
-        this.selectedApplicant = applicant;
-        SiteJS.slideOpen('applicant-info-pipeline');
+    updateChildData(filter: any) {
+        this.filter.offset = filter.offset || 0;
+        this.filter.pageSize = filter.pageSize || 10;
+        this.filter.pageIndex = filter.pageIndex || 1;
+        this.getCandidate(this.jobId);
     }
 
-    ngOnInit() {
-        //getting data from params
-        this.route.params.subscribe((params: Params) => {
-            this.getCandidate(params['jobId']);
-        });
+    getPipeLine(jobId) {
+        if (jobId) {
+            this.jobService.getJobPipeLine(jobId).subscribe((result) => {
+                if (result['success']) {
+                    this.job = result['success'].data;
+                    this.pipeLines = result['success'].data.pipelines;
+                    console.log(' this.pipeLines', this.pipeLines);
+                }
+            });
+        }
+    }
+
+    updatePipeLine() {
+        this.getPipeLine(this.jobId);
     }
 
     getCandidate(jobId) {
         if (jobId) {
-            this.jobService.getWithApplicantsAndPipelineById(jobId).subscribe(result => {
+            this.gettingApplicant = true;
+            this.filter.jobId = jobId;
+            this.jobService.getJobApplicant(this.filter).subscribe((result) => {
                 if (result['success']) {
-                    this.job = result['success'].data;
+                    this.filterApplicant(result['success']['data']['records']);
+                    this.totalRecords = result['success']['data']['total'];
+                    console.log('getCandidateresult[\'success\'].data', result['success'].data);
                 }
+                this.gettingApplicant = false;
+            }, () => {
+                this.gettingApplicant = false;
             });
         }
     }
 
-    saveData(id) {
-        this.items.forEach(element => {
-            if (element.id === id) {
-                this.sharedService.setApplicantDetail(JSON.stringify(element));
-            }
-        });
-    }
+    onDateChange(event, id) {
+        if (id === 'startDate') {
+            this.filter.startDate = this.getDate(new Date(event));
+            this.endMinDate = new Date(event);
+            this.startDate = new Date(event);
+        } else if (id === 'endDate') {
+            this.endDate = new Date(event);
+            this.filter.endDate = this.getDate(new Date(event));
+            if (this.filter.endDate && this.filter.startDate) {
+                console.log('event', event);
 
-    changeStatus(obj) {
-        const applicant: any = {};
-        applicant.applicant = obj.dragData.applicant;
-        applicant.pipeline = obj.dragData.pipeline;
-        applicant.job = obj.dragData.job;
-        applicant.id = obj.dragData.id;
-        this.pipelineService.updateApplicantStatus(applicant).subscribe(result => {
-            if (result['success']['data']) {
-                this.ngOnInit();
-            }
-        });
-    }
-
-    eventHandler(event: any) {
-        if (event.applicant) {
-            this.showApplicantDetails(event);
-        } else {
-            this.closeAndRefresh();
-        }
-    }
-
-    onCandidateReject(event: any) {
-        if (event === 'candiateRemoved') {
-            this.closeAndRefresh();
-        }
-    }
-
-    closeAndRefresh() {
-        const close = document.getElementById('closeButton');
-        close.click();
-        this.pipelineService.getApplicantsByJob(this.jobId).subscribe(result => {
-            if (result['success']) {
-                this.items = result['success']['data'];
-                this.saveData(this.items['0'].id);
-            }
-        });
-    }
-
-    goToSearch(): void {
-        // let pipe_id = 0;
-        // if (this.pipelineArray.length > 0) {
-        //   pipe_id = this.pipelineArray[0].id;
-        // }
-        // localStorage.setItem('jid', JSON.stringify({
-        //   id: this.jobId,
-        //   title: this.jobTitle,
-        //   cName: this.companyName,
-        //   pipeId: pipe_id
-        // }));
-    }
-
-    onColumnDrop(event, item, index) {
-        if (event && item && event.dragData.pipeline !== item._id) {
-            const obj = {
-                dragData: {
-                    pipeline: item._id,
-                    applicant: event.dragData.applicant ? event.dragData.applicant._id : event.dragData,
-                    job: event.dragData.job,
-                    id: event.dragData._id
-                }
-            };
-            this.changeStatus(obj);
-
-            // const newPosition = item.position;
-            // const end = index;
-            // const array = [];
-
-            // if (this.start < end) {
-            //   for (let i = this.start + 1; i <= end; i++) {
-            //     const obj = this.pipelineArray[i];
-            //     obj.position = obj.position - 1;
-            //     array.push(obj);
-            //   }
-            // } else {
-            //   for (let i = this.start; i >= end; i--) {
-            //     let obj = this.pipelineArray[i];
-            //     obj.position = i === this.start ? index : obj.position + 1;
-            //     array.push(obj);
-            //   }
-            //}
-
-            // const object = event.dragData;
-            // object.position = newPosition;
-            // array.push(object);
-
-            // this.pipelineService.updatePipelinePosition(array).subscribe(result => {
-            //   if (result['success']) {
-            //     this.getPipelines(this.jobId);
-            //   }
-            // });
-        }
-    }
-
-    onColumnDrag(event, item, i) {
-        this.draggedItem = item;
-        this.start = i;
-    }
-
-    addPipeline(form): void {
-        let pipeObject;
-        if (this.job.pipelines && this.job.pipelines.find(x => x.name.toUpperCase().trim() === form.name.toUpperCase().trim())) {
-            return;
-        }
-        form.position = this.job.pipelines ? this.job.pipelines.length + 1 : 1;
-        form.jobPostId = this.job._id;
-        this.jobService.addPipeline(form, this.job._id).subscribe(result => {
-            if (result['success']) {
-                this.closeModal();
-                this.job.pipelines.push(result['success']['data']);
-                //this.getPipelines(this.jobId);
-            }
-        });
-    }
-
-    addApplicants() {
-        if (this.job.pipelines && this.job.pipelines.length > 0) {
-            this.router.navigate(['/applicants/add/job', this.job._id, this.job.pipelines[0]._id]);
-        }
-    }
-
-    getPipelines(jobId): void {
-        // get pipeline tabs
-        // this.pipelineService.getPipelineTabs(jobId).subscribe(result => {
-        //   if (result['success']) {
-        //     this.pipelineArray = result['success']['data'];
-        //     const array = result['success']['data'];
-        //     array.forEach(element => {
-        //       const arr = this.items.filter(x => x.pipeline_id === element.id);
-        //       element.items = arr;
-        //     });
-        //     this.pipelineArray.sort(this.compare);
-        //   }
-        // });
-    }
-
-    compare(a, b) {
-        if (a.position > b.position) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }
-
-    editPipeline(pipeline) {
-        this.pipelineService.updatePipelineDetails(pipeline).subscribe(result => {
-            if (result['success'] && result['success'].data) {
-                this.closeModal();
-                this.getPipelines(this.jobId);
-                this.job.pipelines[pipeline.index] = result['success'].data;
-            }else {
-                this.closeModal();
-            }
-        }, () => {
-            this.closeModal();
-        });
-    }
-
-    // deletePipeline (tab) {
-    //   this.pipelineService.deletePipeline(tab).subscribe(result => {
-    //     if (result['success']) {
-    //       this.getPipelines(this.jobId);
-    //     }
-    //   });
-    // }
-
-    pipelineDetails(pipeline: any) {
-        console.log('pipeline', pipeline);
-        if (!this.form.valid) {
-            this.validationService.validateAllFormFields(this.form);
-        } else {
-            if (pipeline && pipeline._id) {
-                this.editPipeline(pipeline);
-            } else {
-                this.pipelineDialogTitle = 'Create';
-                this.addPipeline(pipeline);
             }
         }
+        this.getCandidate(this.jobId);
+
     }
 
-    populateForm(pipeline, index= 0) {
-        console.log('this.pipeline', this.pipeline);
-        if (pipeline && pipeline._id) {
-            this.form = this.fb.group({
-                name: [pipeline.name, [<any>Validators.required]],
-                _id: [pipeline._id],
-                index: index
-            });
-        } else {
-            this.form = this.fb.group({
-                name: ['', [<any>Validators.required]]
-            });
+    onSourceFilterChange(item) {
+        console.log('onSourceFilterChange1', item);
+        if (item === 'Source') {
+            item = '';
+        }
+        if (this.filter.source !== item) {
+            this.filter.source = item;
+            this.getCandidate(this.jobId);
+        }
+
+
+    }
+
+    onSearch() {
+        console.log('onSearch');
+        this.filter.offset = 0;
+        if (this.searchText.length >= 2) {
+            this.JobApplicants = [];
+            this.totalRecords = 0;
+            this.filter.searchText = this.searchText;
+            this.getCandidate(this.jobId);
+        }
+        if (!this.searchText) {
+            this.filter.searchText = '';
+            this.JobApplicants = [];
+            this.totalRecords = 0;
+            this.getCandidate(this.jobId);
         }
     }
 
-    setpipelineId(pipeline: any, index: any) {
-        this.pipeline = pipeline;
-        console.log(pipeline);
-        if (!this.pipeline) {
-            this.pipelineDialogTitle = 'Create';
-            this.form.reset();
-        } else {
-            this.pipelineDialogTitle = 'Edit';
-            this.populateForm(pipeline, index);
+    filterApplicant(data) {
+        this.JobApplicants = [];
+        for (let index = 0; index < data.length; index++) {
+            data[index]['jobApplicants'] = this.getJobApplicantObject(data[index]['jobApplicants']);
+            this.JobApplicants.push(data[index]);
         }
     }
 
-    onKeyPress(event) {
-        if (event.target.value === '') {
-            this.errorMessage = null;
+    getJobApplicantObject(data) {
+        let object = {};
+        for (let index = 0; index < data.length; index++) {
+            if (data[index].job === this.jobId) {
+                object = data[index];
+                break;
+            }
         }
+        return object;
     }
 
-    closeModal() {
-        const close = document.getElementById('close');
-        close.click();
+    getDate(date) {
+        const month = date.getMonth() + 1;
+        return month + '/' + date.getDate() + '/' + date.getFullYear();
     }
 
     goToApplicant(data) {
         this.applicantDataService.setApplicantId(data.applicant._id);
         this.router.navigate(['jobs/applicant']);
+    }
+
+    addApplicants() {
+        if (this.job.pipelines && this.job.pipelines.length > 0) {
+            this.router.navigate(['/database/add/job', this.job._id, this.job.pipelines[0]._id]);
+        }
     }
 
     createApplicant(jobId) {
@@ -358,80 +256,5 @@ export class PipelineComponent implements OnInit {
         //   this.toasterService.pop('error', 'Error', 'pipeline id is not available!');
         // }
 
-    }
-
-    searchApplicant(event: any) {
-        const value = event.target ? event.target.value : '';
-        this.jobService.searchWithApplicantsAndPipelineById(this.job._id, value).subscribe(result => {
-            if (result['success']) {
-                // const jobArray = result['success']['data'];
-                // const personArray = result['success']['data'].person;
-                // this.items.length = 0;
-                // jobArray.forEach((element, index) => {
-                //   const person = personArray.find(x => x._id === element.applicant.mongo_id);
-                //   if (person) {
-                //     element.applicant = person;
-                //   }
-                //   this.items.push(element);
-                // });
-                const applicants = result['success']['data'].applicants;
-                const jobs = [];
-                applicants.forEach(element => {
-                    if (element.applicant) {
-                        jobs.push(element);
-                    }
-                });
-                this.job.applicants = jobs;
-            }
-            // this.getPipelines(this.jobId);
-        });
-    }
-
-    deletePipeline(template: TemplateRef<any>) {
-        this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
-    }
-
-    confirm(pipelineId, index): void {
-        this.pipelineService.deletePipeline(pipelineId).subscribe(result => {
-            if (result['success']) {
-                this.modalRef.hide();
-                this.job.pipelines.splice(index, 1);
-            }
-        });
-    }
-
-    decline(): void {
-        this.modalRef.hide();
-    }
-
-    changeApplicantStatus(applicant: any) {
-        if (applicant && applicant.moveToPipeline && applicant.applicant._id) {
-            const obj = {
-                dragData: {
-                    pipeline: applicant.moveToPipeline,
-                    applicant: applicant.applicant._id,
-                    job: applicant.job,
-                    id: applicant._id  // job pipelineId
-                }
-            };
-            this.changeStatus(obj);
-        }
-    }
-
-    updateJobApplicantList(deleteResponse: any, index) {
-        if (deleteResponse && deleteResponse.isDeleted === true) {
-            this.job.applicants.splice(index, 1);
-            SiteJS.stopLoader();
-        } else {
-            SiteJS.stopLoader();
-        }
-    }
-
-    onUpdate($event) {
-        for (let i = 0; i < this.job.applicants.length; i++) {
-            if ($event._id == this.job.applicants[i].applicant._id) {
-                this.job.applicants[i].applicant = $event;
-            }
-        }
     }
 }

@@ -1,0 +1,67 @@
+<div class="row">
+    <div class="col-sm-12">
+        <data-table [showViewField]='false' pageSize='10' sortField='name' sortOrder='1'
+                    [showSearchFeild]='false'
+                    [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
+
+            <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+                <thead>
+                <tr class="font-weight-bold">
+                    <th>
+                        <div class="sorting">#</div>
+                    </th>
+                    <th>
+                        <div class="sorting">Name</div>
+                    </th>
+                    <th>
+                        <div class="sorting">Source</div>
+                    </th>
+                    <th>Work Exp.</th>
+                    <th>Expected Ctc</th>
+                    <th>Current Ctc</th>
+                    <th>Notice Period</th>
+                    <th>PipeLine</th>
+                </tr>
+
+
+                </thead>
+                <tbody>
+                <tr *ngFor="let applicant of Applicants; let i = index;" class="font-weight-bold">
+                    <th>
+                        <div class="sorting">{{((filter.pageIndex - 1) * filter.pageSize) + i}}</div>
+                    </th>
+                    <th class="list-group-item border-radius-0 mb-15 bl-red overflow-hidden">
+                        <applicant-card
+                                [applicant]="applicant"
+                                [pipelines]="pipeLines"
+                                (onSelect)="showApplicantDetails($event)"
+                                (changeStatus)="changeApplicantStatus($event)"
+                                (removeApplicant)="updateJobApplicantList()">
+                        </applicant-card>
+                    </th>
+                    <th>
+                        <span class="badge badge-secondary">{{applicant?.source}}</span>
+                    </th>
+                    <th>{{applicant?.totalExperience || "" }}</th>
+                    <th>{{applicant?.expectedCtc || "" }}</th>
+                    <th>{{applicant?.currentCtc || "" }}</th>
+                    <th>{{applicant?.noticePeriod || "" }}</th>
+                    <th><select
+                            (change)="onChangeItemStatusFilter($event.target.value, applicant)"
+                            class="form-control ng-pristine ng-valid ng-touched">
+                        <option *ngFor="let pipeLine of pipeLines"
+                                [selected]="getSelectedValue(applicant.jobApplicants.pipeline, pipeLine._id)"
+                                [value]="pipeLine._id">{{pipeLine.name}}</option>
+                    </select>
+                    </th>
+                </tr>
+
+
+                </tbody>
+
+            </table>
+        </data-table>
+    </div>
+</div>
+<applicant-info id="applicant-info-pipeline" [applicant]="selectedApplicant" (onUpdate)="onUpdate($event)">
+</applicant-info>

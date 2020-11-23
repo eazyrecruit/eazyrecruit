@@ -8,12 +8,23 @@ var userRoleSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    created_at: Date,
     modified_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_at: Date
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date, default: Date.now}
 }, { versionKey: false });
-
+userRoleSchema.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+userRoleSchema.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+userRoleSchema.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 module.exports = mongoose.model('UserRoles', userRoleSchema);

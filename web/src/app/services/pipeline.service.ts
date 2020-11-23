@@ -12,6 +12,7 @@ export class PipelineService {
   }
 
   updateApplicantStatus(applicant) {
+    console.log("updateApplicantStatus", applicant);
     return this.http.put(this.constService.baseUrl + 'job/applicant', applicant);
   }
 

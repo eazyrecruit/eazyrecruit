@@ -12,22 +12,18 @@ var fs = require('fs');
 
 // ****** eazy recruit *******
 module.exports.setup = () => {
-  //Set up default mongoose connection
   mongoose.connect(config.mongo.host, {
-      // sets how many times to try reconnecting
-      reconnectTries: 5,
-      // sets the delay between every retry (milliseconds)
-      reconnectInterval: 1000,
-      useMongoClient: true
+    useNewUrlParser: true
   });
   // Get Mongoose to use the global promise library
   mongoose.Promise = global.Promise;
   //Get the default connection
   var mongodb = mongoose.connection;
 
-  mongodb.on('connected', console.log.bind(console, 'EZ MongoDB successfully connected'));
+  mongodb.on('connected', console.log.bind(console, 'MongoDB successfully connected'));
   //Bind connection to error event (to get notification of connection errors)
-  mongodb.on('error', console.error.bind(console, 'EZ MongoDB connection error:'));
+  mongodb.on('error', console.error.bind(console, 'MongoDB connection error:'));
+  //Set up default mongoose connection
 }
 module.exports.initialize = async () => {
 
@@ -44,8 +40,8 @@ module.exports.initialize = async () => {
     }
   }
 
-  var dbUsers = await Users.find();
-  if(dbUsers.length <= 0){
+  var dbUsers = await Users.findOne({email: config.admin.username});
+  if(!dbUsers){
     const randomString = () => crypto.randomBytes(6).hexSlice();
     let role = await Role.findOne({ name: 'admin' });
     var user = new Users();

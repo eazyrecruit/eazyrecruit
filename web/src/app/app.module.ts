@@ -89,6 +89,10 @@ import {EmailTemplateComponent} from './components/settings/emailsettings/email-
 import {ColorPickerModule} from 'ngx-color-picker';
 import {GoogleAnalyticsComponent} from './components/settings/googleAnalytics/google.analytics.component';
 import {ProfileComponent} from './components/profile/profile.component';
+import {DatabaseComponent} from './components/database/database.component';
+import {PipelineGridComponent} from './components/jobs/pipeline/gridView/pipeline.grid.component';
+import {PipelineListComponent} from './components/jobs/pipeline/listView/pipeline.list.component';
+import {UserCardComponent} from "./components/database/UserCard/user.card.component";
 import {CancelConformComponent} from "./components/interview/cancelConfromBox/cancel.conform.component";
 
 @NgModule({
@@ -115,6 +119,9 @@ import {CancelConformComponent} from "./components/interview/cancelConfromBox/ca
         ViewJobsComponent,
         SkillComponent,
         ProfileComponent,
+        DatabaseComponent,
+        PipelineGridComponent,
+        PipelineListComponent,
         ApplicantCardComponent,
         ApplicantInfoComponent,
         JobsComponent,
@@ -152,7 +159,8 @@ import {CancelConformComponent} from "./components/interview/cancelConfromBox/ca
         InterviewListComponent,
         InboundComponent,
         OutboundComponent,
-        EmailTemplateComponent
+        EmailTemplateComponent,
+        UserCardComponent
     ],
     imports: [
         ToasterModule,

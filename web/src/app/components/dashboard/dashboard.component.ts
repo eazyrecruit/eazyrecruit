@@ -49,8 +49,8 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit() {
         this.options = {editable: true};
-        this.getAnalyticsData();
         this.loadResumeByDay();
+        this.getAnalyticsData();
         this.role = this.accountService.getRole();
     }
 
@@ -111,6 +111,7 @@ export class DashboardComponent implements OnInit {
                     ];
                     this.lineChartLabels = labels;
                     this.lineChartData = reportData;
+                    console.log('lineChartDatalineChartData' ,  this.lineChartData);
                 }
             }
         });

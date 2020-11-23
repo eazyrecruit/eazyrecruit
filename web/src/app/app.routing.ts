@@ -42,6 +42,7 @@ import {GoogleComponent} from './components/settings/google/google.component';
 import {GoogleAnalyticsComponent} from './components/settings/googleAnalytics/google.analytics.component';
 import {InterviewListComponent} from './components/interview/interview-list/interview-list/interview-list.component';
 import {ProfileComponent} from './components/profile/profile.component';
+import {DatabaseComponent} from './components/database/database.component';
 
 @NgModule({
     imports: [
@@ -80,13 +81,18 @@ import {ProfileComponent} from './components/profile/profile.component';
                         data: {expectedRole: ['interviewer', 'admin', 'hr']}
                     },
                     {
+                        path: 'database', children: [
+                            {path: '', pathMatch: 'full', component: DatabaseComponent},
+                            {path: 'add/job/:jobId/:pipelineId', component: DatabaseComponent}
+                        ], canActivate: [RoleGuardService], data: {expectedRole: ['admin', 'hr']}
+                    },
+                    {
                         path: 'applicants', children: [
                             {path: '', pathMatch: 'full', component: ApplicantsComponent},
                             {path: 'search-applicant', component: ApplicantSearchComponent},
                             {path: 'upload', component: RegisterApplicantComponent},
                             {path: 'applicant/:applicantId', component: PipelineComponent},
                             {path: 'add/job/:jobId/:pipelineId', component: ApplicantsComponent},
-                            //{ path: 'search', component:  SearchApplicantComponent},
                             {path: 'create', component: CreateApplicantComponent},
                             {path: ':id', resolve: {applicant: ApplicantResolver}, component: ApplicantpageComponent}
                         ], canActivate: [RoleGuardService], data: {expectedRole: ['admin', 'hr']}

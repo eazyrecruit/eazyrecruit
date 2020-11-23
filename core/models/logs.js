@@ -11,5 +11,16 @@ var logs = new Schema({
     modified_date: { type: Date, default: Date.now },
     is_deleted: Boolean
 }, { versionKey: false });
-
+logs.pre('save', function (next) {
+    this.modified_date = new Date;
+    return next();
+});
+logs.pre('updateOne', function (next) {
+    this.modified_date = new Date;
+    return next();
+});
+logs.pre('update', function (next) {
+    this.modified_date = new Date;
+    return next();
+});
 module.exports = mongoose.model('logs', logs);

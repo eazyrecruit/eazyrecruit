@@ -10,13 +10,24 @@ var socialSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    created_at: Date,
     modified_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_at: Date
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date, default: Date.now}
 }, { versionKey: false });
-
+socialSchema.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+socialSchema.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+socialSchema.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 var Socials = mongoose.model('Socials',socialSchema);
 module.exports = Socials;

@@ -1,5 +1,6 @@
 var Jobs = require('../models/job');
 var JobPipelines = require('../models/jobPipeline');
+var Applicant = require('../models/applicant');
 var JobApplicants = require('../models/jobApplicant');
 var JobMetaImage = require('../models/jobMetaImage');
 var Interview = require('../models/interview');
@@ -8,6 +9,7 @@ var histroyService = require('../services/history.service');
 var utilService = require('../services/util.service');
 var esService = require('../services/es.service');
 var config = require('../config').config();
+var ObjectId = require('mongodb').ObjectID;
 exports.save = async (req) => {
     if (req.body) {
         var modelJob = await Jobs.findById(req.body._id);
@@ -117,20 +119,20 @@ exports.getPublishedJobs = async (query, limit, offset) => {
     let count = 0;
     let jobs;
     if (query.hasOwnProperty('title')) {
-        count = await Jobs.find(query).count();
+        count = await Jobs.find(query).countDocuments();
         jobs = await Jobs.find(query).populate("locations").populate("skills")
-            .populate("tags").populate("categories").sort({ created_at: 'desc' });
+            .populate("tags").populate("categories").sort({created_at: 'desc'});
 
     } else {
-        count = await Jobs.find(query).count();
+        count = await Jobs.find(query).countDocuments();
         jobs = await Jobs.find(query).populate("locations").populate("skills")
-            .populate("tags").populate("categories").sort({ created_at: 'desc' }).limit(limit).skip(offset);
+            .populate("tags").populate("categories").sort({created_at: 'desc'}).limit(limit).skip(offset);
     }
-    return { count, jobs };
+    return {count, jobs};
 };
 
 exports.getByGuid = async (guid) => {
-    return await Jobs.findOne({ 'guid': guid }).populate("locations").populate("skills")
+    return await Jobs.findOne({'guid': guid}).populate("locations").populate("skills")
         .populate("tags").populate("categories");
 };
 
@@ -142,18 +144,18 @@ exports.getById = async (_id) => {
 exports.getWithApplicantsAndPipeline = async (req) => {
     return await Jobs.findById(req.params.id)
         .populate({
-            path: 'pipelines', match: { is_deleted: { $ne: true } },
+            path: 'pipelines', match: {is_deleted: {$ne: true}},
             populate: {
                 path: 'pipelines',
                 model: 'JobPipelines'
             }
         })
         .populate({
-            path: 'applicants', match: { is_deleted: { $ne: true } },
+            path: 'applicants', match: {is_deleted: {$ne: true}},
             populate: {
                 path: 'applicant',
                 model: 'Applicants',
-                match: { is_deleted: { $ne: true } },
+                match: {is_deleted: {$ne: true}},
                 populate: {
                     path: 'skills',
                     model: 'Skills'
@@ -162,28 +164,159 @@ exports.getWithApplicantsAndPipeline = async (req) => {
         });
 };
 
-exports.searchWithApplicantsAndPipeline = async (req) => {
-    return await Jobs.findById(req.query.jobId).populate("pipelines")
+exports.getJobsPipeLine = async (req) => {
+    return await Jobs.findById(req.params.id, {title: 1, pipelines: 1})
         .populate({
-            path: 'applicants',
-            match: {
-                is_deleted: { $ne: true }
-            },
+            path: 'pipelines', match: {is_deleted: {$ne: true}},
             populate: {
-                path: 'applicant',
-                model: 'Applicants',
-                match: {
-                    is_deleted: { $ne: true },
-                    $or: [
-                        { firstName: new RegExp('^.*' + req.query.search + '.*$', 'i') },
-                        { middleName: new RegExp('^.*' + req.query.search + '.*$', 'i') },
-                        { lastName: new RegExp('^.*' + req.query.search + '.*$', 'i') },
-                        { email: new RegExp('^.*' + req.query.search + '.*$', 'i') },
-                    ]
-                }
+                path: 'pipelines',
+                model: 'JobPipelines'
             }
         });
 };
+
+
+exports.getJobsApplicant = async (data) => {
+
+    try {
+        const ApplicantQuery = {
+            is_deleted: {$ne: true}
+        };
+        const jobApplicantsQuery = {
+            "jobApplicants.is_deleted": {$ne: true},
+            "jobApplicants.job": {
+                "$exists": true
+            }
+        };
+        if (data.jobId) {
+            jobApplicantsQuery["jobApplicants.job"] = ObjectId(data.jobId);
+        }
+        const result = {total: 0, records: []};
+        let jobsQuery = {
+            _id: {"$in": []}
+        };
+        let sort = {};
+        if (data.sortBy === "modified_at") {
+            sort["jobApplicants.modified_at"] = parseInt(data.order);
+        } else {
+            sort[data.sortBy] = parseInt(data.order);
+        }
+
+        if (data.source) {
+            ApplicantQuery["source"] = data.source;
+        }
+        if (data.startDate && data.endDate) {
+            jobApplicantsQuery["$or"] = [{
+                "jobApplicants.modified_at": {
+                    "$exists": false
+                }
+            }, {
+                "jobApplicants.created_at": {
+                    "$exists": false
+                }
+            },
+                {
+                    "jobApplicants.modified_at": {
+                        $gte: data.startDate,
+                        $lt: data.endDate
+                    },
+                    "jobApplicants.created_at": {
+                        $gte: data.startDate,
+                        $lt: data.endDate
+                    }
+                }]
+        }
+        if (data.searchText) {
+            ApplicantQuery["$or"] = [
+                {firstName: new RegExp('^.*' + data.searchText + '.*$', 'i')},
+                {middleName: new RegExp('^.*' + data.searchText + '.*$', 'i')},
+                {lastName: new RegExp('^.*' + data.searchText + '.*$', 'i')},
+                {email: new RegExp('^.*' + data.searchText + '.*$', 'i')},
+            ]
+        }
+        let ApplicantLookupCount = await Applicant.aggregate(getApplicantLookupCount(ApplicantQuery, jobApplicantsQuery));
+        const count = ApplicantLookupCount && ApplicantLookupCount.length && ApplicantLookupCount[0].count ? ApplicantLookupCount[0].count : 0;
+        if (count > 0) {
+            let project = {"$project": {}};
+            let select = geApplicantSelect();
+            for (let index = 0; index < select.length; index++) {
+                project.$project[select[index]] = 1;
+            }
+            project.$project["jobApplicants._id"] = 1;
+            project.$project["jobApplicants.job"] = 1;
+            project.$project["jobApplicants.pipeline"] = 1;
+            result.total = count;
+
+            result.records = await Applicant.aggregate(getApplicantLookup(ApplicantQuery, jobApplicantsQuery, sort, parseInt(data.limit), parseInt(data.offset), project));
+        }
+
+
+        return result;
+    } catch
+        (error) {
+        console.log("errorerror", error)
+        return {total: 0, records: []};
+    }
+
+
+}
+;
+
+
+function getApplicantLookup(ApplicantQuery, jobApplicantsQuery, sort, limit, skip, project) {
+
+    return [{
+        "$match": ApplicantQuery
+    }, {
+        "$lookup":
+            {
+                "from": "jobapplicants",
+                "localField": "_id",
+                "foreignField": "applicant",
+                "as": "jobApplicants"
+            }
+
+    },
+
+        {
+            "$match": jobApplicantsQuery
+        },
+        {"$sort": sort},
+        {"$skip": skip},
+        {"$limit": limit},
+        project
+    ];
+
+}
+
+function getApplicantLookupCount(ApplicantQuery, jobApplicantsQuery) {
+    /*    {
+            "jobApplicants.is_deleted": {$ne: true},
+            "jobApplicants.job": jobId
+        }*/
+    let query = [{
+        "$match": ApplicantQuery
+    }, {
+        "$lookup":
+            {
+                "from": "jobapplicants",
+                "localField": "_id",
+                "foreignField": "applicant",
+                "as": "jobApplicants"
+            }
+
+    },
+
+        {
+            "$match": jobApplicantsQuery
+        },
+        {
+            "$count": "count"
+        }
+    ];
+    console.log("getApplicantLookupCount", JSON.stringify(query));
+    return query;
+}
 
 exports.delete = async (_id) => {
     var modelJob = Jobs.findById(req.body._id);
@@ -258,7 +391,7 @@ exports.addApplicant = async (req) => {
         let applicant = await JobApplicants.findOne({
             applicant: req.body.applicantId,
             job: req.body.jobId,
-            is_deleted: { $ne: true }
+            is_deleted: {$ne: true}
         });
         if (!applicant) {
             // Create Job Applicant
@@ -288,14 +421,27 @@ exports.addApplicant = async (req) => {
             });
             return jobApplicant;
         } else {
-            return { status: 403, message: "already exist" };
+            return {status: 403, message: "already exist"};
         }
     }
 }
+exports.getJobsName = async (jobId) => {
+    let query = {
+        is_deleted: {$ne: true}
+    };
+    if (jobId) {
+        query["_id"] = jobId;
+    }
+    try {
+        return await Jobs.find(query, {title: 1});
+    } catch (e) {
+        return {status: 400, message: "invalid id"};
+    }
 
+}
 exports.editApplicant = async (req) => {
 
-    let applicant = await JobApplicants.findOne({ _id: req.body.id, applicant: req.body.applicant, is_deleted: false });
+    let applicant = await JobApplicants.findOne({_id: req.body.id, applicant: req.body.applicant, is_deleted: false});
     if (applicant) {
         applicant.pipeline = req.body.pipeline,
             applicant.modefied_by = req.user.id,
@@ -312,7 +458,7 @@ exports.editApplicant = async (req) => {
         });
         return applicant;
     } else {
-        return { status: 400, message: "invalid id" };
+        return {status: 400, message: "invalid id"};
     }
 }
 
@@ -320,9 +466,9 @@ exports.removeApplicant = async (req) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (req.params.id) {
-                let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, { is_deleted: true }, { new: true });
+                let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, {is_deleted: true}, {new: true});
                 if (jobApplicant) {
-                    let job = await Jobs.findByIdAndUpdate(jobApplicant.job, { $pull: { applicants: req.params.id } }, { new: true });
+                    let job = await Jobs.findByIdAndUpdate(jobApplicant.job, {$pull: {applicants: req.params.id}}, {new: true});
                     let elJob = await esService.updateJob(job.id, job);
                     let interview = await Interview.findOne({
                         jobId: jobApplicant.job,
@@ -345,23 +491,24 @@ exports.removeApplicant = async (req) => {
                             });
                         } catch (error) {
                             console.log('remove interview : ', error);
-                            reject({ status: 207, message: "applicant removed successfully, interview remove error" });
+                            reject({status: 207, message: "applicant removed successfully, interview remove error"});
                         }
                     } else {
                         resolve(jobApplicant);
                     }
                 } else {
-                    reject({ status: 400, message: "invalid id" });
+                    reject({status: 400, message: "invalid id"});
                 }
             } else {
-                reject({ status: 400, message: "id required" });
+                reject({status: 400, message: "id required"});
             }
         } catch (error) {
             console.log('remove applicanr error : ', error);
-            reject({ status: 500, message: "internal server error" });
+            reject({status: 500, message: "internal server error"});
         }
     });
 }
+
 
 function createSlug(title) {
     let date = new Date();
@@ -371,3 +518,10 @@ function createSlug(title) {
     let year = date.getFullYear() % 2000;
     return title.replace(/[^\w\s]/gi, '').replace(/\s/g, '').toLowerCase() + "_" + date.getDate() + month + year;
 }
+
+function geApplicantSelect() {
+    return ["firstName", "middleName", "lastName", "dob", "email", "phones", "currentCtc", "score", "expectedCtc", "noticePeriod", "noticePeriodNegotiable", "totalExperience", "availability", "roles", "referredBy", "referredBy", "source"]
+}
+
+
+

@@ -44,7 +44,7 @@ module.exports = {
             },
             coreClientSecret: process.env.CORE_CLIENT_SECRET || "secret",
             mongo: {
-                host: process.env.MONGO_URI || 'mongodb://userName:password@ez_mongodb/admin'
+                host: process.env.MONGO_URI || 'mongodb://eazyrecruit:klkjhgbvfcf@192.168.1.168:27019/admin'
             },
             redis: {
                 host: process.env.RADIS_URI || "redis://:userName@ez_redis:6379/0"

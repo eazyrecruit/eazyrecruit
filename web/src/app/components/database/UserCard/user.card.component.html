@@ -1,0 +1,9 @@
+<div class="info-box-wrapper line-height-22">
+    <a class="font-weight-600 text-meteorite mb-0 c-pointer" (click)="name_clicked()">
+        {{getName(applicants)}}
+    </a>
+    <p class="mt-10 text-11 font-weight-500 mb-5 mt-5 line-height-20">Email:
+        {{applicants?.email}}</p>
+    <p class="text-11 font-weight-500 mb-5 line-height-20">Phone: <span
+            *ngFor="let phone of applicants?.phones">{{phone}}  </span></p>
+</div>

@@ -1,157 +1,121 @@
-<section class="content" *ngIf="job">
-  <div class="box box-info">
-    <div class="box-header">
-      <div class="row">
-        <div class="col-sm-5 mt-10">
-          <h3 class="box-title display-inline">{{job.title}}
-            <div data-toggle="modal" data-target="#infoModal" class="icon-circle-wrapper cursor pointer">
-              <i class="ti-info"></i>
-            </div>
-          </h3>
-        </div>
-        <div class="col-sm-7">
-          <div class="pull-right btn-sm">
-            <div class="form-inline">
-              <div class="btn-group form-group margin-right-10px" role="group" aria-label="Basic example">
-                <button class="btn btn-sm btn-info" (click)="createApplicant(job._id)">Create Applicant</button>
-                <button class="btn btn-sm btn-info" (click)="addApplicants()">Search Database</button>
-              </div>
-              <div class="form-group">
-                <label for="">Search Applicant :</label>
-                <input type="text" placeholder="Search Applicant" class="form-control margin-left-15px"
-                  (keyup)="searchApplicant($event)">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="main-content padding-20px-tb plr-15" id="jobs-custom" style="overflow: scroll;">
-      <div class="pipeline plr">
-        <div droppable *ngFor="let pipeline of job.pipelines; let i = index;"
-          (onDrop)="onColumnDrop($event, pipeline, i)">
-          <ul class="pipeline box-cardWrapper" draggable (onDrag)="onColumnDrag($event, pipeline, i)"
-            [dragData]="pipeline">
-            <li class="pipeline-box bg-box">
-              <div class="pipeline-background pipeline-box-heading">
-                <div class="plr">
-                  {{pipeline.name}}
-                </div>
-                <div class="scroll-pipeline mt-10" *ngIf="job.applicants">
-                  <ng-container *ngFor="let applicant of job.applicants; let i=index;">
-                    <div *ngIf="applicant.pipeline == pipeline._id" droppable (onDrop)="onItemDrop($event, pipeline)">
-                      <div class="plr">
-                        <div class="info-box" draggable [dragData]="applicant"
-                          class="list-group-item border-radius-0 mb-15 bl-red overflow-hidden">
-                          <applicant-card [applicant]="applicant" [pipelines]="job.pipelines" (onSelect)="showApplicantDetails($event)"
-                            (changeStatus)="changeApplicantStatus($event)" (removeApplicant)="updateJobApplicantList($event, i)">
-                          </applicant-card>
+<ng-container *ngIf="gettingApplicant">
+    <i *ngIf="gettingApplicant" class="fa fa-spinner fa-spin"></i>
+</ng-container>
+<ng-container *ngIf="!gettingApplicant">
+    <section class="content content-wrapper">
+        <div class="box box-info">
+            <div class="box-header">
+                <div class="row">
+                    <div class="col-sm-5 mt-10">
+                        <h3 class="box-title display-inline">{{job.title}}
+                            <div data-toggle="modal" data-target="#infoModal"
+                                 class="icon-circle-wrapper cursor pointer">
+                                <i class="ti-info"></i>
+                            </div>
+                        </h3>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="pull-right btn-sm">
+                            <div class="form-inline">
+                                <div class="btn-group form-group margin-right-10px" role="group"
+                                     aria-label="Basic example">
+                                    <button class="btn btn-sm btn-info" (click)="createApplicant(job._id)">Create
+                                        Applicant
+                                    </button>
+                                    <button class="btn btn-sm btn-info" (click)="addApplicants()">Search Database
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                      </div>
                     </div>
-                  </ng-container>
                 </div>
-                <!-- <div *ngIf="pipeline.items.length === 0">
-                  <div class="plr" droppable (onDrop)="onItemDrop($event, pipeline)">
-                    <div class="info-box" draggable [dragData]="item"
-                      class="list-group-item border-radius-0 mb-15 bl-red">
-                      <span>Drop Candidate Here!</span>
+            </div>
+            <div id="database" class="main-content padding-20px-tb plr-15">
+                <div class="row">
+
+                    <div class='col-lg-4'>
+                        <div class="form-group">
+                            <input [(ngModel)]="searchText" (keyup)="onSearch()" type="text" class="form-control"
+                                   placeholder="Search Applicant">
+                        </div>
                     </div>
-                  </div>
-                </div> -->
-              </div>
-              <div class="jobs-menu dropdown">
-                <i class="dropdown-toggle ti-more" data-toggle="dropdown"></i>
-                <ul class="dropdown-menu jobOption">
-                  <li class="dropdown-item" (click)="setpipelineId(pipeline, i)">
-                    <a data-toggle="modal" data-target="#pipeModal" class="pointer">
-                      <i class="fa fa-pencil"></i>Edit Title
-                    </a>
-                  </li>
-                  <li class="dropdown-item" (click)="deletePipeline(template)">
-                    <a><i class="fa fa-trash"></i>Delete Pipeline</a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-          <ng-template #template>
-            <div class="modal-body text-center">
-              <p class="text"><b>Do you want to delete </b></p>
-              <button type="button" class="btn btn-primary" (click)="confirm(pipeline._id, i)">Yes</button>
-              <button type="button" class="btn btn-default" (click)="decline()">No</button>
+
+                    <div class='col-lg-2'>
+                        <div class="form-group">
+                            <div id="filterDate1">
+                                <!-- Datepicker as text field -->
+                                <div class="input-group">
+                                    <label> Start Date
+                                        <input type="text" [(ngModel)]="startDate" [maxDate]="startMaxDate"
+                                               [bsConfig]='bsConfig'
+                                               (ngModelChange)="onDateChange($event, 'startDate')"
+                                               class="form-control datepicker-date" placeholder="Datepicker"
+                                               bsDatepicker>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-lg-2'>
+                        <div class="form-group">
+                            <div id="filterDate2">
+                                <!-- Datepicker as text field -->
+                                <div class="input-group">
+                                    <label> End Date
+                                        <input type="text" [(ngModel)]="endDate" [maxDate]="endMaxDate"
+                                               [minDate]="endMinDate"
+                                               [bsConfig]='bsConfig' (ngModelChange)="onDateChange($event,'endDate')"
+                                               class="form-control datepicker-date" placeholder="Datepicker"
+                                               bsDatepicker>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-1">
+                        <select (change)="onSourceFilterChange($event.target.value)"
+                                class="form-control ng-pristine ng-valid ng-touched">
+                            <option [value]="">Source</option>
+                            <option *ngFor="let source of sourceType"
+                                    [selected]="source.toLocaleLowerCase()===filter.source"
+                                    [value]="source.toLocaleLowerCase()">{{source}}</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1">
+                        <button class="btn" [ngClass]="[ isGridView ? 'btn': 'btn active']"
+                                (click)="changeViewStatus(false)"><i
+                                class="fa fa-bars"></i> List
+                        </button>
+                    </div>
+                    <div class="col-lg-1">
+                        <button [ngClass]="[ isGridView ? 'btn active': 'btn']" (click)="changeViewStatus(true)"><i
+                                class="fa fa-th-large"></i> Grid
+                        </button>
+                    </div>
+                </div>
+                <ng-container *ngIf="gettingApplicant">
+                    <i *ngIf="gettingApplicant" class="fa fa-spinner fa-spin"></i>
+                </ng-container>
+                <ng-container *ngIf="!gettingApplicant">
+                    <ng-container *ngIf="isGridView">
+                        <app-pipieline-grid (onChangeStatus)="changeStatus($event)"
+                                            (getPipeLine)="updatePipeLine()"
+                                            (changeFilter)="updateChildData($event)" [JobApplicants]="JobApplicants"
+                                            [pipeLines]="pipeLines" [jobId]="jobId"></app-pipieline-grid>
+                    </ng-container>
+                    <ng-container *ngIf="!isGridView">
+
+                        <app-pipieline-list (onChangeStatus)="changeStatus($event)" [filter]="filter"
+                                            (changeFilter)="updateChildData($event)"
+                                            [JobApplicants]="JobApplicants" [totalRecords]="totalRecords"
+                                            [pipeLines]="pipeLines" [jobId]="jobId"></app-pipieline-list>
+                    </ng-container>
+                </ng-container>
+
             </div>
-          </ng-template>
+
         </div>
-        <div class="pipeline plr">
-          <div class="pipeline-box">
-            <div class="add-column plr">
-              <div class="border-radius-0 pointer">
-                <a data-toggle="modal" data-target="#pipeModal" type="button" (click)="setpipelineId(null)">
-                  Add New Pipeline <i class="fa fa-plus-circle"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<applicant-info id="applicant-info-pipeline" [applicant]="selectedApplicant" (onUpdate)="onUpdate($event)" (onReject)="onCandidateReject($event)">
-</applicant-info>
-<!-- <div class="modal fade" id="myModal" role="dialog">
-  <div class="modal-dialog window-popup">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button id="closeButton" type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Search Candidates</h4>
-      </div>
-      <div class="modal-body content-move " style="height: 100vh; overflow-y: scroll;">
-        <applicant-search [jobPostId]="jobId" [alreadyApplied]="emails" (data)="eventHandler($event)">
-        </applicant-search>
-      </div>
-    </div>
-  </div>
-</div> -->
-<!-- <div class="modal fade" id="infoModal" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button id="closeButton" type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Job Description</h4>
-      </div>
-      <div class="modal-body content-move " style="height: 100vh; overflow-y: scroll;">
-        <app-job-details [jobPostId]="jobId"></app-job-details>
-      </div>
-    </div>
-  </div>
-</div> -->
-<div class="modal fade" id="pipeModal" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" id="close" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">{{pipelineDialogTitle}} Pipeline</h4>
-      </div>
-      <div class="modal-body">
-        <form [formGroup]="form" (ngSubmit)="pipelineDetails(form.value)">
-          <div class="form-group">
-            <input type="text" placeholder="name" class="form-control" formControlName="name" required autofocus>
-            <small class="text-danger"
-              *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">
-              Please enter Pipeline Name
-            </small>
-            <small class="text-danger" *ngIf="form.controls['name'].hasError('jobTitleValid')">
-              Please enter correct Pipeline name
-            </small>
-            <small class="text-danger" *ngIf="errorMessage != null">
-              {{errorMessage}}
-            </small>
-          </div>
-          <button class="btn btn-primary" type="submit">{{pipelineDialogTitle}} Pipeline</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+    </section>
+</ng-container>
+
