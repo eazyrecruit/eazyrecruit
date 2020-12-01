@@ -394,17 +394,18 @@ async function SendDeleteInterviewNotification(data) {
     return new Promise(async (resolve, reject) => {
         try {
             let company = await getCompany();
+            let applicantName = getFullName(data.jobApplicant);
             let request = {
                 organizer: data.organizer.email,
                 start: data.start,
                 end: data.end,
                 sequence: data.sequence,
                 uuid: data.uid,
-                name: data.jobApplicant.name
+                name: applicantName
             };
             await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + company.name + " for " + data.jobId.title + " profile", data.jobApplicant.email);
-            await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + data.jobApplicant.name + " for " + data.jobId.title + " profile", data.interviewer.email);
-            await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + data.jobApplicant.name + " for " + data.jobId.title + " profile", data.organizer.email);
+            await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + applicantName + " for " + data.jobId.title + " profile", data.interviewer.email);
+            await createDeleteInvitation(request, "Interview Cancel", " Cancel Invitation: Interview Cancel with " + applicantName + " for " + data.jobId.title + " profile", data.organizer.email);
         } catch (err) {
             console.log("SendDeleteInterviewNotifaction", err);
             //reject(err)
@@ -454,6 +455,15 @@ async function createDeleteInvitation(req, title, subject, attendee) {
         }
 
     });
+}
+
+function getFullName(data) {
+    let name = data.firstName;
+    if (data.middleName) name = name + ' ' + data.middleName;
+    if (data.lastName) name = name + ' ' + data.lastName;
+    if (!name) name = data.email;
+
+    return name;
 }
 
 async function getCompany() {
