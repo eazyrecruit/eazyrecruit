@@ -39,19 +39,38 @@ router.post("/search-by-job", async (req, res) => {
 })
 router.get("/search", async (req, res) => {
     try {
-        var results = await esService.searchApplicants(req);
+        let data = {
+            offset: req.query.offset || 0,
+            limit: req.query.limit || 20,
+            source: req.query.source || null,
+            sortBy: req.query.sortBy || "modified_at",
+            order: req.query.order || -1,
+            search: req.query.search || null
+        };
+        if (req.query.startDate && req.query.endDate) {
+            let startDate = new Date(req.query.startDate);
+            let endDate = new Date(req.query.endDate);
+            if (startDate !== undefined && endDate !== undefined) {
+                endDate.setHours(23, 59, 59);
+                startDate.setHours(0, 0, 0);
+                data["startDate"] = startDate;
+                data["endDate"] = endDate;
+            }
+        }
+        var results = await esService.searchApplicants(data);
         if (results.hits && results.hits.hits && results.hits.hits.length) {
             var applicants = [];
             for (var iHit = 0; iHit < results.hits.hits.length; iHit++) {
                 results.hits.hits[iHit]._source._id = results.hits.hits[iHit]._id;
-                results.hits.hits[iHit]._source.skills = await skillService.getAllByIds(results.hits.hits[iHit]._source.skills);
-                results.hits.hits[iHit]._source.location = await locationService.getAllByIds(results.hits.hits[iHit]._source.location);
-                results.hits.hits[iHit]._source.preferredLocations = await locationService.getAllByIds(results.hits.hits[iHit]._source.preferredLocations);
                 applicants.push(results.hits.hits[iHit]._source);
             }
+            /*      let jsonStr = JSON.stringify({
+                      applicants: applicants,
+                      total: results.hits.total.value || results.hits.total
+                  });*/
             responseService.response(req, null, 'Applicants GET', {
                 applicants: applicants,
-                total: results.hits.total
+                total: results.hits.total.value || results.hits.total
             }, res);
         } else {
             responseService.response(req, null, 'Applicants GET', null, res);
@@ -80,7 +99,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-var applicantResumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var applicantResumeUpload = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/", applicantResumeUpload.any(), async (req, res) => {
     try {
         var applicant = await applicantService.save(req, true);
@@ -90,7 +109,7 @@ router.post("/", applicantResumeUpload.any(), async (req, res) => {
     }
 });
 
-var applicantResumeParse = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var applicantResumeParse = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/resume/parse", applicantResumeParse.any(), async (req, res) => {
     try {
         if (req.headers["clientSecret"] === config.coreClientSecret || req.headers["clientsecret"] === config.coreClientSecret) {
@@ -111,7 +130,7 @@ router.post("/resume/parse", applicantResumeParse.any(), async (req, res) => {
     }
 });
 
-var resumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var resumeUpload = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/resume", resumeUpload.any(), async (req, res) => {
     try {
         var applicant;
@@ -135,7 +154,7 @@ router.post("/resume", resumeUpload.any(), async (req, res) => {
     }
 });
 
-var applicantResumeUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var applicantResumeUpload = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.put("/", applicantResumeUpload.any(), async (req, res) => {
     try {
         var applicant = await applicantService.saveAndUpdate(req);
@@ -154,7 +173,7 @@ router.delete("/:id", applicantResumeUpload.any(), async (req, res) => {
     }
 });
 
-var uploadService = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1000 * 1000 * 12 } });
+var uploadService = multer({storage: multer.memoryStorage(), limits: {fileSize: 1000 * 1000 * 12}});
 router.post("/upload", uploadService.any(), (req, res) => {
     applicantService.uploadResume(req, (errorResume, dataResume) => {
         if (errorResume) responseService.response(req, errorResume, 'Upload resume', null, res);

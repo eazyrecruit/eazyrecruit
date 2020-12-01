@@ -11,13 +11,24 @@ var applicantResumeSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    created_at: Date,
     modified_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_at: Date
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date, default: Date.now}
 }, { versionKey: false });
-
+applicantResumeSchema.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+applicantResumeSchema.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+applicantResumeSchema.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 var ApplicantResumes = mongoose.model('ApplicantResumes',applicantResumeSchema);
 module.exports = ApplicantResumes;

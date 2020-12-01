@@ -8,13 +8,24 @@ var skillsSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    created_at: Date,
     modified_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_at: Date
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date, default: Date.now}
 }, { versionKey: false });
-
+skillsSchema.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+skillsSchema.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+skillsSchema.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 var Skills = mongoose.model('Skills', skillsSchema);
 module.exports = Skills;

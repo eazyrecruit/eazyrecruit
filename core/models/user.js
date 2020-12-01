@@ -26,19 +26,27 @@ const userSchema = new mongoose.Schema({
       type: Schema.Types.ObjectId,
       ref: 'Users'
   },
-  created_at: Date,
   modified_by: {
       type: Schema.Types.ObjectId,
       ref: 'Users'
   },
-  modified_at: Date
+  created_at: {type: Date, default: Date.now},
+  modified_at: {type: Date, default: Date.now}
 }, { timestamps: true });
-
+userSchema.pre('updateOne', function (next) {
+  this.modified_at = new Date;
+  return next();
+});
+userSchema.pre('update', function (next) {
+  this.modified_at = new Date;
+  return next();
+});
 /**
  * Password hash middleware.
  */
 userSchema.pre('save', function save(next) {
   const user = this;
+  this.modified_at = new Date;
   if (!user.isModified('password')) { return next(); }
   else {user.password = bcrypt.hashSync(user.password); return next();}
 });

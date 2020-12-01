@@ -12,7 +12,9 @@
   </div>
   <div class="main-content padding-20px-tb plr-15">
     <data-table pageSize='10' sortField='firstName' sortOrder='1' [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
-      <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
+      <div class="table-responsive">
+
+      <table class="table bg-dark-black border-light  no-footer data-table" id="DataTables_Table_0" role="grid">
         <thead>
           <tr class="font-weight-bold">
             <th class="col-sm-2">Name</th>
@@ -42,6 +44,8 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
     </data-table>
   </div>
 </div>

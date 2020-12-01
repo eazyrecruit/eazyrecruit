@@ -15,7 +15,7 @@
 
         <div class="row">
           <div class="col-sm-12">
-            <table class="table table-dark">
+            <table class="table table-dark no-border">
               <tbody>
                 <tr *ngFor="let setting of inboundSettings">
                   <td *ngIf="setting.key == 'host' || setting.key == 'user'">{{setting.key}}</td>
@@ -40,7 +40,7 @@
 
         <div class="row">
           <div class="col-sm-12">
-            <table class="table table-dark">
+            <table class="table table-dark no-border">
               <tbody>
                 <tr *ngFor="let setting of outboundSettings">
                   <td *ngIf="setting.key == 'host' || setting.key == 'user'">{{setting.key}}</td>
@@ -50,7 +50,7 @@
             </table>
           </div>
           <div class="col-sm-12">
-            <button type="button" class="btn btn-success" (click)="editOutbound()">Edit
+            <button type="button" class="btn btn-warning" (click)="editOutbound()">Edit
               <i class="fa fa-arrow-circle-right"></i>
             </button>
           </div>
@@ -63,9 +63,9 @@
     
     <div class="row">
       <fieldset class="col-sm-12">
-        <legend>
+        <h3>
           Preview :
-        </legend>
+        </h3>
         <div class="row">
           <div class="col-sm-12" *ngIf="htmlPreview">
             <div class="box">
@@ -76,7 +76,7 @@
             </div>
           </div>
           <div class="col-sm-12">
-            <button type="button" class="btn btn-success"  (click)="editTemplate()">Edit
+            <button type="button" class="btn btn-primary mt-10 mb-10"  (click)="editTemplate()">Edit
               <i class="fa fa-arrow-circle-right"></i>
             </button>
           </div>

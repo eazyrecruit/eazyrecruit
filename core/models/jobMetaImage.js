@@ -11,13 +11,24 @@ var jobMetaImageSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    created_at: Date,
     modified_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_at: Date
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date, default: Date.now}
 }, { versionKey: false });
-
+jobMetaImageSchema.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+jobMetaImageSchema.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+jobMetaImageSchema.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 var JobMetaImage = mongoose.model('JobMetaImages', jobMetaImageSchema);
 module.exports = JobMetaImage;

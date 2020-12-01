@@ -6,13 +6,14 @@
             <div class="pull-right box-tools">
                 <div class="btn-group form-group margin-right-10px" role="group" aria-label="Basic example">
                     <div class="btn-group">
-                        <button type="button" style="margin-right: 10px" class="btn btn-info"
+                        <button type="button" style="margin-right: 10px" class="btn btn-info btn-sm"
                                 (click)="changeType('PENDING')"> Pending
                         </button>
-                        <button type="button" style="margin-right: 10px" class="btn btn-info"
+                        <button type="button" style="margin-right: 10px" class="btn btn-success btn-sm"
                                 (click)="changeType('COMPLETED')">Completed
                         </button>
-                        <button type="button" class="btn btn-info" (click)="changeType('CANCEL')">Cancel</button>
+                        <button type="button" class="btn btn-primary btn-sm" (click)="changeType('CANCEL')">Cancel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -20,118 +21,144 @@
         <div class="main-content padding-20px-tb plr-15">
             <data-table pageSize='10' sortField='name' sortOrder='1' [showSearchFeild]='false'
                         [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
-                <table class="table bg-dark-black border-light  no-footer" id="DataTables_Table_0" role="grid">
-                    <thead>
-                    <tr class="font-weight-bold">
+                <div class="table-responsive">
+                    <table class="table bg-dark-black border-light  no-footer data-table" id="DataTables_Table_0"
+                           role="grid">
+                        <thead>
+                        <tr class="font-weight-bold">
 
-                        <ng-container *ngIf="filter.type==='CANCEL'">
-                            <th class="col-sm-2">Applicant Name</th>
-                            <th class="col-sm-2">Interviewer Name</th>
-                            <th class="col-sm-2">Job Title</th>
-                            <th class="col-sm-2">Round</th>
-                            <th class="col-sm-2">Cancel By</th>
-                            <th class="col-sm-2">Cancel Time</th>
-                            <th class="col-sm-2">Result</th>
-                        </ng-container>
-                        <ng-container *ngIf="filter.type!=='CANCEL'">
-                            <th class="col-sm-2">Applicant Name</th>
-                            <th class="col-sm-2">Interviewer Name</th>
-                            <th class="col-sm-2">Job Title</th>
-                            <th class="col-sm-2">Start Time</th>
-                            <th class="col-sm-2">Round</th>
-                            <th class="col-sm-3">Channel</th>
-
-                            <th class="col-sm-2">Result</th>
-                            <th class="col-sm-2"></th>
-                        </ng-container>
-
-
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let interview of interviews; let i = index;">
-
-                        <ng-container *ngIf="filter.type==='CANCEL'">
-                            <td>
-                                <a class="c-pointer" (click)="openInterviewPage(interview._id)">
-                                    {{getFullName(interview.jobApplicant.firstName, interview.jobApplicant.middleName, interview.jobApplicant.lastName)}}
-                                </a>
-                            </td>
-                            <td>
-                                {{interview.interviewer.name}}
-                            </td>
-                            <td>
-                                {{interview.jobId.title}}
-                            </td>
-                            <td>
-                                {{interview.round}}
-                            </td>
-                            <td>
-                                <ng-container *ngIf="interview.modified_by">
-                                    {{interview.modified_by.name || interview.modified_by.email}}
-                                </ng-container>
-                            </td>
-                            <td>
-                                <ng-container *ngIf="interview.modified_at">
-                                    {{interview.modified_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}
-                                </ng-container>
-                            </td>
-                            <td>
-                                {{interview.result}}
-                            </td>
-                        </ng-container>
-                        <ng-container *ngIf="filter.type!=='CANCEL'">
-                            <td>
-                                <a class="c-pointer" (click)="openInterviewPage(interview._id)">
-                                    {{getFullName(interview.jobApplicant.firstName, interview.jobApplicant.middleName, interview.jobApplicant.lastName)}}
-                                </a>
-                            </td>
-                            <td>
-                                {{interview.interviewer.name}}
-                            </td>
-                            <td>
-                                {{interview.jobId.title}}
-                            </td>
-                            <td>
-                                {{interview.start | amDateFormat:'DD/MM/YYYY, hh:mmA'}}
-                            </td>
-                            <td>
-                                {{interview.round}}
-                            </td>
-                            <td>
-                                {{interview.channel}}
-                                <ng-container *ngIf="interview.channelLink">
-                                    <a [href]="interview.channelLink" target="_blank">{{interview.channelLink}}</a>
-                                </ng-container>
-                            </td>
-                            <td>
-                                {{interview.result}}
-                            </td>
-                            <ng-container *ngIf="['admin', 'hr'].indexOf(role)>=0">
-                                <ng-container *ngIf="interview.result==='PENDING'">
-                                    <td>
-                                        <button class="icons" data-toggle="modal"
-                                                title="Cancel Interview"
-                                                (click)="openDeleteModel(interview._id)">
-                                            <i class="fa fa-close text-danger"></i>
-                                        </button>
+                            <ng-container *ngIf="filter.type==='CANCEL'">
+                                <th class="col-sm-2">Applicant Name</th>
+                                <th class="col-sm-2">Interviewer Name</th>
+                                <th class="col-sm-2">Job Title</th>
+                                <th class="col-sm-2">Round</th>
+                                <th class="col-sm-2">Cancel By</th>
+                                <th class="col-sm-2">Cancel Time</th>
+                            </ng-container>
+                            <ng-container *ngIf="filter.type==='PENDING'">
+                                <th class="col-sm-2">Applicant Name</th>
+                                <th class="col-sm-2">Interviewer Name</th>
+                                <th class="col-sm-2">Job Title</th>
+                                <th class="col-sm-2">Start Time</th>
+                                <th class="col-sm-1">Round</th>
+                                <th class="col-sm-4">Channel</th>
+                                <th></th>
+                            </ng-container>
+                            <ng-container *ngIf="filter.type==='COMPLETED'">
+                                <th class="col-sm-2">Applicant Name</th>
+                                <th class="col-sm-2">Interviewer Name</th>
+                                <th class="col-sm-2">Job Title</th>
+                                <th class="col-sm-2">Start Time</th>
+                                <th class="col-sm-1">Round</th>
+                                <th class="col-sm-4">Channel</th>
+                            </ng-container>
 
 
-                                    </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let interview of interviews; let i = index;">
 
+                            <ng-container *ngIf="filter.type==='CANCEL'">
+                                <td>
+                                    <a class="c-pointer font-weight-600 text-meteorite mb-0"
+                                       (click)="openInterviewPage(interview._id)">
+                                        {{getFullName(interview.jobApplicant.firstName, interview.jobApplicant.middleName, interview.jobApplicant.lastName)}}
+                                    </a>
+                                    <p class="text-11 font-weight-500 mb-0 line-height-20">
+                                        Email: {{interview.jobApplicant.email}}</p>
+                                    <!--Add phone number of applicant-->
+                                    <p class="text-11 font-weight-500 mb-2 line-height-20">Phone: 4551522525</p>
+                                    <span class="custom-select badge mt-2"
+                                          style="display: inherit;">{{interview.result}}</span>
+
+                                </td>
+                                <td>
+                                    {{interview.interviewer.name}}
+                                </td>
+                                <td>
+
+                                    <span class="jobs-links">{{interview.jobId.title}}</span>
+                                </td>
+                                <td>
+                                    {{interview.round}}
+                                </td>
+                                <td>
+                                    <ng-container *ngIf="interview.modified_by">
+                                        {{interview.modified_by.name || interview.modified_by.email}}
+                                    </ng-container>
+                                </td>
+                                <td>
+                                    <ng-container *ngIf="interview.modified_at">
+                                        {{interview.modified_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}
+                                    </ng-container>
+                                </td>
+                            </ng-container>
+                            <ng-container *ngIf="filter.type!=='CANCEL'">
+                                <td>
+                                    <a class="c-pointer font-weight-600 text-meteorite mb-0 c-pointer"
+                                       (click)="openInterviewPage(interview._id)">
+                                        {{getFullName(interview.jobApplicant.firstName, interview.jobApplicant.middleName, interview.jobApplicant.lastName)}}
+
+                                    </a>
+                                    <p class="text-11 font-weight-500 mb-0 line-height-20">
+                                        Email: {{interview.jobApplicant.email}}</p>
+                                    <!--Add phone number of applicant-->
+                                    <p class="text-11 font-weight-500 mb-2 line-height-20">Phone: 4551522525</p>
+
+                                    <span class="custom-select badge mt-2"
+                                          style="display: inherit;">{{interview.result}}</span>
+                                </td>
+                                <td>
+                                    {{interview.interviewer.name}}
+                                </td>
+                                <td>
+                                <span class="jobs-links">
+                                {{interview.jobId.title}}</span>
+                                </td>
+                                <td>
+                                    {{interview.start | amDateFormat:'DD/MM/YYYY, hh:mmA'}}
+                                </td>
+                                <td>
+                                    <div class="" style="max-width: 75px;">
+                                        {{interview.round}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        {{interview.channel}}
+                                        <ng-container *ngIf="interview.channelLink">
+                                            <a style="word-break: break-all;" [href]="interview.channelLink"
+                                               target="_blank">{{interview.channelLink}}</a>
+                                        </ng-container>
+                                    </div>
+                                </td>
+                                <ng-container *ngIf="['admin', 'hr'].indexOf(role)>=0">
+                                    <ng-container *ngIf="interview.result==='PENDING'">
+                                        <td>
+                                            <button class="icons icon-cancel" data-toggle="modal"
+                                                    title="Cancel Interview"
+                                                    (click)="openDeleteModel(interview._id)">
+                                                <i class="fa fa-close"></i>
+                                            </button>
+
+
+                                        </td>
+
+                                    </ng-container>
                                 </ng-container>
                             </ng-container>
-                        </ng-container>
 
 
-                    </tr>
-                    <tr *ngIf="totalRecords==0">
-                        <td colspan="6" align="center">
-                            <b>No interviews found</b>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                        </tr>
+                        <tr *ngIf="totalRecords==0">
+                            <td colspan="6" align="center">
+                                <b>No interviews found</b>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </data-table>
         </div>
     </div>

@@ -1,209 +1,239 @@
-import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { SearchService } from '../../services/search.service';
-import { JobService } from '../../services/job.service';
-import { saveAs } from 'file-saver';
-import { ApplyJobService } from '../../services/apply-job.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { ApplicantService } from '../../services/applicant.service';
-import { ApplicantDataService } from '../../services/applicant-data.service';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap';
-import { RegisterApplicantComponent } from '../onboarding/register-applicant/register-applicant.component';
-import { ToasterModule, ToasterService, ToasterConfig } from 'angular2-toaster';
-import { UploadResumeComponent } from './upload-resume/upload-resume.component';
-import { CreateApplicantComponent } from './create-applicant/create-applicant.component';
+import {Component, OnInit} from '@angular/core';
+import {SearchService} from '../../services/search.service';
+import {JobService} from '../../services/job.service';
+import {PipelineService} from '../../services/pipeline.service';
+import {SharedService} from "../../services/shared.service";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 @Component({
     selector: 'app-applicants',
     templateUrl: './applicants.component.html',
-    providers: [SearchService, JobService, ApplyJobService, ApplicantService, ApplicantDataService, BsModalService]
+    providers: [SearchService, JobService, PipelineService]
 })
 export class ApplicantsComponent implements OnInit {
-
-    searchForm: FormGroup;
-    applicantJobs: FormGroup;
-    applicantForm: FormGroup;
-    errCategory = false;
-    searchList = [];
-    params: any = {};
-    limit = 10;
-    offset = 0;
-    file: File;
-    candidates = [];
-    ApplicantList = [];
-    isJobSelected: Boolean;
+    filter = {
+        pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at', isGridView: false,
+        order: -1, searchText: '', startDate: '', endDate: '', source: '', jobId: '',
+    };
+    totalRecords = 1;
+    jobs: any = [];
+    jobIds: any = {};
+    bsConfig = Object.assign({}, {containerClass: 'theme-red'});
+    searchText = '';
+    sourceType = ['Email', 'Upload', 'Website', 'Db'];
+    startDate: any = new Date();
+    endDate: any = new Date();
+    startMaxDate: any = new Date();
+    endMinDate: any = new Date();
+    endMaxDate: any = new Date();
+    ApplicantList: any = [];
     applicant: any;
-    filter: any;
-    totalRecords = 0;
-    dataTableName = "applicant";
-    isResultAvailable = false;
-    modalRef: BsModalRef;
-
-    jobId: any;
-    pipeId: any;
-    job: any;
-
-    @Output()
-    onSelect: EventEmitter<any> = new EventEmitter();
+    dataTableName = 'applicant';
+    gettingApplicant = false;
+    colorClass: any = this.sharedService.getPipeLineColor();
+    sourceColor: any = this.sharedService.getSourceColor();
 
     constructor(private searchService: SearchService,
-        private fb: FormBuilder,
-        private jobService: JobService,
-        private applyJobService: ApplyJobService,
-        private router: Router,
-        private activateRoute: ActivatedRoute,
-        private applicantService: ApplicantService,
-        private applicantDataService: ApplicantDataService,
-        private modalService: BsModalService) {
-        this.searchForm = fb.group({
-            search: [null, [<any>Validators.required]],
-            category: [null, [<any>Validators.required]]
-        });
+                private pipelineService: PipelineService,
+                private sharedService: SharedService,
+                private jobService: JobService) {
 
-        this.applicantJobs = fb.group({
-            job: [null, []]
-        });
+    }
 
-        this.applicantForm = fb.group({
-            selectedResult: [null]
-        });
-
-        this.activateRoute.params.subscribe((params) => {
-            this.jobId = params.jobId ? params.jobId : null;
-            this.pipeId = params.pipelineId ? params.pipelineId : null;
+    getJobsName() {
+        this.jobService.getWithApplicantsAndPipelineById().subscribe(result => {
+            if (result['success']) {
+                this.jobs = result['success']['data'];
+                for (let index = 0; index < this.jobs.length; index++) {
+                    this.jobIds[this.jobs[index]._id] = this.jobs[index];
+                }
+            }
         });
     }
 
     ngOnInit() {
-        this.filter = {
-            pageIndex: 1,
-            pageSize: 10,
-            searchText: '',
-            sortField: 'firstName',
-            sortOrder: '1',
-            offset: 0
-        };
+        this.getJobsName();
+        this.startDate.setMonth(new Date().getMonth() - 2);
+        this.endMinDate = this.startDate;
+        this.filter.startDate = this.getDate(this.startDate);
+        this.filter.endDate = this.getDate(this.endDate);
+        this.getCandidate();
 
-        if (this.jobId) {
-            this.jobService.getJobById(this.jobId).subscribe(result => {
-                if (result['success']) {
-                    this.job = result['success']['data'];
+    }
+
+    getSourceColor(source) {
+        return this.sourceColor[source] || '';
+    }
+
+    onDateChange(event, id) {
+        if (id === 'startDate') {
+            this.filter.startDate = this.getDate(new Date(event));
+            this.endMinDate = new Date(event);
+            this.startDate = new Date(event);
+        } else if (id === 'endDate') {
+            this.endDate = new Date(event);
+            this.filter.endDate = this.getDate(new Date(event));
+            if (this.filter.endDate && this.filter.startDate) {
+
+            }
+        }
+        this.ApplicantList = [];
+        this.totalRecords = 0;
+        this.getCandidate();
+
+    }
+
+    onJoBSubmit(item) {
+        if (this.filter.jobId !== item) {
+            this.filter.jobId = item;
+            this.ApplicantList = [];
+            this.totalRecords = 0;
+            this.getCandidate();
+        }
+
+
+    }
+
+    onSourceFilterChange(item) {
+        if (item === 'Source') {
+            item = '';
+        }
+        if (this.filter.source !== item) {
+            this.filter.source = item;
+            this.ApplicantList = [];
+            this.totalRecords = 0;
+            this.getCandidate();
+        }
+
+
+    }
+
+    onSort(event) {
+        this.filter.offset = 0;
+        this.filter.sortBy = event;
+        this.filter.order *= -1;
+        this.ApplicantList = [];
+        this.totalRecords = 0;
+        this.getCandidate();
+    }
+
+    onSearch() {
+        if (this.searchText !== this.filter.searchText) {
+            this.filter.offset = 0;
+            if (this.searchText.length > 2) {
+                this.ApplicantList = [];
+                this.totalRecords = 0;
+                this.filter.searchText = this.searchText;
+                this.getCandidate();
+            }
+            if (!this.searchText) {
+                this.ApplicantList = [];
+                this.totalRecords = 0;
+                this.filter.searchText = '';
+                this.totalRecords = 0;
+                this.gettingApplicant = true;
+                this.getCandidate();
+
+            }
+        }
+
+    }
+
+    getSelectedValue(pipeLine, id) {
+        return pipeLine === id;
+    }
+
+    onChangeItemStatusFilter(pipelineId, applicant) {
+        if (!this.getSelectedValue(applicant.pipeline, pipelineId)) {
+            this.pipelineService.updateApplicantStatus({
+                pipeline: pipelineId,
+                job: applicant.job._id,
+                applicant: applicant._id,
+                id: applicant.jobApplicantsId
+            }).subscribe((result) => {
+                if (result['success']['data']) {
+                    this.getCandidate();
                 }
             });
         }
     }
 
+    getCandidate() {
+        this.ApplicantList = [];
+        this.jobService.getJobApplicant(this.filter).subscribe((result) => {
+            if (result['success']) {
+                this.totalRecords = result['success']['data'].total;
+                const applicants = result['success']['data'].records;
+                for (let index = 0; index < applicants.length; index++) {
+                    const jobApplicants = applicants[index].jobApplicants;
+                    for (let count = 0; count < jobApplicants.length; count++) {
+                        const applicant = Object.assign({}, applicants[index]);
+                        applicant['jobApplicantsId'] = jobApplicants[count]._id;
+                        applicant['pipeline'] = jobApplicants[count].pipeline;
+                        applicant['job'] = this.jobIds[jobApplicants[count].job];
+                        this.ApplicantList.push(applicant);
+                    }
+                }
+
+            }
+            this.gettingApplicant = false;
+        }, () => {
+            this.gettingApplicant = false;
+        });
+    }
+
     openCandidate(applicantId: any) {
-        this.applicant = { _id: applicantId, isApplicantList: true };
+        this.applicant = {_id: applicantId, isApplicantList: true};
         SiteJS.slideOpen('applicant-info');
     }
 
-    getFullName(firstName, middleName, lastName) {
-        var name = firstName;
-        if (middleName && middleName != "null") name = name + " " + middleName;
-        if (lastName && lastName != "null") name = name + " " + lastName;
+    getName(applicant) {
+        let name = '';
+        if (applicant.firstName) {
+            name = name + ' ' + applicant.firstName;
+        }
+        if (applicant.middleName) {
+            name = name + ' ' + applicant.middleName;
+        }
+        if (applicant.lastName) {
+            name = name + ' ' + applicant.lastName;
+        }
+
         return name;
     }
 
-    downloadResume(resumeId: any) {
-        this.searchService.downloadPdf(resumeId).subscribe(
-            (res) => {
-                saveAs(res, 'resume');
-                const fileURL = URL.createObjectURL(res);
-                window.open(fileURL);
-            }
-        );
+    getPipeLineObject(pipeline) {
+        const pipelineObject = {};
+        for (let index = 0; index < pipeline.length; index++) {
+            pipelineObject[pipeline[index]._id] = pipeline[index].name;
+        }
+
+        return pipelineObject;
+
     }
 
-    addApplicantToJob(applicantId: any) {
-        this.jobService.addJobApplicant({
-            jobId: this.jobId,
-            pipelineId: this.pipeId,
-            applicantId: applicantId
-        }).subscribe(result => {
-            if (result['success'] && result['success']['data']) {
-                //this.toasterService.pop('success', 'Success', 'Applicant added to the job');
-            } else {
-                //this.toasterService.pop('error', 'Failed', 'Applicant not saved!');
-            }
-        });
+    getSelectedColor(name) {
+        return this.colorClass[name] || '';
     }
 
-    resetfilter(filter) {
-        this.filter = {
-            pageIndex: filter.pageIndex,
-            pageSize: filter.pageSize,
-            searchText: filter.searchText,
-            sortField: filter.sortField,
-            sortOrder: filter.sortOrder
-        };
-    }
-
-    goToCreate() {
-        localStorage.removeItem('jid');
-        localStorage.setItem('jid', JSON.stringify({
-            id: null,
-            title: null,
-            cName: null,
-            pipeId: null
-        }));
-        // this.router.navigate(['applicants/create']);
-        this.modalRef = this.modalService.show(CreateApplicantComponent, {
-            class: 'modal-lg', initialState: null
-        });
-        this.modalRef.content.closePopup.subscribe(result => {
-            if (result) {
-                this.ApplicantList.unshift(result['data']);
-                this.totalRecords++;
-            }
-        });
+    getFullName(firstName, middleName, lastName) {
+        let name = firstName;
+        if (middleName && middleName != 'null') name = name + ' ' + middleName;
+        if (lastName && lastName != 'null') name = name + ' ' + lastName;
+        return name;
     }
 
     onFilterChange(filter: any) {
-        if (this.job && this.jobId && !this.filter.searchText) {
-            this.filter.searchJob = JSON.stringify({
-                "role": this.job.title,
-                "experience": this.job.minExperience,
-                "skills": this.job.skills
-            })
-        } else {
-            this.filter.searchText = filter.searchText;
-        }
         this.filter.offset = (filter.pageIndex - 1) * filter.pageSize;
         this.filter.pageSize = filter.pageSize;
-        if (filter.searchName || filter.searchExperience || filter.searchLocation) {
-            this.filter.advanceSearch = filter;
-        } else {
-            this.filter.advanceSearch = null;
-        }
-        this.searchService.getData(this.filter).subscribe((result) => {
-            if (result['success'] && result['success']['data']) {
-                this.ApplicantList = result['success']['data'].applicants;
-                this.totalRecords = result['success']['data'].total;
-            } else {
-                //this.toasterService.pop('error', 'Not Found', 'Applicant records not found.');
-            }
-        });
+        this.filter.pageIndex = filter.pageIndex;
+        this.getCandidate();
+
     }
 
-    // getCandidates(limit: any, offset: any) {
-    //   this.applicantService.getAllCandidates(this.filter).subscribe(result => {
-    //     if (result['success']) {
-    //       this.candidates = result['success']['data'];
-    //       this.toasterService.pop('success', 'Retreived successfully', 'Data retreived.');
-    //     }
-    //   });
-    // }
-
-    uploadResume() {
-        this.modalRef = this.modalService.show(UploadResumeComponent);
-        this.modalRef.content.onClose.subscribe(result => {
-            if (result) {
-                this.ApplicantList.unshift(result);
-                this.totalRecords++;
-                //this.toasterService.pop('success', 'Success', 'Resume uploaded successfully.');
-            }
-        });
+    getDate(date) {
+        const month = date.getMonth() + 1;
+        return month + '/' + date.getDate() + '/' + date.getFullYear();
     }
 
     onUpdate($event) {
