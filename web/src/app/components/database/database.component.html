@@ -1,0 +1,153 @@
+<section class="content content-wrapper">
+    <div class="box box-info">
+        <div class="box-header">
+            <i class="fa fa-inbox"></i>
+            <h3 class="box-title"> DataBase</h3>
+            <div class="pull-right box-tools">
+                <div class="btn-group form-group margin-right-10px" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-primary btn-sm mr-3" (click)="goToCreate()">
+                        <i class="fa fa-plus"></i> Create
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" (click)="uploadResume()">
+                        <i class="fa fa-upload"></i> Upload
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="no-print" *ngIf="jobId && job">
+            <div class="callout callout-warning">
+                <h4><i class="fa fa-briefcase"></i> {{job.title}}</h4>
+                Add profiles to this job
+            </div>
+        </div>
+
+
+        <div id="database" class="main-content padding-20px-tb plr-15">
+            <div class="row">
+
+                <div class='col-lg-4 mb-3'>
+                    <div class="form-group">
+                        <input [(ngModel)]="searchText" (keyup)="onSearch()" type="text" class="form-control"
+                               placeholder="Search Applicant">
+                    </div>
+                </div>
+                
+
+                <div class="col-lg-3 mb-3">
+                    <div class="d-flex center-fit">
+                        <div>
+                            <div class="form-group mb-0">
+                                <div id="filterDate1">
+                                    <!-- Datepicker as text field -->
+                                    <div class="input-group">
+                                        <input type="text" [(ngModel)]="startDate" [maxDate]="startMaxDate"
+                                        [bsConfig]='bsConfig'
+                                        (ngModelChange)="onDateChange($event, 'startDate')"
+                                        class="w110px mt-0 form-control datepicker-date" placeholder="Datepicker"
+                                        bsDatepicker>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-to date-to">
+                            <span>To</span>
+                        </div>
+                        <div>
+                            <div class="form-group mb-0">
+                                <div id="filterDate2">
+                                    <!-- Datepicker as text field -->
+                                    <div class="input-group">
+                                        <input type="text" [(ngModel)]="endDate" [maxDate]="endMaxDate"
+                                        [minDate]="endMinDate"
+                                        [bsConfig]='bsConfig' (ngModelChange)="onDateChange($event,'endDate')"
+                                        class="text-right w110px mt-0 form-control datepicker-date" placeholder="Datepicker"
+                                        bsDatepicker>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mr-4"><i class="fa fa-calendar" style="line-height: 30px;"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 mb-3">
+                    <select (change)="onSourceFilterChange($event.target.value)"
+                            class="form-control ng-pristine ng-valid ng-touched">
+                        <option [value]="">Source</option>
+                        <option *ngFor="let source of sourceType"
+                                [selected]="source.toLocaleLowerCase()===filter.source"
+                                [value]="source.toLocaleLowerCase()">{{source}}</option>
+                    </select>
+                </div>
+            </div>
+            <ng-container *ngIf="gettingApplicant">
+                <i *ngIf="gettingApplicant" class="fa fa-spinner fa-spin"></i>
+            </ng-container>
+            <ng-container *ngIf="!gettingApplicant">
+                <data-table [showViewField]='false' pageSize='10' sortField='name' sortOrder='1'
+                            [showSearchFeild]='false'
+                            [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                            <table class="table bg-dark-black border-light  no-footer data-table" id="DataTables_Table_0"
+                                   role="grid">
+                                <thead>
+                                <tr class="font-weight-bold">
+                                    <th *ngIf="jobId && job" class="col-sm-1">
+                                        <div class="sorting">Add</div>
+                                    </th>
+                                    <th>
+                                        <div class="sorting">User
+                                            <!--<i class="fa fa-sort ml-2" (click)="onSort('email')" aria-hidden="true"></i>--></div>
+                                    </th>
+                                    <th>Work Exp.</th>
+                                    <th>Expected Ctc</th>
+                                    <th>Current Ctc</th>
+                                    <th>Notice Period</th>
+                                    <th>Skills</th>
+                                </tr>
+
+
+                                </thead>
+                                <tbody>
+                                <ng-container *ngIf="ApplicantList.length<=0">
+                                    <p class="text-muted">No Applicant available to show</p>
+                                </ng-container>
+
+                                <ng-container *ngIf="ApplicantList.length>0">
+                                    <tr *ngFor="let applicant of ApplicantList; let i = index;"
+                                        class="font-weight-bold">
+                                        <td *ngIf="jobId && job">
+                                            <input type="checkbox" (change)="addApplicantToJob(applicant._id)"/>
+                                        </td>
+                                        <th>
+                                            <app-user-card (onSelect)="openCandidate($event)"
+                                                           [applicants]="applicant"></app-user-card>
+                                            <span [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant?.source}}</span>
+                                        </th>
+                                        <th>{{applicant?.totalExperience || "" }}</th>
+                                        <th>{{applicant?.expectedCtc || "" }}</th>
+                                        <th>{{applicant?.currentCtc || "" }}</th>
+                                        <th>{{applicant?.noticePeriod || "" }}</th>
+                                        <th *ngIf="applicant.skills != null">
+                                            <div class="skills">
+                                    <span *ngFor="let skill of applicant.skills; let i = index;">
+                                        {{skill.name}}<span *ngIf="i < applicant.skills.length - 1">, </span>
+                                    </span>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </ng-container>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                </data-table>
+            </ng-container>
+        </div>
+    </div>
+</section>
+<applicant-info id="applicant-info" (onUpdate)="onUpdate($event)" [applicant]="applicant"></applicant-info>

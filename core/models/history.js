@@ -17,14 +17,25 @@ var historySchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    created_at: Date,
     modified_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_at: Date,
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date, default: Date.now},
     is_deleted: Boolean
 }, { versionKey: false });
-
+historySchema.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+historySchema.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+historySchema.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 var History = mongoose.model('History', historySchema);
 module.exports = History;

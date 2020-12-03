@@ -4,9 +4,9 @@ var config = require('../config').config();
 var Schema = mongoose.Schema, ObjectId = Schema.ObjectId;
 
 var applicantSchema = new Schema({
-    firstName: { type: String },
-    middleName: { type: String },
-    lastName: { type: String },
+    firstName: {type: String},
+    middleName: {type: String},
+    lastName: {type: String},
     dob: Date,
     email: {
         type: String,
@@ -14,7 +14,7 @@ var applicantSchema = new Schema({
     },
     phones: Array,
     currentCtc: Number,
-    score: { type: Number, default: 0 },
+    score: {type: Number, default: 0},
     expectedCtc: Number,
     noticePeriod: String,
     noticePeriodNegotiable: String,
@@ -74,24 +74,35 @@ var applicantSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    created_at: Date,
     modified_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_at: Date
-}, { versionKey: false });
-
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date, default: Date.now}
+}, {versionKey: false});
+applicantSchema.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+applicantSchema.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+applicantSchema.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 applicantSchema.plugin(mexp, {
     hosts: [
         config.elasticSearch.host
     ],
     populate: [
-        { path: 'skills', select: 'name' },
-        { path: 'socials', select: 'profileUrl social.name' },
-        { path: 'location', select: 'zip city state country' },
-        { path: 'preferredLocations', select: 'zip city state country' },
-        { path: 'industry', select: 'name' },
+        {path: 'skills', select: 'name'},
+        {path: 'socials', select: 'profileUrl social.name'},
+        {path: 'location', select: 'zip city state country'},
+        {path: 'preferredLocations', select: 'zip city state country'},
+        {path: 'industry', select: 'name'},
     ],
     bulk: {
         size: 10, // preferred number of docs to bulk index

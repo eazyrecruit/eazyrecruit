@@ -20,14 +20,25 @@ var applicantEmploymentSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    created_at: Date,
     modified_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_at: Date
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date, default: Date.now}
 }, { versionKey: false });
-
+applicantEmploymentSchema.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+applicantEmploymentSchema.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+applicantEmploymentSchema.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 var ApplicantEmployments = mongoose.model('ApplicantEmployments', applicantEmploymentSchema);
 applicantEmploymentSchema.virtual('dateValidator').get(function () {
     if (this.end === 'present') {
