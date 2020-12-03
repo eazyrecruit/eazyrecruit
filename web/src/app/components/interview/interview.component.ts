@@ -146,7 +146,6 @@ export class InterviewComponent implements OnInit {
     }
 
     onSubmit(action) {
-        console.log(this.interview);
         if (action && this.interview.comment) {
             this.interview.result = action;
             this.interviewService.comment(this.interview).subscribe(res => {
@@ -179,7 +178,6 @@ export class InterviewComponent implements OnInit {
     }
 
     onCancelInterview($event) {
-        console.log('$event', $event);
         this.getInterview();
     }
 

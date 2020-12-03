@@ -36,15 +36,26 @@ var interview = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    created_at: Date,
     modified_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_at: Date
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date, default: Date.now}
 }, {
     versionKey: false
 });
-
+interview.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+interview.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+interview.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 var Interviews = mongoose.model('Interviews', interview);
 module.exports = Interviews;

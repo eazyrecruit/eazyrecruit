@@ -6,25 +6,66 @@ var skillService = require('../services/skill.service');
 var locationService = require('../services/location.service');
 var responseService = require('../services/response.service');
 var multer = require('multer');
-
-router.get("/applicants/pipelines/:id", async (req, res) => {
+router.get("/jobname", async (req, res) => {
     try {
-        var results = await jobService.getWithApplicantsAndPipeline(req);
+
+        let result = await jobService.getJobsName(req.query.jobId);
+        responseService.successResponse(result, 'getJob', res);
+    } catch (error) {
+        responseService.errorResponse(error, 'getJob', res);
+    }
+});
+router.get("/pipelines", async (req, res) => {
+    try {
+        var results = await jobService.getJobsPipeLine(req);
         responseService.response(req, null, 'Job Applicants and Pipelines GET', results, res);
     } catch (err) {
         responseService.response(req, err, 'Jobs Applicants and Pipelines GET', null, res);
     }
 });
+
 
 router.get("/applicants/search", async (req, res) => {
     try {
-        var results = await jobService.searchWithApplicantsAndPipeline(req);
+        let data = {
+            offset: req.query.offset || 0,
+            limit: req.query.limit || 20,
+            jobId: req.query.jobId,
+            searchText: req.query.search
+        };
+        var results = await jobService.searchWithApplicantsAndPipeline(data);
         responseService.response(req, null, 'Job Applicants and Pipelines GET', results, res);
     } catch (err) {
         responseService.response(req, err, 'Jobs Applicants and Pipelines GET', null, res);
     }
 });
-
+router.get("/applicants", async (req, res) => {
+    try {
+        let data = {
+            offset: req.query.offset || 0,
+            limit: req.query.limit || 20,
+            source: req.query.source || null,
+            jobId: req.query.jobId || null,
+            sortBy: req.query.sortBy || "modified_at",
+            order: req.query.order || -1,
+            searchText: req.query.search || null
+        };
+        if (req.query.startDate && req.query.endDate) {
+            let startDate = new Date(req.query.startDate);
+            let endDate = new Date(req.query.endDate);
+            if (startDate !== undefined && endDate !== undefined) {
+                endDate.setHours(23, 59, 59);
+                startDate.setHours(0, 0, 0);
+                data["startDate"] = startDate;
+                data["endDate"] = endDate;
+            }
+        }
+        var results = await jobService.getJobsApplicant(data);
+        responseService.response(req, null, 'Job Applicants and Pipelines GET', results, res);
+    } catch (err) {
+        responseService.response(req, err, 'Jobs Applicants and Pipelines GET', null, res);
+    }
+});
 router.get("/:id", async (req, res) => {
     try {
         var jobs = await jobService.getById(req.params.id);
@@ -113,6 +154,15 @@ router.post("/applicant", async (req, res) => {
     }
 });
 
+router.get("/applicants/pipelines/:id", async (req, res) => {
+    try {
+        var results = await jobService.getWithApplicantsAndPipeline(req);
+        responseService.response(req, null, 'Job Applicants and Pipelines GET', results, res);
+    } catch (err) {
+        responseService.response(req, err, 'Jobs Applicants and Pipelines GET', null, res);
+    }
+});
+
 router.put("/applicant", async (req, res) => {
     try {
         var job = await jobService.editApplicant(req);
@@ -139,11 +189,7 @@ router.delete("/applicant/:id", async (req, res) => {
 });
 
 // return job which is not deleted according to id
-router.get("/jobdetail", (req, res) => {
-    jobService.getJobById(req, (err, data) => {
-        responseService.response(req, err, 'Job Details', data, res);
-    });
-});
+
 
 router.get("/criteria", (req, res) => {
     interviewCriteriaService.get(req, (err, data) => {

@@ -23,5 +23,16 @@ var company= new Schema({
         type: String
     }]
 });
-
+company.pre('save', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+company.pre('updateOne', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
+company.pre('update', function (next) {
+    this.modified_at = new Date;
+    return next();
+});
 module.exports = mongoose.model('Companies', company);

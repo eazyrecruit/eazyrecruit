@@ -23,7 +23,9 @@ module.exports.response = (req, err, logType, records, res) => {
     } 
 };
 
-
+module.exports.sendJsonStream = (records, res) => {
+    res.status(200).send(records);
+};
 module.exports.successResponse = (records, logType, res) => {
     if (records) {
         res.status(200).json({success: {data: records}});

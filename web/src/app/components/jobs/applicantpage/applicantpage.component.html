@@ -181,7 +181,7 @@
           <form [formGroup]="resumeForm" novalidate (ngSubmit)="uploadResume()">
               <div class="row">
                 <div class="form-group col-sm-12">
-                  <!-- <label for="name">Upload Resume &nbsp;</label> -->
+                  <!-- <label for="name">Upload Resume &nbsp;</label> 
                   <div class="upload_wrpper c-pointer">
                     <input type="file" class="resume_upload-input" multiple="" accept=".doc, .docx, .pdf" name="resume"
                       #file (change)="onFileChange(file.files)" formControlName="resume">
@@ -260,3 +260,46 @@
     {{i < v ? '&#9733;' : '&#9734;'}}
   </button>
 </ng-template>
+
+
+<!--
+<div class="container">
+    <div class="row">
+      <div class="col-md-4 box-1">
+        <div class="box-body box-profile">
+        <div class="row padding-20px-tb">
+          <div class="col-sm-4">
+              <div class="profile_image-wrapper">
+                  <img class="profile-user-img img-responsive img-circle"
+                       src="/admin/assets/img/amir.png" alt="User profile picture">
+              </div>
+          </div>
+          <div class="col-sm-7 text-left padding-left-5px"
+               *ngIf="applicant && applicant.fullName">
+              <h3 class="profile-username mb-5 mt-0 text-18">
+                  <a [routerLink]="['/applicants',applicant?._id]">
+                      {{applicant.fullName(applicant?.firstName, applicant?.middleName, applicant?.lastName)}}
+                  </a>
+              </h3>
+              <p class="text-12 font-weight-500 mb-5">{{applicant?.email}}</p>
+              <p class="text-12 font-weight-500 mb-5"
+                 *ngIf="applicant && applicant.phones && applicant.phones.length">
+                  <span *ngFor="let phone of applicant.phones">{{phone }}</span>
+              </p>
+              <ul class="rating">
+                  <rating [customTemplate]="rating" name="Userratting" [readonly]="isReadonly"
+                          class="card-body"
+                          [(ngModel)]="applicant.score" [max]="10"></rating>
+              </ul>
+              <p class="text-muted" *ngIf="applicant && applicant.location">
+              <span *ngIf="applicant.location.state">{{applicant.location.city}}
+                  ,&nbsp;{{applicant.location.state}}</span>
+              </p>
+              <i class="fa fa-pencil editApplcant" (click)="updateApplicant()"></i>
+          </div>
+          &lt;!&ndash; working on it &ndash;&gt;
+      </div>
+      </div>
+    </div>
+    </div>
+</div>-->
