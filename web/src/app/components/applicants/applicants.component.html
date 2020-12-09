@@ -102,46 +102,52 @@
 
 
                                     </thead>
-                                    <tbody>
-                                    <ng-container *ngIf="ApplicantList.length<=0">
-                                        <p class="text-muted">No Applicant available to show</p>
+                                    <ng-container *ngIf="gettingApplicant">
+                                        <i *ngIf="gettingApplicant" class="fa fa-spinner fa-spin"></i>
                                     </ng-container>
+                                    <ng-container *ngIf="!gettingApplicant">
+                                        <tbody>
+                                        <ng-container *ngIf="ApplicantList.length<=0">
+                                            <p class="text-muted">No Applicant available to show</p>
+                                        </ng-container>
 
-                                    <ng-container *ngIf="ApplicantList.length>0">
-                                        <tr *ngFor="let applicant of ApplicantList; let i = index;"
-                                            class="font-weight-bold">
-                                            <!-- <th>
-                                                 <div class="sorting">{{((filter.pageIndex - 1) * filter.pageSize) + i}}</div>
-                                             </th>-->
-                                            <th>
-                                                <app-user-card (onSelect)="openCandidate($event)"
-                                                               [applicants]="applicant"></app-user-card>
-                                                <span [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant.source}}</span>
-                                            </th>
-                                            <th>{{applicant?.totalExperience || "" }}</th>
-                                            <th>{{applicant?.expectedCtc || "" }}</th>
-                                            <th>{{applicant?.currentCtc || "" }}</th>
-                                            <th>{{applicant?.noticePeriod || "" }}</th>
-                                            <th>
-                                                <div class="skills"><span>
+                                        <ng-container *ngIf="ApplicantList.length>0">
+                                            <tr *ngFor="let applicant of ApplicantList; let i = index;"
+                                                class="font-weight-bold">
+                                                <!-- <th>
+                                                     <div class="sorting">{{((filter.pageIndex - 1) * filter.pageSize) + i}}</div>
+                                                 </th>-->
+                                                <th>
+                                                    <app-user-card (onSelect)="openCandidate($event)"
+                                                                   [applicants]="applicant"></app-user-card>
+                                                    <span [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant.source}}</span>
+                                                </th>
+                                                <th>{{applicant?.totalExperience || "" }}</th>
+                                                <th>{{applicant?.expectedCtc || "" }}</th>
+                                                <th>{{applicant?.currentCtc || "" }}</th>
+                                                <th>{{applicant?.noticePeriod || "" }}</th>
+                                                <th>
+                                                    <div class="skills"><span>
                                          <a class="jobs-links"
                                             [routerLink]="['/jobs/pipeline',applicant.job._id]">{{applicant.job.title}}</a>                                    </span>
-                                                </div>
-                                            </th>
-                                            <th>
-                                                <select
-                                                        (change)="onChangeItemStatusFilter($event.target.value, applicant)"
-                                                        [ngClass]="[ this.getSelectedColor(getPipeLineObject(applicant.job.pipelines)[applicant.pipeline].toLowerCase()), 'form-control ng-pristine ng-valid ng-touched custom-select badge']">
-                                                    <option *ngFor="let pipeLine of applicant.job.pipelines"
-                                                            [ngClass]="[ this.getSelectedColor(pipeLine.name.toLowerCase()), 'custom-select badge']"
-                                                            [selected]="getSelectedValue(applicant.pipeline, pipeLine._id)"
-                                                            [value]="pipeLine._id">{{pipeLine.name}}</option>
-                                                </select>
-                                            </th>
-                                        </tr>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <select
+                                                            (change)="onChangeItemStatusFilter($event.target.value, applicant)"
+                                                            [ngClass]="[ this.getSelectedColor(getPipeLineObject(applicant.job.pipelines)[applicant.pipeline].toLowerCase()), 'form-control ng-pristine ng-valid ng-touched custom-select badge']">
+                                                        <option *ngFor="let pipeLine of applicant.job.pipelines"
+                                                                [ngClass]="[ this.getSelectedColor(pipeLine.name.toLowerCase()), 'custom-select badge']"
+                                                                [selected]="getSelectedValue(applicant.pipeline, pipeLine._id)"
+                                                                [value]="pipeLine._id">{{pipeLine.name}}</option>
+                                                    </select>
+                                                </th>
+                                            </tr>
+                                        </ng-container>
+
+                                        </tbody>
                                     </ng-container>
 
-                                    </tbody>
                                 </table>
                             </div>
                         </div>

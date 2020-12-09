@@ -131,7 +131,6 @@ export class ApplicantsComponent implements OnInit {
                 this.totalRecords = 0;
                 this.filter.searchText = '';
                 this.totalRecords = 0;
-                this.gettingApplicant = true;
                 this.getCandidate();
 
             }
@@ -159,6 +158,7 @@ export class ApplicantsComponent implements OnInit {
     }
 
     getCandidate() {
+        this.gettingApplicant = true;
         this.ApplicantList = [];
         this.jobService.getJobApplicant(this.filter).subscribe((result) => {
             if (result['success']) {

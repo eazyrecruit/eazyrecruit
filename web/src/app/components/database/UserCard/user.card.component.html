@@ -6,4 +6,12 @@
         {{applicants?.email}}</p>
     <p class="text-11 font-weight-500 mb-0 line-height-20">Phone: <span
             *ngFor="let phone of applicants?.phones">{{phone}}  </span></p>
+    <ng-container *ngIf="applicants?.created_at">
+        <p class="text-11 font-weight-500 mb-0 line-height-20">Created Date
+            {{applicants?.created_at | date:'MMM d, y'}}</p>
+    </ng-container>
+    <ng-container *ngIf="applicants?.modified_at">
+        <p class="text-11 font-weight-500 mb-0 line-height-20">Updated Date
+            {{applicants?.modified_at | date:'MMM d, y'}}</p>
+    </ng-container>
 </div>
