@@ -92,7 +92,6 @@ exports.searchApplicants = async (req) => {
     return new Promise(async (resolve, reject) => {
 
         try {
-
             let sort = {};
             sort[req.sortBy] = {order: parseInt(req.order) === -1 ? "desc" : "asc"};
             var query = {
@@ -122,8 +121,30 @@ exports.searchApplicants = async (req) => {
                     ]
                 }
             };
-            if (req.search) {
-                query.bool.must.push({
+            if (req.search && req.source) {
+                query = {
+                    "bool": {
+                        "must": [
+                            {
+                                "should": [
+                                    {"match_phrase": {"email": req.search}},
+                                    {"match_phrase": {"firstName": req.search}},
+                                    {"match_phrase": {"middleName": req.search}},
+                                    {"match_phrase": {"lastName": req.search}},
+                                    {"match": {"roles": req.search}},
+                                    {"match": {"phones": req.search}},
+                                    {"match": {"skills.name": req.search}}]
+                            },
+                            {
+                                "should": [
+                                    {"match": {"source": req.source}}]
+                            }
+                        ]
+                    }
+                };
+            }
+            if (req.search && !req.source) {
+                query = {
                     "bool": {
                         "should": [
                             {"match_phrase": {"email": req.search}},
@@ -134,10 +155,10 @@ exports.searchApplicants = async (req) => {
                             {"match": {"phones": req.search}},
                             {"match": {"skills.name": req.search}}]
                     }
-                });
+                };
             }
 
-            if (req.source) {
+            if (!req.search && req.source) {
                 query.bool.must.push({
                     "bool": {
                         "should": [

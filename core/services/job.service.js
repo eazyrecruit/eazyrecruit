@@ -522,7 +522,7 @@ function createSlug(title) {
 }
 
 function geApplicantSelect() {
-    return ["firstName", "middleName", "lastName", "dob", "email", "phones", "currentCtc", "score", "expectedCtc", "noticePeriod", "noticePeriodNegotiable", "totalExperience", "availability", "modified_at","created_at", "roles", "referredBy", "referredBy", "source"]
+    return ["firstName", "middleName", "lastName", "dob", "email", "phones", "currentCtc", "score", "expectedCtc", "noticePeriod", "noticePeriodNegotiable", "totalExperience", "availability", "modified_at", "created_at", "roles", "referredBy", "referredBy", "source"]
 }
 
 
