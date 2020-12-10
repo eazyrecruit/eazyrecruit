@@ -43,6 +43,7 @@ import {GoogleAnalyticsComponent} from './components/settings/googleAnalytics/go
 import {InterviewListComponent} from './components/interview/interview-list/interview-list/interview-list.component';
 import {ProfileComponent} from './components/profile/profile.component';
 import {DatabaseComponent} from './components/database/database.component';
+import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/google.recaptcha.component";
 
 @NgModule({
     imports: [
@@ -105,7 +106,8 @@ import {DatabaseComponent} from './components/database/database.component';
                             {path: 'applicants', component: ApplicantSettingsComponent},
                             {path: 'email', component: EmailsettingsComponent},
                             {path: 'google', component: GoogleComponent},
-                            {path: 'analytics', component: GoogleAnalyticsComponent}
+                            {path: 'analytics', component: GoogleAnalyticsComponent},
+                            {path: 'recaptcha', component: GoogleRecaptchaComponent}
                         ], canActivate: [RoleGuardService], data: {expectedRole: ['admin']}
                     },
                     {

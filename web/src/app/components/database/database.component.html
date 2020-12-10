@@ -125,6 +125,7 @@
                                             <app-user-card (onSelect)="openCandidate($event)"
                                                            [applicants]="applicant"></app-user-card>
                                             <span [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant?.source}}</span>
+
                                         </th>
                                         <th>{{applicant?.totalExperience || "" }}</th>
                                         <th>{{applicant?.expectedCtc || "" }}</th>

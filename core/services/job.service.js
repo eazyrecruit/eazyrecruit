@@ -183,7 +183,7 @@ exports.getJobsPipeLine = async (req) => {
 
 
 exports.getJobsApplicant = async (data) => {
-
+    console.time("Applicant");
     try {
         const ApplicantQuery = {
             is_deleted: {$ne: true}
@@ -254,15 +254,15 @@ exports.getJobsApplicant = async (data) => {
             project.$project["jobApplicants.job"] = 1;
             project.$project["jobApplicants.pipeline"] = 1;
             result.total = count;
-
             result.records = await Applicant.aggregate(getApplicantLookup(ApplicantQuery, jobApplicantsQuery, sort, parseInt(data.limit), parseInt(data.offset), project));
+            console.timeEnd("Applicant");
         }
 
 
         return result;
     } catch
         (error) {
-        console.log("errorerror", error)
+        console.log("errorerror", error);
         return {total: 0, records: []};
     }
 
@@ -522,7 +522,7 @@ function createSlug(title) {
 }
 
 function geApplicantSelect() {
-    return ["firstName", "middleName", "lastName", "dob", "email", "phones", "currentCtc", "score", "expectedCtc", "noticePeriod", "noticePeriodNegotiable", "totalExperience", "availability", "roles", "referredBy", "referredBy", "source"]
+    return ["firstName", "middleName", "lastName", "dob", "email", "phones", "currentCtc", "score", "expectedCtc", "noticePeriod", "noticePeriodNegotiable", "totalExperience", "availability", "modified_at", "created_at", "roles", "referredBy", "referredBy", "source"]
 }
 
 

@@ -1,4 +1,18 @@
 <script>
+
+    var googleRecaptcha = "<%- googleRecaptcha %>"
+    var recaptchaSiteKey = "<%- recaptchaSiteKey %>"
+
+    function isEmailValid(email) {
+        var decimal = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+        return !!(email.toLowerCase().trim() && email.toLowerCase().trim().match(decimal));
+    }
+
+    function isNameValid(name) {
+        var decimal = /^[a-zA-Z -]+$/;
+        return name.toLowerCase().trim().match(decimal);
+    }
+
     function isFormValid(formData) {
         // console.log(formData)
         var flag = true
@@ -6,8 +20,16 @@
             document.getElementById('nameError').innerText = "Name is required";
             flag = false
         }
+        if (formData['name'] && (!isNameValid(formData['name']) || formData['name'].length > 50)) {
+            document.getElementById('nameError').innerText = "Only letter and space is allow";
+            flag = false
+        }
         if (!formData['email']) {
             document.getElementById('emailError').innerText = "Email is required";
+            flag = false
+        }
+        if (formData['email'] && !isEmailValid(formData['email'])) {
+            document.getElementById('emailError').innerText = "Invalid email";
             flag = false
         }
 
@@ -15,17 +37,34 @@
             document.getElementById('phoneError').innerText = "Phone is required";
             flag = false
         }
+        if (formData['phone'] && formData['phone'].length !== 10) {
+            document.getElementById('phoneError').innerText = "Phone is invalid";
+            flag = false
+        }
         if (!formData['expectedCtc']) {
             document.getElementById('expectedCtcError').innerText = "Expected CTC is required";
+            flag = false
+        }
+
+        if (formData['expectedCtc'] && parseInt(formData['expectedCtc']) < 1) {
+            document.getElementById('expectedCtcError').innerText = "Only positive number is require";
             flag = false
         }
         if (!formData['currentCtc']) {
             document.getElementById('currentCtcError').innerText = "Current CTC is required";
             flag = false
         }
+        if (formData['expectedCtc'] && parseInt(formData['currentCtc']) < 1) {
+            document.getElementById('currentCtcError').innerText = "Only positive number is require";
+            flag = false
+        }
         if (formData['availability'] === "Select time") {
             document.getElementById('availabilityError').innerText = "Availability is required";
             flag = false
+        }
+        if ((googleRecaptcha === true || googleRecaptcha === 'true') && !formData['g-recaptcha-response']) {
+            document.getElementById('recaptchaError').innerText = 'Please verify that you are not a bot';
+            flag = false;
         }
 
         return flag;
@@ -40,7 +79,7 @@
         document.getElementById('currentCtcError').innerText = "";
         document.getElementById('availabilityError').innerText = "";
         document.getElementById('resumeError').innerText = "";
-
+        document.getElementById('recaptchaError').innerText = '';
         let data = {}
         const formData = new FormData(document.getElementById('form-id'));
         for (var pair of formData.entries()) {
@@ -187,17 +226,31 @@
                                 <div class="row">
                                     <div class="form-group col-md-6 taggingBox">
                                         <label for="contact" class="required">Current CTC (Annually in lacs)</label>
-                                        <input type="text" placeholder="Current CTC" class="form-control"
+                                        <input type="number" min="1" placeholder="Current CTC" class="form-control"
                                                name="currentCtc">
                                         <small id="currentCtcError" class="text-danger"></small>
                                     </div>
                                     <div class="form-group col-md-6 taggingBox">
                                         <label for="contact" class="required">Expected CTC (Annually in lacs)</label>
-                                        <input type="text" placeholder="Expected CTC" class="form-control"
+                                        <input type="number" min="1" placeholder="Expected CTC" class="form-control"
                                                name="expectedCtc">
                                         <small id="expectedCtcError" class="text-danger"></small>
                                     </div>
+
                                 </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <% if (googleRecaptcha === true || googleRecaptcha === 'true') { %>
+                                            <div class="g-recaptcha" id="rcaptcha"
+                                                 data-sitekey="<%= recaptchaSiteKey %>"></div>
+                                            <span id="captcha" style="color:red"></span>
+                                        <% } %>
+                                        <small id="recaptchaError" class="text-danger"></small>
+                                    </div>
+                                </div>
+
+
                                 <button type="submit" onclick="handleSubmit(event)"
                                         class="btn btn-primary mt-10 mb-10 border-radius-30">Submit
                                 </button>

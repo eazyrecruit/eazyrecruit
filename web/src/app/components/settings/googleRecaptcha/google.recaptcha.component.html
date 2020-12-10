@@ -1,0 +1,68 @@
+<div class="box box-info">
+    <div class="box-header">
+        <i class="fa fa-inbox"></i>
+        <h3 class="box-title">Google Recaptcha</h3>
+    </div>
+    <div class="box-body">
+
+        <fieldset class="col-sm-6">
+            <form [formGroup]="recaptchaForm" novalidate (ngSubmit)="editForm(recaptchaForm.value)">
+
+                <div style="margin: 6px;">
+                    <label for="recaptcha"><h4>Google Recaptcha: </h4></label>
+                    <input id="recaptcha" type="checkbox" formControlName="recaptcha"
+                           style="margin-left: 25px; vertical-align: sub;">
+                </div>
+
+                <div>
+                    <ng-container *ngIf="!recaptchaForm.value.recaptcha">
+                        <div style="margin: 6px;">
+                            <label for="secretKey1">SECRET KEY*</label>
+                            <input type="text" id="secretKey1" placeholder="Secret Key" readonly class="form-control"
+                                   formControlName="secretKey">
+                        </div>
+                        <div style="margin: 6px;">
+                            <label for=" siteKey1">Site Key*</label>
+                            <input type="text" id=" siteKey1" placeholder="Site Key" readonly
+                                   class="form-control"
+                                   formControlName="siteKey">
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="recaptchaForm.value.recaptcha">
+                        <div style="margin: 6px;">
+                            <label for="secretKey">Secret Key*</label>
+                            <input type="text" id="secretKey" placeholder="Secret Key" required class="form-control"
+                                   formControlName="secretKey">
+                            <small class="text-danger"
+                                   *ngIf="recaptchaForm.value.recaptcha &&  !recaptchaForm.value['secretKey'] && (isTrackingIdEmpty || recaptchaForm.controls['secretKey'].touched)">
+                                Please enter Secret Key
+                            </small>
+
+                        </div>
+
+                        <div style="margin: 6px;">
+                            <label for="siteKey">Site Key*</label>
+                            <input type="text" id="siteKey" placeholder="Site Key" required class="form-control"
+                                   formControlName="siteKey">
+                            <small class="text-danger"
+                                   *ngIf="recaptchaForm.value.recaptcha &&  !recaptchaForm.value['siteKey'] && (isTrackingIdEmpty || recaptchaForm.controls['siteKey'].touched)">
+                                Please enter Site Key
+                            </small>
+
+                        </div>
+                    </ng-container>
+                </div>
+
+                <div style="margin: 6px;">
+                    <button type="submit" class="btn btn-primary mt-10 mb-10">Submit
+                        <i class="fa fa-arrow-circle-right"></i>
+                    </button>
+                </div>
+
+            </form>
+
+        </fieldset>
+
+    </div>
+</div>

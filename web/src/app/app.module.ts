@@ -94,6 +94,7 @@ import {PipelineGridComponent} from './components/jobs/pipeline/gridView/pipelin
 import {PipelineListComponent} from './components/jobs/pipeline/listView/pipeline.list.component';
 import {UserCardComponent} from "./components/database/UserCard/user.card.component";
 import {CancelConformComponent} from "./components/interview/cancelConfromBox/cancel.conform.component";
+import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/google.recaptcha.component";
 
 @NgModule({
     declarations: [
@@ -156,6 +157,7 @@ import {CancelConformComponent} from "./components/interview/cancelConfromBox/ca
         EmailsettingsComponent,
         GoogleComponent,
         GoogleAnalyticsComponent,
+        GoogleRecaptchaComponent,
         InterviewListComponent,
         InboundComponent,
         OutboundComponent,

@@ -60,6 +60,10 @@ router.get("/applicants", async (req, res) => {
                 data["endDate"] = endDate;
             }
         }
+        if (data.searchText) {
+            data["startDate"] = null;
+            data["endDate"] = null;
+        }
         var results = await jobService.getJobsApplicant(data);
         responseService.response(req, null, 'Job Applicants and Pipelines GET', results, res);
     } catch (err) {
