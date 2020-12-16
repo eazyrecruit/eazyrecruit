@@ -20,8 +20,7 @@ declare var SiteJS: any;
 })
 export class PipelineComponent implements OnInit {
 
-
-    isGridView = false;
+    isGridView = true;
     jobId: any;
     filter = {
         pageIndex: 1, pageSize: 20, offset: 0, sortBy: 'modified_at', isGridView: false,
