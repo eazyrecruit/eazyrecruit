@@ -19,12 +19,9 @@ declare var SiteJS: any;
 export class PipelineListComponent implements OnChanges {
     @Input('jobId') jobId: any;
     @Input('pipeLines') pipeLines: any;
+    @Input('filter') filter: any;
     JobApplicants: any;
     totalRecords: any;
-    filter = {
-        pageIndex: 1, pageSize: 20, offset: 0, sortBy: 'modified_at', isGridView: false,
-        order: -1, searchText: '', startDate: '', endDate: '', source: '', jobId: '',
-    };
     pipeLineName = {};
     Applicants: any;
     selectedApplicant: any;
@@ -164,8 +161,16 @@ export class PipelineListComponent implements OnChanges {
     filterApplicant(data) {
         this.JobApplicants = [];
         for (let index = 0; index < data.length; index++) {
-            data[index]['jobApplicants'] = this.getJobApplicantObject(data[index]['jobApplicants']);
-            this.JobApplicants.push(data[index]);
+            const jobApplicants = data[index];
+            const applicant = Object.assign({}, jobApplicants.Applicants);
+            applicant['created_at'] = jobApplicants['created_at'];
+            applicant['modified_at'] = jobApplicants['modified_at'];
+            applicant['jobApplicants'] = {
+                _id: jobApplicants._id,
+                job: jobApplicants.job,
+                pipeline: jobApplicants.pipeline,
+            };
+            this.JobApplicants.push(applicant);
         }
         this.Applicants = this.JobApplicants;
     }

@@ -64,10 +64,6 @@ router.get("/search", async (req, res) => {
                 results.hits.hits[iHit]._source._id = results.hits.hits[iHit]._id;
                 applicants.push(results.hits.hits[iHit]._source);
             }
-            /*      let jsonStr = JSON.stringify({
-                      applicants: applicants,
-                      total: results.hits.total.value || results.hits.total
-                  });*/
             responseService.response(req, null, 'Applicants GET', {
                 applicants: applicants,
                 total: results.hits.total.value || results.hits.total

@@ -19,7 +19,6 @@ declare var SiteJS: any;
     providers: [PipelineService, SharedService, ValidationService, JobService]
 })
 export class PipelineComponent implements OnInit {
-
     isGridView = true;
     jobId: any;
     filter = {
@@ -59,6 +58,8 @@ export class PipelineComponent implements OnInit {
 
 
     ngOnInit() {
+
+        this.gettingApplicant = true;
         this.startDate.setMonth(new Date().getMonth() - 2);
         this.endMinDate = this.startDate;
         this.filter.startDate = this.getDate(this.startDate);
@@ -66,7 +67,7 @@ export class PipelineComponent implements OnInit {
         this.route.params.subscribe((params) => {
             this.jobId = params['jobId'];
             this.getPipeLine(this.jobId);
-            this.getCandidate(this.jobId);
+            this.changeViewStatus(this.isGridView);
         });
     }
 
@@ -175,20 +176,17 @@ export class PipelineComponent implements OnInit {
     filterApplicant(data) {
         this.JobApplicants = [];
         for (let index = 0; index < data.length; index++) {
-            data[index]['jobApplicants'] = this.getJobApplicantObject(data[index]['jobApplicants']);
-            this.JobApplicants.push(data[index]);
+            const jobApplicants = data[index];
+            const applicant = Object.assign({}, jobApplicants.Applicants);
+            applicant['created_at'] = jobApplicants['created_at'];
+            applicant['modified_at'] = jobApplicants['modified_at'];
+            applicant['jobApplicants'] = {
+                _id: jobApplicants._id,
+                job: jobApplicants.job,
+                pipeline: jobApplicants.pipeline,
+            };
+            this.JobApplicants.push(applicant);
         }
-    }
-
-    getJobApplicantObject(data) {
-        let object = {};
-        for (let index = 0; index < data.length; index++) {
-            if (data[index].job === this.jobId) {
-                object = data[index];
-                break;
-            }
-        }
-        return object;
     }
 
     getDate(date) {

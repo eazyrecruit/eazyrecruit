@@ -91,123 +91,92 @@ exports.searchApplicantsByJob = async (req) => {
 exports.searchApplicants = async (req) => {
     return new Promise(async (resolve, reject) => {
 
-        try {
-            let sort = {};
-            sort[req.sortBy] = {order: parseInt(req.order) === -1 ? "desc" : "asc"};
-            var query = {
-                "bool": {
-                    "must": [
-                        {
-                            "bool": {
-                                "should": [
-                                    {
-                                        "range": {
-                                            "modified_at": {
-                                                "gte": req.startDate,
-                                                "lt": req.endDate
-                                            }
+            try {
+                let sort = {};
+                sort[req.sortBy] = {order: parseInt(req.order) === -1 ? "desc" : "asc"};
+                var query = {};
+                if (req.search && req.source) {
+                    query = {
+                        "bool": {
+                            "must": [
+                                {
+                                    "bool": {
+                                        "should": [
+                                            {"match_phrase": {"email": req.search}},
+                                            {"match_phrase": {"firstName": req.search}},
+                                            {"match_phrase": {"middleName": req.search}},
+                                            {"match_phrase": {"lastName": req.search}},
+                                            {"match": {"roles": req.search}},
+                                            {"match": {"phones": req.search}},
+                                            {"match": {"skills.name": req.search}}]
+                                    }
+                                },
+                                {"match": {"source": req.source}}
+                            ]
+                        }
+                    };
+                }
+                if (req.search && !req.source) {
+                    query = {
+                        "bool": {
+                            "should": [
+                                {"match_phrase": {"email": req.search}},
+                                {"match_phrase": {"firstName": req.search}},
+                                {"match_phrase": {"middleName": req.search}},
+                                {"match_phrase": {"lastName": req.search}},
+                                {"match": {"roles": req.search}},
+                                {"match": {"phones": req.search}},
+                                {"match": {"skills.name": req.search}}]
+                        }
+                    };
+                }
+                if (!req.search && req.source) {
+                    query = {
+                        "bool": {
+                            "must": [
+                                {"match": {"source": req.source}},
+                                {
+                                    "range": {
+                                        "created_at": {
+                                            "gte": req.startDate,
+                                            "lt": req.endDate
                                         }
-                                    },
-                                    {
-                                        "range": {
-                                            "created_at": {
-                                                "gte": req.startDate,
-                                                "lt": req.endDate
-                                            }
-                                        }
-                                    }]
+                                    }
+                                }]
+                        }
+                    }
+                }
+
+                if (!req.source && !req.search) {
+                    query = {
+                        "range": {
+                            "created_at": {
+                                "gte": req.startDate,
+                                "lt": req.endDate
                             }
                         }
-                    ]
-                }
-            };
-            if (req.search && req.source) {
-                query = {
-                    "bool": {
-                        "must": [
-                            {
-                                "should": [
-                                    {"match_phrase": {"email": req.search}},
-                                    {"match_phrase": {"firstName": req.search}},
-                                    {"match_phrase": {"middleName": req.search}},
-                                    {"match_phrase": {"lastName": req.search}},
-                                    {"match": {"roles": req.search}},
-                                    {"match": {"phones": req.search}},
-                                    {"match": {"skills.name": req.search}}]
-                            },
-                            {
-                                "should": [
-                                    {"match": {"source": req.source}}]
-                            }
-                        ]
-                    }
-                };
-            }
-            if (req.search && !req.source) {
-                query = {
-                    "bool": {
-                        "should": [
-                            {"match_phrase": {"email": req.search}},
-                            {"match_phrase": {"firstName": req.search}},
-                            {"match_phrase": {"middleName": req.search}},
-                            {"match_phrase": {"lastName": req.search}},
-                            {"match": {"roles": req.search}},
-                            {"match": {"phones": req.search}},
-                            {"match": {"skills.name": req.search}}]
-                    }
-                };
-            }
-
-            if (!req.search && req.source) {
-                query.bool.must.push({
-                    "bool": {
-                        "should": [
-                            {"match": {"source": req.source}}]
-                    }
-                });
-            }
-
-            if (!req.source && !req.search) {
-                query = {
-                    "bool": {
-                        "should": [
-                            {
-                                "range": {
-                                    "modified_at": {
-                                        "gte": req.startDate,
-                                        "lt": req.endDate
-                                    }
-                                }
-                            },
-                            {
-                                "range": {
-                                    "created_at": {
-                                        "gte": req.startDate,
-                                        "lt": req.endDate
-                                    }
-                                }
-                            }]
                     }
                 }
-            }
-            Applicants.search(query, {
-                    hydrate: false, size: parseInt(req.limit), from: parseInt(req.offset), sort: [sort]
-                }, function (err, results) {
-                    if (err)
-                        reject(err);
-                    else {
-                        resolve(results);
+                Applicants.search(query, {
+                        hydrate: false, size: parseInt(req.limit), from: parseInt(req.offset), sort: [sort]
+                    }, function (err, results) {
+                        if (err)
+                            reject(err);
+                        else {
+                            resolve(results);
+                        }
                     }
-                }
-            );
+                );
 
-            // resolve(result);
-        } catch (err) {
-            console.log("err", err);
-            reject("No data found");
+                // resolve(result);
+            } catch
+                (err) {
+                console.log("err", err);
+                reject("No data found");
+            }
+
         }
-
-    });
+    );
 }
 
 exports.searchJobs = async (req) => {

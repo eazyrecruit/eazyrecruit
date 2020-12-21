@@ -74,6 +74,8 @@
                             <div class="mr-4"><i class="fa fa-calendar" style="line-height: 30px;"></i></div>
                         </div>
                     </div>
+
+
                     <div class="col-lg-2">
                         <select (change)="onSourceFilterChange($event.target.value)"
                                 class="form-control ng-pristine ng-valid ng-touched">
@@ -106,7 +108,7 @@
                     </ng-container>
                     <ng-container *ngIf="!isGridView">
 
-                        <app-pipieline-list (onChangeStatus)="changeStatus($event)"
+                        <app-pipieline-list  [filter]="filter" (onChangeStatus)="changeStatus($event)"
                                             [pipeLines]="pipeLines" [jobId]="jobId"></app-pipieline-list>
                     </ng-container>
                 </ng-container>
