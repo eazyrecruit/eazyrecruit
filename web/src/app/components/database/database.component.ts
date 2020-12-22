@@ -90,6 +90,7 @@ export class DatabaseComponent implements OnInit {
     getSourceColor(source) {
         return this.sourceColor[source] || '';
     }
+
     onDateChange(event, id) {
         if (id === 'startDate') {
             this.filter.startDate = this.getDate(new Date(event));

@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var activitySchema = new Schema({
-    title: String,
     comment: String,
     is_deleted: Boolean,
     created_by: {
