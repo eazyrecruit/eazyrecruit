@@ -183,19 +183,18 @@ exports.getJobsPipeLine = async (req) => {
 
 
 exports.getJobsApplicant = async (data) => {
-    console.time("Applicant");
     try {
         const ApplicantQuery = {
-            is_deleted: {$ne: true}
+            "Applicants.is_deleted": {$ne: true}
         };
         const jobApplicantsQuery = {
-            "jobApplicants.is_deleted": {$ne: true},
-            "jobApplicants.job": {
+            "is_deleted": {$ne: true},
+            "job": {
                 "$exists": true
             }
         };
         if (data.jobId) {
-            jobApplicantsQuery["jobApplicants.job"] = ObjectId(data.jobId);
+            jobApplicantsQuery["job"] = ObjectId(data.jobId);
         }
         const result = {total: 0, records: []};
         let jobsQuery = {
@@ -203,61 +202,44 @@ exports.getJobsApplicant = async (data) => {
         };
         let sort = {};
         if (data.sortBy === "modified_at") {
-            sort["jobApplicants.modified_at"] = parseInt(data.order);
+            sort["modified_at"] = parseInt(data.order);
         } else {
-            sort[data.sortBy] = parseInt(data.order);
+            sort["Applicants." + data.sortBy] = parseInt(data.order);
         }
 
         if (data.source) {
-            ApplicantQuery["source"] = data.source;
+            ApplicantQuery["Applicants.source"] = data.source;
         }
         if (data.startDate && data.endDate) {
-            jobApplicantsQuery["$or"] = [{
-                "jobApplicants.modified_at": {
-                    "$exists": false
-                }
-            }, {
-                "jobApplicants.created_at": {
-                    "$exists": false
-                }
-            },
-                {
-                    "jobApplicants.modified_at": {
-                        $gte: data.startDate,
-                        $lt: data.endDate
-                    }
-                },
-                {
-                    "jobApplicants.created_at": {
-                        $gte: data.startDate,
-                        $lt: data.endDate
-                    }
-                }]
+            jobApplicantsQuery["modified_at"] = {
+                $gt: data.startDate,
+                $lt: data.endDate
+            }
         }
         if (data.searchText) {
             ApplicantQuery["$or"] = [
-                {firstName: new RegExp('^.*' + data.searchText + '.*$', 'i')},
-                {middleName: new RegExp('^.*' + data.searchText + '.*$', 'i')},
-                {lastName: new RegExp('^.*' + data.searchText + '.*$', 'i')},
-                {email: new RegExp('^.*' + data.searchText + '.*$', 'i')},
+                {"Applicants.firstName": {"$regex": data.searchText}},
+                {"Applicants.middleName": {"$regex": data.searchText}},
+                {"Applicants.lastName": {"$regex": data.searchText}},
+                {"Applicants.email": {"$regex": data.searchText}},
             ]
         }
-        let ApplicantLookupCount = await Applicant.aggregate(getApplicantLookupCount(ApplicantQuery, jobApplicantsQuery));
+        let ApplicantLookupCount = await JobApplicants.aggregate(getApplicantLookupCount(ApplicantQuery, jobApplicantsQuery));
         const count = ApplicantLookupCount && ApplicantLookupCount.length && ApplicantLookupCount[0].count ? ApplicantLookupCount[0].count : 0;
         if (count > 0) {
             let project = {"$project": {}};
             let select = geApplicantSelect();
             for (let index = 0; index < select.length; index++) {
-                project.$project[select[index]] = 1;
+                project.$project["Applicants." + select[index]] = 1;
             }
-            project.$project["jobApplicants._id"] = 1;
-            project.$project["jobApplicants.job"] = 1;
-            project.$project["jobApplicants.pipeline"] = 1;
+            project.$project["_id"] = 1;
+            project.$project["job"] = 1;
+            project.$project["pipeline"] = 1;
+            project.$project["modified_at"] = 1;
+            project.$project["created_at"] = 1;
             result.total = count;
-            result.records = await Applicant.aggregate(getApplicantLookup(ApplicantQuery, jobApplicantsQuery, sort, parseInt(data.limit), parseInt(data.offset), project));
-            console.timeEnd("Applicant");
+            result.records = await JobApplicants.aggregate(getApplicantLookup(ApplicantQuery, jobApplicantsQuery, sort, parseInt(data.limit), parseInt(data.offset), project));
         }
-
 
         return result;
     } catch
@@ -273,51 +255,59 @@ exports.getJobsApplicant = async (data) => {
 
 function getApplicantLookup(ApplicantQuery, jobApplicantsQuery, sort, limit, skip, project) {
 
-    return [{
-        "$match": ApplicantQuery
+    let query = [{
+        "$match": jobApplicantsQuery
     }, {
         "$lookup":
             {
-                "from": "jobapplicants",
-                "localField": "_id",
-                "foreignField": "applicant",
-                "as": "jobApplicants"
+                "from": "applicants",
+                "localField": "applicant",
+                "foreignField": "_id",
+                "as": "Applicants"
             }
 
     },
+        {"$unwind": "$Applicants"},
 
         {
-            "$match": jobApplicantsQuery
+            "$match": ApplicantQuery
         },
         {"$sort": sort},
         {"$skip": skip},
         {"$limit": limit},
         project
     ];
+    console.log("query,", JSON.stringify(query));
+    return query;
 
 }
 
 function getApplicantLookupCount(ApplicantQuery, jobApplicantsQuery) {
-    return [{
-        "$match": ApplicantQuery
+    let query = [{
+        "$match": jobApplicantsQuery
     }, {
         "$lookup":
             {
-                "from": "jobapplicants",
-                "localField": "_id",
-                "foreignField": "applicant",
-                "as": "jobApplicants"
+                "from": "applicants",
+                "localField": "applicant",
+                "foreignField": "_id",
+                "as": "Applicants"
             }
 
     },
+        {"$unwind": "$Applicants"},
 
         {
-            "$match": jobApplicantsQuery
+            "$match": ApplicantQuery
         },
         {
             "$count": "count"
         }
     ];
+
+
+    console.log("getApplicantLookupCount,", JSON.stringify(query));
+    return query;
 }
 
 exports.delete = async (_id) => {
@@ -522,7 +512,7 @@ function createSlug(title) {
 }
 
 function geApplicantSelect() {
-    return ["firstName", "middleName", "lastName", "dob", "email", "phones", "currentCtc", "score", "expectedCtc", "noticePeriod", "noticePeriodNegotiable", "totalExperience", "availability", "modified_at", "created_at", "roles", "referredBy", "referredBy", "source"]
+    return ["_id", "firstName", "middleName", "lastName", "dob", "email", "phones", "currentCtc", "score", "expectedCtc", "noticePeriod", "noticePeriodNegotiable", "totalExperience", "availability", "modified_at", "created_at", "roles", "referredBy", "referredBy", "source"]
 }
 
 

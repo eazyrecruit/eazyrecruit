@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {SearchService} from '../../services/search.service';
 import {JobService} from '../../services/job.service';
 import {PipelineService} from '../../services/pipeline.service';
-import {SharedService} from "../../services/shared.service";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
+import {SharedService} from '../../services/shared.service';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 @Component({
     selector: 'app-applicants',
@@ -47,17 +47,17 @@ export class ApplicantsComponent implements OnInit {
                 for (let index = 0; index < this.jobs.length; index++) {
                     this.jobIds[this.jobs[index]._id] = this.jobs[index];
                 }
+                this.getCandidate();
             }
         });
     }
 
     ngOnInit() {
-        this.getJobsName();
         this.startDate.setMonth(new Date().getMonth() - 2);
         this.endMinDate = this.startDate;
         this.filter.startDate = this.getDate(this.startDate);
         this.filter.endDate = this.getDate(this.endDate);
-        this.getCandidate();
+        this.getJobsName();
 
     }
 
@@ -165,14 +165,18 @@ export class ApplicantsComponent implements OnInit {
                 this.totalRecords = result['success']['data'].total;
                 const applicants = result['success']['data'].records;
                 for (let index = 0; index < applicants.length; index++) {
-                    const jobApplicants = applicants[index].jobApplicants;
-                    for (let count = 0; count < jobApplicants.length; count++) {
-                        const applicant = Object.assign({}, applicants[index]);
-                        applicant['jobApplicantsId'] = jobApplicants[count]._id;
-                        applicant['pipeline'] = jobApplicants[count].pipeline;
-                        applicant['job'] = this.jobIds[jobApplicants[count].job];
+                    const jobApplicants = applicants[index];
+                    const applicant = Object.assign({}, jobApplicants.Applicants);
+                    applicant['created_at'] = jobApplicants['created_at'];
+                    applicant['modified_at'] = jobApplicants['modified_at'];
+                    applicant['jobApplicantsId'] = jobApplicants._id;
+                    applicant['pipeline'] = jobApplicants.pipeline;
+                    applicant['job'] = this.jobIds[jobApplicants.job];
+                    console.log('this.jobIds', this.jobIds);
+                    if (this.jobIds[jobApplicants.job]) {
                         this.ApplicantList.push(applicant);
                     }
+
                 }
 
             }

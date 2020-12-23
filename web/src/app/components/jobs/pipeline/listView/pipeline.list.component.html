@@ -7,67 +7,68 @@
                 <table class="table bg-dark-black border-light  no-footer data-table" id="DataTables_Table_0"
                        role="grid">
                     <thead>
-                    <tr class="font-weight-bold">
-
-                        <th>
-                            <div class="sorting">Name</div>
-                        </th>
-                        <th>Work Exp.</th>
-                        <th>Expected Ctc</th>
-                        <th>Current Ctc</th>
-                        <th>Notice Period</th>
-                        <th>PipeLine</th>
-                        <th></th>
-                    </tr>
-
-
+                        <tr class="font-weight-bold">
+                            <th>
+                                <div class="sorting">Candidate</div>
+                            </th>
+                            <th>Experience</th>
+                            <th>Salary</th>
+                            <th>Notice Period</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                        </tr>
                     </thead>
                     <ng-container *ngIf="gettingApplicant">
                         <i *ngIf="gettingApplicant" class="fa fa-spinner fa-spin"></i>
                     </ng-container>
                     <ng-container *ngIf="!gettingApplicant">
                         <tbody>
-                        <tr *ngFor="let applicant of Applicants; let i = index;" class="font-weight-bold">
-
-                            <th>
-                                <a class="font-weight-600 text-meteorite mb-0 c-pointer"
-                                   (click)="showApplicantDetails(applicant)">
-                                    {{getName(applicant)}}
-                                </a>
-
-                                <p class="mt-0 text-11 font-weight-500 mb-0 line-height-20">Email:
-                                    {{applicant?.email}}</p>
-                                <p class="text-11 font-weight-500 mb-5 line-height-20">Phone: <span
-                                        *ngFor="let phone of applicant.phones">{{phone}}</span></p>
-                                <span [ngClass]="[ getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant?.source}}</span>
-                            </th>
-                            <th>{{applicant?.totalExperience || "" }}</th>
-                            <th>{{applicant?.expectedCtc || "" }}</th>
-                            <th>{{applicant?.currentCtc || "" }}</th>
-                            <th>{{applicant?.noticePeriod || "" }}</th>
-                            <th><select
-                                    (change)="onChangeItemStatusFilter($event.target.value, applicant)"
-                                    [ngClass]="[this.getSelectedColor(applicant.jobApplicants.pipeline), 'form-control ng-pristine ng-valid ng-touched custom-select badge']">
-                                <option *ngFor="let pipeLine of pipeLines"
-                                        [ngClass]="[getSelectedColor1(pipeLine.name.toLowerCase()), 'custom-select badge']"
-                                        [selected]="getSelectedValue(applicant.jobApplicants.pipeline, pipeLine._id)"
-                                        [value]="pipeLine._id">{{pipeLine.name}}</option>
-                            </select>
-                            </th>
-                            <th>
-                                <button type="button" (click)="removeUser(applicant.jobApplicants._id)"
-                                        class="icons icon-cancel">
-                                    <i class="fa fa-close" aria-hidden="true"></i>
-                                </button>
-                                <!--Need to add remove User functionility in pipeline list component file-->
-                            </th>
-                        </tr>
-
-
+                            <tr *ngFor="let applicant of Applicants; let i = index;" class="font-weight-bold">
+                                <td>
+                                    <a class="font-weight-600 text-meteorite mb-0 c-pointer" (click)="showApplicantDetails(applicant)">
+                                        {{getName(applicant)}}
+                                    </a>
+                                    <p class="mt-0 text-11 font-weight-500 mb-0 line-height-20">Email:
+                                        {{applicant?.email}}</p>
+                                    <p class="text-11 font-weight-500 mb-5 line-height-20">Phone: <span
+                                            *ngFor="let phone of applicant.phones">{{phone}}</span></p>
+                                </td>
+                                <td><div *ngIf="applicant?.totalExperience">{{applicant?.totalExperience || "" }} Year(s)</div></td>
+                                <td>
+                                    <div class="info-box-wrapper line-height-22">
+                                        <p *ngIf="applicant?.currentCtc" class="font-weight-500 mb-0 line-height-20">{{applicant?.currentCtc || ""}} LPA</p>
+                                        <p *ngIf="applicant?.expectedCtc" class="font-weight-500 text-11 line-height-20">Expected: {{applicant?.expectedCtc || ""}} LPA</p>
+                                    </div>
+                                </td>
+                                <td><div *ngIf="applicant?.noticePeriod">{{applicant?.noticePeriod || "" }}</div></td>
+                                <td>
+                                    <span [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant?.source}}</span>
+                                    <ng-container *ngIf="applicant?.created_at">
+                                        <p class="text-11 font-weight-500 mb-0 line-height-20">Created: 
+                                            {{applicant?.created_at | date:'MMM d, y'}}</p>
+                                    </ng-container>
+                                    <ng-container *ngIf="applicant?.modified_at">
+                                        <p class="text-11 font-weight-500 mb-0 line-height-20">Last Modified:
+                                            {{applicant?.modified_at | date:'MMM d, y'}}</p>
+                                    </ng-container>
+                                </td>
+                                <td>
+                                    <select (change)="onChangeItemStatusFilter($event.target.value, applicant)"
+                                        [ngClass]="[this.getSelectedColor(applicant.jobApplicants.pipeline), 'form-control ng-pristine ng-valid ng-touched custom-select badge']">
+                                        <option *ngFor="let pipeLine of pipeLines"
+                                                [ngClass]="[getSelectedColor1(pipeLine.name.toLowerCase()), 'custom-select badge']"
+                                                [selected]="getSelectedValue(applicant.jobApplicants.pipeline, pipeLine._id)"
+                                                [value]="pipeLine._id">{{pipeLine.name}}</option>
+                                    </select>
+                                    <button type="button" (click)="removeUser(applicant.jobApplicants._id)"
+                                            class="icons icon-cancel">
+                                        <i class="fa fa-close" aria-hidden="true"></i>
+                                    </button>
+                                    <!--Need to add remove User functionility in pipeline list component file-->
+                                </td>
+                            </tr>
                         </tbody>
                     </ng-container>
-
-
                 </table>
             </div>
         </data-table>

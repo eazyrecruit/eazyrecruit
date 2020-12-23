@@ -24,3 +24,5 @@ engine/config/__pycache__/*
 mongo_db/
 .env
 .setup_done
+core/example.env
+web/package-lock.json
