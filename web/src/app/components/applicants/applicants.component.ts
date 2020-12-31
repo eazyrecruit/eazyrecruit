@@ -172,7 +172,6 @@ export class ApplicantsComponent implements OnInit {
                     applicant['jobApplicantsId'] = jobApplicants._id;
                     applicant['pipeline'] = jobApplicants.pipeline;
                     applicant['job'] = this.jobIds[jobApplicants.job];
-                    console.log('this.jobIds', this.jobIds);
                     if (this.jobIds[jobApplicants.job]) {
                         this.ApplicantList.push(applicant);
                     }

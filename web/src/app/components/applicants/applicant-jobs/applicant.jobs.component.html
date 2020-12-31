@@ -1,0 +1,19 @@
+<div>
+    <strong class="display-block mb-10">Jobs Applied</strong>
+    <ul class="padding-six bg-box list-inline"
+        *ngIf="applyJobs.length">
+        <li *ngFor="let job of applyJobs">
+            <span class="text">Title: </span>
+            <span class="text-info">{{job.title || 'N/A'}}</span>
+            <br>
+            <ng-container *ngIf="job.pipeline && job.pipeline.name ">
+                <span class="text">Stage: </span>
+                <span class="text-warning">
+              {{job.pipeline.name}}
+            </span>
+            </ng-container>
+
+        </li>
+    </ul>
+
+</div>

@@ -1,15 +1,14 @@
 import {Component, OnInit, Input, OnChanges} from '@angular/core';
 import {Router} from '@angular/router';
-import {InterviewService} from '../../../../services/interview.service';
-import {AccountService} from "../../../../services/account.service";
-import {SchedulerComponent} from "../../scheduler/scheduler.component";
-import {CancelConformComponent} from "../../cancelConfromBox/cancel.conform.component";
+import {InterviewService} from '../../../services/interview.service';
+import {AccountService} from "../../../services/account.service";
+import {SchedulerComponent} from "../scheduler/scheduler.component";
+import {CancelConformComponent} from "../cancelConfromBox/cancel.conform.component";
 import {BsModalRef, BsModalService} from "ngx-bootstrap";
 
 @Component({
     selector: 'interview-list',
-    templateUrl: './interview-list.component.html',
-    styleUrls: ['./interview-list.component.css'],
+    templateUrl: './interview.list.component.html',
     providers: [InterviewService]
 })
 export class InterviewListComponent implements OnInit, OnChanges {

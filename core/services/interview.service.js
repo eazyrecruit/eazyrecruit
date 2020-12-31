@@ -106,6 +106,7 @@ exports.rescheduleAndInvite = async (req) => {
 exports.getAllBetweenDates = async (req) => {
     let query = {
         is_deleted: {$ne: true},
+        result: "PENDING",
         start: {
             $gte: new Date(new Date(parseInt(req.params.start)).toISOString()),
             $lt: new Date(new Date(parseInt(req.params.end)).toISOString())

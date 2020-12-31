@@ -17,7 +17,7 @@ import {ApplicantInfoService} from '../applicantInfo/applicant-info.service';
 import {ValidationService} from '../../../services/validation.service';
 import {SearchService} from '../../../services/search.service';
 import {saveAs} from 'file-saver';
-import {CreateApplicantComponent} from '../../applicants/create-applicant/create-applicant.component';
+import {CreateApplicantComponent} from '../create-applicant/create-applicant.component';
 import {BsModalService, BsModalRef} from 'ngx-bootstrap';
 
 declare var SiteJS: any;
