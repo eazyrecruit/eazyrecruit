@@ -9,22 +9,28 @@
                     <div class="col-sm-6">
                         <span>{{activity.description}}</span>
                     </div>
+
                     <div class="col-sm-2">
-                        <div class="profile_image-wrapper">
-                            <ng-container *ngIf="!activity.created_by.picture">
-                                <img src="/admin/assets/img/short_profile.png"
-                                     class="profile-user-img img-responsive img-circle" alt="User Image">
-                            </ng-container>
-                            <ng-container *ngIf="activity.created_by.picture">
-                                <img [src]="getImageData(activity.created_by._id)" alt="User profile picture"
-                                     class="profile-user-img img-responsive img-circle">
-                            </ng-container>
-                        </div>
+                        <ng-container *ngIf="activity.created_by">
+                            <div class="profile_image-wrapper">
+                                <ng-container *ngIf="!activity.created_by.picture">
+                                    <img src="/admin/assets/img/short_profile.png"
+                                         class="profile-user-img img-responsive img-circle" alt="User Image">
+                                </ng-container>
+                                <ng-container *ngIf="activity.created_by.picture">
+                                    <img [src]="getImageData(activity.created_by._id)" alt="User profile picture"
+                                         class="profile-user-img img-responsive img-circle">
+                                </ng-container>
+                            </div>
+                        </ng-container>
                     </div>
+
                     <div class="col-sm-4 text-left padding-left-5px">
-                        <h3 class="profile-username mb-5 mt-0 text-18">
-                            {{activity.created_by.name || activity.created_by.email }}
-                        </h3>
+                        <ng-container *ngIf="activity.created_by">
+                            <h3 class="profile-username mb-5 mt-0 text-18">
+                                {{activity.created_by.name || activity.created_by.email }}
+                            </h3>
+                        </ng-container>
                         <p class="text-12 font-weight-500 mb-5">{{activity.created_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</p>
                     </div>
                 </div>
