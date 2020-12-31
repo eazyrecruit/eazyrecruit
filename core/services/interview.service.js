@@ -10,7 +10,7 @@ let interviewCriteria = require('../models/interviewCriteria');
 let Applicant = require('../models/applicant');
 let config = require('../config').config();
 let Company = require('../models/company');
-
+var Activity = require('./activity.service');
 exports.createAndInvite = async (req) => {
 
     let company = await getCompany();
@@ -37,6 +37,19 @@ exports.createAndInvite = async (req) => {
             modified_by: req.body.interview.modified_by.id,
             modified_at: Date.now()
         });
+
+    let description = req.body.interview.job.name + " profile ";
+    if (req.body.interview.round) {
+        description = description + req.body.interview.round + "round " + "interview created";
+    } else {
+        description = description + "interview created "
+    }
+    Activity.addActivity({
+        applicant: req.body.interview.candidate.id,
+        created_by: req.user.id,
+        title: "interview Created",
+        description: description
+    });
 
     // Invite Participants
     await inviteCandidate(req, "Invitation: Interview scheduled with " + req.body["companyName"] + " for " + req.body.interview.job.name + " profile");
@@ -69,6 +82,19 @@ exports.rescheduleAndInvite = async (req) => {
             modified_by: req.body.interview.modified_by.id,
             modified_at: Date.now()
         }, {new: true});
+    let description = req.body.interview.job.name + " profile ";
+    if (req.body.interview.round) {
+        description = description + req.body.interview.round + "round interview updated"
+    } else {
+        description = description + "interview Updated"
+    }
+
+    Activity.addActivity({
+        applicant: req.body.interview.candidate.id,
+        created_by: req.user.id,
+        title: "interview Updated",
+        description: description
+    });
     // Invite Participants
     await inviteCandidate(req, "Invitation: Interview scheduled with " + req.body["companyName"] + " for " + req.body.interview.job.name + " profile");
     await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
@@ -118,10 +144,23 @@ exports.getAllByInterview = async (req) => {
 }
 
 exports.comment = async (req) => {
-    return await Interview.findByIdAndUpdate({_id: req.body._id, is_deleted: {$ne: true}}, {
-        comment: req.body.comment,
-        result: req.body.result
-    }, {new: true});
+    let interview = await Interview.findOne({_id: req.body._id, is_deleted: {$ne: true}}).populate("jobId");
+    interview["result"] = req.body.result;
+    interview["comment"] = req.body.comment;
+    await interview.save();
+    let description = interview.jobId.title + " profile ";
+    if (interview.round) {
+        description = description + interview.round + "round " + "interview Result set to  " + req.body.result
+    } else {
+        description = description + "interview Result set to  " + req.body.result
+    }
+    Activity.addActivity({
+        applicant: interview.jobApplicant,
+        created_by: req.user.id,
+        title: "Updated Interview Result",
+        description: description
+    });
+    return true;
 }
 
 exports.getResult = async (req) => {
@@ -150,6 +189,18 @@ exports.cancelInterview = async (id, user) => {
             interview["modified_at"] = new Date();
             await interview.save();
             SendDeleteInterviewNotification(interview);
+            let description = interview.jobId.title + " profile ";
+            if (interview.round) {
+                description = description + interview.round + "round " + "interview cancel";
+            } else {
+                description = description + "interview cancel "
+            }
+            Activity.addActivity({
+                applicant: interview.jobApplicant._id,
+                created_by: user,
+                title: "Cancel Interview",
+                description: description
+            });
             resolve(true);
         } catch (error) {
             return reject(error);

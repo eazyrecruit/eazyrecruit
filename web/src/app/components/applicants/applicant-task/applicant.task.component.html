@@ -1,0 +1,45 @@
+<button style="margin-bottom: 20px" (click)="addTask()"
+        class="btn btn-primary  ng-scope">create Task
+</button>
+<ng-container *ngIf="isLoading">
+    <i class="fa fa-spinner fa-spin"></i>
+</ng-container>
+<ng-container *ngIf="!isLoading">
+    <ng-container *ngIf="taskData.length >0">
+        <div *ngFor="let data of taskData; let i=index;">
+            <div class="bg-box padding-six mb-10">
+                <div class="row">
+                    <div class="col-sm-1">
+                        <input (change)="changeStatus(data._id, data.status)" type="checkbox"
+                               [checked]="data.status==='COMPLETED'"/>
+                    </div>
+                    <div class="col-sm-5">
+                        <span> {{data.description}}</span>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="profile_image-wrapper">
+                            <ng-container *ngIf="!data.assignee.picture">
+                                <img src="/admin/assets/img/short_profile.png"
+                                     class="profile-user-img img-responsive img-circle" alt="User Image">
+                            </ng-container>
+                            <ng-container *ngIf="data.assignee.picture">
+                                <img [src]="getImageData(data.assignee._id)" alt="User profile picture"
+                                     class="profile-user-img img-responsive img-circle">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <h3 class="profile-username mb-5 mt-0 text-18">
+                            {{data.assignee.name || data.assignee.email }}
+                        </h3>
+                        <p class="text-12 font-weight-500 mb-5">{{data.targetDate | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</p>
+                        <i class="fa fa-pencil editApplcant" (click)="editTask(data)"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="taskData.length <=0">
+        no History found for this Applicant
+    </ng-container>
+</ng-container>

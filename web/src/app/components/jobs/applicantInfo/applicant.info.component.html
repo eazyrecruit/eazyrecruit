@@ -16,6 +16,8 @@
                         <!-- <li><a data-toggle="tab" title="Rejection" href="#rejectApplicant"><i class="fa fa-trash"></i></a></li> -->
                         <li><a data-toggle="tab" title="History" href="#history" (click)="getApplicantHistory()"><i
                                 class="fa fa-history"></i></a></li>
+                        <li><a data-toggle="tab" title="Task" href="#task"><i
+                                class="fa fa-tasks"></i></a></li>
                     </ul>
                     <ng-container *ngIf="gettingApplicant">
                         <div class="box-body box-profile"><i *ngIf="gettingApplicant" class="fa fa-spinner fa-spin"></i>
@@ -60,7 +62,6 @@
 
                             <!-- <span [innerHtml]="applicant?.job_post.description"></span> -->
                             <ul class="tab-content p-0">
-
                                 <div id="basic" class="tab-pane fade active in">
                                     <strong>Resume</strong>
                                     <applicant-resume *ngIf="applicant" [(applicant)]="applicant"></applicant-resume>
@@ -119,7 +120,7 @@
 
                                 <div id="comments" class="tab-pane fade in">
                                     <app-comment *ngIf="applicant && showComments" [applicant]="applicant"
-                                                 [job]="jobId">
+                                                 [job]="jobId" (commentAdded)="commentAdded()">
                                     </app-comment>
                                 </div>
 
@@ -242,29 +243,19 @@
 
                                 <div id="history" class="tab-pane fade in">
                                     <strong class="display-block mb-10">Job History</strong>
-                                    <div *ngFor="let history of applicantHistory; let i=index;">
-                                        <div class="bg-box padding-six mb-10" *ngIf="history">
-                                            <p>
-                                                <!-- <a class="cursor pointer" (click)="getRejectHistory(history.applicant_id, history.job_post_id, i)">
-                                                  <span *ngIf="history.job_post">{{history.job_post.title}}</span>
-                                                </a> -->
-                                                <span *ngIf="history.job">Job : {{history.job.title}}</span>
-                                            </p>
-                                            <p>Status :
-                                                <span *ngIf="history.pipeline">{{history.pipeline.name}}</span>
-                                            </p>
-                                            <p>{{history.created_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</p>
-                                            <!-- <div class="comment" *ngFor="let rejectionComment of history.rejectionHistory">
-                                              <span>{{rejectionComment.comment}}</span>
-                                              <div class="row">
-                                                <div class="col-md-6 coment-info-text">{{rejectionComment.user_detail.first_name}}
-                                                  {{rejectionComment.user_detail.last_name}}</div>
-                                                <div class="col-md-6 align-text-right coment-info-text">
-                                                  {{rejectionComment.created_at | amTimeAgo}}</div>
-                                              </div>
-                                            </div> -->
-                                        </div>
-                                    </div>
+                                    <ng-container *ngIf="applicant && applicant._id">
+                                        <applicant-activity [isActivityUpdate]="isActivityUpdate"
+                                                            [applicantId]="applicant._id"></applicant-activity>
+                                    </ng-container>
+
+                                </div>
+
+                                <div id="task" class="tab-pane fade in">
+                                    <strong class="display-block mb-10">Applicant Task</strong>
+                                    <ng-container *ngIf="applicant && applicant._id">
+                                        <app-applicant-task [applicantId]="applicant._id"></app-applicant-task>
+                                    </ng-container>
+
                                 </div>
 
                             </ul>

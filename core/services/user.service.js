@@ -18,7 +18,7 @@ exports.getUsers = async (req) => {
     let count = 0;
     let users;
     if (req.query.all == 'true') {
-        users = await User.find({is_deleted: false}, {password: 0, passwordResetToken: 0});
+        users = await User.find({is_deleted: false}, {email: 1, name: 1});
     } else {
         if (req.query.limit) limit = parseInt(req.query.limit);
         if (req.query.offset) skip = parseInt(req.query.offset);

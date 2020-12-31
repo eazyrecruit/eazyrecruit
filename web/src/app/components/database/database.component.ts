@@ -9,7 +9,7 @@ import {ApplicantDataService} from '../../services/applicant-data.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {CreateApplicantComponent} from '../applicants/create-applicant/create-applicant.component';
 import {UploadResumeComponent} from '../applicants/upload-resume/upload-resume.component';
-import {SharedService} from "../../services/shared.service";
+import {SharedService} from '../../services/shared.service';
 
 declare var SiteJS: any;
 

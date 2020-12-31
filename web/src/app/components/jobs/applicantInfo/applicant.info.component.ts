@@ -39,6 +39,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     applicantDetails: any;
     modalRef: BsModalRef;
     jobsSkils = {};
+    isActivityUpdate = true;
     matchedSkills: any[] = [];
     unMatchSkills: any[] = [];
     SkillDiv = '';
@@ -99,6 +100,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         });
         this.modalRef.content.close = (data) => {
             if (data) {
+                this.isActivityUpdate = !this.isActivityUpdate;
                 this.getScheduledInterviews();
                 this.onCancelInterview.emit({});
             }
@@ -122,6 +124,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
             }
         });
         this.modalRef.content.close = (data) => {
+            this.isActivityUpdate = !this.isActivityUpdate;
             if (data) this.scheduledInterviews.push(data.interview || {});
             this.modalRef.hide();
         };
@@ -216,6 +219,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     editApplicant(applicant, template: TemplateRef<any>) {
         const close = document.getElementById('closed-panel');
         close.click();
+        this.isActivityUpdate = !this.isActivityUpdate;
         window.editApplicantPopup = document.getElementById('closeButton');
         this.applicantDetails = applicant;
     }
@@ -347,11 +351,16 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         this.modalRef.content.closePopup.subscribe(result => {
             if (result) {
                 this.getApplicantById(result['data']._id);
+                this.isActivityUpdate = !this.isActivityUpdate;
                 // this.onUpdate.emit(this.applicant);   // old
                 result['data'].fullName = this.getFullName.bind(this.applicant);
                 this.onUpdate.emit(result['data']);   // new testing
             }
         });
+    }
+
+    commentAdded() {
+        this.isActivityUpdate = !this.isActivityUpdate;
     }
 
     getSkilsDiv(name, color) {

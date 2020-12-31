@@ -105,6 +105,7 @@ module.exports.setup = (app) => {
     app.use('/api/migration', require('./controllers/migrate.ctrl').migrate);
     app.use('/api/analytics', require('./controllers/analytics.ctrl').analyticsRoutes);
     app.use('/api/user', require('./controllers/user.ctrl').user);
+    app.use('/api/task', require('./controllers/task.ctrl').task);
 };
 
 var secretRecruitCallBack = function (req, payload, done) {

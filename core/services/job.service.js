@@ -10,6 +10,7 @@ var utilService = require('../services/util.service');
 var esService = require('../services/es.service');
 var config = require('../config').config();
 var ObjectId = require('mongodb').ObjectID;
+var Activity = require('./activity.service');
 exports.save = async (req) => {
     if (req.body) {
         var modelJob = await Jobs.findById(req.body._id);
@@ -404,6 +405,18 @@ exports.addApplicant = async (req) => {
             modelJob.applicants.push(jobApplicant._id);
 
             modelJob = await modelJob.save();
+            let description = "applicant added for  " + modelJob.title + " profile";
+
+            let jobPipeline = await JobPipelines.findOne({_id: req.body.pipelineId});
+            if (jobPipeline.name) {
+                description = description + " and move to " + jobPipeline.name + " pipeline ";
+            }
+            Activity.addActivity({
+                applicant: req.body.applicantId,
+                created_by: req.user.id,
+                title: "Added to Job",
+                description: description
+            });
             await histroyService.create({
                 applicant: req.body.applicantId,
                 pipeline: req.body.pipelineId,
@@ -433,14 +446,29 @@ exports.getJobsName = async (jobId) => {
 }
 exports.editApplicant = async (req) => {
 
-    let applicant = await JobApplicants.findOne({_id: req.body.id, applicant: req.body.applicant, is_deleted: false});
+    let applicant = await JobApplicants.findOne({
+        _id: req.body.id,
+        applicant: req.body.applicant,
+        is_deleted: false
+    }).populate("job");
     if (applicant) {
-        applicant.pipeline = req.body.pipeline,
-            applicant.modefied_by = req.user.id,
-            applicant.modefied_at = Date.now(),
-            applicant.is_deleted = false
+        applicant.pipeline = req.body.pipeline;
+        applicant.modefied_by = req.user.id;
+        applicant.modefied_at = Date.now();
+        applicant.is_deleted = false;
         await applicant.save();
+        let description = "applicant update for  " + applicant.job.title + " profile";
 
+        let jobPipeline = await JobPipelines.findOne({_id: req.body.pipeline});
+        if (jobPipeline.name) {
+            description = description + " and move to " + jobPipeline.name + " pipeline ";
+        }
+        Activity.addActivity({
+            applicant: req.body.applicant,
+            created_by: req.user.id,
+            title: "Pipeline Updated",
+            description: description
+        });
         await histroyService.create({
             applicant: req.body.applicant,
             pipeline: req.body.pipeline,
@@ -458,8 +486,22 @@ exports.removeApplicant = async (req) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (req.params.id) {
-                let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, {is_deleted: true}, {new: true});
+                let jobApplicant = await JobApplicants.findByIdAndUpdate(req.params.id, {is_deleted: true}, {new: true}).populate("job");
                 if (jobApplicant) {
+                    let description = "applicant remove from  " + jobApplicant.job.title + " profile";
+                    Activity.addActivity({
+                        applicant: req.body.applicant,
+                        created_by: req.user.id,
+                        title: "Applicant remove from Job",
+                        description: description
+                    });
+                    await histroyService.create({
+                        applicant: req.body.applicant,
+                        pipeline: req.body.pipeline,
+                        job: req.body.job,
+                        createdBy: req.user.id,
+                        modifiedBy: req.user.id,
+                    });
                     let job = await Jobs.findByIdAndUpdate(jobApplicant.job, {$pull: {applicants: req.params.id}}, {new: true});
                     let elJob = await esService.updateJob(job.id, job);
                     let interview = await Interview.findOne({
@@ -478,6 +520,13 @@ exports.removeApplicant = async (req) => {
                                         message: "applicant removed successfully, interview remove error"
                                     });
                                 } else {
+                                    let description = "Interview remove for " + jobApplicant.job.title + " profile";
+                                    Activity.addActivity({
+                                        applicant: req.body.applicant,
+                                        created_by: req.user.id,
+                                        title: "Interview remove",
+                                        description: description
+                                    });
                                     resolve(jobApplicant);
                                 }
                             });

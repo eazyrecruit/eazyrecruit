@@ -95,6 +95,10 @@ import {PipelineListComponent} from './components/jobs/pipeline/listView/pipelin
 import {UserCardComponent} from "./components/database/UserCard/user.card.component";
 import {CancelConformComponent} from "./components/interview/cancelConfromBox/cancel.conform.component";
 import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/google.recaptcha.component";
+import {ApplicantActivityComponent} from "./components/applicants/applicant-activity/applicant.activity.component";
+import {ApplicantActivityService} from "./components/applicants/applicant-activity/applicant-activity.service";
+import {AddTaskComponent} from "./components/applicants/applicant-task/add-task/add.task.component";
+import {ApplicantTaskComponent} from "./components/applicants/applicant-task/applicant.task.component";
 
 @NgModule({
     declarations: [
@@ -162,7 +166,10 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
         InboundComponent,
         OutboundComponent,
         EmailTemplateComponent,
-        UserCardComponent
+        UserCardComponent,
+        AddTaskComponent,
+        ApplicantTaskComponent,
+        ApplicantActivityComponent
     ],
     imports: [
         ToasterModule,
@@ -201,6 +208,7 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
         SchedulerComponent,
         UploadResumeComponent,
         InboundComponent,
+        AddTaskComponent,
         CancelConformComponent,
         OutboundComponent,
         EmailTemplateComponent
@@ -209,6 +217,7 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
         SharedService,
         ApplicantResolver,
         AuthGuard,
+        ApplicantActivityService,
         RoleGuardService,
         AccountService,
         ToasterService,

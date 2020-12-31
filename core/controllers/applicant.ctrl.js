@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var applicantService = require("../services/applicant.service");
+var Activity = require("../services/activity.service");
 var responseService = require('../services/response.service');
 var Logs = require('../models/logs');
 var multer = require('multer');
@@ -372,6 +373,20 @@ router.get("/history/:id", async (req, res) => {
         responseService.response(req, null, 'get applicant history', result, res);
     } catch (error) {
         responseService.response(req, error, 'get applicant history', null, res);
+    }
+});
+
+router.get("/activity/:id", async (req, res) => {
+    try {
+        let data = {
+            offset: req.query.offset || 0,
+            limit: req.query.limit || 100,
+            applicant: req.params.id
+        };
+        let result = await Activity.getActivity(data);
+        responseService.response(req, null, 'get applicant Activity', result, res);
+    } catch (error) {
+        responseService.response(req, error, 'get applicant Activity', null, res);
     }
 });
 

@@ -3,6 +3,7 @@ var User = require('../models/user');
 var config = require('../config').config();
 var Role = require('../models/userRole');
 var ApplicantComments = require('../models/applicantComment');
+var Activity = require('./activity.service');
 var ApplicantResumes = require('../models/applicantResume');
 var ApplicantEducation = require('../models/applicantEducation');
 var ApplicantEmployer = require('../models/applicantEmployer');
@@ -22,6 +23,7 @@ const request = require('request');
 exports.save = async (req, enableEmail) => {
     return new Promise(async (resolve, reject) => {
         try {
+            var isNew = false;
             if (req.body.body) req.body = JSON.parse(req.body.body);
             if (req.body && (req.body.email || req.body._id)) {
                 // Get email from body
@@ -40,6 +42,7 @@ exports.save = async (req, enableEmail) => {
                 }
                 // Create applicant if unable to find
                 if (modelApplicant == null) {
+                    isNew = true;
                     modelApplicant = new Applicants();
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
@@ -112,7 +115,7 @@ exports.save = async (req, enableEmail) => {
                 if (req.body.currentLocation) {
                     var current = JSON.parse(req.body.currentLocation);
                     if (current && current.length > 0) {
-                        modelCurrentLocation = await Locations.findOne({_id: current[0].id})
+                        modelCurrentLocation = await Locations.findOne({_id: current[0].id});
                         if (modelCurrentLocation == null) {
                             modelCurrentLocation = new Locations();
                             modelCurrentLocation.country = current.country || '';
@@ -202,6 +205,22 @@ exports.save = async (req, enableEmail) => {
                 modelApplicant.modified_by = req.user.id;
                 modelApplicant.modified_at = new Date();
                 modelApplicant = await modelApplicant.save();
+                if (isNew) {
+                    Activity.addActivity({
+                        applicant: modelApplicant._id,
+                        created_by: req.user.id,
+                        title: "Applicant Created",
+                        description: "Applicant created from " + modelApplicant.source
+                    });
+                } else {
+                    Activity.addActivity({
+                        applicant: modelApplicant._id,
+                        created_by: req.user.id,
+                        title: "Applicant Updated",
+                        description: "Applicant details updated"
+                    });
+                }
+
 
                 // if jobid and pipelinid available then add applicant to that job
                 let jobPipeline = null;
@@ -239,6 +258,16 @@ exports.save = async (req, enableEmail) => {
                         job: modelJob.id,
                         createdBy: req.user.id,
                         modifiedBy: req.user.id,
+                    });
+                    let description = "applicant apply for  " + modelJob.title;
+                    if (jobPipeline.name) {
+                        description = description + " and move to " + jobPipeline.name + " pipeline ";
+                    }
+                    Activity.addActivity({
+                        applicant: modelApplicant._id,
+                        created_by: req.user.id,
+                        title: "Apply for job",
+                        description: description
                     });
                 } else {
                     console.log('job id is missing : ', req.body.jobId)
@@ -362,13 +391,22 @@ exports.getjobsByApplicantId = async (_id) => {
     }).populate({path: 'pipeline', select: 'name'});
 }
 
-exports.delete = async (_id) => {
-    var modelApplicant = Applicants.findById(req.body._id);
+exports.delete = async (req) => {
+    var modelApplicant = Applicants.findById(req.body.id);
     if (modelApplicant) {
         modelApplicant.is_deleted = true;
         modelApplicant.modified_by = req.user.id;
         modelApplicant = new Date();
-        return await modelApplicant.save();
+        let result = await modelApplicant.save();
+        Activity.addActivity({
+            applicant: modelApplicant._id,
+            created_by: req.user.id,
+            title: "Delete Applicant ",
+            description: "Applicant deleted "
+        });
+
+        return result;
+
     }
     throw 'invalid id';
 };
@@ -383,8 +421,15 @@ exports.addComment = async (req) => {
         created_by: req.user.id,
         modified_at: Date.now(),
         modified_by: req.user.id
-    }
-    return await ApplicantComments.create(comment);
+    };
+    let result = await ApplicantComments.create(comment);
+    Activity.addActivity({
+        applicant: req.body.applicant,
+        created_by: req.user.id,
+        title: "Comment Added ",
+        description: req.body.comment + " comment added"
+    });
+    return result;
 }
 
 exports.updateCommentsById = async (req) => {
@@ -393,7 +438,15 @@ exports.updateCommentsById = async (req) => {
         modified_at: Date.now(),
         modified_by: req.user.id
     }
-    return await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
+    let result = await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
+
+    Activity.addActivity({
+        applicant: req.body.applicant,
+        created_by: req.user.id,
+        title: "Comment updated ",
+        description: req.body.comment + " comment updated"
+    });
+    return result;
 }
 
 exports.getComments = async (req) => {

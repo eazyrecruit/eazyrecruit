@@ -1,0 +1,37 @@
+<ng-container *ngIf="isLoading">
+    <i class="fa fa-spinner fa-spin"></i>
+</ng-container>
+<ng-container *ngIf="!isLoading">
+    <ng-container *ngIf="activityData.length >0">
+        <div *ngFor="let activity of activityData; let i=index;">
+            <div class="bg-box padding-six mb-10">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <span>{{activity.description}}</span>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="profile_image-wrapper">
+                            <ng-container *ngIf="!activity.created_by.picture">
+                                <img src="/admin/assets/img/short_profile.png"
+                                     class="profile-user-img img-responsive img-circle" alt="User Image">
+                            </ng-container>
+                            <ng-container *ngIf="activity.created_by.picture">
+                                <img [src]="getImageData(activity.created_by._id)" alt="User profile picture"
+                                     class="profile-user-img img-responsive img-circle">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 text-left padding-left-5px">
+                        <h3 class="profile-username mb-5 mt-0 text-18">
+                            {{activity.created_by.name || activity.created_by.email }}
+                        </h3>
+                        <p class="text-12 font-weight-500 mb-5">{{activity.created_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="activityData.length <=0">
+        no History found for this Applicant
+    </ng-container>
+</ng-container>
