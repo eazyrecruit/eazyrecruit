@@ -10,7 +10,7 @@ import {
     EventEmitter
 } from '@angular/core';
 import {ApplicantDataService} from '../../../services/applicant-data.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, Router} from '@angular/router';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {UploadService} from '../../../services/upload.service';
 import {ApplicantInfoService} from '../applicantInfo/applicant-info.service';
@@ -30,196 +30,110 @@ declare var SiteJS: any;
 })
 
 export class ApplicantpageComponent implements OnInit, OnDestroy {
+    gettingApplicant = false;
+    jobLoad = false;
+    jobId: any;
+    jobsSkils = {};
+    isActivityUpdate = true;
+    SkillDiv = '';
     applicantId: string;
-    isReadonly = true;
-    applicant: any;
-    fullName: string;
-    personalInfo: any;
-    addressesInfo: any;
-    experiencesInfo: any;
-    skills: any;
-    errInvalidFile: boolean;
-    resumeForm: FormGroup;
-    resume: any;
-    resumeId: any;
-    isResumeUploading = false;
-    isUploadDisabled = false;
-    appliedJobs: any;
-    applicantComments: any;
-    dataSourceforPdf: String;
-    pdf_url: string;
-    applicantDetails: any;
-    contractInfo: any;
-    modalRef: BsModalRef;
-    availability: any[];
-    comments: any;
+    showComments = false;
+    applyJobs: any = [];
+    @Input()
+    applicant?: any;
+
+    @Output()
+    onReject: EventEmitter<any> = new EventEmitter();
 
     @Output()
     onUpdate: EventEmitter<any> = new EventEmitter();
+    @Output()
+    onCancelInterview: EventEmitter<any> = new EventEmitter();
+
+    applicantData?: any;
 
     constructor(
         private router: Router,
-        private applicantDataService: ApplicantDataService,
-        private activatedRoute: ActivatedRoute,
-        private uploadService: UploadService,
-        private fb: FormBuilder,
-        private validationService: ValidationService,
         private applicantInfoService: ApplicantInfoService,
-        private modalService: BsModalService
+        private applicantDataService: ApplicantDataService,
+        private route: ActivatedRoute,
     ) {
-        this.resumeForm = this.fb.group({
-            resume: [null, [<any>Validators.required]]
-        });
+    }
+
+
+    getFullName(firstName, middleName, lastName) {
+        let name = firstName;
+        if (middleName && middleName != 'null') name = name + ' ' + middleName;
+        if (lastName && lastName != 'null') name = name + ' ' + lastName;
+        return name;
+    }
+
+    setJobsSkils(jobsApplicants) {
+        console.log('jobsApplicants', jobsApplicants);
+        this.jobsSkils = {};
+        this.applyJobs = [];
+        for (let index = 0; index < jobsApplicants.length; index++) {
+            const job = jobsApplicants[index].job || {};
+            this.jobId = job._id;
+            job['pipeline'] = jobsApplicants[index].pipeline;
+            this.applyJobs.push(job);
+            if (job.skills && job.skills.length) {
+                for (let count = 0; count < job.skills.length; count++) {
+                    this.jobsSkils[job.skills[count].name.toUpperCase()] = job.skills[count].name;
+                }
+            }
+        }
+        this.jobLoad = true;
+
+    }
+
+    onUpdateProfile(result) {
+        this.isActivityUpdate = !this.isActivityUpdate;
+        this.applicantData = result;
+        this.onUpdate.emit(result);
+    }
+
+    onCancelInterviewData(result) {
+        this.isActivityUpdate = !this.isActivityUpdate;
+        this.onCancelInterview.emit(result);
+    }
+
+    onUpdateInterview(result) {
+        this.isActivityUpdate = !this.isActivityUpdate;
     }
 
     ngOnInit() {
-
-        if (this.activatedRoute.snapshot.data && this.activatedRoute.snapshot.data['applicant'].success
-            && this.activatedRoute.snapshot.data['applicant'].success.data) {
-            this.getApplicantData(this.activatedRoute.snapshot.data['applicant'].success.data);
-            this.availability = [
-                'Immediate',
-                'One Month',
-                'Two Months',
-                'More Than Two Months'
-            ];
+        this.route.params.subscribe((params) => {
+            this.applicantId = params['id'];
+            this.getApplicantCompleteData();
             this.getJobsByApplicantId();
-        } else {
-            this.router.navigate(['/home']);
-        }
+        });
 
+    }
+
+    getApplicantCompleteData() {
+        this.applicantDataService.getApplicantCompleteData(this.applicantId).subscribe(result => {
+            if (result && result['success'] && result['success']['data']) {
+                this.applicantData = result['success']['data'];
+                console.log('this.applicantData', this.applicantData);
+            }
+        }, (error) => {
+            SiteJS.stopLoader();
+        });
+
+    }
+
+    getJobsByApplicantId() {
+        this.applicantInfoService.getJobsByApplicantId(this.applicantId).subscribe(result => {
+            if (result && result['success'] && result['success']['data'] && result['success']['data'].length) {
+                this.setJobsSkils(result['success']['data']);
+            }
+        }, () => {
+            this.jobLoad = true;
+        });
     }
 
     ngOnDestroy() {
         this.applicantId = null;
-    }
-
-    getApplicantData(applicant: any) {
-        if (applicant) {
-            if (applicant.firstName) {
-                applicant.fullName = this.getFullName.bind(applicant);
-            } else {
-                this.fullName = this.getFullName.bind(applicant);
-            }
-            this.applicant = applicant;
-            this.applicant.version = 1;
-        } else {
-            SiteJS.stopLoader();
-        }
-    }
-
-    getFullName(firstName, middleName, lastName) {
-        var name = firstName;
-        if (middleName && middleName != "null") name = name + " " + middleName;
-        if (lastName && lastName != "null") name = name + " " + lastName;
-        return name;
-    }
-
-    uploadResume() {
-        const formData = new FormData();
-        formData.append('resumeData', this.resumeForm.get(['resume']).value);
-        if (!this.resumeForm.valid) {
-            this.validationService.validateAllFormFields(this.resumeForm);
-        }
-        if (this.resumeForm.valid) {
-            this.uploadService.updateResume(formData, this.applicant._id).subscribe(result => {
-                if (result && result['success'] && result['success']['data']) {
-                    this.resumeForm.get(['resume']).reset();
-                    this.applicant.version++;
-                    this.applicant.resume = result['success']['data']._id;
-                }
-            }, (error) => {
-                SiteJS.stopLoader();
-            });
-        }
-    }
-
-    onFileChange(event) {
-        if (event.length > 0) {
-            const reader = new FileReader();
-            if (event[0].type.includes('pdf') || event[0].type.includes('msword') ||
-                event[0].type.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) {
-                this.errInvalidFile = false;
-                reader.onload = () => {
-                    this.resumeForm.get(['resume']).setValue(event[0]);
-                }
-                reader.readAsDataURL(event[0]);
-            } else {
-                this.errInvalidFile = true;
-            }
-        } else {
-            this.resumeForm.get(['resume']).setValue('');
-        }
-    }
-
-    updateApplicant() {
-        this.modalRef = this.modalService.show(CreateApplicantComponent, {
-            class: 'modal-lg',
-            initialState: {applicant: this.applicant}
-        });
-        this.modalRef.content.closePopup.subscribe(result => {
-            if (result) {
-                this.getApplicantById(result['data']._id);
-                this.onUpdate.emit(this.applicant);
-            }
-        });
-    }
-
-    getApplicantJobStatus(id) {
-        this.applicantInfoService.getAllJobHistory(id).subscribe(result => {
-            if (result['success']['data']) {
-                const status = result['success']['data'];
-                this.appliedJobs.forEach(element => {
-                    const arr = [];
-                    status.forEach(x => {
-                        if (x.job_post_id === element.job_post.id) {
-                            arr.push(x.pipeline);
-                        }
-                    });
-                    element.jobStatus = arr;
-                });
-            } else {
-                console.log('error', result);
-            }
-        });
-    }
-
-    getJobsByApplicantId() {
-        if (this.applicant && this.applicant._id) {
-            this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
-                if (result) {
-                    this.applicant.jobs = result['success']['data'];
-                    this.setBackgroundColor(null);
-                }
-            });
-        }
-    }
-
-    getCommentsByJobId(jobId: any, index) {
-        this.applicantInfoService.getJobAndComments(this.applicant._id, jobId).subscribe(result => {
-            if (result && result['success'] && result['success']['data']) {
-                this.setBackgroundColor(index);
-                this.comments = result['success']['data'];
-            }
-        });
-    }
-
-    getApplicantById(id: string) {
-        this.applicantInfoService.getApplicantById(id).subscribe(result => {
-            if (result) {
-                this.applicant = result['success']['data'];
-                this.applicant.fullName = this.getFullName.bind(this.applicant);
-            }
-        });
-    }
-
-    setBackgroundColor(index) {
-        for (let i = 0; i < this.applicant.jobs.length; i++) {
-            if (index === i) {
-                this.applicant.jobs[index].background = "status-box-selected";
-            } else {
-                this.applicant.jobs[i].background = "status-box";
-            }
-        }
     }
 }

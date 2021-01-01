@@ -46,7 +46,6 @@ export class ApplicantProfileCardComponent implements OnChanges {
         this.modalRef.content.closePopup.subscribe(result => {
             if (result) {
                 // this.onUpdate.emit(this.applicant);   // old
-                result['data'].fullName = this.getFullName.bind(this.applicant);
                 this.onUpdate.emit(result['data']);   // new testing
             }
         });

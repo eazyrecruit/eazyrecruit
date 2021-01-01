@@ -63,8 +63,8 @@
                                 <div id="history" class="tab-pane fade in">
                                     <strong class="display-block mb-10">Applicant Activity</strong>
                                     <ng-container *ngIf="applicant && applicant._id">
-                                        <applicant-activity [isActivityUpdate]="isActivityUpdate"
-                                                            [applicantId]="applicant._id"></applicant-activity>
+                                        <app-applicant-activity [isActivityUpdate]="isActivityUpdate"
+                                                                [applicantId]="applicant._id"></app-applicant-activity>
                                     </ng-container>
 
                                 </div>

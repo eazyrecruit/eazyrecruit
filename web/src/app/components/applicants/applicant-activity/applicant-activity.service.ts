@@ -12,6 +12,10 @@ export class ApplicantActivityService {
     }
 
     getActivity(id) {
-        return this.http.get(`${this.constService.baseUrl}applicant/activity/${id}`);
+        return this.http.get(`${this.constService.baseUrl}activity/${id}`);
+    }
+
+    createActivity(body) {
+        return this.http.post(`${this.constService.baseUrl}activity`, body);
     }
 }

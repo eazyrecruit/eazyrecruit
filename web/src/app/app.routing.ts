@@ -95,7 +95,7 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
                             {path: 'applicant/:applicantId', component: PipelineComponent},
                             {path: 'add/job/:jobId/:pipelineId', component: ApplicantsComponent},
                             {path: 'create', component: CreateApplicantComponent},
-                            {path: ':id', resolve: {applicant: ApplicantResolver}, component: ApplicantpageComponent}
+                            {path: ':id', component: ApplicantpageComponent}
                         ], canActivate: [RoleGuardService], data: {expectedRole: ['admin', 'hr']}
                     },
                     {

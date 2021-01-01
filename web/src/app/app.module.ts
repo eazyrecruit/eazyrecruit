@@ -103,6 +103,7 @@ import {ApplicantProfileComponent} from './components/applicants/applicant-profi
 import {ApplicantProfileCardComponent} from './components/applicants/applicant-profile-card/applicant.profile.card.component';
 import {ApplicantInterviewComponent} from './components/interview/applicant-Interview/applicant.Interview.component';
 import {ApplicantJobsComponent} from "./components/applicants/applicant-jobs/applicant.jobs.component";
+import {AddActivityComponent} from "./components/applicants/applicant-activity/add-activity/add.activity.component";
 
 @NgModule({
     declarations: [
@@ -177,7 +178,8 @@ import {ApplicantJobsComponent} from "./components/applicants/applicant-jobs/app
         ApplicantProfileComponent,
         ApplicantProfileCardComponent,
         ApplicantInterviewComponent,
-        ApplicantJobsComponent
+        ApplicantJobsComponent,
+        AddActivityComponent
     ],
     imports: [
         ToasterModule,
@@ -219,7 +221,8 @@ import {ApplicantJobsComponent} from "./components/applicants/applicant-jobs/app
         AddTaskComponent,
         CancelConformComponent,
         OutboundComponent,
-        EmailTemplateComponent
+        EmailTemplateComponent,
+        AddActivityComponent
     ],
     providers: [ConstService,
         SharedService,

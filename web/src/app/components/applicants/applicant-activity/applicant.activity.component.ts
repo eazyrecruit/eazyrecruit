@@ -2,9 +2,12 @@ import {Component, OnInit, Input, OnChanges} from '@angular/core';
 import {ApplicantActivityService} from './applicant-activity.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {ConstService} from '../../../services/const.service';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {ToasterService} from 'angular2-toaster';
+import {AddActivityComponent} from './add-activity/add.activity.component';
 
 @Component({
-    selector: 'applicant-activity',
+    selector: 'app-applicant-activity',
     templateUrl: 'applicant.activity.component.html',
     providers: [ApplicantActivityService]
 })
@@ -17,10 +20,13 @@ export class ApplicantActivityComponent implements OnChanges {
     isLoading = false;
     activityData: any = [];
     time = new Date().getTime();
+    modalRef: BsModalRef;
 
     constructor(
         private route: ActivatedRoute,
         private constService: ConstService,
+        private modalService: BsModalService,
+        private toasterService: ToasterService,
         private applicantActivityService: ApplicantActivityService
     ) {
     }
@@ -29,10 +35,9 @@ export class ApplicantActivityComponent implements OnChanges {
         this.time = new Date().getTime();
         this.isLoading = true;
         this.applicantActivityService.getActivity(this.applicantId).subscribe(result => {
-            console.log('result', result);
+
             if (result['success'] && result['success'].data && result['success'].data.records && result['success'].data.records.length) {
                 this.activityData = result['success'].data.records;
-                console.log('ActivityData', this.activityData);
             }
             this.isLoading = false;
         }, () => {
@@ -40,6 +45,18 @@ export class ApplicantActivityComponent implements OnChanges {
         });
     }
 
+    createActivity() {
+        this.modalRef = this.modalService.show(AddActivityComponent, {
+            class: 'modal-md',
+            initialState: {applicant: this.applicantId}
+        });
+        this.modalRef.content.closePopup.subscribe(result => {
+            if (result) {
+                this.toasterService.pop('success', 'Activity Created', 'Activity Created successfully');
+                this.getApplicantActivity();
+            }
+        });
+    }
 
     getImageData(id) {
         return this.constService.publicUrl + '/api/user/profile/' + id + '?' + this.time;

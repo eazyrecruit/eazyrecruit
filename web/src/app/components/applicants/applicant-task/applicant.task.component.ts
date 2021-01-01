@@ -69,10 +69,8 @@ export class ApplicantTaskComponent implements OnChanges {
         this.time = new Date().getTime();
         this.isLoading = true;
         this.applicantActivityService.getTask(this.applicantId).subscribe(result => {
-            console.log('result', result);
             if (result['success'] && result['success'].data && result['success'].data.records && result['success'].data.records.length) {
                 this.taskData = result['success'].data.records;
-                console.log('ActivityData', this.taskData);
             }
             this.isLoading = false;
         }, () => {
@@ -82,7 +80,6 @@ export class ApplicantTaskComponent implements OnChanges {
 
     changeStatus(id, status) {
         this.applicantActivityService.updateTask(id, {status: status === 'ACTIVE' ? 'COMPLETED' : 'ACTIVE'}).subscribe(result => {
-            console.log('result', result);
             if (result['success']) {
                 this.getTask();
             }
