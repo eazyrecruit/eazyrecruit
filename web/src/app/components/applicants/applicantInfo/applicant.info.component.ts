@@ -133,7 +133,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
 
     onUpdateProfile(result) {
         this.isActivityUpdate = !this.isActivityUpdate;
-        this.applicantData = result;
+        this.getApplicantById(this.applicant._id);
         this.onUpdate.emit(result);
     }
 

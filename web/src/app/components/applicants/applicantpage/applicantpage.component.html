@@ -2,7 +2,7 @@
     <div class="col-sm-4">
         <div class="box-body box-profile">
             <ng-container *ngIf="applicantData">
-                <app-applicant-profile-card (onUpdate)="onUpdateProfile($event)"
+                <app-applicant-profile-card (onUpdate)="onUpdateProfile($event)" [isFullPage]="true"
                                             [applicant]="applicantData"></app-applicant-profile-card>
 
                 <app-applicant-profile [applicant]="applicantData"
@@ -41,5 +41,9 @@
         <ng-container *ngIf="jobLoad">
             <app-applicant-jobs [applyJobs]="applyJobs"></app-applicant-jobs>
         </ng-container>
+
+        <app-comment *ngIf="applicantId" [applicant]="{_id: applicantId}"
+                     [job]="jobId" (commentAdded)="commentAdded()">
+        </app-comment>
     </div>
 </div>

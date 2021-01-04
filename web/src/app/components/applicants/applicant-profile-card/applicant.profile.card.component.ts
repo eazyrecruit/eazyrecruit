@@ -2,6 +2,7 @@ import {Component, OnInit, Input, Output, EventEmitter, OnChanges, TemplateRef} 
 import {BsModalService, BsModalRef} from 'ngx-bootstrap';
 import {ActivatedRoute} from '@angular/router';
 import {CreateApplicantComponent} from '../create-applicant/create-applicant.component';
+import {SharedService} from "../../../services/shared.service";
 
 @Component({
     selector: 'app-applicant-profile-card',
@@ -10,14 +11,18 @@ import {CreateApplicantComponent} from '../create-applicant/create-applicant.com
 export class ApplicantProfileCardComponent implements OnChanges {
     @Input()
     applicant: any;
+    @Input()
+    isFullPage ?: any;
     @Output()
     onUpdate: EventEmitter<any> = new EventEmitter();
     modalRef: BsModalRef;
     isReadonly: true;
     applicantData: any;
+    sourceColor: any = this.sharedService.getSourceColor();
 
     constructor(
         private route: ActivatedRoute,
+        private sharedService: SharedService,
         private modalService: BsModalService
     ) {
 
@@ -29,6 +34,10 @@ export class ApplicantProfileCardComponent implements OnChanges {
             this.applicantData['fullName'] = this.getFullName(this.applicantData.firstName, this.applicantData.middleName, this.applicantData.lastName);
         }
         console.log('ApplicantProfileCardComponent', this.applicant);
+    }
+
+    getSourceColor(source) {
+        return this.sourceColor[source] || '';
     }
 
     getFullName(firstName, middleName, lastName) {

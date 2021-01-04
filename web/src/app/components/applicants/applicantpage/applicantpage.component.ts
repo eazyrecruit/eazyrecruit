@@ -61,6 +61,10 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     }
 
 
+    commentAdded() {
+        this.isActivityUpdate = !this.isActivityUpdate;
+    }
+
     getFullName(firstName, middleName, lastName) {
         let name = firstName;
         if (middleName && middleName != 'null') name = name + ' ' + middleName;
@@ -91,6 +95,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
         this.isActivityUpdate = !this.isActivityUpdate;
         this.applicantData = result;
         this.onUpdate.emit(result);
+        this.getApplicantCompleteData();
     }
 
     onCancelInterviewData(result) {

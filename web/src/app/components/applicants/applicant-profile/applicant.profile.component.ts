@@ -43,7 +43,7 @@ export class ApplicantProfileComponent implements OnChanges {
         if (this.applicant && this.applicant.skills) {
             this.SkillDiv = '';
             for (let index = 0; index < this.applicant.skills.length; index++) {
-                if (this.jobsSkils.hasOwnProperty(this.applicant.skills[index].name.toUpperCase())) {
+                if (this.applicant.skills[index].name && this.jobsSkils.hasOwnProperty(this.applicant.skills[index].name.toUpperCase())) {
                     matchSkillDiv = matchSkillDiv + this.getSkilsDiv(this.applicant.skills[index].name, this.matchedColor);
                 } else {
                     unMatchSkillDiv = unMatchSkillDiv + this.getSkilsDiv(this.applicant.skills[index].name, this.defaultColor);

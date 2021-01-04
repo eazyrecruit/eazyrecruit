@@ -9,9 +9,17 @@
         <div class="col-sm-7 text-left padding-left-5px"
              *ngIf="applicantData && applicantData.fullName">
             <h3 class="profile-username mb-5 mt-0 text-18">
-                <a [routerLink]="['/applicants',applicantData?._id]">
-                    {{applicantData.fullName}}
-                </a>
+                <ng-container *ngIf="isFullPage">
+                    <a>
+                        {{applicantData.fullName}}
+                    </a>
+                </ng-container>
+                <ng-container *ngIf="!isFullPage">
+                    <a [routerLink]="['/applicants',applicantData?._id]">
+                        {{applicantData.fullName}}
+                    </a>
+                </ng-container>
+
             </h3>
             <p class="text-12 font-weight-500 mb-5">{{applicantData?.email}}</p>
             <p class="text-12 font-weight-500 mb-5"
@@ -27,6 +35,8 @@
                                     <span *ngIf="applicantData.location.state">{{applicantData.location.city}}
                                         ,&nbsp;{{applicantData.location.state}}</span>
             </p>
+            <span
+                    [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant?.source}}</span>
             <i class="fa fa-pencil editApplcant" (click)="updateApplicant()"></i>
         </div>
         <!-- working on it -->

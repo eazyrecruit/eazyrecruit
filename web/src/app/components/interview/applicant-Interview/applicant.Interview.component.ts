@@ -35,7 +35,10 @@ export class ApplicantInterviewComponent implements OnChanges {
     }
 
     ngOnChanges() {
-        this.getScheduledInterviews();
+        if (this.applicant && this.applicant._id) {
+            this.getScheduledInterviews();
+        }
+
     }
 
 
