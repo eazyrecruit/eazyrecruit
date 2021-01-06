@@ -101,7 +101,6 @@ export class JobComponent implements OnInit {
         this.jobService.getHrAdmin().subscribe(result => {
             if (result['success'] && result['success'].data) {
                 this.userList = result['success'].data;
-                console.log('ActivityData', this.userList);
             }
         });
     }

@@ -59,13 +59,11 @@ export class AddTaskComponent implements OnInit {
         this.applicantTaskService.getAllUsers().subscribe(result => {
             if (result['success'] && result['success'].data && result['success'].data.users && result['success'].data.users.length) {
                 this.userList = result['success'].data.users;
-                console.log('ActivityData', this.userList);
             }
         });
     }
 
     createTask(form) {
-        console.log('Form', form);
         if (!this.addTaskForm.valid) {
             this.validationService.validateAllFormFields(this.addTaskForm);
         } else {

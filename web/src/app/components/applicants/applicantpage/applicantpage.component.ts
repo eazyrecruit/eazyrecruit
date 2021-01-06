@@ -73,7 +73,6 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     }
 
     setJobsSkils(jobsApplicants) {
-        console.log('jobsApplicants', jobsApplicants);
         this.jobsSkils = {};
         this.applyJobs = [];
         for (let index = 0; index < jobsApplicants.length; index++) {
@@ -120,7 +119,6 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
         this.applicantDataService.getApplicantCompleteData(this.applicantId).subscribe(result => {
             if (result && result['success'] && result['success']['data']) {
                 this.applicantData = result['success']['data'];
-                console.log('this.applicantData', this.applicantData);
             }
         }, (error) => {
             SiteJS.stopLoader();

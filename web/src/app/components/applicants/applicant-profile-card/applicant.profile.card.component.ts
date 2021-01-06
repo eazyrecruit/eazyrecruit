@@ -35,7 +35,6 @@ export class ApplicantProfileCardComponent implements OnChanges {
         if (this.applicantData) {
             this.applicantData['fullName'] = this.getFullName(this.applicantData.firstName, this.applicantData.middleName, this.applicantData.lastName);
         }
-        console.log('ApplicantProfileCardComponent', this.applicant);
     }
 
     getSourceColor(source) {
