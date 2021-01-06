@@ -1,5 +1,5 @@
 <div>
-    <a class="btn btn-block btn-info" (click)="schduleInterview()"><i
+    <a class="btn mb-3 btn-info" (click)="schduleInterview()"><i
             class="fa fa-calendar"></i> Schedule Interview</a>
     <ul class="products-list product-list-in-box"
         *ngIf="scheduledInterviews && scheduledInterviews.length > 0">
@@ -19,13 +19,13 @@
                         [(ngModel)]="scheduledInterview.score"
                         [max]="10"></rating>
                 <p class="message mt-10">{{scheduledInterview.comment}}</p>
-                <button
+                <button class="btn btn-success btn-xs mr-2"
                         *ngIf="scheduledInterview.result &&   ['HOLD', 'PENDING'].indexOf(scheduledInterview.result)>=0"
                         (click)="openInterview(scheduledInterview, i)"><i
                         class="fa fa-calendar"></i> Reschedule
                 </button>
 
-                <button
+                <button class="btn btn-xs" 
                         *ngIf="scheduledInterview.result && ['HOLD', 'PENDING'].indexOf(scheduledInterview.result)>=0"
                         (click)="openDeleteModel(scheduledInterview._id)"><i
                         class="fa fa-close"></i> Cancel

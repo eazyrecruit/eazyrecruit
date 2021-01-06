@@ -3,12 +3,31 @@
     <ul class="padding-six bg-box list-inline"
         *ngIf="applyJobs.length">
         <li *ngFor="let job of applyJobs">
-            <span class="text">Title: </span>
-            <span class="text-info">{{job.title || 'N/A'}}</span>
-            <br>
+            <!-- <span class="text">Title: </span> -->
+            <div class="d-flex justify-content-between">
+                <strong class="">{{job.title || 'N/A'}}</strong>
+                <span class="badge badge-success  mt-2">Active</span>
+            </div>
+            <span class="text-muted d-block font-75">Washhington</span>
+            <span class="text-muted d-block font-75 mb-3">3 Years - 6 Years</span>
+
+            <ng-container>
+                
+                <strong class="d-block mb-2">Recruitment Manager</strong>
+                <div class="d-flex align-items-center mb-3"> 
+                    <div class="profile_image-wrapper activity-img mr-2 ng-star-inserted">
+                        <img alt="User profile picture" class="profile-user-img img-responsive img-circle ng-star-inserted" src="http://localhost:8082/api/user/profile/5ef33a4b45831c001263efd8?1609843332906"></div><div>
+                             
+                  <p class="profile-username mt-0 text-12 mb-0 ng-star-inserted">
+                      <strong> Admin Admin </strong>
+                  </p>
+                  </div></div>
+            </ng-container>
+          
             <ng-container *ngIf="job.pipeline && job.pipeline.name ">
-                <span class="text">Stage: </span>
-                <span class="text-warning">
+                <!-- <span class="text">Stage: </span> -->
+                <strong class="d-block">Status</strong>
+                <span class="badge bg-yellow-light  mt-2">
               {{job.pipeline.name}}
             </span>
             </ng-container>

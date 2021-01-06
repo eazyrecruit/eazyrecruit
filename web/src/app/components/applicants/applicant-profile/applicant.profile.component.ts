@@ -57,7 +57,7 @@ export class ApplicantProfileComponent implements OnChanges {
     }
 
     getSkilsDiv(name, color) {
-        return '<span class="display-inline-block"> <span class="' + color + '">' + name + '</span></span>';
+        return '<span class="display-inline-block box-shadow"> <span class="' + color + '">' + name + '</span></span>';
     }
 
 }
