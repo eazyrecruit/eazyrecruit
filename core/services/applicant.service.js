@@ -57,8 +57,12 @@ exports.save = async (req, enableEmail) => {
                 modelApplicant.noticePeriodNegotiable = req.body.noticePeriodNegotiable || modelApplicant.noticePeriodNegotiable || '';
                 modelApplicant.totalExperience = req.body.experience || modelApplicant.totalExperience || '';
                 modelApplicant.availability = req.body.availability || modelApplicant.availability || '';
-                modelApplicant.roles = req.body.roles || modelApplicant.roles || [];
-                modelApplicant.referredBy = req.body.referredBy || null;
+                modelApplicant.roles = req.body.roles || modelApplicant.roles || [];;
+                modelApplicant.referredBy = req.body.referredBy;
+                if (req.user.email) {
+                    modelApplicant.referredBy = req.body.referredBy || req.user.email;
+                }
+
                 if (req.body.firstName) {
                     modelApplicant.firstName = req.body.firstName ? req.body.firstName : '';
                     modelApplicant.middleName = req.body.middleName ? req.body.middleName : '';
@@ -78,24 +82,26 @@ exports.save = async (req, enableEmail) => {
                 // Create/Update resume
                 if (req.body.resumeId && req.body.resumeId.length > 0) {
                     modelApplicant.resume = req.body.resumeId;
-                } else {
-                    if (req.files && req.files.length > 0) {
-                        modelResume = await ApplicantResumes.findById(modelApplicant.resume);
-                        if (modelResume == null) {
-                            modelResume = new ApplicantResumes();
-                            modelResume.created_by = req.user.id;
-                            modelResume.created_at = new Date();
-                        }
-                        modelResume.resume = req.files[0].buffer.toString('base64');
-                        modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
-                        modelResume.fileType = req.files[0].mimetype;
-                        modelResume.modified_by = req.user.id;
-                        modelResume.modified_at = new Date();
-                        modelResume = await modelResume.save();
-                        modelApplicant.resume = modelResume._id;
-                    } else {
-                        modelApplicant.resume = req.body.resumeId;
+                }
+                var modelResume = await ApplicantResumes.findById(modelApplicant.resume).populate("created_by");
+                if (modelResume && modelResume.created_by) {
+                    modelApplicant.referredBy = modelApplicant.referredBy || modelResume.created_by.email;
+                }
+                if (req.files && req.files.length > 0) {
+                    if (!modelResume) {
+                        modelResume = new ApplicantResumes();
+                        modelResume.created_by = req.user.id;
+                        modelResume.created_at = new Date();
                     }
+                    modelResume.resume = req.files[0].buffer.toString('base64');
+                    modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
+                    modelResume.fileType = req.files[0].mimetype;
+                    modelResume.modified_by = req.user.id;
+                    modelResume.modified_at = new Date();
+                    modelResume = await modelResume.save();
+                    modelApplicant.resume = modelResume._id;
+                } else {
+                    modelApplicant.resume = req.body.resumeId;
                 }
 
                 // Create/Update skills
