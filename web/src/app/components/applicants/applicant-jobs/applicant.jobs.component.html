@@ -1,29 +1,44 @@
 <div>
     <strong class="display-block mb-10">Jobs Applied</strong>
-    <ul class="padding-six bg-box list-inline"
-        *ngIf="applyJobs.length">
-        <li *ngFor="let job of applyJobs">
+    <ul *ngIf="applyJobs.length" class="padding-six bg-box list-inline">
+        <li *ngFor="let job of applyJobs" class="margin-nine-top">
             <!-- <span class="text">Title: </span> -->
             <div class="d-flex justify-content-between">
                 <strong class="">{{job.title || 'N/A'}}</strong>
-                <span class="badge badge-success  mt-2">Active</span>
+                <span [ngClass]="[color[getStatus(job)], 'badge  mt-2']">{{getStatus(job)}}</span>
             </div>
-            <span class="text-muted d-block font-75">Washhington</span>
-            <span class="text-muted d-block font-75 mb-3">3 Years - 6 Years</span>
-
-            <ng-container>
-                
-                <strong class="d-block mb-2">Recruitment Manager</strong>
-                <div class="d-flex align-items-center mb-3"> 
-                    <div class="profile_image-wrapper activity-img mr-2 ng-star-inserted">
-                        <img alt="User profile picture" class="profile-user-img img-responsive img-circle ng-star-inserted" src="http://localhost:8082/api/user/profile/5ef33a4b45831c001263efd8?1609843332906"></div><div>
-                             
-                  <p class="profile-username mt-0 text-12 mb-0 ng-star-inserted">
-                      <strong> Admin Admin </strong>
-                  </p>
-                  </div></div>
+            <ng-container *ngIf="job.locations && job.locations.length">
+                <span *ngFor="let location of job.locations"
+                      class=" display-inline-block text-muted d-block font-75">{{location.city}}</span>
             </ng-container>
-          
+
+            <span class="text-muted d-block font-75 mb-3">{{job.minExperience}} Years - {{job.maxExperience}}
+                Years</span>
+
+            <ng-container *ngIf="job.recruitmentManager">
+                <strong class="d-block mb-2">Recruitment Manager</strong>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="profile_image-wrapper activity-img mr-2 ng-star-inserted">
+
+                        <ng-container *ngIf="!job.recruitmentManager.picture">
+                            <img src="/admin/assets/img/short_profile.png"
+                                 class="profile-user-img img-responsive img-circle ng-star-inserted"
+                                 alt="User Image">
+                        </ng-container>
+                        <ng-container *ngIf="job.recruitmentManager.picture">
+                            <img [src]="getImageData(job.recruitmentManager._id)" alt="User profile picture"
+                                 class="profile-user-img img-responsive img-circle ng-star-inserted">
+                        </ng-container>
+                    </div>
+                    <div>
+
+                        <p class="profile-username mt-0 text-12 mb-0 ng-star-inserted">
+                            <strong> {{job.recruitmentManager.name || job.recruitmentManager.email }}  </strong>
+                        </p>
+                    </div>
+                </div>
+            </ng-container>
+
             <ng-container *ngIf="job.pipeline && job.pipeline.name ">
                 <!-- <span class="text">Stage: </span> -->
                 <strong class="d-block">Status</strong>

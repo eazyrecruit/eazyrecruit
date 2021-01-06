@@ -15,7 +15,17 @@ router.get('/', async (req, res) => {
         responseService.successResponse(result, 'get users', res);
     } catch (err) {
         console.log('get users - error : ', err);
-        responseService.errorResponse(error, 'get users', res);
+        responseService.errorResponse(err, 'get users', res);
+    }
+});
+
+router.get('/adminHr', async (req, res) => {
+    try {
+        const result = await userService.getHrAdmin();
+        responseService.successResponse(result, 'getHrAdmin', res);
+    } catch (err) {
+        console.log('get users - error : ', err);
+        responseService.errorResponse(err, 'getHrAdmin', res);
     }
 });
 

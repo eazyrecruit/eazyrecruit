@@ -21,6 +21,10 @@ export class JobService {
         return this.http.get(this.constService.baseUrl + 'job/' + id);
     }
 
+    getHrAdmin() {
+        return this.http.get(`${this.constService.baseUrl}user/adminHr`);
+    }
+
     getJobsName(jobId = null) {
         let url = `${this.constService.baseUrl}job/jobname`;
         if (jobId) {

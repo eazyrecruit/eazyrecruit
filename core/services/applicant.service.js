@@ -383,11 +383,17 @@ exports.getById = async (_id) => {
 exports.getjobsByApplicantId = async (_id) => {
     return await JobApplicant.find({applicant: _id, is_deleted: {$ne: true}}).populate({
         path: 'job',
-        select: 'title skills',
-        populate: {
+        select: 'title skills active minExperience is_deleted maxExperience locations, recruitmentManager ',
+        populate: [{
             path: 'skills',
             select: 'name',
-        }
+        }, {
+            path: 'locations',
+            select: 'city',
+        }, {
+            path: 'recruitmentManager',
+            select: 'name email picture',
+        }]
     }).populate({path: 'pipeline', select: 'name'});
 }
 
