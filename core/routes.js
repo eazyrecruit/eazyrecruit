@@ -105,6 +105,7 @@ module.exports.setup = (app) => {
     app.use('/api/analytics', require('./controllers/analytics.ctrl').analyticsRoutes);
     app.use('/api/user', require('./controllers/user.ctrl').user);
     app.use('/api/task', require('./controllers/task.ctrl').task);
+    app.use('/api/referred', require('./controllers/referred.ctrl').referred);
     app.use('/api/activity', require('./controllers/activity.ctrl').activity);
 };
 

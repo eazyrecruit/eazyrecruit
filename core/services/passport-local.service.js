@@ -18,7 +18,7 @@ exports.setup = function () {
                         return done(null, false, {status: 401, message: 'Invalid email or password.'});
                     }
                     if (!user.password) {
-                        return done(null, false, {msg: 'Your account was registered using a sign-in provider. To enable password login, sign in using a provider, and then set a password under your user profile.'});
+                        return done(null, false, {status: 401, message: 'Your account was registered using a sign-in provider. To enable password login, sign in using a provider, and then set a password under your user profile.'});
                     }
                     user.comparePassword(password, (isMatch) => {
                         if (isMatch) {

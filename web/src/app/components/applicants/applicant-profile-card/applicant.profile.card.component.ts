@@ -13,6 +13,8 @@ export class ApplicantProfileCardComponent implements OnChanges {
     applicant: any;
     @Input()
     isFullPage ?: any;
+    @Input()
+    notEdit ?: any;
     @Output()
     onUpdate: EventEmitter<any> = new EventEmitter();
     modalRef: BsModalRef;

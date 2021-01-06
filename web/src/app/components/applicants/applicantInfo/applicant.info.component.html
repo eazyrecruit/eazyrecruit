@@ -33,14 +33,14 @@
                             </ng-container>
                             <ul class="tab-content p-0">
                                 <div id="basic" class="tab-pane fade active in">
-                                    <ng-container *ngIf="applicantData && this.jobLoad">
+                                    <ng-container *ngIf="applicantData">
                                         <app-applicant-profile [applicant]="applicantData"
                                                                [jobsSkils]="jobsSkils"></app-applicant-profile>
                                     </ng-container>
                                 </div>
 
                                 <div id="comments" class="tab-pane fade in">
-                                    <ng-container *ngIf="applicantData && this.jobLoad">
+                                    <ng-container *ngIf="applicantData">
                                         <app-comment *ngIf="applicant && showComments" [applicant]="applicant"
                                                      [job]="jobId" (commentAdded)="commentAdded()">
                                         </app-comment>

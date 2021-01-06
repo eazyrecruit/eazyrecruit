@@ -99,6 +99,8 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
                 if (result && result['success'] && result['success']['data'] && result['success']['data'].length) {
                     this.applicant.jobs = result['success']['data'];
                     this.setJobsSkils(result['success']['data']);
+                } else {
+                    this.jobLoad = true;
                 }
             }, () => {
                 this.jobLoad = true;
