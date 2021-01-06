@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 var pathToRegexp = require('path-to-regexp');
 const fs = require('fs');
-dotenv.config({ path: "./.env" });
+dotenv.config({path: "./.env"});
 normalize = (param) => {
     if (typeof (param) == 'string') {
         param = param.replace(/\s+/g, '');
@@ -64,7 +64,7 @@ module.exports = {
             profileSupportFileType: ['image/jpeg', 'image/png'],
             profileSupportFileSize: 1024 * 1024 * 2,
             googleAnalyticsApi: process.env.GOOGLE_ANALYTICS_API || "https://www.googleapis.com/auth/analytics.readonly",
-            roles: ['admin', 'hr', 'interviewer'],
+            roles: ['admin', 'hr', 'interviewer', "user"],
             companyInfo: {
                 signature: process.env.COMPANY_SIGNATURE || "<b>HR team</b><br>Eazyrecruit<br><a href='mailto:hr@eazyrecruit.in'>hr@eazyrecruit.in</a>",
                 name: process.env.COMPANY_NAME || 'Eazyrecruit',

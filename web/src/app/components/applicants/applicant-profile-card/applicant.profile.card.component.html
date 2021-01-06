@@ -37,7 +37,9 @@
             </p>
             <span
                     [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant?.source}}</span>
-            <i class="fa fa-pencil editApplcant" (click)="updateApplicant()"></i>
+            <ng-container *ngIf="!notEdit" >
+                <i class="fa fa-pencil editApplcant" (click)="updateApplicant()"></i>
+            </ng-container>
         </div>
         <!-- working on it -->
     </div>

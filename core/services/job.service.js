@@ -490,13 +490,13 @@ exports.removeApplicant = async (req) => {
                 if (jobApplicant) {
                     let description = "applicant remove from  " + jobApplicant.job.title + " profile";
                     Activity.addActivity({
-                        applicant: req.body.applicant,
+                        applicant: jobApplicant.applicant,
                         created_by: req.user.id,
                         title: "Applicant remove from Job",
                         description: description
                     });
                     await histroyService.create({
-                        applicant: req.body.applicant,
+                        applicant:jobApplicant.applicant,
                         pipeline: req.body.pipeline,
                         job: req.body.job,
                         createdBy: req.user.id,
@@ -522,7 +522,7 @@ exports.removeApplicant = async (req) => {
                                 } else {
                                     let description = "Interview remove for " + jobApplicant.job.title + " profile";
                                     Activity.addActivity({
-                                        applicant: req.body.applicant,
+                                        applicant: jobApplicant.applicant,
                                         created_by: req.user.id,
                                         title: "Interview remove",
                                         description: description
