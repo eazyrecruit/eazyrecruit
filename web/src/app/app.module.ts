@@ -35,7 +35,7 @@ import {PipelineComponent} from './components/jobs/pipeline/pipeline.component';
 import {JobComponent} from './components/jobs/job/job.component';
 import {ViewJobsComponent} from './components/jobs/view-jobs/view-jobs.component';
 import {ApplicantCardComponent} from './components/jobs/applicantCard/applicant.card.component';
-import {ApplicantInfoComponent} from './components/jobs/applicantInfo/applicant.info.component';
+import {ApplicantInfoComponent} from './components/applicants/applicantInfo/applicant.info.component';
 import {ApplicantSearchComponent} from './components/jobs/applicantsearch/applicantsearch.component';
 
 import {CompanayviewComponent} from './components/settings/companayview/companayview.component';
@@ -68,7 +68,7 @@ import {ModalModule, BsDatepickerModule, TimepickerModule, RatingModule, Typeahe
 import {PopupComponent} from './components/jobs/popup/popup.component';
 import {SearchApplicantComponent} from './components/applicants/search-applicant/search-applicant.component';
 import {ToasterModule, ToasterService} from 'angular2-toaster';
-import {ApplicantpageComponent} from './components/jobs/applicantpage/applicantpage.component';
+import {ApplicantpageComponent} from './components/applicants/applicantpage/applicantpage.component';
 import {ApplicantDataService} from './services/applicant-data.service';
 import {CreateApplicantComponent} from './components/applicants/create-applicant/create-applicant.component';
 import {SafePipe} from './services/senatizerpipe.service';
@@ -82,7 +82,7 @@ import {SettingsComponent} from './components/settings/settings.component';
 import {ApplicantSettingsComponent} from './components/settings/applicants/applicant-settings.component';
 import {EmailsettingsComponent} from './components/settings/emailsettings/emailsettings.component';
 import {GoogleComponent} from './components/settings/google/google.component';
-import {InterviewListComponent} from './components/interview/interview-list/interview-list/interview-list.component';
+import {InterviewListComponent} from './components/interview/interview-list/interview.list.component';
 import {InboundComponent} from './components/settings/emailsettings/inbound/inbound.component';
 import {OutboundComponent} from './components/settings/emailsettings/outbound/outbound.component';
 import {EmailTemplateComponent} from './components/settings/emailsettings/email-template/email-template.component';
@@ -92,9 +92,18 @@ import {ProfileComponent} from './components/profile/profile.component';
 import {DatabaseComponent} from './components/database/database.component';
 import {PipelineGridComponent} from './components/jobs/pipeline/gridView/pipeline.grid.component';
 import {PipelineListComponent} from './components/jobs/pipeline/listView/pipeline.list.component';
-import {UserCardComponent} from "./components/database/UserCard/user.card.component";
-import {CancelConformComponent} from "./components/interview/cancelConfromBox/cancel.conform.component";
-import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/google.recaptcha.component";
+import {UserCardComponent} from './components/database/UserCard/user.card.component';
+import {CancelConformComponent} from './components/interview/cancelConfromBox/cancel.conform.component';
+import {GoogleRecaptchaComponent} from './components/settings/googleRecaptcha/google.recaptcha.component';
+import {ApplicantActivityComponent} from './components/applicants/applicant-activity/applicant.activity.component';
+import {ApplicantActivityService} from './components/applicants/applicant-activity/applicant-activity.service';
+import {AddTaskComponent} from './components/applicants/applicant-task/add-task/add.task.component';
+import {ApplicantTaskComponent} from './components/applicants/applicant-task/applicant.task.component';
+import {ApplicantProfileComponent} from './components/applicants/applicant-profile/applicant.profile.component';
+import {ApplicantProfileCardComponent} from './components/applicants/applicant-profile-card/applicant.profile.card.component';
+import {ApplicantInterviewComponent} from './components/interview/applicant-Interview/applicant.Interview.component';
+import {ApplicantJobsComponent} from "./components/applicants/applicant-jobs/applicant.jobs.component";
+import {AddActivityComponent} from "./components/applicants/applicant-activity/add-activity/add.activity.component";
 
 @NgModule({
     declarations: [
@@ -162,7 +171,15 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
         InboundComponent,
         OutboundComponent,
         EmailTemplateComponent,
-        UserCardComponent
+        UserCardComponent,
+        AddTaskComponent,
+        ApplicantTaskComponent,
+        ApplicantActivityComponent,
+        ApplicantProfileComponent,
+        ApplicantProfileCardComponent,
+        ApplicantInterviewComponent,
+        ApplicantJobsComponent,
+        AddActivityComponent
     ],
     imports: [
         ToasterModule,
@@ -201,14 +218,17 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
         SchedulerComponent,
         UploadResumeComponent,
         InboundComponent,
+        AddTaskComponent,
         CancelConformComponent,
         OutboundComponent,
-        EmailTemplateComponent
+        EmailTemplateComponent,
+        AddActivityComponent
     ],
     providers: [ConstService,
         SharedService,
         ApplicantResolver,
         AuthGuard,
+        ApplicantActivityService,
         RoleGuardService,
         AccountService,
         ToasterService,

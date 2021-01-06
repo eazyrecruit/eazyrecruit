@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var applicantService = require("../services/applicant.service");
+var Activity = require("../services/activity.service");
 var responseService = require('../services/response.service');
 var Logs = require('../models/logs');
 var multer = require('multer');

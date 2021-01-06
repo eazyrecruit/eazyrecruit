@@ -3,33 +3,17 @@ var Schema = mongoose.Schema;
 
 var activitySchema = new Schema({
     title: String,
-    comment: String,
-    is_deleted: Boolean,
+    description: String,
+    applicant: {
+        type: Schema.Types.ObjectId,
+        ref: 'Applicants'
+    },
     created_by: {
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    modified_by: {
-        type: Schema.Types.ObjectId,
-        ref: 'Users'
-    },
     created_at: {type: Date, default: Date.now},
-    modified_at: {type: Date, default: Date.now}
-}, { versionKey: false });
-
-
-activitySchema.pre('save', function (next) {
-    this.modified_at = new Date;
-    return next();
-});
-activitySchema.pre('updateOne', function (next) {
-    this.modified_at = new Date;
-    return next();
-});
-activitySchema.pre('update', function (next) {
-    this.modified_at = new Date;
-    return next();
-});
+}, {versionKey: false});
 var Activities = mongoose.model('Activities', activitySchema);
 
 module.exports = Activities;

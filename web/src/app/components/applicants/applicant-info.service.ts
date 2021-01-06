@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ConstService } from '../../../services/const.service';
-import { HttpClient } from '../../../../../node_modules/@angular/common/http';
+import { ConstService } from '../../services/const.service';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable()

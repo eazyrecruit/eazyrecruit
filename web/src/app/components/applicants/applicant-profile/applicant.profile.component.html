@@ -1,0 +1,62 @@
+<div class="mt-3">
+    <!-- <strong>Resume</strong> -->
+    <applicant-resume *ngIf="applicant" [(applicant)]="applicant"></applicant-resume>
+    <hr>
+    <!-- <strong><i class="fas fa-user-graduate"></i> Contract</strong>
+    <ul class="bg-box list-style-none padding-six" *ngIf="applicant">
+        <li>Referred By : <span
+                *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
+        <li>Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
+        <li>Notice Period(negotiable) :
+            <span>{{applicant?.noticePeriodNegotiable}}</span></li>
+    </ul>
+    <hr> -->
+    <!-- <strong class="display-block mb-10">Experience</strong> -->
+    <ul class="todo-list ui-sortable mb-3 list-box">
+        <li class="border text-12"> <span>Total Experience : </span> <span> {{applicant?.totalExperience}} Years </span> </li>
+        <li class="border text-12"> <span>Current CTC :</span>  <span>{{applicant?.currentCtc}}</span> </li>
+     
+    </ul>
+
+    <ul class="todo-list ui-sortable mb-3 list-box">     
+        <li class="border text-12"> <span>Expected CTC :</span>  <span> {{applicant?.expectedCtc}} </span> </li>
+        <li class="border text-12"> <span> Notice Period : </span>  <span> {{applicant?.noticePeriod}} </span> </li>
+    </ul>
+
+    <ul class="todo-list ui-sortable list-box">
+        <li class="border text-12" style="border-bottom: 1px solid #dee2e6!important;"> <span> Referred By : </span>  <span
+            *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
+    </ul>
+    <hr>
+    <!-- <strong class="display-block mb-10">Jobs Applied</strong> -->
+    <!--    <ul class="padding-six bg-box list-inline"
+            *ngIf="applyJobs.length">
+            <li *ngFor="let job of applyJobs">
+                <span class="text">Title: </span>
+                <span class="text-info">{{job || 'N/A'}}</span>
+                &lt;!&ndash; <br>
+                <span class="text">Stage: </span>
+                <span class="text-warning">
+                  {{job.pipeline.name}}
+                </span> &ndash;&gt;
+            </li>
+        </ul>-->
+    <!-- <strong><i class="fas fa-user-graduate"></i> Description</strong>
+    <p class="text-muted" *ngIf="applicant?.summary">{{applicant?.summary}}</p>
+    <hr> -->
+    
+    <!-- <strong>Preferred Locations </strong>
+    <p class="text-muted"
+       *ngIf="applicant && applicant.preferredLocations && applicant.preferredLocations.length">
+                                    <span *ngFor="let location of applicant.preferredLocations;">
+                                        <span class="display-inline-block {{defaultColor}}"
+                                              *ngIf="location.state">{{location.city}}
+                                            ,&nbsp;{{location.state}}</span>
+                                    </span>
+    </p> 
+    <hr>-->
+    <!-- <strong>Skills </strong> -->
+    <p class="skill-box" [innerHTML]="SkillDiv | sanitizeHtml">
+    </p>
+
+</div>

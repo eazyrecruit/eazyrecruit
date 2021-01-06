@@ -1,0 +1,60 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <strong>Activity</strong>
+    <button (click)="createActivity()"
+        class="btn btn-primary btn-xs ng-scope">Log Activity
+</button>
+</div>
+
+<ng-container *ngIf="isLoading">
+    <i class="fa fa-spinner fa-spin"></i>
+</ng-container>
+<ng-container *ngIf="!isLoading">
+    <ng-container *ngIf="activityData.length >0">
+        <div *ngFor="let activity of activityData; let i=index;">
+            <div class="border pad-15-10 mb-10 bg-light border-radius-8 box-shadow">
+                <div class="row">
+
+                    <div class="col-sm-8">
+                        <div class="d-flex align-items-center mb-2">
+                            <ng-container *ngIf="activity.created_by">
+                                <div class="profile_image-wrapper activity-img mr-2">
+                                    <ng-container *ngIf="!activity.created_by.picture">
+                                        <img src="/admin/assets/img/short_profile.png"
+                                             class="profile-user-img img-responsive img-circle" alt="User Image">
+                                    </ng-container>
+                                    <ng-container *ngIf="activity.created_by.picture">
+                                        <img [src]="getImageData(activity.created_by._id)" alt="User profile picture"
+                                             class="profile-user-img img-responsive img-circle">
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+
+                            <div>
+                                <ng-container *ngIf="activity.created_by">
+                                    <p class="profile-username mt-0 text-12 mb-0">
+                                       <strong> {{activity.created_by.name || activity.created_by.email }} </strong> 
+                                    </p>
+                                </ng-container>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 d-flex align-items-center justify-content-end edithover">
+                        <small class="font-75 font-weight-500 mb-5 text-muted">{{activity.created_at | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <span class="text-12">  {{activity.description}} </span>
+                    </div>             
+
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="activityData.length <=0">
+        no History found for this Applicant
+    </ng-container>
+</ng-container>

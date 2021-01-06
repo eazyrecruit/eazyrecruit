@@ -51,7 +51,7 @@ exports.resetPassword = (req, next) => {
                             console.log('forget password : ', err);
                             next(err, null);
                         } else {
-                            next(null, `An email has been sent to ${email.receiverAddress} for reset your password.`);
+                            next(null, `An email has been sent to ${user.email} for reset your password.`);
                         }
                     });
                 } catch (error) {

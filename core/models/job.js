@@ -3,7 +3,7 @@ var mexp = require('mongoosastic');
 var config = require('../config').config();
 var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
- 
+
 var jobSchema = new Schema({
     title: String,
     guid: String,
@@ -18,32 +18,35 @@ var jobSchema = new Schema({
     locations: [{
         type: Schema.Types.ObjectId,
         ref: 'Locations',
-        es_type:'nested',
-        es_include_in_parent:true
+        es_type: 'nested',
+        es_include_in_parent: true
     }],
     skills: [{
         type: Schema.Types.ObjectId,
         ref: 'Skills',
-        es_type:'nested',
-        es_include_in_parent:true
+        es_type: 'nested',
+        es_include_in_parent: true
     }],
     applicants: [{
-        type:Schema.Types.ObjectId,
-        ref:'JobApplicants'
+        type: Schema.Types.ObjectId,
+        ref: 'JobApplicants'
     }],
     pipelines: [{
-        type:Schema.Types.ObjectId,
-        ref:'JobPipelines'
+        type: Schema.Types.ObjectId,
+        ref: 'JobPipelines'
     }],
 
     expiryDate: Date,
     is_published: Boolean,
-    metaImage: { type: String },
+    metaImage: {type: String},
     metaImageAltText: String,
     metaTitle: String,
     tags: Array,
     categories: Array,
-
+    recruitmentManager: {
+        type: Schema.Types.ObjectId,
+        ref: 'Users'
+    },
     is_deleted: Boolean,
     created_by: {
         type: Schema.Types.ObjectId,
@@ -78,10 +81,10 @@ jobSchema.plugin(mexp, {
         config.elasticSearch.host
     ],
     populate: [
-        { path: 'locations.Locations', select: 'city state' },
-        { path: 'skills.Skills', select: 'name' },
-    //     { path: 'jobapplicants', select: 'applicant._id applicant.firstName applicant.middleName applicant.lastName applicant.email applicant.phone pipeline._id' },
-    //     { path: 'pipelines', select: 'name' },
+        {path: 'locations.Locations', select: 'city state'},
+        {path: 'skills.Skills', select: 'name'},
+        //     { path: 'jobapplicants', select: 'applicant._id applicant.firstName applicant.middleName applicant.lastName applicant.email applicant.phone pipeline._id' },
+        //     { path: 'pipelines', select: 'name' },
     ],
     bulk: {
         size: 10, // preferred number of docs to bulk index

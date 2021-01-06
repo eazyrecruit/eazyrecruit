@@ -29,7 +29,7 @@ import {ResetPasswordComponent} from './components/reset-password/reset-password
 import {ApplicantSearchComponent} from './components/jobs/applicantsearch/applicantsearch.component';
 import {SelectDropdownComponent} from './components/select-dropdown/select-dropdown.component';
 import {SearchApplicantComponent} from './components/applicants/search-applicant/search-applicant.component';
-import {ApplicantpageComponent} from './components/jobs/applicantpage/applicantpage.component';
+import {ApplicantpageComponent} from './components/applicants/applicantpage/applicantpage.component';
 import {CreateApplicantComponent} from './components/applicants/create-applicant/create-applicant.component';
 import {ApplicantResolver} from './resolver/applicant.resolver';
 import {ForgetPasswordComponent} from './components/forget-password/forget-password.component';
@@ -40,7 +40,7 @@ import {ApplicantSettingsComponent} from './components/settings/applicants/appli
 import {EmailsettingsComponent} from './components/settings/emailsettings/emailsettings.component';
 import {GoogleComponent} from './components/settings/google/google.component';
 import {GoogleAnalyticsComponent} from './components/settings/googleAnalytics/google.analytics.component';
-import {InterviewListComponent} from './components/interview/interview-list/interview-list/interview-list.component';
+import {InterviewListComponent} from './components/interview/interview-list/interview.list.component';
 import {ProfileComponent} from './components/profile/profile.component';
 import {DatabaseComponent} from './components/database/database.component';
 import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/google.recaptcha.component";
@@ -95,7 +95,7 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
                             {path: 'applicant/:applicantId', component: PipelineComponent},
                             {path: 'add/job/:jobId/:pipelineId', component: ApplicantsComponent},
                             {path: 'create', component: CreateApplicantComponent},
-                            {path: ':id', resolve: {applicant: ApplicantResolver}, component: ApplicantpageComponent}
+                            {path: ':id', component: ApplicantpageComponent}
                         ], canActivate: [RoleGuardService], data: {expectedRole: ['admin', 'hr']}
                     },
                     {

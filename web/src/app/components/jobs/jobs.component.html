@@ -2,9 +2,9 @@
     <div class="box box-info">
         <div class="box-header">
             <div class="row">
-                <div class="col-sm-5  mt-10">
+                <div class="col-sm-5">
                     <div class="box-tools">
-                        <div class="btn-group form-group margin-left-10px" role="group" aria-label="Basic example">
+                        <div class="btn-group form-group mb-0" role="group" aria-label="Basic example">
                             <button type="button"  [ngClass]="['btn mr-2', isArchive? '': 'btn-primary', 'btn-sm']"  (click)="setArchive(false)">
                                 <i></i> Active
                                 Jobs</button>
@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div class="col-sm-7">
-                    <div class="pull-right btn-sm">
+                    <div class="pull-right">
                         <div class="form-inline">
                             <ng-container *ngIf="!isArchive">
                                 <div class="form-group margin-right-10px">

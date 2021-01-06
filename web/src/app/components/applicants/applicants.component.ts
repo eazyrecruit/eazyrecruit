@@ -15,6 +15,7 @@ export class ApplicantsComponent implements OnInit {
         pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at', isGridView: false,
         order: -1, searchText: '', startDate: '', endDate: '', source: '', jobId: '',
     };
+    openCandidatePage = false;
     totalRecords = 1;
     jobs: any = [];
     jobIds: any = {};
@@ -28,6 +29,7 @@ export class ApplicantsComponent implements OnInit {
     endMaxDate: any = new Date();
     ApplicantList: any = [];
     applicant: any;
+    applicantData: any;
     dataTableName = 'applicant';
     gettingApplicant = false;
     colorClass: any = this.sharedService.getPipeLineColor();
@@ -172,7 +174,6 @@ export class ApplicantsComponent implements OnInit {
                     applicant['jobApplicantsId'] = jobApplicants._id;
                     applicant['pipeline'] = jobApplicants.pipeline;
                     applicant['job'] = this.jobIds[jobApplicants.job];
-                    console.log('this.jobIds', this.jobIds);
                     if (this.jobIds[jobApplicants.job]) {
                         this.ApplicantList.push(applicant);
                     }
@@ -187,7 +188,8 @@ export class ApplicantsComponent implements OnInit {
     }
 
     openCandidate(applicantId: any) {
-        this.applicant = {_id: applicantId, isApplicantList: true};
+        this.openCandidatePage = true;
+        this.applicantData = {_id: applicantId, isApplicantList: true};
         SiteJS.slideOpen('applicant-info');
     }
 
@@ -241,10 +243,7 @@ export class ApplicantsComponent implements OnInit {
     }
 
     onUpdate($event) {
-        for (let i = 0; i < this.ApplicantList.length; i++) {
-            if ($event._id == this.ApplicantList[i]._id) {
-                this.ApplicantList[i] = $event;
-            }
-        }
+        console.log("$event", $event);
+        this.getCandidate();
     }
 }

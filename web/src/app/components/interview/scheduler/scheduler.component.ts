@@ -7,7 +7,7 @@ import {ApplicantDataService} from '../../../services/applicant-data.service';
 import {InterviewService} from '../../../services/interview.service';
 import {last} from '@angular/router/src/utils/collection';
 import {DatePipe} from '@angular/common';
-import {ApplicantInfoService} from '../../jobs/applicantInfo/applicant-info.service';
+import {ApplicantInfoService} from '../../applicants/applicantInfo/applicant-info.service';
 
 const month = {
     0: 'Jan',

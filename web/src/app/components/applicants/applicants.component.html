@@ -83,21 +83,21 @@
                                        id="DataTables_Table_0"
                                        role="grid">
                                     <thead>
-                                        <tr class="font-weight-bold">
-                                            <!--<th>
-                                                <div class="sorting">#</div>
-                                            </th>-->
-                                            <th>
-                                                <div class="sorting">Candidate
-                                                    <!--<i class="fa fa-sort ml-2" (click)="onSort('email')" aria-hidden="true"></i>--></div>
-                                            </th>
-                                            <th>Experience</th>
-                                            <th>Salary</th>
-                                            <th>Notice Period</th>
-                                            <th>Source</th>
-                                            <th>Job</th>
-                                            <th>Status</th>
-                                        </tr>
+                                    <tr class="font-weight-bold">
+                                        <!--<th>
+                                            <div class="sorting">#</div>
+                                        </th>-->
+                                        <th>
+                                            <div class="sorting">Candidate
+                                                <!--<i class="fa fa-sort ml-2" (click)="onSort('email')" aria-hidden="true"></i>--></div>
+                                        </th>
+                                        <th>Experience</th>
+                                        <th>Salary</th>
+                                        <th>Notice Period</th>
+                                        <th>Source</th>
+                                        <th>Job</th>
+                                        <th>Status</th>
+                                    </tr>
                                     </thead>
                                     <ng-container *ngIf="gettingApplicant">
                                         <i *ngIf="gettingApplicant" class="fa fa-spinner fa-spin"></i>
@@ -118,22 +118,33 @@
                                                     <app-user-card (onSelect)="openCandidate($event)"
                                                                    [applicants]="applicant"></app-user-card>
                                                 </th>
-                                                <td><div *ngIf="applicant?.totalExperience">{{applicant?.totalExperience || "" }} Year(s)</div></td>
                                                 <td>
-                                                    <div class="info-box-wrapper line-height-22">
-                                                        <p *ngIf="applicant?.currentCtc" class="font-weight-500 mb-0 line-height-20">{{applicant?.currentCtc || ""}} LPA</p>
-                                                        <p *ngIf="applicant?.expectedCtc" class="font-weight-500 text-11 line-height-20">Expected: {{applicant?.expectedCtc || ""}} LPA</p>
+                                                    <div *ngIf="applicant?.totalExperience">{{applicant?.totalExperience || "" }}
+                                                        Year(s)
                                                     </div>
                                                 </td>
-                                                 <td><div *ngIf="applicant?.noticePeriod">{{applicant?.noticePeriod || "" }}</div></td>
+                                                <td>
+                                                    <div class="info-box-wrapper line-height-22">
+                                                        <p *ngIf="applicant?.currentCtc"
+                                                           class="font-weight-500 mb-0 line-height-20">{{applicant?.currentCtc || ""}}
+                                                            LPA</p>
+                                                        <p *ngIf="applicant?.expectedCtc"
+                                                           class="font-weight-500 text-11 line-height-20">
+                                                            Expected: {{applicant?.expectedCtc || ""}} LPA</p>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div *ngIf="applicant?.noticePeriod">{{applicant?.noticePeriod || "" }}</div>
+                                                </td>
                                                 <td>
                                                     <span [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant?.source}}</span>
                                                     <ng-container *ngIf="applicant?.created_at">
-                                                        <p class="text-11 font-weight-500 mb-0 line-height-20">Created: 
+                                                        <p class="text-11 font-weight-500 mb-0 line-height-20">Created:
                                                             {{applicant?.created_at | date:'MMM d, y'}}</p>
                                                     </ng-container>
                                                     <ng-container *ngIf="applicant?.modified_at">
-                                                        <p class="text-11 font-weight-500 mb-0 line-height-20">Last Modified:
+                                                        <p class="text-11 font-weight-500 mb-0 line-height-20">Last
+                                                            Modified:
                                                             {{applicant?.modified_at | date:'MMM d, y'}}</p>
                                                     </ng-container>
                                                 </td>
@@ -141,7 +152,7 @@
                                                     <div class="skills">
                                                         <span>
                                                             <a class="jobs-links"
-                                                                [routerLink]="['/jobs/pipeline',applicant.job._id]">{{applicant.job.title}}</a>                                    
+                                                               [routerLink]="['/jobs/pipeline',applicant.job._id]">{{applicant.job.title}}</a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -172,4 +183,5 @@
 
     </div>
 </section>
-<applicant-info id="applicant-info" (onUpdate)="onUpdate($event)" [applicant]="applicant"></applicant-info>
+<applicant-info id="applicant-info" (onUpdate)="onUpdate($event)" [applicant]="applicantData"></applicant-info>
+

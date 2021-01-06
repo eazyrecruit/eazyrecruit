@@ -77,7 +77,6 @@ module.exports.setup = (app) => {
     // Generic Implementation
     // app.use('/api/applicant/comment', require('./services/crud.service')(ApplicantCommentModel, 'CRUDQ'));
     app.use('/api/applicant/employer', require('./services/crud.service')(ApplicantEmployerModel, 'CRUDQ'));
-    app.use('/api/activity', require('./services/crud.service')(ActivityModels, 'CRUDQ'));
     app.use('/api/industry', require('./services/crud.service')(IndustryModel, 'CRUDQ'));
     // app.use('/api/interview/criteria', require('./services/crud.service')(InterviewCriteriaModel, 'CRUDQ'));
     app.use('/api/interview/mode', require('./services/crud.service')(InterviewModeModel, 'CRUDQ'));
@@ -105,6 +104,9 @@ module.exports.setup = (app) => {
     app.use('/api/migration', require('./controllers/migrate.ctrl').migrate);
     app.use('/api/analytics', require('./controllers/analytics.ctrl').analyticsRoutes);
     app.use('/api/user', require('./controllers/user.ctrl').user);
+    app.use('/api/task', require('./controllers/task.ctrl').task);
+    app.use('/api/referred', require('./controllers/referred.ctrl').referred);
+    app.use('/api/activity', require('./controllers/activity.ctrl').activity);
 };
 
 var secretRecruitCallBack = function (req, payload, done) {
