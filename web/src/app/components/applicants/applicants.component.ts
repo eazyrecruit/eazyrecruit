@@ -243,7 +243,6 @@ export class ApplicantsComponent implements OnInit {
     }
 
     onUpdate($event) {
-        console.log("$event", $event);
         this.getCandidate();
     }
 }

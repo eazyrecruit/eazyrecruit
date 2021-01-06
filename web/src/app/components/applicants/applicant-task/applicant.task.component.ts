@@ -92,7 +92,6 @@ export class ApplicantTaskComponent implements OnChanges {
     }
 
     ngOnChanges(): void {
-        console.log('getApplicantActivity');
         this.getTask();
     }
 }

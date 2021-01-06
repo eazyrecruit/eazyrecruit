@@ -36,7 +36,6 @@ export class AddActivityComponent implements OnInit {
     }
 
     createActivity(form) {
-        console.log('Form', form);
         if (!this.addActivityForm.valid) {
             this.validationService.validateAllFormFields(this.addActivityForm);
         } else {

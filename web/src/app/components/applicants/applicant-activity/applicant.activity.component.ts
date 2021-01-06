@@ -63,7 +63,6 @@ export class ApplicantActivityComponent implements OnChanges {
     }
 
     ngOnChanges(): void {
-        console.log('getApplicantActivity');
         this.getApplicantActivity();
     }
 }

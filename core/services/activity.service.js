@@ -29,7 +29,6 @@ exports.addActivity = async (data) => {
     if (data.description) {
         activity["description"] = data.description;
     }
-    console.log("addActivity", activity);
     return await new Activity(activity).save();
 
 };
