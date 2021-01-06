@@ -30,7 +30,17 @@ exports.getUsers = async (req) => {
     }
     return {count, users};
 };
-
+exports.getHrAdmin = async () => {
+    let roles = await Role.find({is_deleted: false, name: {$in: ["hr", "admin"]}});
+    const roleIds = [];
+    for (let index = 0; index < roles.length; index++) {
+        roleIds.push(roles[index]._id);
+    }
+    return await User.find({roles: {$elemMatch: {$in: roleIds}}, is_deleted: false}, {
+        name: 1, email: 1, firstName: 1,
+        lastName: 1
+    });
+};
 exports.getUser = async (ownerId) => {
     return await User.findOne({_id: ownerId, is_deleted: false}, {passwordResetToken: 0});
 };

@@ -66,7 +66,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
         if (this.applicant) {
             this.SkillDiv = '';
             this.gettingApplicant = true;
-            document.getElementById('home').click();
+            document.getElementById('history').click();
             this.getApplicantById(this.applicant._id);
             this.getJobsByApplicantId();
         }

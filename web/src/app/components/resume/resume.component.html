@@ -1,9 +1,9 @@
 <ul class="todo-list ui-sortable" *ngIf="resume">
-  <li>
-    <span class="text">
-      <a type="button" class="btn btn-sm" (click)="open()">{{resume?.fileName}}</a>
-      <a type="button" class="btn btn-primary btn-sm" (click)="download(resume?._id)"><i class="fa fa-download"></i></a>
-    </span>
+  <li class="border border-radius-8">
+    <div class="text">
+      <a type="button" class="btn btn-sm p-0" (click)="open()">{{resume?.fileName}}</a>
+      <a type="button" class="btn btn-info btn-sm" (click)="download(resume?._id)"><i class="fa fa-download"></i></a>
+    </div>
   </li>
 </ul>
 

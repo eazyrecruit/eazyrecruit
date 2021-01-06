@@ -32,6 +32,7 @@ export class JobComponent implements OnInit {
     jobId: any;
     job: any;
     skills = [];
+    userList: any[] = [];
     locations = [];
     isSkillSelected: boolean;
     errorDescription: boolean;
@@ -48,137 +49,70 @@ export class JobComponent implements OnInit {
     metaImage: any;
     currentMetaImage: any;
 
-  @Output()
-  refreshList: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output()
+    refreshList: EventEmitter<boolean> = new EventEmitter<boolean>();
 
 
-  quillConfig = {
-    //toolbar: '.toolbar',
-    toolbar: {
-      container: [
-        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-        ['code-block'],
-        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        //[{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-        //[{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-        //[{ 'direction': 'rtl' }],                         // text direction
+    quillConfig = {
 
-        //[{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-        //[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        toolbar: {
+            container: [
+                ['bold', 'italic', 'underline', 'strike'],
+                ['code-block'],
+                [{'header': 1}, {'header': 2}],
+                [{'list': 'ordered'}, {'list': 'bullet'}],
 
-        //[{ 'font': [] }],
-        //[{ 'align': [] }],
+                ['clean'],
 
-        ['clean'],                                         // remove formatting button
-
-        ['link'],
-        //['link', 'image', 'video']
-        //['emoji'],
-      ],
-      //handlers: {'emoji': function() {}}
-    },
-    //autoLink: true
-
-    // mention: {
-    //   allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
-    //   mentionDenotationChars: ["@", "#"],
-    //   source: (searchTerm, renderList, mentionChar) => {
-    //     let values;
-
-    //     if (mentionChar === "@") {
-    //       values = this.atValues;
-    //     } else {
-    //       values = this.hashValues;
-    //     }
-
-    //     if (searchTerm.length === 0) {
-    //       renderList(values, searchTerm);
-    //     } else {
-    //       const matches = [];
-    //       for (var i = 0; i < values.length; i++)
-    //         if (~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())) matches.push(values[i]);
-    //       renderList(matches, searchTerm);
-    //     }
-    //   },
-    // },
-    // "emoji-toolbar": true,
-    // "emoji-textarea": false,
-    // "emoji-shortname": true,
-    // keyboard: {
-    //   bindings: {
-    //     // shiftEnter: {
-    //     //   key: 13,
-    //     //   shiftKey: true,
-    //     //   handler: (range, context) => {
-    //     //     // Handle shift+enter
-    //     //     console.log("shift+enter")
-    //     //   }
-    //     // },
-    //     enter:{
-    //       key:13,
-    //       handler: (range, context)=>{
-    //         console.log("enter");
-    //         return true;
-    //       }
-    //     }
-    //   }
-    // }
-  }
-
-
-
-  constructor(
-    public bsModelRef: BsModalRef,
-    private jobService: JobService,
-    private fbForm: FormBuilder,
-    private validationService: ValidationService,
-    private sharedService: SharedService,
-    private router: Router,
-    private departmentService: DepartmentService,
-    private companyService: CompanyService,
-    private skillService: SkillsService,
-    private locationService: LocationService) {
-    this.populateForm(null);
-  }
-
-  ngOnInit() {
-    // this.companyService.searchCompany().subscribe(result => {
-    //   if (result['success']) {
-    //     this.companyList = result['success']['data']['rows'];
-    //   }
-    // });
-
-    // this.locationService.getState().subscribe(result => {
-    //   if (result['success']['data']) {
-    //     this.stateList = result['success']['data'];
-    //   }
-    // });
-
-    // this.jobDetails = this.fbForm.group({
-    //   items: this.fbForm.array([this.createItem()])
-    // });
-
-    // this.jobId = JSON.parse(this.sharedService.getJobDetail());
-    // this.sharedService.deleteJobDetail();
-    this.closePopup = new Subject<any>();
-    if (this.jobId) {
-      this.jobService.getJobById(this.jobId).subscribe(result => {
-        if (result['success']) {
-          this.job = result['success'].data;
-          this.populateForm(this.job);
+                ['link']
+            ],
         }
-      });
-    }
-  }
+    };
 
-  eventHandler(event: any) {
-    if (event[0].city) {
-      this.jobDetails.controls['location'].setValue(event);
-    } else {
-      this.jobDetails.controls['skill'].setValue(event);
+
+    constructor(
+        public bsModelRef: BsModalRef,
+        private jobService: JobService,
+        private fbForm: FormBuilder,
+        private validationService: ValidationService,
+        private sharedService: SharedService,
+        private router: Router,
+        private departmentService: DepartmentService,
+        private companyService: CompanyService,
+        private skillService: SkillsService,
+        private locationService: LocationService) {
+        this.populateForm(null);
     }
-  }
+
+    ngOnInit() {
+        this.closePopup = new Subject<any>();
+        this.getUser();
+        if (this.jobId) {
+            this.jobService.getJobById(this.jobId).subscribe(result => {
+                if (result['success']) {
+                    this.job = result['success'].data;
+                    this.populateForm(this.job);
+                }
+            });
+        }
+    }
+
+    getUser() {
+        this.jobService.getHrAdmin().subscribe(result => {
+            if (result['success'] && result['success'].data) {
+                this.userList = result['success'].data;
+                console.log('ActivityData', this.userList);
+            }
+        });
+    }
+
+    eventHandler(event: any) {
+        if (event[0].city) {
+            this.jobDetails.controls['location'].setValue(event);
+        } else {
+            this.jobDetails.controls['skill'].setValue(event);
+        }
+    }
 
     get formData() {
         return <FormArray>this.jobDetails.get('items');
@@ -230,6 +164,7 @@ export class JobComponent implements OnInit {
             locations: [null, [<any>Validators.required]],
             type: [null],
             expiryDate: [null],
+            recruitmentManager: [null, [<any>Validators.required]],
             minExperience: [null, [], this.validationService.jobExperience],
             maxExperience: [null, [], this.validationService.jobExperience],
             ctc: [null],
@@ -242,22 +177,23 @@ export class JobComponent implements OnInit {
         if (job) {
             this.active = job.active;
             this.publish = job.is_published;
-            this.jobDetails.controls["_id"].setValue(job._id);
-            this.jobDetails.controls["title"].setValue(job.title);
-            this.jobDetails.controls["active"].setValue(job.active);
-            this.jobDetails.controls["is_published"].setValue(job.is_published);
-            this.jobDetails.controls["minExperience"].setValue(job.minExperience);
-            this.jobDetails.controls["maxExperience"].setValue(job.maxExperience);
-            this.jobDetails.controls["ctc"].setValue(job.ctc);
-            this.jobDetails.controls["type"].setValue(job.type);
-            this.jobDetails.controls["expiryDate"].setValue(new Date(job.expiryDate));
-            this.jobDetails.controls["skills"].setValue(this.addDisplayName(job.skills));
-            this.jobDetails.controls["locations"].setValue(this.addDisplayName(job.locations));
-            this.jobDetails.controls["description"].setValue(job.description);
-            this.jobDetails.controls["responsibilities"].setValue(job.responsibilities);
-            this.jobDetails.controls["metaImage"].setValue(job.metaImage);
-            this.jobDetails.controls["metaImageAltText"].setValue(job.metaImageAltText);
-            this.jobDetails.controls["metaTitle"].setValue(job.metaTitle);
+            this.jobDetails.controls['_id'].setValue(job._id);
+            this.jobDetails.controls['title'].setValue(job.title);
+            this.jobDetails.controls['active'].setValue(job.active);
+            this.jobDetails.controls['is_published'].setValue(job.is_published);
+            this.jobDetails.controls['minExperience'].setValue(job.minExperience);
+            this.jobDetails.controls['maxExperience'].setValue(job.maxExperience);
+            this.jobDetails.controls['ctc'].setValue(job.ctc);
+            this.jobDetails.controls['type'].setValue(job.type);
+            this.jobDetails.controls['expiryDate'].setValue(new Date(job.expiryDate));
+            this.jobDetails.controls['recruitmentManager'].setValue(job.recruitmentManager || null);
+            this.jobDetails.controls['skills'].setValue(this.addDisplayName(job.skills));
+            this.jobDetails.controls['locations'].setValue(this.addDisplayName(job.locations));
+            this.jobDetails.controls['description'].setValue(job.description);
+            this.jobDetails.controls['responsibilities'].setValue(job.responsibilities);
+            this.jobDetails.controls['metaImage'].setValue(job.metaImage);
+            this.jobDetails.controls['metaImageAltText'].setValue(job.metaImageAltText);
+            this.jobDetails.controls['metaTitle'].setValue(job.metaTitle);
             this.currentMetaImage = job.metaImage;
         }
     }
@@ -300,14 +236,14 @@ export class JobComponent implements OnInit {
             this.validationService.validateAllFormFields(this.jobDetails);
         } else {
             const formData = new FormData();
-            for (var key in jobForm) {
+            for (const key in jobForm) {
                 if (jobForm[key] !== null) {
                     formData.append(key, jobForm[key]);
                 }
             }
-            let skill = [];
-            let current = [];
-            let preferred = [];
+            const skill = [];
+            const current = [];
+            const preferred = [];
             if (jobForm.skills) {
                 for (let index = 0; index < jobForm.skills.length; index++) {
                     if (jobForm.skills[index]._id) {
@@ -420,13 +356,13 @@ export class JobComponent implements OnInit {
     }
 
     public asyncSkills = (text: string): Observable<any> => {
-        let filter = {pageSize: 10, offset: 0, searchText: text};
+        const filter = {pageSize: 10, offset: 0, searchText: text};
         return this.skillService.getSkills(filter).pipe(map((result: any) => result.success.data.skills));
-    };
+    }
 
     public asyncLocations = (text: string): Observable<any> => {
         return this.locationService.getLocations(text).pipe(map((data: any) => data.success.data));
-    };
+    }
 
     onFileChange(event) {
         const reader = new FileReader();
@@ -435,7 +371,7 @@ export class JobComponent implements OnInit {
             if (event[0].type.includes('jpg') || event[0].type.includes('jpeg') || event[0].type.includes('png')) {
                 reader.onload = () => {
                     this.metaImage = event[0];
-                }
+                };
                 reader.readAsDataURL(event[0]);
             } else {
                 this.errInvalidFile = true;

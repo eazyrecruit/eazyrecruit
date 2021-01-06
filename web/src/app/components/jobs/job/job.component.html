@@ -1,208 +1,211 @@
 <div class="modal-header">
-  <button id="closeButton" type="button" (click)="bsModelRef.hide()" class="close" data-dismiss="modal">&times;</button>
-  <h4 class="modal-title">Job</h4>
+    <button id="closeButton" type="button" (click)="bsModelRef.hide()" class="close" data-dismiss="modal">&times;
+    </button>
+    <h4 class="modal-title">Job</h4>
 </div>
 <div class="modal-body content-move">
-  <form [formGroup]="jobDetails" novalidate (ngSubmit)="createJob(jobDetails.value)">
-    <div class="row">
-      <div class="col-sm-9">
-        <div class="form-group">
-          <label for="title" class="required">Job Title</label>
-          <input type="text" placeholder="Job Title" class="form-control" formControlName="title" required>
-          <small class="text-danger"
-            *ngIf="jobDetails.controls['title'].hasError('required') && jobDetails.controls['title'].touched">
-            Please enter Job Title
-          </small>
-          <small class="text-danger" *ngIf="jobDetails.controls['title'].hasError('jobTitleValid')">
-            Please enter correct job title            
-          </small>
-        </div>
-      </div>
-      <div class="col-sm-3 mr-top">
+    <form [formGroup]="jobDetails" novalidate (ngSubmit)="createJob(jobDetails.value)">
         <div class="row">
-          <div class="col-sm-6">
-            <div class="form-group">
-              <label for="active">Active</label>
-              <input style="margin-left: 25px;" type="checkbox" formControlName="active" [(ngModel)]="active">
+            <div class="col-sm-9">
+                <div class="form-group">
+                    <label for="title" class="required">Job Title</label>
+                    <input type="text" placeholder="Job Title" class="form-control" formControlName="title" required>
+                    <small class="text-danger"
+                           *ngIf="jobDetails.controls['title'].hasError('required') && jobDetails.controls['title'].touched">
+                        Please enter Job Title
+                    </small>
+                    <small class="text-danger" *ngIf="jobDetails.controls['title'].hasError('jobTitleValid')">
+                        Please enter correct job title
+                    </small>
+                </div>
             </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="form-group">
-              <label for="is_published">Publish</label>
-              <input style="margin-left: 25px;" type="checkbox" formControlName="is_published" [(ngModel)]="publish">
+            <div class="col-sm-3 mr-top">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="active">Active</label>
+                            <input style="margin-left: 25px;" type="checkbox" formControlName="active"
+                                   [(ngModel)]="active">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="is_published">Publish</label>
+                            <input style="margin-left: 25px;" type="checkbox" formControlName="is_published"
+                                   [(ngModel)]="publish">
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3">
-        <div class="form-group">
-          <label for="type" class="required">Job Type</label>
-          <select class="form-control" formControlName="type">
-            <option value="null" disabled selected>Select your option</option>
-            <option *ngFor="let jobType of jobTypes;" value="{{jobType.value}}">{{jobType.display}}</option>
-          </select>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="type" class="required">Job Type</label>
+                    <select class="form-control" formControlName="type">
+                        <option value="null" disabled selected>Select your option</option>
+                        <option *ngFor="let jobType of jobTypes;" value="{{jobType.value}}">{{jobType.display}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="ctc" class="required">Annual CTC (Lakh)</label>
+                    <input type="text" placeholder="Annual CTC" class="form-control" formControlName="ctc" required>
+                    <small class="text-danger"
+                           *ngIf="jobDetails.controls['ctc'].hasError('required') && jobDetails.controls['ctc'].touched">
+                        Please enter Annual CTC
+                    </small>
+                    <small class="text-danger" *ngIf="jobDetails.controls['ctc'].hasError('jobExperience')">
+                        Please enter correct CTC
+                    </small>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="minExperience" class="required">Minimum Experience(Year)</label>
+                    <input type="text" placeholder="0-2" class="form-control" formControlName="minExperience" required>
+                    <small class="text-danger"
+                           *ngIf="jobDetails.controls['minExperience'].hasError('required') && jobDetails.controls['minExperience'].touched">
+                        Please enter experience
+                    </small>
+                    <small class="text-danger" *ngIf="jobDetails.controls['minExperience'].hasError('jobExperience')">
+                        Please enter correct experience
+                    </small>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="maxExperience" class="required">Maximum Experience(Year)</label>
+                    <input type="text" placeholder="0-2" class="form-control" formControlName="maxExperience" required>
+                    <small class="text-danger"
+                           *ngIf="jobDetails.controls['maxExperience'].hasError('required') && jobDetails.controls['maxExperience'].touched">
+                        Please enter experience
+                    </small>
+                    <small class="text-danger" *ngIf="jobDetails.controls['maxExperience'].hasError('jobExperience')">
+                        Please enter correct experience
+                    </small>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-sm-3">
-        <div class="form-group">
-          <label for="ctc" class="required">Annual CTC (Lakh)</label>
-          <input type="text" placeholder="Annual CTC" class="form-control" formControlName="ctc" required>
-          <small class="text-danger"
-            *ngIf="jobDetails.controls['ctc'].hasError('required') && jobDetails.controls['ctc'].touched">
-            Please enter Annual CTC
-          </small>
-          <small class="text-danger" *ngIf="jobDetails.controls['ctc'].hasError('jobExperience')">
-            Please enter correct CTC
-          </small>
-        </div>
-      </div>
-      <div class="col-sm-3">
-        <div class="form-group">
-          <label for="minExperience" class="required">Minimum Experience(Year)</label>
-          <input type="text" placeholder="0-2" class="form-control" formControlName="minExperience" required>
-          <small class="text-danger"
-            *ngIf="jobDetails.controls['minExperience'].hasError('required') && jobDetails.controls['minExperience'].touched">
-            Please enter experience
-          </small>
-          <small class="text-danger" *ngIf="jobDetails.controls['minExperience'].hasError('jobExperience')">
-            Please enter correct experience
-          </small>
-        </div>
-      </div>
-      <div class="col-sm-3">
-        <div class="form-group">
-          <label for="maxExperience" class="required">Maximum Experience(Year)</label>
-          <input type="text" placeholder="0-2" class="form-control" formControlName="maxExperience" required>
-          <small class="text-danger"
-            *ngIf="jobDetails.controls['maxExperience'].hasError('required') && jobDetails.controls['maxExperience'].touched">
-            Please enter experience
-          </small>
-          <small class="text-danger" *ngIf="jobDetails.controls['maxExperience'].hasError('jobExperience')">
-            Please enter correct experience
-          </small>
-        </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-sm-6">
-        <div class="form-group">
-          <label for="locations" class="required">Job Locations</label>
-          <tag-input [onlyFromAutocomplete]="true" formControlName="locations">
-            <tag-input-dropdown aria-placeholder="Enter new Job Location" [identifyBy]="'_id'" [displayBy]="'city'" [autocompleteObservable]="asyncLocations">
-              <ng-template let-item="item" let-index="index">
-                {{ item.city + ', ' + item.state }}
-              </ng-template>
-            </tag-input-dropdown>
-          </tag-input>
-          <small class="text-danger"
-            *ngIf="jobDetails.controls['locations'].hasError('required') && jobDetails.controls['locations'].touched">
-            Please select job location
-          </small>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="locations" class="required">Job Locations</label>
+                    <tag-input [onlyFromAutocomplete]="true" formControlName="locations">
+                        <tag-input-dropdown aria-placeholder="Enter new Job Location" [identifyBy]="'_id'"
+                                            [displayBy]="'city'" [autocompleteObservable]="asyncLocations">
+                            <ng-template let-item="item" let-index="index">
+                                {{ item.city + ', ' + item.state }}
+                            </ng-template>
+                        </tag-input-dropdown>
+                    </tag-input>
+                    <small class="text-danger"
+                           *ngIf="jobDetails.controls['locations'].hasError('required') && jobDetails.controls['locations'].touched">
+                        Please select job location
+                    </small>
+                </div>
+            </div>
+            <div class="col-sm-3 mt-10">
+                <label for="recruitmentManager">Recruitment Manager</label>
+                <select id="recruitmentManager" formControlName="recruitmentManager" class="form-control">
+                    <option value="" disabled selected>Select Assignee</option>
+                    <option *ngFor="let user of userList;"
+                            value="{{user._id}}"> {{user.name}}{{'<' + user.email + '>'}}</option>
+                </select>
+                <small class="text-danger"
+                       *ngIf="jobDetails.controls['recruitmentManager'].hasError('required') && (jobDetails.controls['recruitmentManager'].touched || submit)">
+                    Please select an Recruitment Manager
+                </small>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="expiryDate">Expiry Date</label>
+                    <input type="text" class="form-control" placeholder="Select expiry date"
+                           formControlName="expiryDate" bsDatepicker/>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-sm-6">
-        <div class="form-group">
-          <label for="expiryDate">Expiry Date</label>
-          <input type="text" class="form-control" placeholder="Select expiry date" formControlName="expiryDate" bsDatepicker/>
-        </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="form-group">
-          <label for="skills" class="required">Skills</label>
-          <tag-input [onlyFromAutocomplete]="true" formControlName="skills">
-            <tag-input-dropdown aria-placeholder="Enter new skill" [identifyBy]="'_id'" [displayBy]="'name'" [autocompleteObservable]="asyncSkills">
-              <ng-template let-item="item" let-index="index">
-                {{ item.name }}
-              </ng-template>
-            </tag-input-dropdown>
-          </tag-input>
-          <small class="text-danger"
-            *ngIf="jobDetails.controls['skills'].hasError('required') && jobDetails.controls['skills'].touched">
-            Please select skills
-          </small>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label for="skills" class="required">Skills</label>
+                    <tag-input [onlyFromAutocomplete]="true" formControlName="skills">
+                        <tag-input-dropdown aria-placeholder="Enter new skill" [identifyBy]="'_id'" [displayBy]="'name'"
+                                            [autocompleteObservable]="asyncSkills">
+                            <ng-template let-item="item" let-index="index">
+                                {{ item.name }}
+                            </ng-template>
+                        </tag-input-dropdown>
+                    </tag-input>
+                    <small class="text-danger"
+                           *ngIf="jobDetails.controls['skills'].hasError('required') && jobDetails.controls['skills'].touched">
+                        Please select skills
+                    </small>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- <div class="row">
-          <div formArrayName="items" *ngFor="let item of formData.controls; let i = index;">
-            <div class="col-sm-12" [formGroupName]="i">
-                <input class="form-control" formControlName="name" placeholder="Name">
-                <input class="form-control" formControlName="comment" placeholder="Comment">
-                <button class="btn btn-success" (click)="addItem()">
-                    add
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <!-- <textarea rows="6" type="text" placeholder="Description" id="txtDescription" class="form-control"
+                      formControlName="description"></textarea> -->
+                    <quill-editor formControlName="description" [modules]="quillConfig"></quill-editor>
+                    <small class="text-danger" *ngIf="errorDescription">Please enter Description.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label for="responsibilities">Responsibilities</label>
+                    <!-- <textarea rows="6" placeholder="Responsibilities" id="txtReponsibility" class="form-control"
+                      formControlName="responsibilities"></textarea> -->
+                    <quill-editor formControlName="responsibilities" [modules]="quillConfig"></quill-editor>
+                    <small class="text-danger" *ngIf="errorResponsiblity">Please enter Responsibilities.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="publish">
+            <div class="form-group col-md-3">
+                <label for="metaImage" class="not-required">Meta Image</label>
+                <input type="file" class="form-control" formControlName="metaImage" #file
+                       (change)="onFileChange(file.files)" multiple="" accept=".jpg, .jpeg, .png">
+                <small class="text-danger" *ngIf="errInvalidFile">
+                    Please upload only png/jpg/jpeg image
+                </small>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="metaImageAltText" class="not-required">Meta Image Alt Text</label>
+                <input type="text" placeholder="Meta Image Alt Text" class="form-control"
+                       formControlName="metaImageAltText">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="metaTitle" class="required">Meta Title</label>
+                <input type="text" placeholder="Meta Title" class="form-control" formControlName="metaTitle">
+                <small class="text-danger"
+                       *ngIf="publish &&  !jobDetails.value['metaTitle'] && (submit || jobDetails.controls['metaTitle'].touched)">
+                    Please enter meta title
+                </small>
+            </div>
+            <div class="form-group col-md-3">
+                <button style="margin-top: 32px;" class="btn btn-primary" (click)="publishJob(jobDetails.value)">Publish
+                    <i class="fa fa-arrow-circle-right"></i>
                 </button>
-                <span *ngIf="i > 0">
-                    <button class="btn btn-danger" (click)="removeItem(i)">
-                        remove
-                    </button>
-                </span>
             </div>
-          </div>
-        </div> -->
-
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="form-group">
-          <label for="description">Description</label>
-          <!-- <textarea rows="6" type="text" placeholder="Description" id="txtDescription" class="form-control"
-            formControlName="description"></textarea> -->
-          <quill-editor formControlName="description" [modules]="quillConfig"></quill-editor>
-          <small class="text-danger" *ngIf="errorDescription">Please enter Description.</small>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="form-group">
-          <label for="responsibilities">Responsibilities</label>
-          <!-- <textarea rows="6" placeholder="Responsibilities" id="txtReponsibility" class="form-control"
-            formControlName="responsibilities"></textarea> -->
-          <quill-editor formControlName="responsibilities" [modules]="quillConfig"></quill-editor>
-          <small class="text-danger" *ngIf="errorResponsiblity">Please enter Responsibilities.</small>
-        </div>
-      </div>
-    </div>
-
-    <div class="row" *ngIf="publish">
-      <div class="form-group col-md-3">
-        <label for="metaImage" class="not-required">Meta Image</label>
-        <input type="file" class="form-control" formControlName="metaImage" #file (change)="onFileChange(file.files)" multiple="" accept=".jpg, .jpeg, .png">
-        <small class="text-danger" *ngIf="errInvalidFile">
-          Please upload only png/jpg/jpeg image
-        </small>
-      </div>
-      <div class="form-group col-md-3">
-        <label for="metaImageAltText" class="not-required">Meta Image Alt Text</label>
-        <input type="text" placeholder="Meta Image Alt Text" class="form-control" formControlName="metaImageAltText">
-      </div>
-      <div class="form-group col-md-3">
-        <label for="metaTitle" class="required">Meta Title</label>
-        <input type="text" placeholder="Meta Title" class="form-control" formControlName="metaTitle">
-        <small class="text-danger"
-          *ngIf="publish &&  !jobDetails.value['metaTitle'] && (submit || jobDetails.controls['metaTitle'].touched)">
-          Please enter meta title
-        </small>
-      </div>
-      <div class="form-group col-md-3">
-        <button style="margin-top: 32px;" class="btn btn-primary" (click)="publishJob(jobDetails.value)">Publish
-          <i class="fa fa-arrow-circle-right"></i>
+        <button type="submit" class="btn btn-primary">Submit
+            <i class="fa fa-arrow-circle-right"></i>
         </button>
-      </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Submit
-      <i class="fa fa-arrow-circle-right"></i>
-    </button>
-    <small class="text-danger" *ngIf="!active || !publish">
-      Only active submitted.
-    </small>
-  </form>
+        <small class="text-danger" *ngIf="!active || !publish">
+            Only active submitted.
+        </small>
+    </form>
 </div>

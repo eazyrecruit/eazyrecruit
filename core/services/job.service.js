@@ -37,6 +37,7 @@ exports.save = async (req) => {
         }
 
         modelJob.title = req.body.title;
+        modelJob.recruitmentManager = req.body.recruitmentManager || modelJob.recruitmentManager;
         modelJob.guid = modelJob.guid || createSlug(req.body.title);
         modelJob.active = req.body.active ? req.body.active : true;
         modelJob.description = req.body.description ? req.body.description : null;
@@ -496,7 +497,7 @@ exports.removeApplicant = async (req) => {
                         description: description
                     });
                     await histroyService.create({
-                        applicant:jobApplicant.applicant,
+                        applicant: jobApplicant.applicant,
                         pipeline: req.body.pipeline,
                         job: req.body.job,
                         createdBy: req.user.id,
