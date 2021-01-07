@@ -14,30 +14,32 @@
 
             </div>
             <div class="col-sm-6">
-                <ul class="nav nav-tabs nav-justified control-sidebar-tabs custom-tabs">
-                    <li class="active"><a href="#nav-task-Activates" data-toggle="tab">Tasks And Activities</a></li>
-                    <li><a href="#nav-interview" data-toggle="tab">Interviews</a></li>
-                    <li><a href="#nav-message" data-toggle="tab">Message</a></li>
-                </ul>
-                <div class="tab-content border custom-tab-pane"
-                     style="background: #F7F5F5; max-height: 98vh; overflow-y: auto;">
-                    <div class="tab-pane fade active in" id="nav-task-Activates">
-                        <div class="scroll-content">
-                            <app-applicant-task [applicantId]="applicantId"></app-applicant-task>
-                        </div>
-                        <div class="scroll-content">
-                            <app-applicant-activity [isAddedActivity]="true" [isActivityUpdate]="isActivityUpdate"
-                                                    [applicantId]="applicantId">
-                            </app-applicant-activity>
-                        </div>
+                <div style=" min-height: 98vh; background: #F7F5F5;padding: 15px;margin-top: -15px;">
+                    <ul class="nav nav-tabs nav-justified control-sidebar-tabs custom-tabs">
+                        <li class="active"><a href="#nav-task-Activates" data-toggle="tab">Tasks And Activities</a></li>
+                        <li><a href="#nav-interview" data-toggle="tab">Interviews</a></li>
+                        <li><a href="#nav-message" data-toggle="tab">Message</a></li>
+                    </ul>
+                    <div class="tab-content border custom-tab-pane"
+                         style=" background: #F7F9FC; max-height: 98vh; overflow-y: auto;">
+                        <div class="tab-pane fade active in" id="nav-task-Activates">
+                            <div class="scroll-content">
+                                <app-applicant-task [applicantId]="applicantId"></app-applicant-task>
+                            </div>
+                            <div class="scroll-content">
+                                <app-applicant-activity [isAddedActivity]="true" [isActivityUpdate]="isActivityUpdate"
+                                                        [applicantId]="applicantId">
+                                </app-applicant-activity>
+                            </div>
 
+                        </div>
+                        <div class="tab-pane fade in" id="nav-interview">
+                            <app-applicant-interview (onCancelInterview)="onCancelInterviewData($event)"
+                                                     (onOnInterViewUpdate)="onUpdateInterview($event)" [jobId]="jobId"
+                                                     [applicant]="applicantData"></app-applicant-interview>
+                        </div>
+                        <div class="tab-pane fade in" id="nav-message"></div>
                     </div>
-                    <div class="tab-pane fade in" id="nav-interview">
-                        <app-applicant-interview (onCancelInterview)="onCancelInterviewData($event)"
-                                                 (onOnInterViewUpdate)="onUpdateInterview($event)" [jobId]="jobId"
-                                                 [applicant]="applicantData"></app-applicant-interview>
-                    </div>
-                    <div class="tab-pane fade in" id="nav-message"></div>
                 </div>
 
             </div>
