@@ -1,9 +1,9 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <strong>Task</strong>
 
-<button   (click)="addTask()"
-        class="btn btn-primary btn-xs ng-scope">Create Task
-</button>
+    <button (click)="addTask()"
+            class="btn btn-primary btn-xs ng-scope">Create Task
+    </button>
 </div>
 <ng-container *ngIf="isLoading">
     <i class="fa fa-spinner fa-spin"></i>
@@ -14,7 +14,7 @@
             <div class="border pad-15-10 mb-10 bg-light border-radius-8 box-shadow">
 
                 <div class="d-flex align-items-center">
-               
+
                     <div class="w-100">
                         <div class="row">
 
@@ -30,36 +30,38 @@
                                                  class="profile-user-img img-responsive img-circle">
                                         </ng-container>
                                     </div>
-        
+
                                     <div>
                                         <p class="profile-username mb-5 mt-0 text-12 mb-0">
-                                           <strong> {{data.assignee.name || data.assignee.email }} </strong>
+                                            <strong> {{data.assignee.name || data.assignee.email }} </strong>
                                         </p>
-                                  
+
                                     </div>
-                                </div>                    
+                                </div>
                             </div>
-                          
-                            <div class="col-sm-4 d-flex align-items-center justify-content-end edithover">        
+
+                            <div class="col-sm-4 d-flex align-items-center justify-content-end edithover">
                                 <small class="font-75 font-weight-500 text-muted mr-2">{{data.targetDate | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</small>
                                 <i class="fa fa-pencil editApplcant editApplcant-custom" (click)="editTask(data)"></i>
                             </div>
                         </div>
-        
+
                         <div class="row">
                             <div class="col-sm-12">
-                                <input class="custom-checkbox mx-4-auto" (change)="changeStatus(data._id, data.status)" type="checkbox"
-                                [checked]="data.status==='COMPLETED'"/>       <span class="text-12">  {{data.description}}  </span>
+                                <input class="custom-checkbox mx-4-auto" (change)="changeStatus(data._id, data.status)"
+                                       type="checkbox"
+                                       [checked]="data.status==='COMPLETED'"/> <span
+                                    class="text-12">  {{data.description}}  </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                
+
             </div>
         </div>
     </ng-container>
     <ng-container *ngIf="taskData.length <=0">
-        no History found for this Applicant
+        There are no tasks
     </ng-container>
 </ng-container>

@@ -95,7 +95,7 @@ export class CreateApplicantComponent implements OnInit {
                 lastName: [applicant.lastName, [], this.validationService.nameValid],
                 email: [applicant.email, [<any>Validators.required], this.validationService.emailValid],
                 phone: [applicant.phones.toString(), [], this.validationService.mobileValid],
-                referredBy: [applicant.referredBy || ''],
+                referredBy: [applicant.referredBy || '', [<any>Validators.required], this.validationService.emailValid],
                 noticePeriod: [applicant.noticePeriod],
                 noticePeriodNegotiable: [applicant.noticePeriodNegotiable],
                 skills: [applicant.skills, []],
@@ -117,7 +117,7 @@ export class CreateApplicantComponent implements OnInit {
                 lastName: [null, [], this.validationService.nameValid],
                 email: [null, [<any>Validators.required], this.validationService.emailValid],
                 phone: [null, [], this.validationService.mobileValid],
-                referredBy: [null],
+                referredBy: [null, [<any>Validators.required], this.validationService.emailValid],
                 noticePeriod: [null],
                 noticePeriodNegotiable: [null],
                 skills: [null, []],
@@ -132,13 +132,13 @@ export class CreateApplicantComponent implements OnInit {
 
     }
 
-  getAllUsers() {
-    this.accountService.getAllUsers({ offset: 0, pageSize: 10, searchText: '', all: true }).subscribe(result => {
-      if (result['success'] && result['success']['data'] && result['success']['data']['users']) {
-        this.referrers = result['success']['data']['users'];
-      }
-    });
-  }
+    getAllUsers() {
+        this.accountService.getAllUsers({offset: 0, pageSize: 10, searchText: '', all: true}).subscribe(result => {
+            if (result['success'] && result['success']['data'] && result['success']['data']['users']) {
+                this.referrers = result['success']['data']['users'];
+            }
+        });
+    }
 
     onFileChange(event) {
         const reader = new FileReader();

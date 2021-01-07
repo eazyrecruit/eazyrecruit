@@ -5,7 +5,7 @@
                 <div class="box-body box-profile">
                     <ng-container *ngIf="applicantData">
                         <app-applicant-profile-card (onUpdate)="onUpdateProfile($event)" [isFullPage]="true"
-                            [applicant]="applicantData"></app-applicant-profile-card>
+                                                    [applicant]="applicantData"></app-applicant-profile-card>
 
                         <app-applicant-profile [applicant]="applicantData" [jobsSkils]="jobsSkils">
                         </app-applicant-profile>
@@ -19,21 +19,22 @@
                     <li><a href="#nav-interview" data-toggle="tab">Interviews</a></li>
                     <li><a href="#nav-message" data-toggle="tab">Message</a></li>
                 </ul>
-                <div class="tab-content border custom-tab-pane" style="max-height: 98vh; overflow-y: auto;">
+                <div class="tab-content border custom-tab-pane"
+                     style="background: #F7F5F5; max-height: 98vh; overflow-y: auto;">
                     <div class="tab-pane fade active in" id="nav-task-Activates">
-                        <div class="scroll-content" >
+                        <div class="scroll-content">
                             <app-applicant-task [applicantId]="applicantId"></app-applicant-task>
                         </div>
-                        <div   class="scroll-content">
+                        <div class="scroll-content">
                             <app-applicant-activity [isActivityUpdate]="isActivityUpdate" [applicantId]="applicantId">
                             </app-applicant-activity>
                         </div>
-                        
+
                     </div>
                     <div class="tab-pane fade in" id="nav-interview">
                         <app-applicant-interview (onCancelInterview)="onCancelInterviewData($event)"
-                            (onOnInterViewUpdate)="onUpdateInterview($event)" [jobId]="jobId"
-                            [applicant]="applicantData"></app-applicant-interview>
+                                                 (onOnInterViewUpdate)="onUpdateInterview($event)" [jobId]="jobId"
+                                                 [applicant]="applicantData"></app-applicant-interview>
                     </div>
                     <div class="tab-pane fade in" id="nav-message"></div>
                 </div>
@@ -45,7 +46,7 @@
                 </ng-container>
 
                 <app-comment *ngIf="applicantId" [applicant]="{_id: applicantId}" [job]="jobId"
-                    (commentAdded)="commentAdded()">
+                             (commentAdded)="commentAdded()">
                 </app-comment>
             </div>
         </div>

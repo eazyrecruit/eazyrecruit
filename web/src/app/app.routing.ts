@@ -44,6 +44,7 @@ import {InterviewListComponent} from './components/interview/interview-list/inte
 import {ProfileComponent} from './components/profile/profile.component';
 import {DatabaseComponent} from './components/database/database.component';
 import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/google.recaptcha.component";
+import {ReferredApplicantComponent} from "./components/referred-applicant/referred.applicant.component";
 
 @NgModule({
     imports: [
@@ -66,8 +67,7 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
                     {
                         path: 'home',
                         component: DashboardComponent,
-                        canActivate: [RoleGuardService],
-                        data: {expectedRole: ['interviewer', 'admin', 'hr']}
+                        canActivate: [AuthGuard]
                     },
                     {
                         path: 'jobs', children: [
@@ -79,7 +79,7 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
                     {
                         path: 'profile',
                         component: ProfileComponent,
-                        data: {expectedRole: ['interviewer', 'admin', 'hr']}
+                        canActivate: [AuthGuard]
                     },
                     {
                         path: 'database', children: [
@@ -97,6 +97,10 @@ import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/go
                             {path: 'create', component: CreateApplicantComponent},
                             {path: ':id', component: ApplicantpageComponent}
                         ], canActivate: [RoleGuardService], data: {expectedRole: ['admin', 'hr']}
+                    },
+                    {
+                        path: 'referred-applicants', component: ReferredApplicantComponent,
+                        canActivate: [AuthGuard]
                     },
                     {
                         path: 'settings', component: SettingsComponent, children: [

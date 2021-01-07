@@ -104,6 +104,8 @@ import {ApplicantProfileCardComponent} from './components/applicants/applicant-p
 import {ApplicantInterviewComponent} from './components/interview/applicant-Interview/applicant.Interview.component';
 import {ApplicantJobsComponent} from "./components/applicants/applicant-jobs/applicant.jobs.component";
 import {AddActivityComponent} from "./components/applicants/applicant-activity/add-activity/add.activity.component";
+import {ReferredApplicantComponent} from "./components/referred-applicant/referred.applicant.component";
+import {ReferredApplicantInfoComponent} from "./components/referred-applicant/referred-applicant-info/referred.applicant.info.component";
 
 @NgModule({
     declarations: [
@@ -179,7 +181,9 @@ import {AddActivityComponent} from "./components/applicants/applicant-activity/a
         ApplicantProfileCardComponent,
         ApplicantInterviewComponent,
         ApplicantJobsComponent,
-        AddActivityComponent
+        AddActivityComponent,
+        ReferredApplicantComponent,
+        ReferredApplicantInfoComponent
     ],
     imports: [
         ToasterModule,
