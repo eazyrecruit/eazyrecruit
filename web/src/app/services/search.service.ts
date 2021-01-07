@@ -16,6 +16,17 @@ export class SearchService {
         return this.http.post(this.constService.baseUrl + 'applicant/search', details);
     }
 
+    getReferredApplicantData(filter) {
+        let url = `${this.constService.baseUrl}referred?offset=${filter.offset}&limit=${filter.pageSize}`;
+        if (filter.searchText) {
+            url = `${url}&search=${filter.searchText}`;
+        }
+        if (filter.sortBy && filter.order) {
+            url = `${url}&sortBy=${filter.sortBy}&order=${filter.order}`;
+        }
+        return this.http.get(url);
+    }
+
     getAllResume(filter) {
         return this.http.post(this.constService.baseUrl + 'applicant/', filter);
     }
