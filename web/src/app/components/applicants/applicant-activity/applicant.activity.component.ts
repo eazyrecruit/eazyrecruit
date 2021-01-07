@@ -17,6 +17,9 @@ export class ApplicantActivityComponent implements OnChanges {
 
     @Input()
     isActivityUpdate: boolean;
+
+    @Input()
+    isAddedActivity ?: boolean;
     isLoading = false;
     activityData: any = [];
     time = new Date().getTime();
