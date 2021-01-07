@@ -39,7 +39,7 @@ export class ReferredApplicantInfoComponent implements OnInit, OnChanges {
         if (this.applicant) {
             this.SkillDiv = '';
             this.gettingApplicant = true;
-            document.getElementById('home').click();
+            document.getElementById('history').click();
             this.getApplicantById(this.applicant._id);
             this.getJobsByApplicantId();
         }
@@ -72,6 +72,8 @@ export class ReferredApplicantInfoComponent implements OnInit, OnChanges {
                 if (result && result['success'] && result['success']['data'] && result['success']['data'].length) {
                     this.applicant.jobs = result['success']['data'];
                     this.setJobsSkils(result['success']['data']);
+                } else {
+                    this.jobLoad = true;
                 }
             }, () => {
                 this.jobLoad = true;
