@@ -22,6 +22,7 @@ export class ReferredApplicantInfoComponent implements OnInit, OnChanges {
     @Input()
     applicant?: any;
     applicantData?: any;
+    applyJobs: any = [];
 
     constructor(
         private route: ActivatedRoute,
@@ -86,11 +87,7 @@ export class ReferredApplicantInfoComponent implements OnInit, OnChanges {
         for (let index = 0; index < jobsApplicants.length; index++) {
             const job = jobsApplicants[index].job || {};
             job['pipeline'] = jobsApplicants[index].pipeline;
-            if (job.skills && job.skills.length) {
-                for (let count = 0; count < job.skills.length; count++) {
-                    this.jobsSkils[job.skills[count].name.toUpperCase()] = job.skills[count].name;
-                }
-            }
+            this.applyJobs.push(job);
         }
         this.jobLoad = true;
 

@@ -17,6 +17,9 @@ export class ApplicantProfileComponent implements OnChanges {
     applyJobs: any = [];
     @Input()
     applicant?: any;
+
+    @Input()
+    isRefereed?: any;
     @Input()
     jobsSkils: any;
 
@@ -28,10 +31,13 @@ export class ApplicantProfileComponent implements OnChanges {
 
     ngOnChanges() {
         if (this.applicant) {
-            this.SkillDiv = '';
-            this.matchedSkills = [];
-            this.unMatchSkills = this.applicant.skills;
-            this.setMatchSkils();
+            if (!this.isRefereed) {
+                this.SkillDiv = '';
+                this.matchedSkills = [];
+                this.unMatchSkills = this.applicant.skills;
+                this.setMatchSkils();
+            }
+
         }
     }
 

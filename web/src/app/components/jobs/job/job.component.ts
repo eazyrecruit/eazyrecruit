@@ -23,36 +23,26 @@ declare var SiteJS: any;
 })
 export class JobComponent implements OnInit {
     errInvalidFile: Boolean = false;
-    departmentList: any[];
-    companyList = [];
     jobTypes = [{display: 'Part-Time', value: 'Part-Time'}, {display: 'Full-Time', value: 'Full-Time'}];
     jobDetails: FormGroup;
     limit = 10;
     offset = 0;
-    jobId: any;
     job: any;
+    isView: any;
     skills = [];
-    userList: any[] = [];
+    userList: any;
     locations = [];
-    isSkillSelected: boolean;
     errorDescription: boolean;
-    errorResponsiblity: boolean;
+    errorResponsibility: boolean;
     items: any = [];
     filter: any;
     submit: Boolean = false;
-    stateList = [];
     cityList = [];
-    skillFilter: any;
     active: boolean;
     publish: boolean;
     closePopup: Subject<any>;
     metaImage: any;
     currentMetaImage: any;
-
-    @Output()
-    refreshList: EventEmitter<boolean> = new EventEmitter<boolean>();
-
-
     quillConfig = {
 
         toolbar: {
@@ -86,70 +76,10 @@ export class JobComponent implements OnInit {
 
     ngOnInit() {
         this.closePopup = new Subject<any>();
-        this.getUser();
-        if (this.jobId) {
-            this.jobService.getJobById(this.jobId).subscribe(result => {
-                if (result['success']) {
-                    this.job = result['success'].data;
-                    this.populateForm(this.job);
-                }
-            });
+        if (this.job) {
+            this.populateForm(this.job);
         }
-    }
 
-    getUser() {
-        this.jobService.getHrAdmin().subscribe(result => {
-            if (result['success'] && result['success'].data) {
-                this.userList = result['success'].data;
-            }
-        });
-    }
-
-    eventHandler(event: any) {
-        if (event[0].city) {
-            this.jobDetails.controls['location'].setValue(event);
-        } else {
-            this.jobDetails.controls['skill'].setValue(event);
-        }
-    }
-
-    get formData() {
-        return <FormArray>this.jobDetails.get('items');
-    }
-
-    createItem(): FormGroup {
-        return this.fbForm.group({
-            name: [null, []],
-            comment: [null, [<any>Validators.required]],
-        });
-    }
-
-    addItem(): void {
-        this.items = this.jobDetails.get('items') as FormArray;
-        this.items.push(this.createItem());
-    }
-
-    removeItem(index: any) {
-        if (index !== 0) {
-            (this.jobDetails.get('items') as FormArray).removeAt(index);
-        }
-    }
-
-    getDepartment(event) {
-        let value;
-        if (event.target) {
-            value = parseInt(event.target.value);
-        } else {
-            value = parseInt(event);
-        }
-        if (value > 0) {
-            // this.isCompanySelect = false;
-            this.departmentService.searchDepartment(value).subscribe(result => {
-                if (result['success']) {
-                    this.departmentList = result['success']['data'];
-                }
-            });
-        }
     }
 
     populateForm(job: any) {
@@ -173,7 +103,8 @@ export class JobComponent implements OnInit {
             metaImageAltText: [null],
             metaTitle: [null],
         });
-        if (job) {
+        console.log('jobjob', job);
+        if (job && job._id) {
             this.active = job.active;
             this.publish = job.is_published;
             this.jobDetails.controls['_id'].setValue(job._id);
@@ -224,6 +155,19 @@ export class JobComponent implements OnInit {
         this.createJob(jobForm);
         //   }
         // }
+    }
+
+    getJob(id) {
+        this.jobService.getJobById(id).subscribe(result => {
+            if (result['success']) {
+                this.closePopup.next(result['success'].data);
+                this.bsModelRef.hide();
+            } else {
+                this.bsModelRef.hide();
+            }
+        }, () => {
+            this.bsModelRef.hide();
+        });
     }
 
     createJob(jobForm: any) {
@@ -289,12 +233,8 @@ export class JobComponent implements OnInit {
                 formData.set('metaImage', this.currentMetaImage);
             }
             this.jobService.saveJob(formData).subscribe(result => {
-                if (result['success']) {
-                    // this.publishJob(jobForm);
-                    // this.jobDetails.reset();
-                    // this.refreshList.emit(true);
-                    this.closePopup.next(result['success']);
-                    this.bsModelRef.hide();
+                if (result['success'] && result['success'].data) {
+                    this.getJob(result['success'].data._id);
                 }
             });
         }
@@ -335,8 +275,7 @@ export class JobComponent implements OnInit {
         this.jobService.editJob(jobForm).subscribe(result => {
             if (result['success']) {
                 this.jobDetails.reset();
-                this.refreshList.emit(true);
-                this.router.navigate(['/jobs']);
+                this.getJob(result['success'].data._id);
             }
         });
     }

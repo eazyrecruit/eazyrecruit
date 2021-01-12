@@ -9,6 +9,7 @@
                         <li class="closed-panel" id="closed-panel"><a><i class="fa fa-close"></i></a></li>
                         <li><a data-toggle="tab" id="home" title="Details" href="#basic"><i class="fa fa-home"></i></a>
                         </li>
+                        <li><a data-toggle="tab" title="Jobs" href="#job-applied"> <i class="ti-bag"></i></a></li>
                         <!-- <li><a data-toggle="tab" title="Rejection" href="#rejectApplicant"><i class="fa fa-trash"></i></a></li> -->
                         <li><a data-toggle="tab" title="Activity" href="#history"><i
                                 class="fa fa-history"></i></a></li>
@@ -28,9 +29,15 @@
                                 <div id="basic" class="tab-pane fade in">
 
                                     <ng-container *ngIf="applicantData">
-                                        <app-applicant-profile [applicant]="applicantData"
+                                        <app-applicant-profile [isRefereed]="true" [applicant]="applicantData"
                                                                [jobsSkils]="jobsSkils"></app-applicant-profile>
                                     </ng-container>
+                                </div>
+                                <div id="job-applied" class="tab-pane fade in">
+                                    <ng-container *ngIf="applyJobs.length">
+                                        <app-applicant-jobs [applyJobs]="applyJobs"></app-applicant-jobs>
+                                    </ng-container>
+
                                 </div>
                                 <div id="history" class="tab-pane fade in active ">
                                     <ng-container *ngIf="applicant && applicant._id">

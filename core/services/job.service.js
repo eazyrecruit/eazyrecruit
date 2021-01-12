@@ -391,7 +391,7 @@ exports.addApplicant = async (req) => {
             // Create Job Applicant
             let jobApplicant = new JobApplicants();
             jobApplicant.applicant = req.body.applicantId;
-            jobApplicant.pipeline = req.body.pipelineId;
+            jobApplicant.pipeline = req.body.pipelineId || modelJob.pipelines[0];
             jobApplicant.job = req.body.jobId;
             jobApplicant.created_by = req.user.id;
             jobApplicant.created_at = Date.now();
@@ -408,7 +408,7 @@ exports.addApplicant = async (req) => {
             modelJob = await modelJob.save();
             let description = "applicant added for  " + modelJob.title + " profile";
 
-            let jobPipeline = await JobPipelines.findOne({_id: req.body.pipelineId});
+            let jobPipeline = await JobPipelines.findOne({_id: jobApplicant.pipeline});
             if (jobPipeline.name) {
                 description = description + " and move to " + jobPipeline.name + " pipeline ";
             }

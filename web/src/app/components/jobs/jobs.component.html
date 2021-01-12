@@ -1,196 +1,206 @@
 <section class="content">
-    <div class="box box-info">
-        <div class="box-header">
-            <div class="row">
-                <div class="col-sm-5">
-                    <div class="box-tools">
-                        <div class="btn-group form-group mb-0" role="group" aria-label="Basic example">
-                            <button type="button"  [ngClass]="['btn mr-2', isArchive? '': 'btn-primary', 'btn-sm']"  (click)="setArchive(false)">
-                                <i></i> Active
-                                Jobs</button>
-                            <button type="button"  [ngClass]="['btn ', isArchive? 'btn-primary': '', 'btn-sm']"  (click)="setArchive(true)">
-                                <i ></i> Archive
-                                Jobs</button>
+    <ng-container *ngIf="jobLoading">
+        <i class="fa fa-spinner fa-spin"></i>
+    </ng-container>
+    <ng-container *ngIf="!jobLoading">
+        <div class="box box-info">
+            <div class="box-header">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="box-tools">
+                            <div class="btn-group form-group mb-0" role="group" aria-label="Basic example">
+                                <button type="button" [ngClass]="['btn mr-2', isArchive? '': 'btn-primary', 'btn-sm']"
+                                        (click)="setArchive(false)">
+                                    <i></i> Active
+                                    Jobs
+                                </button>
+                                <button type="button" [ngClass]="['btn ', isArchive? 'btn-primary': '', 'btn-sm']"
+                                        (click)="setArchive(true)">
+                                    <i></i> Archive
+                                    Jobs
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-7">
-                    <div class="pull-right">
-                        <div class="form-inline">
-                            <ng-container *ngIf="!isArchive">
-                                <div class="form-group margin-right-10px">
-                                    <button (click)="createJob()" data-toggle="modal" type="button"
-                                            class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> Create
-                                    </button>
-                                </div>
-                            </ng-container>
+                    <div class="col-sm-7">
+                        <div class="pull-right">
+                            <div class="form-inline">
+                                <ng-container *ngIf="!isArchive">
+                                    <div class="form-group margin-right-10px">
+                                        <button (click)="createJob({})" data-toggle="modal" type="button"
+                                                class="btn btn-sm btn-primary">
+                                            <i class="fa fa-plus"></i> Create
+                                        </button>
+                                    </div>
+                                </ng-container>
 
-                            <div class="form-group ">
-                                <label for="">Search Job :</label><input type="text" placeholder="Job Title"
-                                                                         class="form-control margin-left-15px"
-                                                                         (keyup)="searchJob($event)">
+                                <div class="form-group ">
+                                    <label for="">Search Job :</label><input type="text" placeholder="Job Title"
+                                                                             class="form-control margin-left-15px"
+                                                                             (keyup)="searchJob($event)">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <ng-container *ngIf="!(jobs && jobs.length > 0)">
+                <div class="main-content padding-20px-tb plr-15">
+                    <p class="text-muted">No jobs available to show</p>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="isArchive">
+                <div class="main-content padding-20px-tb plr-15" *ngIf="jobs && jobs.length > 0">
+                    <div class="row">
+                        <div class="col-md-3 mb-3" *ngFor="let job of jobs; let jobIndex = index;">
+                            <!-- Widget: user widget style 1 -->
+                            <div class="bg-box box box-widget pad widget-user-2">
+                                <!-- Add the bg color to the header using any of the bg-* classes -->
+                                <div class="widget-user-header">
+                                    <!--extra menu-->
+                                    <div class="jobs-menu dropdown">
+                                        <i class="dropdown-toggle ti-more" data-toggle="dropdown"></i>
+                                        <ul class="dropdown-menu jobOption">
+                                            <li class="dropdown-item" (click)="archiveJob(job._id, true, jobIndex)">
+                                                <!-- <a routerLink="/jobs/create"> -->
+                                                <a><i class="fa fc-agenda-view"></i> activate Job</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- /.widget-user-image -->
+                                    <h3 class="mt-0 text-large text-ellipsis">
+                                        {{job.title}}
+                                    </h3>
+                                    <h5>No. of applicants <b>{{job.applicants ? job.applicants.length : '0'}}</b></h5>
+                                </div>
+                                <div class="box-footer no-padding">
+                                    <div class="list-group-item border-radius-0 bl-red">
+                                        <p class="mt-0 text-12 font-weight-600 mb-0 mt-0">
+                                            <span class="tags">Experience-:</span>
+                                            {{job.minExperience}} - {{job.maxExperience}} (Years)
+                                        </p>
+                                        <!-- <p class="mt-10 text-12 font-weight-600 mb-5 mt-5"> <span class="tags"> Link:</span>
+                                                        <a href="">{{url}}{{job.guid}}</a>
+                                                    </p> -->
+                                        <p class="mt-0 text-12 font-weight-600 mb-0 mt-0">
+                                            <span class="tags">Job Type:</span>
+                                            {{job.type}}
+                                        </p>
+                                        <p class="mt-0 text-12 font-weight-600 mb-2 mt-0">
+                                            <span class="tags">Published:</span>
+                                            {{job.is_published ? 'True' : 'False'}}
+                                        </p>
+                                        <!-- <div>
+                                            <app-select-dropdown [jobPostId]="job.id"></app-select-dropdown>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.widget-user -->
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col-sm-6">
+                            <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                Showing
+                                <strong>{{(filter.pageIndex - 1) * filter.pageSize + 1}}</strong>-<strong>{{filter.pageIndex * filter.pageSize > totalItems ? totalItems : filter.pageIndex * filter.pageSize}}</strong>
+                                of <strong>{{totalItems}}</strong></div>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                <pagination [totalItems]="totalItems" [maxSize]="3" [itemsPerPage]="filter.pageSize"
+                                            [boundaryLinks]="true"
+                                            (pageChanged)="CurrentPage = $event.page; filterChanged(false)"
+                                            [(ngModel)]="CurrentPage" aria-label="Default pagination"></pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="!isArchive">
+                <div class="main-content padding-20px-tb plr-15" *ngIf="jobs && jobs.length > 0">
+                    <div class="row">
+                        <div class="col-md-3 mb-3" *ngFor="let job of jobs; let jobIndex = index;">
+                            <!-- Widget: user widget style 1 -->
+                            <div class="bg-box box box-widget pad widget-user-2">
+                                <!-- Add the bg color to the header using any of the bg-* classes -->
+                                <div class="widget-user-header">
+                                    <!--extra menu-->
+                                    <div class="jobs-menu dropdown">
+                                        <i class="dropdown-toggle ti-more" data-toggle="dropdown"></i>
+                                        <ul class="dropdown-menu jobOption">
+                                            <li class="dropdown-item" (click)="editJob(job, jobIndex)">
+                                                <!-- <a routerLink="/jobs/create"> -->
+                                                <a><i class="fa fa-pencil"></i>Edit Job</a>
+                                            </li>
+
+                                            <li class="dropdown-item" (click)="archiveJob(job._id, false, jobIndex)">
+                                                <!-- <a routerLink="/jobs/create"> -->
+                                                <a><i class="fa fa-archive"></i>Archive Job</a>
+                                            </li>
+                                            <li class="dropdown-item" (click)="copyText(job.guid)">
+                                                <a>
+                                                    <i class="ti-layers"></i> Copy Link</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- /.widget-user-image -->
+                                    <h3 class="mt-0 text-large text-ellipsis">
+                                        <a [routerLink]="['/jobs/pipeline',job._id]">{{job.title}}</a>
+                                    </h3>
+                                    <h5>No. of applicants <b>{{job.applicants ? job.applicants.length : '0'}}</b></h5>
+                                    <!-- <h5 class="widget-user-desc text-ellipsis" *ngIf="job.locations">
+                                        <span *ngFor="let location of job.locations">
+                                            {{location.city + ' | '}}
+                                        </span>
+                                    </h5> -->
+                                </div>
+                                <div class="box-footer no-padding">
+                                    <div class="list-group-item border-radius-0 bl-red">
+                                        <p class="mt-0 text-12 font-weight-600 mb-0 mt-0">
+                                            <span class="tags">Experience-:</span>
+                                            {{job.minExperience}} - {{job.maxExperience}} (Years)
+                                        </p>
+                                        <!-- <p class="mt-10 text-12 font-weight-600 mb-5 mt-5"> <span class="tags"> Link:</span>
+                                                        <a href="">{{url}}{{job.guid}}</a>
+                                                    </p> -->
+                                        <p class="mt-0 text-12 font-weight-600 mb-0 mt-0">
+                                            <span class="tags">Job Type:</span>
+                                            {{job.type}}
+                                        </p>
+                                        <p class="mt-0 text-12 font-weight-600 mb-2 mt-0">
+                                            <span class="tags">Published:</span>
+                                            {{job.is_published ? 'True' : 'False'}}
+                                        </p>
+                                        <!-- <div>
+                                            <app-select-dropdown [jobPostId]="job.id"></app-select-dropdown>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.widget-user -->
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col-sm-6">
+                            <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                Showing
+                                <strong>{{(filter.pageIndex - 1) * filter.pageSize + 1}}</strong>-<strong>{{filter.pageIndex * filter.pageSize > totalItems ? totalItems : filter.pageIndex * filter.pageSize}}</strong>
+                                of <strong>{{totalItems}}</strong></div>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                <pagination [totalItems]="totalItems" [maxSize]="3" [itemsPerPage]="filter.pageSize"
+                                            [boundaryLinks]="true"
+                                            (pageChanged)="CurrentPage = $event.page; filterChanged(false)"
+                                            [(ngModel)]="CurrentPage" aria-label="Default pagination"></pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
         </div>
-        <ng-container *ngIf="!(jobs && jobs.length > 0)">
-            <div class="main-content padding-20px-tb plr-15">
-                <p class="text-muted">No jobs available to show</p>
-            </div>
-        </ng-container>
-        <ng-container *ngIf="isArchive">
-            <div class="main-content padding-20px-tb plr-15" *ngIf="jobs && jobs.length > 0">
-                <div class="row">
-                    <div class="col-md-3 mb-3" *ngFor="let job of jobs; let jobIndex = index;">
-                        <!-- Widget: user widget style 1 -->
-                        <div class="bg-box box box-widget pad widget-user-2">
-                            <!-- Add the bg color to the header using any of the bg-* classes -->
-                            <div class="widget-user-header">
-                                <!--extra menu-->
-                                <div class="jobs-menu dropdown">
-                                    <i class="dropdown-toggle ti-more" data-toggle="dropdown"></i>
-                                    <ul class="dropdown-menu jobOption">
-                                        <li class="dropdown-item" (click)="archiveJob(job._id, true, jobIndex)">
-                                            <!-- <a routerLink="/jobs/create"> -->
-                                            <a><i class="fa fc-agenda-view"></i> activate Job</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <!-- /.widget-user-image -->
-                                <h3 class="mt-0 text-large text-ellipsis">
-                                    {{job.title}}
-                                </h3>
-                                <h5>No. of applicants <b>{{job.applicants ? job.applicants.length : '0'}}</b></h5>
-                            </div>
-                            <div class="box-footer no-padding">
-                                <div class="list-group-item border-radius-0 bl-red">
-                                    <p class="mt-0 text-12 font-weight-600 mb-0 mt-0">
-                                        <span class="tags">Experience-:</span>
-                                        {{job.minExperience}} - {{job.maxExperience}} (Years)
-                                    </p>
-                                    <!-- <p class="mt-10 text-12 font-weight-600 mb-5 mt-5"> <span class="tags"> Link:</span>
-                                                    <a href="">{{url}}{{job.guid}}</a>
-                                                </p> -->
-                                    <p class="mt-0 text-12 font-weight-600 mb-0 mt-0">
-                                        <span class="tags">Job Type:</span>
-                                        {{job.type}}
-                                    </p>
-                                    <p class="mt-0 text-12 font-weight-600 mb-2 mt-0">
-                                        <span class="tags">Published:</span>
-                                        {{job.is_published ? 'True' : 'False'}}
-                                    </p>
-                                    <!-- <div>
-                                        <app-select-dropdown [jobPostId]="job.id"></app-select-dropdown>
-                                    </div> -->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.widget-user -->
-                    </div>
-                </div>
-                <div class="row mt-5">
-                    <div class="col-sm-6">
-                        <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
-                            Showing
-                            <strong>{{(filter.pageIndex - 1) * filter.pageSize + 1}}</strong>-<strong>{{filter.pageIndex * filter.pageSize > totalItems ? totalItems : filter.pageIndex * filter.pageSize}}</strong>
-                            of <strong>{{totalItems}}</strong></div>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
-                            <pagination [totalItems]="totalItems" [maxSize]="3" [itemsPerPage]="filter.pageSize"
-                                        [boundaryLinks]="true"
-                                        (pageChanged)="CurrentPage = $event.page; filterChanged(false)"
-                                        [(ngModel)]="CurrentPage" aria-label="Default pagination"></pagination>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ng-container>
-        <ng-container *ngIf="!isArchive">
-            <div class="main-content padding-20px-tb plr-15" *ngIf="jobs && jobs.length > 0">
-                <div class="row">
-                    <div class="col-md-3 mb-3" *ngFor="let job of jobs; let jobIndex = index;">
-                        <!-- Widget: user widget style 1 -->
-                        <div class="bg-box box box-widget pad widget-user-2">
-                            <!-- Add the bg color to the header using any of the bg-* classes -->
-                            <div class="widget-user-header">
-                                <!--extra menu-->
-                                <div class="jobs-menu dropdown">
-                                    <i class="dropdown-toggle ti-more" data-toggle="dropdown"></i>
-                                    <ul class="dropdown-menu jobOption">
-                                        <li class="dropdown-item" (click)="editJob(job._id, jobIndex)">
-                                            <!-- <a routerLink="/jobs/create"> -->
-                                            <a><i class="fa fa-pencil"></i>Edit Job</a>
-                                        </li>
+    </ng-container>
 
-                                        <li class="dropdown-item" (click)="archiveJob(job._id, false, jobIndex)">
-                                            <!-- <a routerLink="/jobs/create"> -->
-                                            <a><i class="fa fa-archive"></i>Archive Job</a>
-                                        </li>
-                                        <li class="dropdown-item" (click)="copyText(job.guid)">
-                                            <a>
-                                                <i class="ti-layers"></i> Copy Link</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <!-- /.widget-user-image -->
-                                <h3 class="mt-0 text-large text-ellipsis">
-                                    <a [routerLink]="['/jobs/pipeline',job._id]">{{job.title}}</a>
-                                </h3>
-                                <h5>No. of applicants <b>{{job.applicants ? job.applicants.length : '0'}}</b></h5>
-                                <!-- <h5 class="widget-user-desc text-ellipsis" *ngIf="job.locations">
-                                    <span *ngFor="let location of job.locations">
-                                        {{location.city + ' | '}}
-                                    </span>
-                                </h5> -->
-                            </div>
-                            <div class="box-footer no-padding">
-                                <div class="list-group-item border-radius-0 bl-red">
-                                    <p class="mt-0 text-12 font-weight-600 mb-0 mt-0">
-                                        <span class="tags">Experience-:</span>
-                                        {{job.minExperience}} - {{job.maxExperience}} (Years)
-                                    </p>
-                                    <!-- <p class="mt-10 text-12 font-weight-600 mb-5 mt-5"> <span class="tags"> Link:</span>
-                                                    <a href="">{{url}}{{job.guid}}</a>
-                                                </p> -->
-                                    <p class="mt-0 text-12 font-weight-600 mb-0 mt-0">
-                                        <span class="tags">Job Type:</span>
-                                        {{job.type}}
-                                    </p>
-                                    <p class="mt-0 text-12 font-weight-600 mb-2 mt-0">
-                                        <span class="tags">Published:</span>
-                                        {{job.is_published ? 'True' : 'False'}}
-                                    </p>
-                                    <!-- <div>
-                                        <app-select-dropdown [jobPostId]="job.id"></app-select-dropdown>
-                                    </div> -->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.widget-user -->
-                    </div>
-                </div>
-                <div class="row mt-5">
-                    <div class="col-sm-6">
-                        <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
-                            Showing
-                            <strong>{{(filter.pageIndex - 1) * filter.pageSize + 1}}</strong>-<strong>{{filter.pageIndex * filter.pageSize > totalItems ? totalItems : filter.pageIndex * filter.pageSize}}</strong>
-                            of <strong>{{totalItems}}</strong></div>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
-                            <pagination [totalItems]="totalItems" [maxSize]="3" [itemsPerPage]="filter.pageSize"
-                                        [boundaryLinks]="true"
-                                        (pageChanged)="CurrentPage = $event.page; filterChanged(false)"
-                                        [(ngModel)]="CurrentPage" aria-label="Default pagination"></pagination>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ng-container>
-
-    </div>
 </section>

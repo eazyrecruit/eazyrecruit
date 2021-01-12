@@ -19,7 +19,7 @@ declare var SiteJS: any;
     providers: [SearchService, JobService, ApplyJobService, ApplicantService, ApplicantDataService, BsModalService]
 })
 export class DatabaseComponent implements OnInit {
-
+    timeOut;
     filter = {
         pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at', isGridView: false,
         order: -1, searchText: '', startDate: '', endDate: '', source: '',
@@ -134,20 +134,26 @@ export class DatabaseComponent implements OnInit {
 
     onSearch() {
         if (this.searchText !== this.filter.searchText) {
-            this.filter.offset = 0;
-            if (this.searchText.length > 2) {
-                this.ApplicantList = [];
-                this.totalRecords = 0;
-                this.filter.searchText = this.searchText;
-                this.getCandidate();
+            if (this.timeOut) {
+                clearTimeout(this.timeOut);
             }
-            if (!this.searchText) {
-                this.ApplicantList = [];
-                this.totalRecords = 0;
-                this.filter.searchText = '';
-                this.totalRecords = 0;
-                this.getCandidate();
-            }
+            this.timeOut = setTimeout(() => {
+                this.filter.offset = 0;
+                if (this.searchText.length > 2) {
+                    this.ApplicantList = [];
+                    this.totalRecords = 0;
+                    this.filter.searchText = this.searchText;
+                    this.getCandidate();
+                }
+                if (!this.searchText) {
+                    this.ApplicantList = [];
+                    this.totalRecords = 0;
+                    this.filter.searchText = '';
+                    this.totalRecords = 0;
+                    this.getCandidate();
+                }
+            }, 500);
+
         }
 
     }
@@ -170,6 +176,7 @@ export class DatabaseComponent implements OnInit {
     }
 
     getCandidate() {
+        console.log('cal');
         this.searchService.getApplicantData(this.filter).subscribe((result) => {
             if (result['success'] && result['success']['data']) {
                 this.ApplicantList = result['success']['data'].applicants;

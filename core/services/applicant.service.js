@@ -112,8 +112,7 @@ exports.save = async (req, enableEmail) => {
                     } else {
                         skills = JSON.parse(req.body.skills);
                     }
-                    let skillsResult = await findOrCreate(skills, req.user.id);
-                    modelApplicant.skills = skillsResult;
+                    modelApplicant.skills = await findOrCreate(skills, req.user.id);
                 }
 
                 // Create/Update Address
@@ -191,20 +190,6 @@ exports.save = async (req, enableEmail) => {
                         }
                         modelApplicant.socials.push(applicantSocial._id);
                     }
-                }
-
-                // Referral
-                if (req.body.referralEmail) {
-                    var modelUser = await Users.findOne({email: req.body.referralEmail});
-                    if (modelUser == null) {
-                        modelUser.email = req.body.referralEmail.trim();
-                        modelUser.created_by = req.user.id;
-                        modelUser.created_at = new Date();
-                        modelUser.modified_by = req.user.id;
-                        modelUser.modified_at = new Date();
-                        modelUser = await modelUser.save();
-                    }
-                    modelApplicant.referral = modelUser._id;
                 }
 
                 // Save profile in the end to ensure elastic searchis sycned

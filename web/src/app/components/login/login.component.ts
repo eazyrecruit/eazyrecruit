@@ -20,7 +20,10 @@ export class LoginComponent implements OnInit {
                 private fbuilder: FormBuilder,
                 private validationService: ValidationService,
                 private authGuardService: AuthGuard) {
-
+        const user = this.accountService.isAuthorized();
+        if (user && user.isAuthorized) {
+            this.router.navigate([this.accountService.getHomeUrl(user.role)]);
+        }
         this.loginForm = fbuilder.group({
             userName: [null, [<any>Validators.required], this.validationService.emailValid],
             password: [null, [<any>Validators.required]]
@@ -28,16 +31,7 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
-        let user = this.accountService.isAuthorized();
-        if (user && user.isAuthorized) {
-            if (user.role == 'admin' || user.role == 'hr') {
-                this.router.navigate(['/jobs']);
-            } else {
-                this.router.navigate(['/home']);
-            }
-        } else {
-            this.router.navigate(['/login']);
-        }
+
     }
 
     login(loginModel: any) {
@@ -50,12 +44,9 @@ export class LoginComponent implements OnInit {
             this.accountService.login(this.loginForm.value).subscribe(result => {
                 if (result['success']) {
                     this.accountService.setAuthorizationHeader(result['success']);
-                    let role = this.accountService.getRole();
-                    if (role == 'admin' || role == 'hr') {
-                        this.router.navigate(['/jobs']);
-                    } else {
-                        this.router.navigate(['/user']);
-                    }
+                    const role = this.accountService.getRole();
+                    console.log('role', role);
+                    this.router.navigate([this.accountService.getHomeUrl(role)]);
                 } else {
                     this.errorMessage = result['error']['data'];
                 }
@@ -68,14 +59,10 @@ export class LoginComponent implements OnInit {
 
     oauthLogin(app) {
         SiteJS.oauthpopup(
-            "/admin/assets/auth.html?socialApp=" + app, () => {
-                let user = this.accountService.isAuthorized();
+            '/admin/assets/auth.html?socialApp=' + app, () => {
+                const user = this.accountService.isAuthorized();
                 if (user && user.isAuthorized) {
-                    if (user.role == 'admin' || user.role == 'hr') {
-                        this.router.navigate(['/jobs']);
-                    } else {
-                        this.router.navigate(['/user']);
-                    }
+                    this.router.navigate([this.accountService.getHomeUrl(user.role)]);
                 } else {
                     this.router.navigate(['/login']);
                 }

@@ -1,8 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {FormGroup, FormBuilder, Validators, FormArray} from '@angular/forms';
-import {HttpClientModule, HttpHeaders, HTTP_INTERCEPTORS} from '@angular/common/http';
+import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {TagInputModule} from 'ngx-chips';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgDragDropModule} from 'ng-drag-drop';
@@ -18,9 +17,6 @@ import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app.routing';
 import {CallbackPipe, SanitizeHtmlPipe} from './pipe/callback.pipe';
 
-// import { DashboardComponent } from './components/dashboard/dashboard.component';
-// import { ContentComponent } from './components/dashboard/content/content.component';
-
 import {LayoutComponent} from './components/layout/layout.component';
 import {HeaderComponent} from './components/layout/header/header.component';
 import {LeftSideComponent} from './components/layout/left-side/left-side.component';
@@ -28,27 +24,21 @@ import {FooterComponent} from './components/layout/footer/footer.component';
 import {ControlSidebarComponent} from './components/layout/control-sidebar/control-sidebar.component';
 
 import {LoginComponent} from './components/login/login.component';
-import {SearchComponent} from './components/search/search.component';
 
 import {JobsComponent} from './components/jobs/jobs.component';
 import {PipelineComponent} from './components/jobs/pipeline/pipeline.component';
 import {JobComponent} from './components/jobs/job/job.component';
-import {ViewJobsComponent} from './components/jobs/view-jobs/view-jobs.component';
 import {ApplicantCardComponent} from './components/jobs/applicantCard/applicant.card.component';
 import {ApplicantInfoComponent} from './components/applicants/applicantInfo/applicant.info.component';
-import {ApplicantSearchComponent} from './components/jobs/applicantsearch/applicantsearch.component';
 
 import {CompanayviewComponent} from './components/settings/companayview/companayview.component';
 import {CompanaiesComponent} from './components/settings/companycreate/companaies.component';
 import {DepartmentcreateComponent} from './components/settings/departmentcreate/departmentcreate.component';
 import {DepartmentviewComponent} from './components/settings/departmentview/departmentview.component';
 import {SkillComponent} from './components/settings/skill/skill.component';
-import {JobDetailsComponent} from './components/onboarding/job-details/job-details.component';
 import {RegisterApplicantComponent} from './components/onboarding/register-applicant/register-applicant.component';
 import {ApplicantsComponent} from './components/applicants/applicants.component';
 import {UploadResumeComponent} from './components/applicants/upload-resume/upload-resume.component';
-import {SkillsAssessmentComponent} from './components/onboarding/skills-assessment/skills-assessment.component';
-import {ThankyouComponent} from './components/onboarding/thankyou/thankyou.component';
 
 import {ConstService} from './services/const.service';
 import {AuthInterceptor, AuthGuard, AccountService, RoleGuardService} from './services/account.service';
@@ -56,11 +46,10 @@ import {SharedService} from './services/shared.service';
 import {DataShareService} from './services/data-share.service';
 
 import {CompanysettingsComponent} from './components/settings/companysettings/companysettings.component';
-import {OnboardingLayoutComponent} from './components/onboarding/onboardinglayout.component';
 import {CreateComponent} from './components/settings/users/create/create.component';
 import {ViewComponent} from './components/settings/users/view/view.component';
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
-import {CommentComponent} from './components/jobs/comment/comment.component';
+import {CommentComponent} from './components/applicants/comment/comment.component';
 import {SelectDropdownComponent} from './components/select-dropdown/select-dropdown.component';
 import {DatatableComponent} from './components/applicants/datatable';
 import {DatatableSortFieldComponent} from './components/applicants/datatable';
@@ -102,10 +91,12 @@ import {ApplicantTaskComponent} from './components/applicants/applicant-task/app
 import {ApplicantProfileComponent} from './components/applicants/applicant-profile/applicant.profile.component';
 import {ApplicantProfileCardComponent} from './components/applicants/applicant-profile-card/applicant.profile.card.component';
 import {ApplicantInterviewComponent} from './components/interview/applicant-Interview/applicant.Interview.component';
-import {ApplicantJobsComponent} from "./components/applicants/applicant-jobs/applicant.jobs.component";
-import {AddActivityComponent} from "./components/applicants/applicant-activity/add-activity/add.activity.component";
-import {ReferredApplicantComponent} from "./components/referred-applicant/referred.applicant.component";
-import {ReferredApplicantInfoComponent} from "./components/referred-applicant/referred-applicant-info/referred.applicant.info.component";
+import {AddActivityComponent} from './components/applicants/applicant-activity/add-activity/add.activity.component';
+import {ApplicantJobsComponent} from './components/applicants/applicant-jobs/applicant.jobs.component';
+import {ReferredApplicantInfoComponent} from './components/referred-applicant/referred-applicant-info/referred.applicant.info.component';
+import {ReferredApplicantComponent} from './components/referred-applicant/referred.applicant.component';
+import {ReferredApplicantJobComponent} from "./components/referred-applicant/referred-applicant-Job/referred.applicant.job.component";
+import {CreateReferredApplicantComponent} from "./components/referred-applicant/create-referred-applicant/create.referred.applicant.component";
 
 @NgModule({
     declarations: [
@@ -119,7 +110,6 @@ import {ReferredApplicantInfoComponent} from "./components/referred-applicant/re
         ControlSidebarComponent,
         LoginComponent,
         UploadResumeComponent,
-        SearchComponent,
         CompanayviewComponent,
         CompanaiesComponent,
         DepartmentcreateComponent,
@@ -128,7 +118,6 @@ import {ReferredApplicantInfoComponent} from "./components/referred-applicant/re
         LayoutComponent,
         PipelineComponent,
         JobComponent,
-        ViewJobsComponent,
         SkillComponent,
         ProfileComponent,
         DatabaseComponent,
@@ -138,12 +127,8 @@ import {ReferredApplicantInfoComponent} from "./components/referred-applicant/re
         ApplicantInfoComponent,
         JobsComponent,
         ApplicantsComponent,
-        JobDetailsComponent,
         RegisterApplicantComponent,
-        SkillsAssessmentComponent,
-        ThankyouComponent,
         CompanysettingsComponent,
-        OnboardingLayoutComponent,
         CreateComponent,
         ViewComponent,
         ResetPasswordComponent,
@@ -151,7 +136,6 @@ import {ReferredApplicantInfoComponent} from "./components/referred-applicant/re
         SelectDropdownComponent,
         DatatableComponent,
         DatatableSortFieldComponent,
-        ApplicantSearchComponent,
         PopupComponent,
         SearchApplicantComponent,
         ApplicantpageComponent,
@@ -183,7 +167,9 @@ import {ReferredApplicantInfoComponent} from "./components/referred-applicant/re
         ApplicantJobsComponent,
         AddActivityComponent,
         ReferredApplicantComponent,
-        ReferredApplicantInfoComponent
+        ReferredApplicantInfoComponent,
+        ReferredApplicantJobComponent,
+        CreateReferredApplicantComponent
     ],
     imports: [
         ToasterModule,
@@ -226,7 +212,10 @@ import {ReferredApplicantInfoComponent} from "./components/referred-applicant/re
         CancelConformComponent,
         OutboundComponent,
         EmailTemplateComponent,
-        AddActivityComponent
+        AddActivityComponent,
+        CreateApplicantComponent,
+        CreateReferredApplicantComponent,
+        JobComponent
     ],
     providers: [ConstService,
         SharedService,
