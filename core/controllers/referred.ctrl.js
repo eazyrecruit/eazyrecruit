@@ -27,7 +27,7 @@ router.get("", async (req, res) => {
             responseService.response(req, null, 'Applicants GET', null, res);
         }
     } catch (err) {
-        responseService.response(req, err, logTypes.debug, null, res);
+        responseService.response(req, err, 'Applicants GET', null, res);
     }
 });
 

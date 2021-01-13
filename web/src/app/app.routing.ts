@@ -1,37 +1,16 @@
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-
-// import { DashboardComponent } from './components/dashboard/dashboard.component';
 import {LoginComponent} from './components/login/login.component';
-import {SearchComponent} from './components/search/search.component';
 import {LayoutComponent} from './components/layout/layout.component';
 import {PipelineComponent} from './components/jobs/pipeline/pipeline.component';
 import {AuthGuard, RoleGuardService} from './services/account.service';
-import {JobComponent} from './components/jobs/job/job.component';
-import {ViewJobsComponent} from './components/jobs/view-jobs/view-jobs.component';
 import {SkillComponent} from './components/settings/skill/skill.component';
-import {CompanaiesComponent} from './components/settings/companycreate/companaies.component';
-import {CompanayviewComponent} from './components/settings/companayview/companayview.component';
-import {DepartmentcreateComponent} from './components/settings/departmentcreate/departmentcreate.component';
-import {DepartmentviewComponent} from './components/settings/departmentview/departmentview.component';
 import {JobsComponent} from './components/jobs/jobs.component';
 import {ApplicantsComponent} from './components/applicants/applicants.component';
-import {UploadResumeComponent} from './components/applicants/upload-resume/upload-resume.component';
-import {JobDetailsComponent} from './components/onboarding/job-details/job-details.component';
-import {RegisterApplicantComponent} from './components/onboarding/register-applicant/register-applicant.component';
-import {SkillsAssessmentComponent} from './components/onboarding/skills-assessment/skills-assessment.component';
-import {ThankyouComponent} from './components/onboarding/thankyou/thankyou.component';
 import {CompanysettingsComponent} from './components/settings/companysettings/companysettings.component';
-import {OnboardingLayoutComponent} from './components/onboarding/onboardinglayout.component';
-import {CreateComponent} from './components/settings/users/create/create.component';
 import {ViewComponent} from './components/settings/users/view/view.component';
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
-import {ApplicantSearchComponent} from './components/jobs/applicantsearch/applicantsearch.component';
-import {SelectDropdownComponent} from './components/select-dropdown/select-dropdown.component';
-import {SearchApplicantComponent} from './components/applicants/search-applicant/search-applicant.component';
 import {ApplicantpageComponent} from './components/applicants/applicantpage/applicantpage.component';
-import {CreateApplicantComponent} from './components/applicants/create-applicant/create-applicant.component';
-import {ApplicantResolver} from './resolver/applicant.resolver';
 import {ForgetPasswordComponent} from './components/forget-password/forget-password.component';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {InterviewComponent} from './components/interview/interview.component';
@@ -43,21 +22,15 @@ import {GoogleAnalyticsComponent} from './components/settings/googleAnalytics/go
 import {InterviewListComponent} from './components/interview/interview-list/interview.list.component';
 import {ProfileComponent} from './components/profile/profile.component';
 import {DatabaseComponent} from './components/database/database.component';
-import {GoogleRecaptchaComponent} from "./components/settings/googleRecaptcha/google.recaptcha.component";
-import {ReferredApplicantComponent} from "./components/referred-applicant/referred.applicant.component";
+import {GoogleRecaptchaComponent} from './components/settings/googleRecaptcha/google.recaptcha.component';
+import {ReferredApplicantComponent} from './components/referred-applicant/referred.applicant.component';
+import {ReferredApplicantJobComponent} from "./components/referred-applicant/referred-applicant-Job/referred.applicant.job.component";
 
 @NgModule({
     imports: [
         RouterModule.forRoot([
             {path: 'resetpassword/:otp', component: ResetPasswordComponent},
             {path: 'forgetpassword', component: ForgetPasswordComponent},
-            {
-                path: 'onboarding', component: OnboardingLayoutComponent, children: [
-                    {path: 'job/:id', component: JobDetailsComponent},
-                    {path: 'register/:id', component: RegisterApplicantComponent},
-                    {path: 'skill/:id/:applicantId', component: SkillsAssessmentComponent},
-                    {path: 'thankyou', component: ThankyouComponent}]
-            },
             {path: 'login', component: LoginComponent},
             // we added role to each path, now expecting to match role first before loading that route.
             {
@@ -67,12 +40,12 @@ import {ReferredApplicantComponent} from "./components/referred-applicant/referr
                     {
                         path: 'home',
                         component: DashboardComponent,
-                        canActivate: [AuthGuard]
+                        canActivate: [RoleGuardService],
+                        data: {expectedRole: ['interviewer', 'admin', 'hr']}
                     },
                     {
                         path: 'jobs', children: [
                             {path: '', component: JobsComponent},
-                            {path: 'create', component: JobComponent},
                             {path: 'pipeline/:jobId', component: PipelineComponent},
                         ], canActivate: [RoleGuardService], data: {expectedRole: ['admin', 'hr']}
                     },
@@ -90,16 +63,16 @@ import {ReferredApplicantComponent} from "./components/referred-applicant/referr
                     {
                         path: 'applicants', children: [
                             {path: '', pathMatch: 'full', component: ApplicantsComponent},
-                            {path: 'search-applicant', component: ApplicantSearchComponent},
-                            {path: 'upload', component: RegisterApplicantComponent},
-                            {path: 'applicant/:applicantId', component: PipelineComponent},
-                            {path: 'add/job/:jobId/:pipelineId', component: ApplicantsComponent},
-                            {path: 'create', component: CreateApplicantComponent},
                             {path: ':id', component: ApplicantpageComponent}
                         ], canActivate: [RoleGuardService], data: {expectedRole: ['admin', 'hr']}
                     },
                     {
-                        path: 'referred-applicants', component: ReferredApplicantComponent,
+                        path: 'referred-applicants',
+                        children: [
+                            {path: '', pathMatch: 'full', component: ReferredApplicantComponent},
+                            {path: 'job', component: ReferredApplicantJobComponent},
+                            {path: 'add/job/:jobId', component: ReferredApplicantComponent}
+                        ],
                         canActivate: [AuthGuard]
                     },
                     {
@@ -124,24 +97,6 @@ import {ReferredApplicantComponent} from "./components/referred-applicant/referr
                         component: InterviewComponent,
                         data: {expectedRole: ['interviewer', 'admin', 'hr']}
                     },
-                    {
-                        path: 'search',
-                        component: SearchComponent,
-                        canActivate: [RoleGuardService],
-                        data: {expectedRole: ['admin', 'hr']}
-                    },
-                    {
-                        path: 'createjob',
-                        component: JobComponent,
-                        canActivate: [RoleGuardService],
-                        data: {expectedRole: ['admin', 'hr']}
-                    },
-                    {
-                        path: 'viewjobs',
-                        component: ViewJobsComponent,
-                        canActivate: [RoleGuardService],
-                        data: {expectedRole: ['admin', 'hr']}
-                    }
                 ], canActivate: [AuthGuard],
             },
             {path: '**', redirectTo: 'home', pathMatch: 'full'},

@@ -9,7 +9,7 @@
                         <i class="fa fa-plus"></i> Create
                     </button>
                     <button type="button" class="btn btn-primary btn-sm" (click)="uploadResume()">
-                        <i class="fa fa-upload"></i> Upload
+                        <i class="fa fa-search"></i> Search Job
                     </button>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                                         <th *ngIf="jobId && job" class="col-sm-1">
                                             <div class="sorting">Add</div>
                                         </th>
-                                        <th>
+                                        <th width="20%">
                                             <div class="sorting">Candidate
                                                 <!--<i class="fa fa-sort ml-2" (click)="onSort('email')" aria-hidden="true"></i>--></div>
                                         </th>
@@ -58,7 +58,6 @@
                                         <th>Salary</th>
                                         <th>Notice Period</th>
                                         <th>Source</th>
-                                        <th>Skills</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -104,14 +103,6 @@
                                                         Modified:
                                                         {{applicant?.modified_at | date:'MMM d, y'}}</p>
                                                 </ng-container>
-                                            </td>
-                                            <td *ngIf="applicant.skills != null">
-                                                <div class="skills">
-                                                    <span *ngFor="let skill of applicant.skills; let i = index;">
-                                                        {{skill.name}}<span
-                                                            *ngIf="i < applicant.skills.length - 1">, </span>
-                                                    </span>
-                                                </div>
                                             </td>
 
                                         </tr>

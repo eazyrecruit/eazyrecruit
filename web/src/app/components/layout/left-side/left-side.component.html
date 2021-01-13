@@ -74,33 +74,33 @@
             </div>
         </div>
         <ul class="sidebar-menu tree" (click)="sidebarMenu();">
-            <li>
-                <a routerLink="/dashboard">
-                    <i class="fa fa-home"></i>
-                    <span>Home</span>
-                </a>
-            </li>
-            <ng-container *ngIf="['admin', 'hr'].indexOf(role)>=0">
-                <li>
-                    <a routerLinkActive="active" routerLink="/jobs">
-                        <i class="ti-bag"></i>
-                        <span>Jobs</span>
-                    </a>
-                </li>
-                <li>
-                    <a routerLinkActive="active" routerLink="/applicants">
-                        <i class="fa fa-graduation-cap"></i>
-                        <span>Applicants</span>
-                    </a>
-                </li>
-                <li>
-                    <a routerLink="/database">
-                        <i class="fa fa-database" aria-hidden="true"></i>
-                        <span>Database</span>
-                    </a>
-                </li>
-            </ng-container>
             <ng-container *ngIf="['admin', 'hr', 'interviewer'].indexOf(role)>=0">
+                <li>
+                    <a routerLink="/dashboard">
+                        <i class="fa fa-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <ng-container *ngIf="['admin', 'hr'].indexOf(role)>=0">
+                    <li>
+                        <a routerLinkActive="active" routerLink="/jobs">
+                            <i class="ti-bag"></i>
+                            <span>Jobs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a routerLinkActive="active" routerLink="/applicants">
+                            <i class="fa fa-graduation-cap"></i>
+                            <span>Applicants</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a routerLink="/database">
+                            <i class="fa fa-database" aria-hidden="true"></i>
+                            <span>Database</span>
+                        </a>
+                    </li>
+                </ng-container>
                 <li>
                     <a routerLink="/interviews">
                         <i class="fa fa-home"></i>
@@ -109,15 +109,15 @@
                 </li>
             </ng-container>
             <li>
-                <a routerLink="/profile">
-                    <i class="fa fa-user"></i>
-                    <span>Profile</span>
+                <a routerLink="/referred-applicants">
+                    <i class="fa fa-graduation-cap"></i>
+                    <span>My Referred</span>
                 </a>
             </li>
             <li>
-                <a routerLink="/referred-applicants">
-                    <i class="fa fa-graduation-cap"></i>
-                    <span>Referred Applicant</span>
+                <a routerLink="/profile">
+                    <i class="fa fa-user"></i>
+                    <span>Profile</span>
                 </a>
             </li>
             <li *ngIf="role == 'admin'">

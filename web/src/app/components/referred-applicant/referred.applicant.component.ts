@@ -10,6 +10,7 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {CreateApplicantComponent} from '../applicants/create-applicant/create-applicant.component';
 import {UploadResumeComponent} from '../applicants/upload-resume/upload-resume.component';
 import {SharedService} from '../../services/shared.service';
+import {CreateReferredApplicantComponent} from "./create-referred-applicant/create.referred.applicant.component";
 
 declare var SiteJS: any;
 
@@ -30,10 +31,7 @@ export class ReferredApplicantComponent implements OnInit {
     file: File;
     candidates = [];
     ApplicantList = [];
-    isJobSelected: Boolean;
     applicant: any;
-    dataTableName = 'applicant';
-    isResultAvailable = false;
     modalRef: BsModalRef;
 
     jobId: any;
@@ -159,6 +157,18 @@ export class ReferredApplicantComponent implements OnInit {
     }
 
     goToCreate() {
+        // this.router.navigate(['applicants/create']);
+        this.modalRef = this.modalService.show(CreateReferredApplicantComponent, {
+            class: 'modal-lg', initialState: null
+        });
+        this.modalRef.content.closePopup.subscribe(result => {
+            if (result) {
+                this.getCandidate();
+            }
+        });
+    }
+
+    searchJob() {
         localStorage.removeItem('jid');
         localStorage.setItem('jid', JSON.stringify({
             id: null,
@@ -188,12 +198,7 @@ export class ReferredApplicantComponent implements OnInit {
     }
 
     uploadResume() {
-        this.modalRef = this.modalService.show(UploadResumeComponent);
-        this.modalRef.content.onClose.subscribe(result => {
-            if (result) {
-                this.getCandidate();
-            }
-        });
+        this.router.navigate(['/referred-applicants/job']);
     }
 
     onUpdate($event) {

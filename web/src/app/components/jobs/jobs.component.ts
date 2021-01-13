@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { JobService } from '../../services/job.service';
-import { SharedService } from '../../services/shared.service';
-import { DataShareService } from '../../services/data-share.service';
-import { ConstService } from '../../services/const.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap';
-import { JobComponent } from './job/job.component';
+import {Component, OnInit} from '@angular/core';
+import {Router, ActivatedRoute, Params} from '@angular/router';
+import {JobService} from '../../services/job.service';
+import {SharedService} from '../../services/shared.service';
+import {DataShareService} from '../../services/data-share.service';
+import {ConstService} from '../../services/const.service';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {JobComponent} from './job/job.component';
 
 @Component({
     selector: 'app-jobs',
@@ -21,23 +21,21 @@ export class JobsComponent implements OnInit {
     offset = 0;
     jobId = 0;
     job: any;
-    jobById: any;
     jobDetails: FormGroup;
     userList = [];
     modalRef: BsModalRef;
     filter: any;
-
-    totalItems: number = 0;
+    jobLoading = false;
+    totalItems = 0;
     CurrentPage: any = 1;
 
     constructor(private jobService: JobService,
-        private sharedService: SharedService,
-        private router: Router,
-        private dataShared: DataShareService,
-        private constService: ConstService,
-        //private interviewerService: InterviewerService,
-        private modalService: BsModalService,
-        private fbForm: FormBuilder) {
+                private sharedService: SharedService,
+                private router: Router,
+                private dataShared: DataShareService,
+                private constService: ConstService,
+                private modalService: BsModalService,
+                private fbForm: FormBuilder) {
         this.url = this.constService.publicUrl;
         this.jobDetails = this.fbForm.group({
             title: [null, [<any>Validators.required]]
@@ -54,7 +52,9 @@ export class JobsComponent implements OnInit {
             sortOrder: '1',
             offset: 0
         };
+        this.jobLoading = true;
         this.searchJob();
+        this.getUser();
     }
 
     storeId(jobById: any) {
@@ -69,7 +69,7 @@ export class JobsComponent implements OnInit {
 
 
     copyText(val: string) {
-        let selBox = document.createElement('textarea');
+        const selBox = document.createElement('textarea');
         selBox.value = this.url + val;
         document.body.appendChild(selBox);
         selBox.focus();
@@ -86,8 +86,8 @@ export class JobsComponent implements OnInit {
         // }, (err) => { });
     }
 
-    editJob(jobId, index) {
-        this.createJob(jobId, index);
+    editJob(job, index) {
+        this.createJob(job, index);
     }
 
     setArchive(falg) {
@@ -125,22 +125,32 @@ export class JobsComponent implements OnInit {
                 // this.dataShared.notificationChangeMessage({ name: 'success', type: 'Success', message: 'No active job found' })
                 this.totalItems = result['success']['data']['count'];
             }
+            this.jobLoading = false;
         }, (err) => {
             this.jobs = [];
+            this.jobLoading = false;
         });
     }
 
-    createJob(jobId, index) {
+    getUser() {
+        this.jobService.getHrAdmin().subscribe(result => {
+            if (result['success'] && result['success'].data) {
+                this.userList = result['success'].data;
+            }
+        });
+    }
+
+    createJob(job, index) {
         this.modalRef = this.modalService.show(JobComponent, {
             class: 'modal-lg',
-            initialState: { jobId: jobId }
+            initialState: {job: job, userList: this.userList}
         });
         this.modalRef.content.closePopup.subscribe(result => {
             if (result) {
                 if (index != null) {
-                    this.jobs[index] = result['data'];
+                    this.jobs[index] = result;
                 } else {
-                    this.jobs.unshift(result['data']);
+                    this.jobs.unshift(result);
                 }
             }
         });
