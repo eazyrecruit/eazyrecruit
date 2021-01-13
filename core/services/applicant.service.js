@@ -57,7 +57,7 @@ exports.save = async (req, enableEmail) => {
                 modelApplicant.noticePeriodNegotiable = req.body.noticePeriodNegotiable || modelApplicant.noticePeriodNegotiable || '';
                 modelApplicant.totalExperience = req.body.experience || modelApplicant.totalExperience || '';
                 modelApplicant.availability = req.body.availability || modelApplicant.availability || '';
-                modelApplicant.roles = req.body.roles || modelApplicant.roles || [];;
+                modelApplicant.roles = req.body.roles || modelApplicant.roles || [];
                 modelApplicant.referredBy = req.body.referredBy;
                 if (req.user.email) {
                     modelApplicant.referredBy = req.body.referredBy || req.user.email;
@@ -85,6 +85,13 @@ exports.save = async (req, enableEmail) => {
                 }
                 var modelResume = await ApplicantResumes.findById(modelApplicant.resume).populate("created_by");
                 if (modelResume && modelResume.created_by) {
+                    if (req.user) {
+                        req.user["id"] = req.user.id || modelResume.created_by._id;
+                    } else {
+                        req["user"] = {
+                            id: modelResume.created_by._id
+                        }
+                    }
                     modelApplicant.referredBy = modelApplicant.referredBy || modelResume.created_by.email;
                 }
                 if (req.files && req.files.length > 0) {
@@ -195,6 +202,9 @@ exports.save = async (req, enableEmail) => {
                 // Save profile in the end to ensure elastic searchis sycned
                 modelApplicant.modified_by = req.user.id;
                 modelApplicant.modified_at = new Date();
+                if (isNew) {
+                    modelApplicant["created_by"] = req.user.id;
+                }
                 modelApplicant = await modelApplicant.save();
                 if (isNew) {
                     Activity.addActivity({
