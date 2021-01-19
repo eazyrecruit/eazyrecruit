@@ -14,6 +14,18 @@ exports.getCreateInterviewRequest = async function (request) {
         }
     }
 };
+
+
+exports.getDeleteInterviewRequest = async function (request) {
+    switch (request.channel) {
+        case  "GoLiveMeet": {
+            return deleteGoLiveMeetInterview(request);
+        }
+        default: {
+            return null;
+        }
+    }
+};
 exports.getUpdateInterviewRequest = async function (request) {
     switch (request.channel) {
         case  "GoLiveMeet": {
@@ -137,6 +149,24 @@ async function getDefaultUpdate(request) {
 
 }
 
+function deleteGoLiveMeetInterview(request) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const goLiveMeetConfiguration = await getGoLiveMeetConfiguration();
+            request["companyName"] = goLiveMeetConfiguration.companyName;
+            if (request.channelProperty && request.channelProperty.channelId) {
+                let result = await deleteGoLiveMeetMeeting(goLiveMeetConfiguration.goLiveMeetClientID, goLiveMeetConfiguration.goLiveMeetClientSecret, request.channelProperty.channelId);
+                resolve(result);
+            } else {
+                reject({message: "GoLiveMeet interview  meetingID not found "});
+            }
+        } catch (error) {
+            reject(error);
+        }
+
+    })
+}
+
 function createGoLiveMeetInterview(request) {
     return new Promise(async (resolve, reject) => {
         try {
@@ -181,7 +211,6 @@ function updateGoLiveMeetInterview(request) {
             const goLiveMeetConfiguration = await getGoLiveMeetConfiguration();
             request["companyName"] = goLiveMeetConfiguration.companyName;
             let body = {
-                id: request,
                 "meetingName": request.jobName + " Profile Interview ",
                 "meetingStart": request.start,
                 "meetingEnd": request.end,
@@ -207,12 +236,12 @@ function updateGoLiveMeetInterview(request) {
                 resolve(await updateInterview(request));
             } else {
                 let result = await createGoLiveMeetMeeting(goLiveMeetConfiguration.goLiveMeetClientID, goLiveMeetConfiguration.goLiveMeetClientSecret, body);
-                request["channelLink"] = result.attendeesLink[request.applicantEmail]["meetingUrl"] || ''
+                request["channelLink"] = result.attendeesLink[request.applicantEmail]["meetingUrl"] || '';
                 request["channelProperty"] = {
                     meetingID: result.meetingID,
                     channelId: result._id.toString(),
                 };
-                resolve(await createInterview(request));
+                resolve(await updateInterview(request));
             }
 
 
@@ -265,7 +294,10 @@ function startGoLiveMeetInterview(request) {
             const goLiveMeetConfiguration = await getGoLiveMeetConfiguration();
             request["companyName"] = goLiveMeetConfiguration.companyName;
             if (request.channelProperty && request.channelProperty.meetingID) {
-                let result = await startGoLiveMeetMeeting(goLiveMeetConfiguration.goLiveMeetClientID, goLiveMeetConfiguration.goLiveMeetClientSecret, request.channelProperty.meetingID);
+                let result = await startGoLiveMeetMeeting(goLiveMeetConfiguration.goLiveMeetClientID, goLiveMeetConfiguration.goLiveMeetClientSecret, {
+                    meetingID: request.channelProperty.meetingID,
+                    meetingOwner: request.interviewerName
+                });
                 resolve(result);
             } else {
                 reject({message: "GoLiveMeet interview  meetingID not found "});
@@ -277,11 +309,25 @@ function startGoLiveMeetInterview(request) {
     })
 }
 
-function startGoLiveMeetMeeting(goLiveMeetClientID, goLiveMeetClientSecret, meetingID) {
+function deleteGoLiveMeetMeeting(goLiveMeetClientID, goLiveMeetClientSecret, channelId) {
     return new Promise(async (resolve, reject) => {
         try {
+            let option = getGoLiveOption(goLiveMeetClientID, goLiveMeetClientSecret, config.InterviewInterviewIntegration.GoLiveMeet.deleteWebinar);
+            let result = getGoLiveMeetMeetingData(await httpService.post(option, {id: channelId}));
+            resolve(result);
+        } catch (error) {
+            reject(error);
+        }
+
+    })
+}
+
+function startGoLiveMeetMeeting(goLiveMeetClientID, goLiveMeetClientSecret, body) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log("body", body);
             let option = getGoLiveOption(goLiveMeetClientID, goLiveMeetClientSecret, config.InterviewInterviewIntegration.GoLiveMeet.startWebinar);
-            let result = getGoLiveMeetMeetingData(await httpService.post(option, {meetingID: meetingID}));
+            let result = getGoLiveMeetMeetingData(await httpService.post(option, body));
             resolve(result);
         } catch (error) {
             reject(error);

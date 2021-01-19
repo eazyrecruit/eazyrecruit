@@ -8,7 +8,6 @@ import {InterviewService} from '../../../services/interview.service';
 import {DatePipe} from '@angular/common';
 import {ApplicantInfoService} from '../../applicants/applicantInfo/applicant-info.service';
 import {ToasterService} from "angular2-toaster";
-import {error} from "util";
 
 const month = {
     0: 'Jan',
@@ -28,7 +27,6 @@ const month = {
 @Component({
     selector: 'app-scheduler',
     templateUrl: './scheduler.component.html',
-    styleUrls: ['./scheduler.component.css'],
     providers: [JobService, AccountService, ApplicantDataService, ApplicantInfoService, InterviewService, AuthStorage, DatePipe]
 })
 export class SchedulerComponent implements OnInit {

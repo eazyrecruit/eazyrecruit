@@ -6,7 +6,6 @@ import {ValidationService} from '../../../services/validation.service';
 @Component({
     selector: 'app-companysettings',
     templateUrl: './companysettings.component.html',
-    styleUrls: ['./companysettings.component.css'],
     providers: [CompanyService, ValidationService]
 })
 export class CompanysettingsComponent implements OnInit {

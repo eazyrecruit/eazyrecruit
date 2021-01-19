@@ -15,7 +15,6 @@ declare var SiteJS: any;
 @Component({
     selector: 'app-pipeline',
     templateUrl: './pipeline.component.html',
-    styleUrls: ['./pipeline.component.css'],
     providers: [PipelineService, SharedService, ValidationService, JobService]
 })
 export class PipelineComponent implements OnInit {

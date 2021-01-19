@@ -131,13 +131,13 @@ exports.rescheduleAndInvite = async (req) => {
 }
 exports.startInterView = async (id) => {
     try {
-        let interview = await Interview.findById({_id: id});
+        let interview = await Interview.findById({_id: id}).populate("interviewer", ['email', "name", "firstName", "lastName"]);
         const data = {
             channelProperty: interview.channelProperty,
             interviewId: interview.interviewId,
             channel: interview.channel,
-            channelLink: interview.channelLink
-
+            channelLink: interview.channelLink,
+            interviewerName: interview.interviewer.name
         };
 
         return await interviewIntegration.startInterview(data);
@@ -246,6 +246,7 @@ exports.cancelInterview = async (id, user) => {
                 title: "Cancel Interview",
                 description: description
             });
+            interviewIntegration.getDeleteInterviewRequest(interview);
             resolve(true);
         } catch (error) {
             return reject(error);

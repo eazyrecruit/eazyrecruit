@@ -12,7 +12,6 @@ import {Subject} from 'rxjs/internal/Subject';
 @Component({
     selector: 'app-upload-resume',
     templateUrl: './upload-resume.component.html',
-    styleUrls: ['./upload-resume.component.css'],
     providers: [ApplicantService, ValidationService, SkillsService]
 })
 export class UploadResumeComponent implements OnInit {

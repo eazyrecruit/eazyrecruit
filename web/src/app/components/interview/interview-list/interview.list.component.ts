@@ -65,11 +65,10 @@ export class InterviewListComponent implements OnInit, OnChanges {
             ael['disabled'] = true;
             ael['innerHTML'] = '<i class="fa fa-spinner fa-spin"></i>';
             this.interviewService.startInterView(interview._id).subscribe(result => {
-                console.log(result);
                 ael['disabled'] = false;
                 ael['innerHTML'] = '<i class="fas fa-play"></i>Start Interview';
                 if (result['success']) {
-                    window.open(result['success'].data, '_self');
+                    window.open(result['success'].data, '_blank');
                 } else {
                     this.toasterService.pop('error', 'Error in schedule interview', result['error'].data);
                 }

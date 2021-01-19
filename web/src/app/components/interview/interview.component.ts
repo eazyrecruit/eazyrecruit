@@ -3,12 +3,11 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {InterviewService} from '../../services/interview.service';
 import {ApplicantDataService} from '../../services/applicant-data.service';
 import {FormGroup, FormBuilder} from '@angular/forms';
-import {AccountService} from "../../services/account.service";
+import {AccountService} from '../../services/account.service';
 
 @Component({
     selector: 'app-interview',
     templateUrl: './interview.component.html',
-    styleUrls: ['./interview.component.css'],
     providers: [InterviewService, ApplicantDataService]
 })
 export class InterviewComponent implements OnInit {

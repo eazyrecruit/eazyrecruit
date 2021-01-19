@@ -18,10 +18,7 @@ import {AppRoutingModule} from './app.routing';
 import {CallbackPipe, SanitizeHtmlPipe} from './pipe/callback.pipe';
 
 import {LayoutComponent} from './components/layout/layout.component';
-import {HeaderComponent} from './components/layout/header/header.component';
 import {LeftSideComponent} from './components/layout/left-side/left-side.component';
-import {FooterComponent} from './components/layout/footer/footer.component';
-import {ControlSidebarComponent} from './components/layout/control-sidebar/control-sidebar.component';
 
 import {LoginComponent} from './components/login/login.component';
 
@@ -33,10 +30,7 @@ import {ApplicantInfoComponent} from './components/applicants/applicantInfo/appl
 
 import {CompanayviewComponent} from './components/settings/companayview/companayview.component';
 import {CompanaiesComponent} from './components/settings/companycreate/companaies.component';
-import {DepartmentcreateComponent} from './components/settings/departmentcreate/departmentcreate.component';
-import {DepartmentviewComponent} from './components/settings/departmentview/departmentview.component';
 import {SkillComponent} from './components/settings/skill/skill.component';
-import {RegisterApplicantComponent} from './components/onboarding/register-applicant/register-applicant.component';
 import {ApplicantsComponent} from './components/applicants/applicants.component';
 import {UploadResumeComponent} from './components/applicants/upload-resume/upload-resume.component';
 
@@ -46,22 +40,18 @@ import {SharedService} from './services/shared.service';
 import {DataShareService} from './services/data-share.service';
 
 import {CompanysettingsComponent} from './components/settings/companysettings/companysettings.component';
-import {CreateComponent} from './components/settings/users/create/create.component';
 import {ViewComponent} from './components/settings/users/view/view.component';
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
 import {CommentComponent} from './components/applicants/comment/comment.component';
-import {SelectDropdownComponent} from './components/select-dropdown/select-dropdown.component';
 import {DatatableComponent} from './components/applicants/datatable';
 import {DatatableSortFieldComponent} from './components/applicants/datatable';
 import {ModalModule, BsDatepickerModule, TimepickerModule, RatingModule, TypeaheadModule} from 'ngx-bootstrap';
-import {PopupComponent} from './components/jobs/popup/popup.component';
 import {SearchApplicantComponent} from './components/applicants/search-applicant/search-applicant.component';
 import {ToasterModule, ToasterService} from 'angular2-toaster';
 import {ApplicantpageComponent} from './components/applicants/applicantpage/applicantpage.component';
 import {ApplicantDataService} from './services/applicant-data.service';
 import {CreateApplicantComponent} from './components/applicants/create-applicant/create-applicant.component';
 import {SafePipe} from './services/senatizerpipe.service';
-import {ApplicantResolver} from './resolver/applicant.resolver';
 import {ForgetPasswordComponent} from './components/forget-password/forget-password.component';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {ResumeComponent} from './components/resume/resume.component';
@@ -97,25 +87,18 @@ import {ReferredApplicantInfoComponent} from './components/referred-applicant/re
 import {ReferredApplicantComponent} from './components/referred-applicant/referred.applicant.component';
 import {ReferredApplicantJobComponent} from './components/referred-applicant/referred-applicant-Job/referred.applicant.job.component';
 import {CreateReferredApplicantComponent} from './components/referred-applicant/create-referred-applicant/create.referred.applicant.component';
-import {InterviewIntegrationComponent} from "./components/settings/Interview-Integration/interview.integration.component";
+import {InterviewIntegrationComponent} from './components/settings/Interview-Integration/interview.integration.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         CallbackPipe,
         SanitizeHtmlPipe,
-        // DashboardComponent,
-        HeaderComponent,
         LeftSideComponent,
-        FooterComponent,
-        ControlSidebarComponent,
         LoginComponent,
         UploadResumeComponent,
         CompanayviewComponent,
         CompanaiesComponent,
-        DepartmentcreateComponent,
-        DepartmentviewComponent,
-        // ContentComponent,
         LayoutComponent,
         PipelineComponent,
         JobComponent,
@@ -128,16 +111,12 @@ import {InterviewIntegrationComponent} from "./components/settings/Interview-Int
         ApplicantInfoComponent,
         JobsComponent,
         ApplicantsComponent,
-        RegisterApplicantComponent,
         CompanysettingsComponent,
-        CreateComponent,
         ViewComponent,
         ResetPasswordComponent,
         CommentComponent,
-        SelectDropdownComponent,
         DatatableComponent,
         DatatableSortFieldComponent,
-        PopupComponent,
         SearchApplicantComponent,
         ApplicantpageComponent,
         CreateApplicantComponent,
@@ -221,7 +200,6 @@ import {InterviewIntegrationComponent} from "./components/settings/Interview-Int
     ],
     providers: [ConstService,
         SharedService,
-        ApplicantResolver,
         AuthGuard,
         ApplicantActivityService,
         RoleGuardService,

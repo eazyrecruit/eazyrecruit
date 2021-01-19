@@ -62,10 +62,11 @@ module.exports = {
             },
             InterviewInterviewIntegration: {
                 GoLiveMeet: {
-                    BaseUrl: process.env.GO_LIVE_MEET_BASE_URL || "http://localhost:3009/meeting/api",
+                    BaseUrl: process.env.GO_LIVE_MEET_BASE_URL || "http://localhost:3009/api",
                     createWebinar: "events/createWebinar",
-                    updateWebinar: "events/createWebinar",
-                    startWebinar: "events/startWebinar"
+                    updateWebinar: "events/updateWebinar",
+                    startWebinar: "events/startWebinar",
+                    deleteWebinar: "events/deleteWebinar",
 
                 }
             },

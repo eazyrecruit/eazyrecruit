@@ -8,7 +8,6 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'app-email-template',
   templateUrl: './email-template.component.html',
-  styleUrls: ['./email-template.component.css'],
   providers: [CompanyService, ValidationService]
 })
 export class EmailTemplateComponent implements OnInit {

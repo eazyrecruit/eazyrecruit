@@ -24,8 +24,8 @@ import {ProfileComponent} from './components/profile/profile.component';
 import {DatabaseComponent} from './components/database/database.component';
 import {GoogleRecaptchaComponent} from './components/settings/googleRecaptcha/google.recaptcha.component';
 import {ReferredApplicantComponent} from './components/referred-applicant/referred.applicant.component';
-import {ReferredApplicantJobComponent} from "./components/referred-applicant/referred-applicant-Job/referred.applicant.job.component";
-import {InterviewIntegrationComponent} from "./components/settings/Interview-Integration/interview.integration.component";
+import {ReferredApplicantJobComponent} from './components/referred-applicant/referred-applicant-Job/referred.applicant.job.component';
+import {InterviewIntegrationComponent} from './components/settings/Interview-Integration/interview.integration.component';
 
 @NgModule({
     imports: [

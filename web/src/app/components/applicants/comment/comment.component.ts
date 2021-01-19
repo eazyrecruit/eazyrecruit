@@ -6,7 +6,6 @@ import {ValidationService} from '../../../services/validation.service';
 @Component({
     selector: 'app-comment',
     templateUrl: './comment.component.html',
-    styleUrls: ['./comment.component.css'],
     providers: [ApplicantService, ValidationService]
 })
 export class CommentComponent implements OnInit, OnChanges {

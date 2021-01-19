@@ -17,7 +17,6 @@ declare var SiteJS: any;
 @Component({
     selector: 'app-job',
     templateUrl: './job.component.html',
-    styleUrls: ['./job.component.css'],
     providers: [JobService, SharedService, ValidationService,
         DepartmentService, CompanyService, SkillsService, LocationService]
 })
@@ -103,7 +102,6 @@ export class JobComponent implements OnInit {
             metaImageAltText: [null],
             metaTitle: [null],
         });
-        console.log('jobjob', job);
         if (job && job._id) {
             this.active = job.active;
             this.publish = job.is_published;

@@ -2,30 +2,22 @@ import {
     Component,
     OnInit,
     Input,
-    OnChanges,
     OnDestroy,
-    ViewChild,
-    TemplateRef,
     Output,
     EventEmitter
 } from '@angular/core';
 import {ApplicantDataService} from '../../../services/applicant-data.service';
-import {ActivatedRoute, ActivatedRouteSnapshot, Router} from '@angular/router';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 import {UploadService} from '../../../services/upload.service';
 import {ApplicantInfoService} from '../applicantInfo/applicant-info.service';
 import {ValidationService} from '../../../services/validation.service';
 import {SearchService} from '../../../services/search.service';
-import {saveAs} from 'file-saver';
-import {CreateApplicantComponent} from '../create-applicant/create-applicant.component';
-import {BsModalService, BsModalRef} from 'ngx-bootstrap';
 
 declare var SiteJS: any;
 
 @Component({
     selector: 'app-applicantpage',
     templateUrl: './applicantpage.component.html',
-    styleUrls: ['./applicantpage.component.css'],
     providers: [UploadService, SearchService, ApplicantInfoService, ValidationService]
 })
 

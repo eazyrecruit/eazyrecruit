@@ -1,25 +1,28 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {AccountService, AuthGuard, RoleGuardService} from '../../services/account.service';
-import {Router, ActivatedRoute} from '@angular/router';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AccountService} from '../../services/account.service';
+import {Router} from '@angular/router';
 import {ValidationService} from '../../services/validation.service';
+import {ConstService} from '../../services/const.service';
 
 @Component({
     selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css'],
+    templateUrl: 'login.component.html',
     providers: [AccountService, ValidationService]
 })
 export class LoginComponent implements OnInit {
 
     loginForm: FormGroup;
     errorMessage: string;
+    google;
 
     constructor(private accountService: AccountService,
                 private router: Router,
+                private constService: ConstService,
                 private fbuilder: FormBuilder,
-                private validationService: ValidationService,
-                private authGuardService: AuthGuard) {
+                private validationService: ValidationService) {
+
+        this.google = `${this.constService.publicUrl}/admin/assets/auth.html?socialApp=google`;
         const user = this.accountService.isAuthorized();
         if (user && user.isAuthorized) {
             this.router.navigate([this.accountService.getHomeUrl(user.role)]);
@@ -45,29 +48,15 @@ export class LoginComponent implements OnInit {
                 if (result['success']) {
                     this.accountService.setAuthorizationHeader(result['success']);
                     const role = this.accountService.getRole();
-                    console.log('role', role);
                     this.router.navigate([this.accountService.getHomeUrl(role)]);
                 } else {
                     this.errorMessage = result['error']['data'];
                 }
             }, (err) => {
                 this.errorMessage = err.error.error.message;
-                console.log('login-error', 'Erron in Login');
+                console.log('login-error', 'Error in Login');
             });
         }
-    }
-
-    oauthLogin(app) {
-        SiteJS.oauthpopup(
-            '/admin/assets/auth.html?socialApp=' + app, () => {
-                const user = this.accountService.isAuthorized();
-                if (user && user.isAuthorized) {
-                    this.router.navigate([this.accountService.getHomeUrl(user.role)]);
-                } else {
-                    this.router.navigate(['/login']);
-                }
-            }
-        );
     }
 
 

@@ -22,7 +22,7 @@ exports.setup = async function () {
                                 return done(err);
                             }
                             if (!user) {
-                                return done(null, false, {status: 401, message: 'inavalid user'});
+                                return done(null, false, {status: 401, message: 'invalid user'});
                             } else {
                                 let isPicture = false;
                                 if (user.picture) {
@@ -68,7 +68,7 @@ exports.authenticate = async function (req, res, next) {
         })(req, next);
     } else {
         console.error('Error : client id and secret not found.');
-        next({message: 'client id and secret not found'}, null);
+        next({message: 'client id and secret not found', status: 401}, null);
     }
 };
 

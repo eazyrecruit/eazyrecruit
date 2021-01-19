@@ -1,8 +1,7 @@
-import { Component, ViewChild, TemplateRef, Input, OnChanges, DoCheck } from '@angular/core';
+import { Component, ViewChild, TemplateRef, Input, DoCheck } from '@angular/core';
 import { ApplicantDataService } from '../../services/applicant-data.service';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { saveAs } from 'file-saver';
 import { SearchService } from '../../services/search.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UploadService } from '../../services/upload.service';
@@ -11,7 +10,6 @@ import { ValidationService } from '../../services/validation.service';
 @Component({
   selector: 'applicant-resume',
   templateUrl: './resume.component.html',
-  styleUrls: ['./resume.component.css'],
   providers: [SearchService, UploadService, ValidationService]
 })
 export class ResumeComponent implements DoCheck {

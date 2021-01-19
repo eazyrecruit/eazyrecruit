@@ -7,7 +7,6 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 @Component({
   selector: 'app-companayview',
   templateUrl: './companayview.component.html',
-  styleUrls: ['./companayview.component.css'],
   providers: [CompanyService, SharedService]
 })
 export class CompanayviewComponent implements OnInit {

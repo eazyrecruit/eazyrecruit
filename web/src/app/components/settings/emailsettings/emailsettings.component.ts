@@ -10,7 +10,6 @@ import { ToasterService, ToasterConfig } from 'angular2-toaster';
 @Component({
   selector: 'app-emailsettings',
   templateUrl: './emailsettings.component.html',
-  styleUrls: ['./emailsettings.component.css'],
   providers: [CompanyService, ValidationService]
 })
 export class EmailsettingsComponent implements OnInit {

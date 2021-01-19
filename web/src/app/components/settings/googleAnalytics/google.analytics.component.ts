@@ -6,7 +6,6 @@ import {ValidationService} from '../../../services/validation.service';
 @Component({
     selector: 'app-google-analytics',
     templateUrl: './google.analytics.component.html',
-    styleUrls: ['./google.analytics.component.css'],
     providers: [CompanyService, ValidationService]
 })
 export class GoogleAnalyticsComponent implements OnInit {

@@ -8,7 +8,7 @@
         var code = getParameterByName('code');
         $.ajax({
             type: 'GET',
-            url: getApiUrl() + '/account/google/callback?code=' + code,
+            url: getApiUrl() + '/api/account/google/callback?code=' + code,
             success: function (data) {
                 if (data.success) {
                     window.localStorage.setItem('Authorization', data.success.data.token);
@@ -16,12 +16,28 @@
                     window.localStorage.setItem('userId', data.success.data.id);
                     window.localStorage.setItem('DisplayName', data.success.data.displayName);
                     window.localStorage.removeItem('app');
-                    window.close();
+
+                } else {
+                    if (data.error) {
+                        alert(data.error.data || data.error)
+                    } else {
+                        alert(data)
+                    }
                 }
+                window.open(getApiUrl() + "/admin", '_self');
+
             },
             error: function (error) {
                 window.localStorage.removeItem('app');
-                window.close();
+                let data = parse(error.responseText);
+                console.log(data);
+                if (data && data.error && data.error.message) {
+                    alert(data.error.message)
+                } else {
+                    alert(data.error || data)
+
+                }
+                window.open(getApiUrl() + "/admin", '_self');
             }
         })
     });
@@ -36,8 +52,20 @@
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
 
+    function parse(data) {
+        try {
+            return JSON.parse(data)
+        } catch (error) {
+            return data;
+        }
+    }
+
     function getApiUrl() {
-        return window.location.protocol + '//' + window.location.hostname + '/api';
+        var publicUrl = window.location.protocol + '//' + window.location.hostname + '/';
+        if (window.location.hostname === 'localhost') {
+            publicUrl = 'http://localhost:8082';
+        }
+        return publicUrl;
     }
 </script>
 </body>

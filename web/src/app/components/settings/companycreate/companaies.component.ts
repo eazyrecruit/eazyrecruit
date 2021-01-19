@@ -9,7 +9,6 @@ import { concatAll } from 'rxjs/operators';
 @Component({
   selector: 'add-company',
   templateUrl: './companaies.component.html',
-  styleUrls: ['./companaies.component.css'],
   providers: [CompanyService, ValidationService, SharedService]
 })
 export class CompanaiesComponent implements OnInit, OnChanges {

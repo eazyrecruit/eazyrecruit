@@ -5,7 +5,6 @@ import {ValidationService} from '../../../services/validation.service';
 import {SkillsService} from '../../../services/skills.service';
 import {DataShareService} from '../../../services/data-share.service';
 import {LocationService} from '../../../services/location.service';
-import {ToasterModule, ToasterService, ToasterConfig} from 'angular2-toaster';
 import {SearchService} from '../../../services/search.service';
 import {Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -16,7 +15,6 @@ import {AccountService} from '../../../services/account.service';
 @Component({
     selector: 'app-create-applicant',
     templateUrl: './create-applicant.component.html',
-    styleUrls: ['./create-applicant.component.css'],
     providers: [ValidationService, SkillsService, SearchService, LocationService, ApplicantService]
 })
 export class CreateApplicantComponent implements OnInit {

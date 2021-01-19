@@ -32,44 +32,6 @@
                     </div>
                 </div>
                 
-
-                <div class="col-lg-3 mb-3">
-                    <div class="d-flex center-fit">
-                        <div>
-                            <div class="form-group mb-0">
-                                <div id="filterDate1">
-                                    <!-- Datepicker as text field -->
-                                    <div class="input-group">
-                                        <input type="text" [(ngModel)]="startDate" [maxDate]="startMaxDate"
-                                        [bsConfig]='bsConfig'
-                                        (ngModelChange)="onDateChange($event, 'startDate')"
-                                        class="w110px mt-0 form-control datepicker-date" placeholder="Datepicker"
-                                        bsDatepicker>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-to date-to">
-                            <span>To</span>
-                        </div>
-                        <div>
-                            <div class="form-group mb-0">
-                                <div id="filterDate2">
-                                    <!-- Datepicker as text field -->
-                                    <div class="input-group">
-                                        <input type="text" [(ngModel)]="endDate" [maxDate]="endMaxDate"
-                                        [minDate]="endMinDate"
-                                        [bsConfig]='bsConfig' (ngModelChange)="onDateChange($event,'endDate')"
-                                        class="text-right w110px mt-0 form-control datepicker-date" placeholder="Datepicker"
-                                        bsDatepicker>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mr-4"><i class="fa fa-calendar" style="line-height: 30px;"></i></div>
-                    </div>
-                </div>
-
                 <div class="col-lg-2 mb-3">
                     <select (change)="onSourceFilterChange($event.target.value)"
                             class="form-control ng-pristine ng-valid ng-touched">
