@@ -1,17 +1,12 @@
 import {Component, OnInit, Input, Output, EventEmitter, OnChanges, TemplateRef} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {UploadService} from '../../../services/upload.service';
 import {SearchService} from '../../../services/search.service';
-import {saveAs} from 'file-saver';
 import {ApplicantInfoService} from './applicant-info.service';
 import {ValidationService} from '../../../services/validation.service';
-import {BsModalService, BsModalRef} from 'ngx-bootstrap';
 import {InterviewService} from '../../../services/interview.service';
-import {SchedulerComponent} from '../../interview/scheduler/scheduler.component';
 import {AccountService} from '../../../services/account.service';
-import {ActivatedRoute, Params} from '@angular/router';
-import {CreateApplicantComponent} from '../create-applicant/create-applicant.component';
-import {CancelConformComponent} from "../../interview/cancelConfromBox/cancel.conform.component";
+import {ActivatedRoute} from '@angular/router';
 
 declare global {
     interface Window {

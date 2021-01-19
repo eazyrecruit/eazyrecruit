@@ -5,9 +5,10 @@ import {AccountService, AuthStorage} from '../../../services/account.service';
 import {JobService} from '../../../services/job.service';
 import {ApplicantDataService} from '../../../services/applicant-data.service';
 import {InterviewService} from '../../../services/interview.service';
-import {last} from '@angular/router/src/utils/collection';
 import {DatePipe} from '@angular/common';
 import {ApplicantInfoService} from '../../applicants/applicantInfo/applicant-info.service';
+import {ToasterService} from "angular2-toaster";
+import {error} from "util";
 
 const month = {
     0: 'Jan',
@@ -45,6 +46,7 @@ export class SchedulerComponent implements OnInit {
     endDateValid = true;
     startDateValid = true;
     submit = false;
+    channels = ['GoLiveMeet', 'Skype', 'Online', 'Google Meet', 'F2F', 'Telephonic'];
     startString: string;
     endString: string;
     startTimeString: string;
@@ -60,6 +62,7 @@ export class SchedulerComponent implements OnInit {
         private formBuilder: FormBuilder,
         private accountService: AccountService,
         private jobService: JobService,
+        private toasterService: ToasterService,
         private applicantDataService: ApplicantDataService,
         private applicantInfoService: ApplicantInfoService,
         private interviewService: InterviewService,
@@ -88,6 +91,13 @@ export class SchedulerComponent implements OnInit {
         if (event && event.target && event.target.value && event.target.value !== '') {
             this.interviewer = this.interviewers.find(i => i._id == event.target.value);
         }
+    }
+
+    onChanelChange(event) {
+        if (event === 'GoLiveMeet') {
+            this.interviewForm.get('channelLink').setValue('');
+        }
+
     }
 
     onJobChange(event) {
@@ -129,11 +139,11 @@ export class SchedulerComponent implements OnInit {
             }
         } else {
             if (this.event) {
-                let startDate = new Date(this.currentDate);
-                let endDate = new Date(this.currentDate);
-                let hours = startDate.getHours() + 1;
+                const startDate = new Date(this.currentDate);
+                const endDate = new Date(this.currentDate);
+                const hours = startDate.getHours() + 1;
                 endDate.setHours(hours);
-                let min = startDate.getMinutes();
+                const min = startDate.getMinutes();
                 if (min > 30) {
                     startDate.setMinutes(0);
                     startDate.setHours(startDate.getHours() + 1);
@@ -150,7 +160,7 @@ export class SchedulerComponent implements OnInit {
                 this.interviewForm.get('end').setValue(endDate);
                 this.interviewForm.get('endTime').setValue(endDate);
                 if (this.event.extendedProps) {
-                    this.interviewForm.get('channelLink').setValue(this.event.extendedProps.channelLink || "");
+                    this.interviewForm.get('channelLink').setValue(this.event.extendedProps.channelLink || '');
                     this.interviewForm.get('note').setValue(this.event.extendedProps.note);
                     this.interviewForm.get('channel').setValue(this.event.extendedProps.channel);
                     this.interviewForm.get('round').setValue(this.event.extendedProps.round);
@@ -175,7 +185,7 @@ export class SchedulerComponent implements OnInit {
                     if (result['success'] && result['success']['data']) {
                         this.candidate = result['success']['data'];
                         this.interviewForm.get('candidateId').setValue(this.candidate._id);
-                        let candidatename = this.getFullName(this.candidate.firstName, this.candidate.middleName, this.candidate.lastName);
+                        const candidatename = this.getFullName(this.candidate.firstName, this.candidate.middleName, this.candidate.lastName);
                         this.interviewForm.get('candidateName').setValue(`${candidatename}<${this.candidate.email}>`);
                     }
                 });
@@ -224,7 +234,7 @@ export class SchedulerComponent implements OnInit {
         else this.endDateValid = false;
 
         if (this.endDateValid && this.startDateValid && this.interviewForm.valid) {
-            let interview = {
+            const interview = {
                 job: {
                     id: this.job._id,
                     name: this.job.title
@@ -268,13 +278,21 @@ export class SchedulerComponent implements OnInit {
                 this.interviewService.reschedule(interview, interviewFormData.id, this.event.extendedProps.sequence).subscribe(result => {
                     if (result['success']) {
                         this.close(result['success'].data);
+                    } else {
+                        this.toasterService.pop('error', 'Error in schedule interview', result['error'].data);
                     }
+                }, (error: any) => {
+                    console.log(error);
                 });
             } else {
                 this.interviewService.schedule(interview, interviewFormData.id).subscribe(result => {
                     if (result['success']) {
                         this.close(result['success'].data);
+                    } else {
+                        this.toasterService.pop('error', 'Error in schedule interview', result['error'].data);
                     }
+                }, (error) => {
+                    this.toasterService.pop('error', 'Error in schedule interview', error);
                 });
             }
         }

@@ -1,0 +1,74 @@
+<div class="box box-info">
+    <div class="box-header">
+        <i class="fa fa-inbox"></i>
+        <h3 class="box-title">Interview Integration</h3>
+    </div>
+    <div class="box-body">
+
+        <fieldset class="col-sm-6">
+            <form [formGroup]="interviewIntegrationForm" novalidate
+                  (ngSubmit)="editForm(interviewIntegrationForm.value)">
+
+                <div style="margin: 6px;">
+                    <label for="goLiveMeet"><h4>GoLiveMeet : </h4></label>
+                    <input id="goLiveMeet" type="checkbox" formControlName="goLiveMeet"
+                           style="margin-left: 25px; vertical-align: sub;">
+                </div>
+
+                <div>
+                    <ng-container *ngIf="!interviewIntegrationForm.value.goLiveMeet">
+                        <div style="margin: 6px;">
+                            <label for="goLiveMeetClientID1">GoLiveMeet ClientId*</label>
+                            <input type="text" id="goLiveMeetClientID1" placeholder="GoLiveMeet ClientId" readonly
+                                   class="form-control"
+                                   formControlName="goLiveMeetClientID">
+                        </div>
+                        <div style="margin: 6px;">
+                            <label for=" goLiveMeetClientSecret1">GoLiveMeet ClientSecret*</label>
+                            <input type="text" id=" goLiveMeetClientSecret1" placeholder="GoLiveMeet ClientSecret"
+                                   readonly
+                                   class="form-control"
+                                   formControlName="goLiveMeetClientSecret">
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="interviewIntegrationForm.value.goLiveMeet">
+                        <div style="margin: 6px;">
+                            <label for="goLiveMeetClientID">GoLiveMeet ClientId*</label>
+                            <input type="text" id="goLiveMeetClientID" placeholder="GoLiveMeet ClientId" required
+                                   class="form-control"
+                                   formControlName="goLiveMeetClientID">
+                            <small class="text-danger"
+                                   *ngIf="interviewIntegrationForm.value.goLiveMeet &&  !interviewIntegrationForm.value['goLiveMeetClientID'] && (isTrackingIdEmpty || interviewIntegrationForm.controls['goLiveMeetClientID'].touched)">
+                                Please enter GoLiveMeet ClientId
+                            </small>
+
+                        </div>
+
+                        <div style="margin: 6px;">
+                            <label for="goLiveMeetClientSecret">GoLiveMeet ClientSecret*</label>
+                            <input type="text" id="goLiveMeetClientSecret" placeholder="GoLiveMeet ClientSecret"
+                                   required
+                                   class="form-control"
+                                   formControlName="goLiveMeetClientSecret">
+                            <small class="text-danger"
+                                   *ngIf="interviewIntegrationForm.value.goLiveMeet &&  !interviewIntegrationForm.value['goLiveMeetClientSecret'] && (isTrackingIdEmpty || interviewIntegrationForm.controls['goLiveMeetClientSecret'].touched)">
+                                Please enter GoLiveMeet ClientSecret
+                            </small>
+
+                        </div>
+                    </ng-container>
+                </div>
+
+                <div style="margin: 6px;">
+                    <button type="submit" class="btn btn-primary mt-10 mb-10">Submit
+                        <i class="fa fa-arrow-circle-right"></i>
+                    </button>
+                </div>
+
+            </form>
+
+        </fieldset>
+
+    </div>
+</div>

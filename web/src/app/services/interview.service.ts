@@ -36,6 +36,10 @@ export class InterviewService {
         });
     }
 
+    startInterView(id) {
+        return this.http.get(this.constService.baseUrl + 'interview/start/' + id);
+    }
+
     getEventBetweenDates(start, end) {
         return this.http.get(`${this.constService.baseUrl}interview/dates/${start}/${end}`);
     }

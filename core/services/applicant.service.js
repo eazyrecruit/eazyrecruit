@@ -18,8 +18,8 @@ var Jobs = require('../models/job');
 var Histories = require('../models/history');
 var emailService = require('../services/email.service');
 var histroyService = require('../services/history.service');
+var httpService = require('../services/httpService');
 let Company = require('../models/company');
-const request = require('request');
 exports.save = async (req, enableEmail) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -591,18 +591,12 @@ exports.validateRecaptcha = async (token, origin, secretKey) => {
             if (token === null || token === undefined) {
                 reject("invalid Recaptcha");
             }
-            request(url, function (err, response, body) {
-                if (err || !body) {
-                    reject("invalid Recaptcha");
-                }
-                //the body is the data that contains success message
-                body = JSON.parse(body);
-                if (body && body.success) {
-                    resolve();
-                } else {
-                    reject("invalid Recaptcha");
-                }
-            });
+            let body = await httpService.get({url: url});
+            if (body && body.success) {
+                resolve();
+            } else {
+                reject("invalid Recaptcha");
+            }
         } catch (error) {
             reject("invalid Recaptcha");
         }

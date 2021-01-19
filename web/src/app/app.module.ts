@@ -95,8 +95,9 @@ import {AddActivityComponent} from './components/applicants/applicant-activity/a
 import {ApplicantJobsComponent} from './components/applicants/applicant-jobs/applicant.jobs.component';
 import {ReferredApplicantInfoComponent} from './components/referred-applicant/referred-applicant-info/referred.applicant.info.component';
 import {ReferredApplicantComponent} from './components/referred-applicant/referred.applicant.component';
-import {ReferredApplicantJobComponent} from "./components/referred-applicant/referred-applicant-Job/referred.applicant.job.component";
-import {CreateReferredApplicantComponent} from "./components/referred-applicant/create-referred-applicant/create.referred.applicant.component";
+import {ReferredApplicantJobComponent} from './components/referred-applicant/referred-applicant-Job/referred.applicant.job.component';
+import {CreateReferredApplicantComponent} from './components/referred-applicant/create-referred-applicant/create.referred.applicant.component';
+import {InterviewIntegrationComponent} from "./components/settings/Interview-Integration/interview.integration.component";
 
 @NgModule({
     declarations: [
@@ -169,7 +170,8 @@ import {CreateReferredApplicantComponent} from "./components/referred-applicant/
         ReferredApplicantComponent,
         ReferredApplicantInfoComponent,
         ReferredApplicantJobComponent,
-        CreateReferredApplicantComponent
+        CreateReferredApplicantComponent,
+        InterviewIntegrationComponent
     ],
     imports: [
         ToasterModule,

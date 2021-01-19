@@ -37,6 +37,7 @@ services:
             - EMAIL_TEST=$EMAIL_TEST
             - TEST_RECEPIENT=$TEST_RECEPIENT
             - CORE_CLIENT_SECRET=$CORE_CLIENT_SECRET
+            - GO_LIVE_MEET_BASE_URL=$GO_LIVE_MEET_BASE_URL
 
     ez_engine:
         container_name: ez_engine
@@ -124,6 +125,3 @@ volumes:
     elastic_search_data:
     mongo_db:
     web_images:
-
-
-
