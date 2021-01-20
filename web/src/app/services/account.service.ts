@@ -33,10 +33,7 @@ export class AccountService {
             user: 'referred-applicants/',
             interviewer: 'home/'
         };
-        console.log(role);
-        let data = url[role];
-        console.log(data);
-        return data;
+        return url[role];
     }
 
     isAuthorized() {

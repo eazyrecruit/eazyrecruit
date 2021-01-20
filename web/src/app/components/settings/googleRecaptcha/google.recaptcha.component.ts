@@ -6,7 +6,6 @@ import {ValidationService} from '../../../services/validation.service';
 @Component({
     selector: 'app-google-recaptcha',
     templateUrl: './google.recaptcha.component.html',
-    styleUrls: ['./google.recaptcha.component.css'],
     providers: [CompanyService, ValidationService]
 })
 export class GoogleRecaptchaComponent implements OnInit {

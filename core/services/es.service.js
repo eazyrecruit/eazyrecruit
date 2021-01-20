@@ -134,27 +134,14 @@ exports.searchApplicants = async (req) => {
                     query = {
                         "bool": {
                             "must": [
-                                {"match": {"source": req.source}},
-                                {
-                                    "range": {
-                                        "created_at": {
-                                            "gte": req.startDate,
-                                            "lt": req.endDate
-                                        }
-                                    }
-                                }]
+                                {"match": {"source": req.source}}]
                         }
                     }
                 }
 
                 if (!req.source && !req.search) {
                     query = {
-                        "range": {
-                            "created_at": {
-                                "gte": req.startDate,
-                                "lt": req.endDate
-                            }
-                        }
+                        "match_all": {}
                     }
                 }
                 Applicants.search(query, {

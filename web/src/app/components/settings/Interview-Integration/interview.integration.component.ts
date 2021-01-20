@@ -4,13 +4,13 @@ import {CompanyService} from '../../../services/company.service';
 import {ValidationService} from '../../../services/validation.service';
 
 @Component({
-    selector: 'app-google-analytics',
-    templateUrl: './google.analytics.component.html',
+    selector: 'app-interview-integration',
+    templateUrl: 'interview.integration.component.html',
     providers: [CompanyService, ValidationService]
 })
-export class GoogleAnalyticsComponent implements OnInit {
+export class InterviewIntegrationComponent implements OnInit {
 
-    analyticsForm: FormGroup;
+    interviewIntegrationForm: FormGroup;
     company: any;
     isTrackingIdEmpty: any = false;
     json: any;
@@ -18,13 +18,10 @@ export class GoogleAnalyticsComponent implements OnInit {
     constructor(private companyService: CompanyService,
                 private validationService: ValidationService,
                 private fbForm: FormBuilder) {
-        this.analyticsForm = this.fbForm.group({
-            analytics: [true],
-            trackingID: [null],
-            clientEmail: [null],
-            privateKey: [null],
-            viewId: [null],
-            json: []
+        this.interviewIntegrationForm = this.fbForm.group({
+            goLiveMeet: [true],
+            goLiveMeetClientID: [null],
+            goLiveMeetClientSecret: [null]
         });
     }
 
@@ -36,49 +33,35 @@ export class GoogleAnalyticsComponent implements OnInit {
         this.companyService.getCompany().subscribe(company => {
             if (company['success']['data']) {
                 this.company = company['success']['data'][0];
-                this.companyService.getSettings(this.company._id, 'googleAnalytics').subscribe(
+                this.companyService.getSettings(this.company._id, 'interviewIntegration').subscribe(
                     result => {
                         if (result['success']['data']) {
                             result['success']['data'].forEach(setting => {
                                 // tslint:disable-next-line:triple-equals max-line-length
                                 const value = setting.value == 'true' || setting.value == true ? true : setting.value == 'false' || setting.value == false ? false : setting.value;
-                                this.analyticsForm.get(setting.key).setValue(value);
+                                this.interviewIntegrationForm.get(setting.key).setValue(value);
                             });
                         }
 
                     });
             } else {
-                this.analyticsForm.reset();
+                this.interviewIntegrationForm.reset();
             }
         });
     }
 
-    onFileChange(event) {
-        const reader = new FileReader();
-        if (event[0].type.includes('json')) {
-            reader.onload = () => {
-                this.json = event[0];
-            };
-            reader.readAsDataURL(event[0]);
-        }
-    }
-
     editForm(form) {
-        const formData = new FormData();
-        formData.append('analytics', form.analytics);
-        if (form.analytics) {
-            if (!form.trackingID || !form.viewId) {
+        if (form.goLiveMeet) {
+            if (!form.goLiveMeetClientID || !form.goLiveMeetClientSecret) {
                 this.isTrackingIdEmpty = true;
                 return;
             }
-            if (this.json) {
-                formData.append('gaConfigurationFile', this.json);
-            }
-            formData.append('trackingID', form.trackingID);
-            formData.append('viewId', form.viewId);
-
         }
-        this.companyService.editSettings(formData, this.company._id, 'googleAnalytics').subscribe(result => {
+        this.companyService.editSettings({
+            goLiveMeet: form.goLiveMeet,
+            goLiveMeetClientID: form.goLiveMeetClientID,
+            goLiveMeetClientSecret: form.goLiveMeetClientSecret
+        }, this.company._id, 'interviewIntegration').subscribe(result => {
             if (result['success']) {
                 this.setForm();
             }

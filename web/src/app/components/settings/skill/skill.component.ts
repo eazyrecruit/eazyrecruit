@@ -8,7 +8,6 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 @Component({
   selector: 'app-skill',
   templateUrl: './skill.component.html',
-  styleUrls: ['./skill.component.css'],
   providers: [SkillsService, ValidationService]
 })
 export class SkillComponent implements OnInit {

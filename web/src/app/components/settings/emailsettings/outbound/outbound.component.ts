@@ -8,7 +8,6 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'app-outbound',
   templateUrl: './outbound.component.html',
-  styleUrls: ['./outbound.component.css'],
   providers: [CompanyService, ValidationService]
 })
 export class OutboundComponent implements OnInit {

@@ -60,6 +60,16 @@ module.exports = {
             admin: {
                 username: process.env.ADMIN_USER_NAME || "admin@eazyrecruit.in"
             },
+            InterviewInterviewIntegration: {
+                GoLiveMeet: {
+                    BaseUrl: process.env.GO_LIVE_MEET_BASE_URL || "http://localhost:3009/api",
+                    createWebinar: "events/createWebinar",
+                    updateWebinar: "events/updateWebinar",
+                    startWebinar: "events/startWebinar",
+                    deleteWebinar: "events/deleteWebinar",
+
+                }
+            },
             rootPath: __dirname,
             profileSupportFileType: ['image/jpeg', 'image/png'],
             profileSupportFileSize: 1024 * 1024 * 2,

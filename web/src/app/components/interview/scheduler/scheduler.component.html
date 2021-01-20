@@ -12,13 +12,14 @@
             <ng-template #titleBlock>
                 <div class="col-sm-12">
                     <label for="name">Job title</label>
-                    <input type="text" formControlName="title" placeholder="Job title" class="form-control" readonly>
+                    <input id="name" type="text" formControlName="title" placeholder="Job title" class="form-control"
+                           readonly>
                 </div>
             </ng-template>
             <ng-template #dropdownBlock>
                 <div class="col-sm-12">
-                    <label for="name">Job Title</label>
-                    <select formControlName="title" class="form-control" (change)="onJobChange($event)">
+                    <label for="title">Job Title</label>
+                    <select id="title" formControlName="title" class="form-control" (change)="onJobChange($event)">
                         <option value="null" disabled selected>Select Job</option>
                         <option *ngFor="let jobApplicant of appliedJobs;"
                                 value="{{jobApplicant.job._id}}">{{jobApplicant.job.title}}</option>
@@ -78,19 +79,25 @@
             </div>
             <!-- ============================ -->
             <div class="col-sm-6">
-                <label for="end">Round name (1st/2nd/HR)</label>
-                <input type="text" placeholder="Round name" formControlName="round" class="form-control">
+                <label for="round">Round name (1st/2nd/HR)</label>
+                <input id="round" type="text" placeholder="Round name" formControlName="round" class="form-control">
             </div>
             <div class="col-sm-6">
-                <label for="end">Channel (Skype/Online/F2F/Telephonic)</label>
-                <input type="text" placeholder="Channel" formControlName="channel" class="form-control">
+                <label for="channel">Channel (Skype/Online/F2F/Telephonic)</label>
+                <select id="channel" formControlName="channel" class="form-control"
+                        (change)="onChanelChange($event.target.value)">
+                    <option *ngFor="let channel of channels;"
+                            value="{{channel}}"> {{channel}}</option>
+                </select>
             </div>
-            <div class="col-sm-12 mt-10">
-                <label>
-                    Channel Link
-                    <input placeholder="ChannelLink" formControlName="channelLink" class="form-control"/>
-                </label>
-            </div>
+            <ng-container *ngIf="interviewForm.value['channel']!='GoLiveMeet'">
+                <div class="col-sm-12 mt-10">
+                    <label>
+                        Channel Link
+                        <input placeholder="ChannelLink" formControlName="channelLink" class="form-control"/>
+                    </label>
+                </div>
+            </ng-container>
             <div class="col-sm-12 mt-10">
                 <label for="end">Note</label>
                 <textarea rows="3" placeholder="Note" formControlName="note" class="form-control"></textarea>

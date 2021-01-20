@@ -3,8 +3,9 @@ import {Router} from '@angular/router';
 import {InterviewService} from '../../../services/interview.service';
 import {AccountService} from "../../../services/account.service";
 import {SchedulerComponent} from "../scheduler/scheduler.component";
-import {CancelConformComponent} from "../cancelConfromBox/cancel.conform.component";
+import {CancelConformComponent} from '../cancelConfromBox/cancel.conform.component';
 import {BsModalRef, BsModalService} from "ngx-bootstrap";
+import {ToasterService} from "angular2-toaster";
 
 @Component({
     selector: 'interview-list',
@@ -21,6 +22,7 @@ export class InterviewListComponent implements OnInit, OnChanges {
     modalRef: BsModalRef;
 
     constructor(private router: Router,
+                private toasterService: ToasterService,
                 private modalService: BsModalService,
                 private interviewService: InterviewService, private accountService: AccountService) {
     }
@@ -54,6 +56,31 @@ export class InterviewListComponent implements OnInit, OnChanges {
         this.filter.sortOrder = filter.sortOrder;
         this.filter.type = filter.type ? filter.type : this.filter.type;
         this.getAllInterviews(this.filter);
+    }
+
+
+    startInterview(interview) {
+        if (interview.channel === 'GoLiveMeet') {
+            const ael = document.activeElement;
+            ael['disabled'] = true;
+            ael['innerHTML'] = '<i class="fa fa-spinner fa-spin"></i>';
+            this.interviewService.startInterView(interview._id).subscribe(result => {
+                ael['disabled'] = false;
+                ael['innerHTML'] = '<i class="fas fa-play"></i>Start Interview';
+                if (result['success']) {
+                    window.open(result['success'].data, '_blank');
+                } else {
+                    this.toasterService.pop('error', 'Error in schedule interview', result['error'].data);
+                }
+            }, error => {
+                ael['disabled'] = false;
+                ael['innerHTML'] = '<i class="fas fa-play"></i>Start Interview';
+                this.totalRecords = 0;
+            });
+        } else {
+            window.open(interview.channelLink, '_blank');
+        }
+
     }
 
     getAllInterviews(filter: any) {

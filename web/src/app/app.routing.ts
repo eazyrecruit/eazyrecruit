@@ -24,7 +24,8 @@ import {ProfileComponent} from './components/profile/profile.component';
 import {DatabaseComponent} from './components/database/database.component';
 import {GoogleRecaptchaComponent} from './components/settings/googleRecaptcha/google.recaptcha.component';
 import {ReferredApplicantComponent} from './components/referred-applicant/referred.applicant.component';
-import {ReferredApplicantJobComponent} from "./components/referred-applicant/referred-applicant-Job/referred.applicant.job.component";
+import {ReferredApplicantJobComponent} from './components/referred-applicant/referred-applicant-Job/referred.applicant.job.component';
+import {InterviewIntegrationComponent} from './components/settings/Interview-Integration/interview.integration.component';
 
 @NgModule({
     imports: [
@@ -84,7 +85,8 @@ import {ReferredApplicantJobComponent} from "./components/referred-applicant/ref
                             {path: 'email', component: EmailsettingsComponent},
                             {path: 'google', component: GoogleComponent},
                             {path: 'analytics', component: GoogleAnalyticsComponent},
-                            {path: 'recaptcha', component: GoogleRecaptchaComponent}
+                            {path: 'recaptcha', component: GoogleRecaptchaComponent},
+                            {path: 'interviewIntegration', component: InterviewIntegrationComponent}
                         ], canActivate: [RoleGuardService], data: {expectedRole: ['admin']}
                     },
                     {

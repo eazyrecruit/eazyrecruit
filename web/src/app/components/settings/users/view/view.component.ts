@@ -8,7 +8,6 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 @Component({
   selector: 'app-view',
   templateUrl: './view.component.html',
-  styleUrls: ['./view.component.css'],
   providers: [AccountService, ValidationService]
 })
 export class ViewComponent implements OnInit {

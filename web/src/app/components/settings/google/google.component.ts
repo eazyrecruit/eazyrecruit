@@ -6,7 +6,6 @@ import { ValidationService } from '../../../services/validation.service';
 @Component({
   selector: 'app-google',
   templateUrl: './google.component.html',
-  styleUrls: ['./google.component.css'],
   providers: [CompanyService, ValidationService]
 })
 export class GoogleComponent implements OnInit {

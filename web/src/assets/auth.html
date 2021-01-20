@@ -1,28 +1,33 @@
 <html>
-    <head>
-    </head>
-    <body>
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-        <script>
-            $(document).ready(function () {
-                var app = getParameterByName('socialApp');
-                window.location.href = getApiUrl() + '/account/' + app;
-                window.localStorage.setItem("app", app);
-            })
+<head>
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        var app = getParameterByName('socialApp');
+        window.location.href = getApiUrl() + '/account/' + app;
+        window.localStorage.setItem("app", app);
+    })
 
-            function getParameterByName(name, url) {
-                if (!url) url = window.location.href;
-                name = name.replace(/[\[\]]/g, "\\$&");
-                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                    results = regex.exec(url);
-                if (!results) return null;
-                if (!results[2]) return '';
-                return decodeURIComponent(results[2].replace(/\+/g, " "));
-            }
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
 
-            function getApiUrl() {
-                return window.location.protocol + '//' + window.location.hostname + '/api';
-            }
-        </script>
-    </body>
+    function getApiUrl() {
+        var publicUrl = window.location.protocol + '//' + window.location.hostname + '/';
+        if (window.location.hostname === 'localhost') {
+            publicUrl = 'http://localhost:8082';
+        }
+        return publicUrl + '/api';
+    }
+</script>
+</body>
 </html>

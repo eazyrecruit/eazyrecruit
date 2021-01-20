@@ -22,7 +22,7 @@ export class DatabaseComponent implements OnInit {
     timeOut;
     filter = {
         pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at', isGridView: false,
-        order: -1, searchText: '', startDate: '', endDate: '', source: '',
+        order: -1, searchText: '', source: '',
     };
     pipeLines = [];
     totalRecords = 1;
@@ -31,11 +31,6 @@ export class DatabaseComponent implements OnInit {
     searchText = '';
     sourceType = ['Email', 'Upload', 'Website', 'Db'];
     job: any;
-    startDate: any = new Date();
-    endDate: any = new Date();
-    startMaxDate: any = new Date();
-    endMinDate: any = new Date();
-    endMaxDate: any = new Date();
 
 
     searchForm: FormGroup;
@@ -89,24 +84,6 @@ export class DatabaseComponent implements OnInit {
 
     getSourceColor(source) {
         return this.sourceColor[source] || '';
-    }
-
-    onDateChange(event, id) {
-        if (id === 'startDate') {
-            this.filter.startDate = this.getDate(new Date(event));
-            this.endMinDate = new Date(event);
-            this.startDate = new Date(event);
-        } else if (id === 'endDate') {
-            this.endDate = new Date(event);
-            this.filter.endDate = this.getDate(new Date(event));
-            if (this.filter.endDate && this.filter.startDate) {
-
-            }
-        }
-        this.ApplicantList = [];
-        this.totalRecords = 0;
-        this.getCandidate();
-
     }
 
     onSourceFilterChange(item) {
@@ -167,16 +144,11 @@ export class DatabaseComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.startDate.setMonth(new Date().getMonth() - 2);
-        this.endMinDate = this.startDate;
-        this.filter.startDate = this.getDate(this.startDate);
-        this.filter.endDate = this.getDate(this.endDate);
         this.gettingApplicant = true;
         this.getCandidate();
     }
 
     getCandidate() {
-        console.log('cal');
         this.searchService.getApplicantData(this.filter).subscribe((result) => {
             if (result['success'] && result['success']['data']) {
                 this.ApplicantList = result['success']['data'].applicants;
@@ -281,17 +253,11 @@ export class DatabaseComponent implements OnInit {
         this.modalRef.content.onClose.subscribe(result => {
             if (result) {
                 this.getCandidate();
-                //this.toasterService.pop('success', 'Success', 'Resume uploaded successfully.');
             }
         });
     }
 
     onUpdate($event) {
         this.getCandidate();
-    }
-
-    getDate(date) {
-        const month = date.getMonth() + 1;
-        return month + '/' + date.getDate() + '/' + date.getFullYear();
     }
 }
