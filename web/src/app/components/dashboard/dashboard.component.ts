@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild, ElementRef, AfterViewInit} from '@angular/
 import {FullCalendarOptions, EventObject, FullCalendarComponent} from 'ngx-fullcalendar';
 import {InterviewService} from '../../services/interview.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
-import {SchedulerComponent} from '../interview/scheduler/scheduler.component';
+import {SchedulerComponent} from '../common/scheduler/scheduler.component';
 import {ChartDataSets, ChartOptions} from 'chart.js';
 import {Color, BaseChartDirective, Label} from 'ng2-charts';
 import {ReportService} from '../../services/report.service';

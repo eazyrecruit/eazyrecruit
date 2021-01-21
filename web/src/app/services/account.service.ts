@@ -31,7 +31,7 @@ export class AccountService {
             hr: 'jobs/',
             admin: 'jobs/',
             user: 'referred-applicants/',
-            interviewer: 'home/'
+            interviewer: 'dashboard/'
         };
         return url[role];
     }
