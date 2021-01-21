@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Router, Params, ActivatedRoute} from '@angular/router';
 import {ValidationService} from '../../../services/validation.service';
 import {AccountService, AuthStorage} from '../../../services/account.service';
 import {ConstService} from '../../../services/const.service';
-import {ToasterService} from "angular2-toaster";
+import {ToasterService} from 'angular2-toaster';
+import {Subscription} from 'rxjs';
 
 declare var SiteJS: any;
 
@@ -12,12 +13,11 @@ declare var SiteJS: any;
     templateUrl: 'profile.component.html',
     providers: [ValidationService, AccountService]
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
 
     profileForm: FormGroup;
     passwordForm: FormGroup;
     errorMessage: string;
-    currentUser: any = {};
     userPicUrl: any;
     user: any;
     fileToUpload: any;
@@ -28,6 +28,7 @@ export class ProfileComponent implements OnInit {
     authStorage = new AuthStorage();
     profileError = false;
     isLoginWithGoogle = true;
+    private _subs: Subscription;
 
     constructor(private accountService: AccountService,
                 private router: Router,
@@ -81,7 +82,7 @@ export class ProfileComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.accountService.getUser().subscribe(result => {
+        this._subs = this.accountService.getUser().subscribe(result => {
             if (result['success']['data']) {
                 if (result['success']['data']['password']) {
                     this.isLoginWithGoogle = false;
@@ -132,7 +133,7 @@ export class ProfileComponent implements OnInit {
                 formData.append('isRemovePhoto', 'true');
             }
             this.profileSubmit = true;
-            this.accountService.updateUserData(formData).subscribe(result => {
+            this._subs = this.accountService.updateUserData(formData).subscribe(result => {
                 if (result['success'] && result['success']['data']) {
                     this.fileToUpload = null;
                     const authData = this.authStorage.getAuthData();
@@ -174,7 +175,7 @@ export class ProfileComponent implements OnInit {
         if (this.passwordForm.valid) {
             if (this.passwordForm.valid && (passwordFormDetail.confirmPassword === passwordFormDetail.newPassword)) {
                 this.passwordSubmit = true;
-                this.accountService.updateUserData(passwordFormDetail).subscribe(result => {
+                this._subs = this.accountService.updateUserData(passwordFormDetail).subscribe(result => {
                     if (result['success'] && result['success']['data']) {
                         this.toasterService.pop('success', 'Password updated', 'Password updated successfully');
                     } else if (result['error']) {
@@ -197,4 +198,9 @@ export class ProfileComponent implements OnInit {
         }
     }
 
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+    }
 }

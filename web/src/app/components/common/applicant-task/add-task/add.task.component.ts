@@ -1,9 +1,9 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {CompanyService} from '../../../../services/company.service';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ValidationService} from '../../../../services/validation.service';
 import {BsModalRef} from 'ngx-bootstrap';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {ApplicantTaskService} from '../applicant.task.service';
 
 @Component({
@@ -11,7 +11,7 @@ import {ApplicantTaskService} from '../applicant.task.service';
     templateUrl: 'add.task.component.html',
     providers: [ApplicantTaskService, ValidationService]
 })
-export class AddTaskComponent implements OnInit {
+export class AddTaskComponent implements OnInit, OnDestroy {
 
     addTaskForm: FormGroup;
     closePopup: Subject<any>;
@@ -24,6 +24,7 @@ export class AddTaskComponent implements OnInit {
     taskData;
     userList: any[] = [];
     bsConfig = Object.assign({}, {containerClass: 'theme-red'});
+    private _subs: Subscription;
 
     constructor(private applicantTaskService: ApplicantTaskService,
                 private fbForm: FormBuilder,
@@ -77,4 +78,9 @@ export class AddTaskComponent implements OnInit {
         }
     }
 
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+    }
 }

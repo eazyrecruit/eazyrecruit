@@ -1,23 +1,25 @@
-import {Component, OnInit, Input, OnChanges} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core';
 import {ApplicantTaskService} from './applicant.task.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {ConstService} from '../../../services/const.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {AddTaskComponent} from './add-task/add.task.component';
 import {ToasterService} from 'angular2-toaster';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-applicant-task',
     templateUrl: 'applicant.task.component.html',
     providers: [ApplicantTaskService]
 })
-export class ApplicantTaskComponent implements OnChanges {
+export class ApplicantTaskComponent implements OnChanges, OnDestroy {
     @Input()
     applicantId?: any;
     isLoading = false;
     taskData: any = [];
     time = new Date().getTime();
     modalRef: BsModalRef;
+    private _subs: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -68,7 +70,7 @@ export class ApplicantTaskComponent implements OnChanges {
     getTask() {
         this.time = new Date().getTime();
         this.isLoading = true;
-        this.applicantActivityService.getTask(this.applicantId).subscribe(result => {
+        this._subs = this.applicantActivityService.getTask(this.applicantId).subscribe(result => {
             if (result['success'] && result['success'].data && result['success'].data.records && result['success'].data.records.length) {
                 this.taskData = result['success'].data.records;
             }
@@ -79,7 +81,7 @@ export class ApplicantTaskComponent implements OnChanges {
     }
 
     changeStatus(id, status) {
-        this.applicantActivityService.updateTask(id, {status: status === 'ACTIVE' ? 'COMPLETED' : 'ACTIVE'}).subscribe(result => {
+        this._subs = this.applicantActivityService.updateTask(id, {status: status === 'ACTIVE' ? 'COMPLETED' : 'ACTIVE'}).subscribe(result => {
             if (result['success']) {
                 this.getTask();
             }
@@ -93,5 +95,11 @@ export class ApplicantTaskComponent implements OnChanges {
 
     ngOnChanges(): void {
         this.getTask();
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

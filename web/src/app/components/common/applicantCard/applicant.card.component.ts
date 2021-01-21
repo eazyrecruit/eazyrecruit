@@ -1,6 +1,7 @@
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, Output, EventEmitter} from '@angular/core';
 import {SharedService} from '../../../services/shared.service';
 import {ApplicantService} from '../../../services/applicant.service';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-applicant-card',
@@ -9,7 +10,7 @@ import {ApplicantService} from '../../../services/applicant.service';
         ApplicantService
     ]
 })
-export class ApplicantCardComponent implements OnInit {
+export class ApplicantCardComponent implements OnInit, OnDestroy {
 
     applicants: any = {};
     selectedPipeline: any;
@@ -31,7 +32,7 @@ export class ApplicantCardComponent implements OnInit {
 
     @Output()
     removeApplicant: EventEmitter<any> = new EventEmitter();
-
+    private _subs: Subscription;
 
     constructor(private sharedService: SharedService,
                 private applicantService: ApplicantService) {
@@ -59,7 +60,7 @@ export class ApplicantCardComponent implements OnInit {
     }
 
     removeUser(jobApplicantId: any) {
-        let result = this.applicantService.removeApplicantFromJob(jobApplicantId);
+        let result =  this._subs = this.applicantService.removeApplicantFromJob(jobApplicantId);
         if (result) {
             this.removeApplicant.emit({isDeleted: true});
         } else {
@@ -84,5 +85,11 @@ export class ApplicantCardComponent implements OnInit {
         }
 
         return name;
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

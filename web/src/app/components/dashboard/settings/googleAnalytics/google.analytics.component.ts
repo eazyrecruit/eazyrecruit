@@ -1,14 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {CompanyService} from '../../../../services/company.service';
 import {ValidationService} from '../../../../services/validation.service';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-google-analytics',
     templateUrl: './google.analytics.component.html',
     providers: [CompanyService, ValidationService]
 })
-export class GoogleAnalyticsComponent implements OnInit {
+export class GoogleAnalyticsComponent implements OnInit, OnDestroy {
+    private _subs: Subscription;
 
     analyticsForm: FormGroup;
     company: any;
@@ -33,10 +35,10 @@ export class GoogleAnalyticsComponent implements OnInit {
     }
 
     setForm() {
-        this.companyService.getCompany().subscribe(company => {
+         this._subs = this.companyService.getCompany().subscribe(company => {
             if (company['success']['data']) {
                 this.company = company['success']['data'][0];
-                this.companyService.getSettings(this.company._id, 'googleAnalytics').subscribe(
+                 this._subs = this.companyService.getSettings(this.company._id, 'googleAnalytics').subscribe(
                     result => {
                         if (result['success']['data']) {
                             result['success']['data'].forEach(setting => {
@@ -78,11 +80,16 @@ export class GoogleAnalyticsComponent implements OnInit {
             formData.append('viewId', form.viewId);
 
         }
-        this.companyService.editSettings(formData, this.company._id, 'googleAnalytics').subscribe(result => {
+         this._subs = this.companyService.editSettings(formData, this.company._id, 'googleAnalytics').subscribe(result => {
             if (result['success']) {
                 this.setForm();
             }
         });
     }
 
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+    }
 }

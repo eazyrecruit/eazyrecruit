@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 
 import {ApplicantService} from '../../../services/applicant.service';
@@ -6,6 +6,7 @@ import {ValidationService} from '../../../services/validation.service';
 import {SkillsService} from '../../../services/skills.service';
 import {BsModalRef} from 'ngx-bootstrap';
 import {Subject} from 'rxjs/internal/Subject';
+import {Subscription} from "rxjs";
 
 // import { Observable } from 'rxjs/Observable';
 
@@ -14,9 +15,7 @@ import {Subject} from 'rxjs/internal/Subject';
     templateUrl: './upload-resume.component.html',
     providers: [ApplicantService, ValidationService, SkillsService]
 })
-export class UploadResumeComponent implements OnInit {
-
-    skillsAssessmentService: any;
+export class UploadResumeComponent implements OnInit, OnDestroy {
     errInvalidFile: boolean;
     formDetails: FormGroup;
     resume: any;
@@ -26,6 +25,7 @@ export class UploadResumeComponent implements OnInit {
 
     public onClose: Subject<any>;
 
+    private _subs: Subscription;
 
     constructor(
         private modalRef: BsModalRef,
@@ -54,7 +54,7 @@ export class UploadResumeComponent implements OnInit {
             const formData = new FormData();
             formData.append('resume', this.resume);
             formData.append('source', 'upload');
-            this.applicantService.resume(formData).subscribe(result => {
+            this._subs = this.applicantService.resume(formData).subscribe(result => {
                 if (result && result['success']) {
                     this.onClose.next(result['success']['data']);
                     this.modalRef.hide();
@@ -78,6 +78,12 @@ export class UploadResumeComponent implements OnInit {
             this.formDetails.get(['resume']).setValue(event[0].name);
         } else {
             this.formDetails.get(['resume']).setValue(null);
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
         }
     }
 }

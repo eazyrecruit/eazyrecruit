@@ -12,6 +12,7 @@ import {UploadService} from '../../../../services/upload.service';
 import {ApplicantInfoService} from '../../../common/applicantInfo/applicant-info.service';
 import {ValidationService} from '../../../../services/validation.service';
 import {SearchService} from '../../../../services/search.service';
+import {Subscription} from "rxjs";
 
 declare var SiteJS: any;
 
@@ -43,6 +44,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     onCancelInterview: EventEmitter<any> = new EventEmitter();
 
     applicantData?: any;
+    private _subs: Subscription;
 
     constructor(
         private router: Router,
@@ -108,7 +110,7 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
     }
 
     getApplicantCompleteData() {
-        this.applicantDataService.getApplicantCompleteData(this.applicantId).subscribe(result => {
+         this._subs = this.applicantDataService.getApplicantCompleteData(this.applicantId).subscribe(result => {
             if (result && result['success'] && result['success']['data']) {
                 this.applicantData = result['success']['data'];
             }
@@ -128,7 +130,10 @@ export class ApplicantpageComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.applicantId = null;
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Router, Params, ActivatedRoute} from '@angular/router';
 import {SearchService} from '../../../services/search.service';
@@ -11,6 +11,7 @@ import {CreateApplicantComponent} from '../../common/create-applicant/create-app
 import {UploadResumeComponent} from '../../common/upload-resume/upload-resume.component';
 import {SharedService} from '../../../services/shared.service';
 import {CreateReferredApplicantComponent} from "./create-referred-applicant/create.referred.applicant.component";
+import {Subscription} from 'rxjs';
 
 declare var SiteJS: any;
 
@@ -18,7 +19,7 @@ declare var SiteJS: any;
     templateUrl: 'referred.applicant.component.html',
     providers: [SearchService, JobService, ApplyJobService, ApplicantService, ApplicantDataService, BsModalService]
 })
-export class ReferredApplicantComponent implements OnInit {
+export class ReferredApplicantComponent implements OnInit, OnDestroy {
 
     filter = {
         pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at',
@@ -33,7 +34,7 @@ export class ReferredApplicantComponent implements OnInit {
     ApplicantList = [];
     applicant: any;
     modalRef: BsModalRef;
-
+    private _subs: Subscription;
     jobId: any;
     pipeId: any;
     sourceColor: any = this.sharedService.getSourceColor();
@@ -92,7 +93,7 @@ export class ReferredApplicantComponent implements OnInit {
     }
 
     getJobsName(jobId) {
-        this.jobService.getJobsName(jobId).subscribe(result => {
+        this._subs =  this._subs = this.jobService.getJobsName(jobId).subscribe(result => {
             if (result['success'] && result['success']['data'] && result['success']['data'].length) {
                 this.job = result['success']['data'][0];
             }
@@ -105,7 +106,7 @@ export class ReferredApplicantComponent implements OnInit {
     }
 
     getCandidate() {
-        this.searchService.getReferredApplicantData(this.filter).subscribe((result) => {
+        this._subs = this.searchService.getReferredApplicantData(this.filter).subscribe((result) => {
             if (result['success'] && result['success']['data']) {
                 this.ApplicantList = result['success']['data'].applicants;
                 this.totalRecords = result['success']['data'].total;
@@ -145,7 +146,7 @@ export class ReferredApplicantComponent implements OnInit {
     }
 
     addApplicantToJob(applicantId: any) {
-        this.jobService.addJobApplicant({
+        this._subs =  this._subs = this.jobService.addJobApplicant({
             jobId: this.jobId,
             pipelineId: this.pipeId,
             applicantId: applicantId
@@ -212,5 +213,14 @@ export class ReferredApplicantComponent implements OnInit {
     getDate(date) {
         const month = date.getMonth() + 1;
         return month + '/' + date.getDate() + '/' + date.getFullYear();
+    }
+
+    // tslint:disable-next-line:use-life-cycle-interface
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+
+
     }
 }

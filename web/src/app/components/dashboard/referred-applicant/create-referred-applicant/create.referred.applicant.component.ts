@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, OnChanges, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, OnChanges, Output, EventEmitter} from '@angular/core';
 import {Router, ActivatedRoute, Params} from '@angular/router';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ValidationService} from '../../../../services/validation.service';
@@ -7,7 +7,7 @@ import {DataShareService} from '../../../../services/data-share.service';
 import {LocationService} from '../../../../services/location.service';
 import {ToasterModule, ToasterService, ToasterConfig} from 'angular2-toaster';
 import {SearchService} from '../../../../services/search.service';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {BsModalRef} from 'ngx-bootstrap';
 import {ApplicantService} from '../../../../services/applicant.service';
@@ -18,7 +18,7 @@ import {AccountService} from '../../../../services/account.service';
     templateUrl: 'create.referred.applicant.component.html',
     providers: [ValidationService, SkillsService, SearchService, LocationService, ApplicantService]
 })
-export class CreateReferredApplicantComponent implements OnInit {
+export class CreateReferredApplicantComponent implements OnInit, OnDestroy {
 
     @Input()
     jobId: any;
@@ -27,6 +27,7 @@ export class CreateReferredApplicantComponent implements OnInit {
     applicantForm: FormGroup;
     resume: any;
     errInvalidFile = '';
+    private _subs: Subscription;
 
     constructor(
         private bsModelRef: BsModalRef,
@@ -102,7 +103,7 @@ export class CreateReferredApplicantComponent implements OnInit {
             formData.append('jobId', this.jobId);
         }
 
-        this.applicantService.resume(formData).subscribe(result => {
+        this._subs = this.applicantService.resume(formData).subscribe(result => {
             if (result && result['success']) {
                 this.closePopup.next(result['success']);
                 this.bsModelRef.hide();
@@ -113,6 +114,12 @@ export class CreateReferredApplicantComponent implements OnInit {
     validateAvailability(event: any) {
         if (!(parseInt(event.target.value) >= 0)) {
             console.log('add error message here!');
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
         }
     }
 }

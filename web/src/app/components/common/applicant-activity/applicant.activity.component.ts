@@ -1,17 +1,18 @@
-import {Component, OnInit, Input, OnChanges} from '@angular/core';
+import {Component, OnDestroy, Input, OnChanges} from '@angular/core';
 import {ApplicantActivityService} from './applicant-activity.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {ConstService} from '../../../services/const.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {ToasterService} from 'angular2-toaster';
 import {AddActivityComponent} from './add-activity/add.activity.component';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-applicant-activity',
     templateUrl: 'applicant.activity.component.html',
     providers: [ApplicantActivityService]
 })
-export class ApplicantActivityComponent implements OnChanges {
+export class ApplicantActivityComponent implements OnChanges, OnDestroy {
     @Input()
     applicantId: any;
 
@@ -24,6 +25,7 @@ export class ApplicantActivityComponent implements OnChanges {
     activityData: any = [];
     time = new Date().getTime();
     modalRef: BsModalRef;
+    private _subs: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -37,7 +39,7 @@ export class ApplicantActivityComponent implements OnChanges {
     getApplicantActivity() {
         this.time = new Date().getTime();
         this.isLoading = true;
-        this.applicantActivityService.getActivity(this.applicantId).subscribe(result => {
+        this._subs = this.applicantActivityService.getActivity(this.applicantId).subscribe(result => {
 
             if (result['success'] && result['success'].data && result['success'].data.records && result['success'].data.records.length) {
                 this.activityData = result['success'].data.records;
@@ -67,5 +69,13 @@ export class ApplicantActivityComponent implements OnChanges {
 
     ngOnChanges(): void {
         this.getApplicantActivity();
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+
+
     }
 }

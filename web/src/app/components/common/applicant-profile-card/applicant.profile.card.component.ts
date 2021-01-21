@@ -1,14 +1,15 @@
-import {Component, OnInit, Input, Output, EventEmitter, OnChanges, TemplateRef} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, Output, EventEmitter, OnChanges, TemplateRef} from '@angular/core';
 import {BsModalService, BsModalRef} from 'ngx-bootstrap';
 import {ActivatedRoute} from '@angular/router';
 import {CreateApplicantComponent} from '../create-applicant/create-applicant.component';
 import {SharedService} from "../../../services/shared.service";
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-applicant-profile-card',
     templateUrl: 'applicant.profile.card.component.html'
 })
-export class ApplicantProfileCardComponent implements OnChanges {
+export class ApplicantProfileCardComponent implements OnChanges, OnDestroy {
     @Input()
     applicant: any;
     @Input()
@@ -21,6 +22,7 @@ export class ApplicantProfileCardComponent implements OnChanges {
     isReadonly: true;
     applicantData: any;
     sourceColor: any = this.sharedService.getSourceColor();
+    private _subs: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -59,5 +61,13 @@ export class ApplicantProfileCardComponent implements OnChanges {
                 this.onUpdate.emit(result['data']);   // new testing
             }
         });
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+
+
     }
 }

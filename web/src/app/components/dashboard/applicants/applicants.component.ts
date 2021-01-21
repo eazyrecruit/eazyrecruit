@@ -1,15 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy } from '@angular/core';
 import {SearchService} from '../../../services/search.service';
 import {JobService} from '../../../services/job.service';
 import {PipelineService} from '../../../services/pipeline.service';
 import {SharedService} from '../../../services/shared.service';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-applicants',
     templateUrl: './applicants.component.html',
     providers: [SearchService, JobService, PipelineService]
 })
-export class ApplicantsComponent implements OnInit {
+export class ApplicantsComponent implements OnInit, OnDestroy {
     filter = {
         pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at', isGridView: false,
         order: -1, searchText: '', startDate: '', endDate: '', source: '', jobId: '',
@@ -33,7 +34,7 @@ export class ApplicantsComponent implements OnInit {
     gettingApplicant = false;
     colorClass: any = this.sharedService.getPipeLineColor();
     sourceColor: any = this.sharedService.getSourceColor();
-
+    private _subs: Subscription;
     constructor(private searchService: SearchService,
                 private pipelineService: PipelineService,
                 private sharedService: SharedService,
@@ -42,7 +43,7 @@ export class ApplicantsComponent implements OnInit {
     }
 
     getJobsName() {
-        this.jobService.getWithApplicantsAndPipelineById().subscribe(result => {
+         this._subs = this.jobService.getWithApplicantsAndPipelineById().subscribe(result => {
             if (result['success']) {
                 this.jobs = result['success']['data'];
                 for (let index = 0; index < this.jobs.length; index++) {
@@ -161,7 +162,7 @@ export class ApplicantsComponent implements OnInit {
     getCandidate() {
         this.gettingApplicant = true;
         this.ApplicantList = [];
-        this.jobService.getJobApplicant(this.filter).subscribe((result) => {
+         this._subs = this.jobService.getJobApplicant(this.filter).subscribe((result) => {
             if (result['success']) {
                 this.totalRecords = result['success']['data'].total;
                 const applicants = result['success']['data'].records;
@@ -243,5 +244,11 @@ export class ApplicantsComponent implements OnInit {
 
     onUpdate($event) {
         this.getCandidate();
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

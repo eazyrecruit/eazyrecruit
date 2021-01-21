@@ -1,6 +1,7 @@
-import {Component, OnInit, Input, OnChanges} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApplicantInfoService} from '../../../common/applicantInfo/applicant-info.service';
+import {Subscription} from "rxjs";
 
 declare global {
     interface Window {
@@ -13,7 +14,7 @@ declare global {
     templateUrl: './referred.applicant.info.component.html',
     providers: [ApplicantInfoService]
 })
-export class ReferredApplicantInfoComponent implements OnInit, OnChanges {
+export class ReferredApplicantInfoComponent implements OnInit, OnChanges, OnDestroy {
     gettingApplicant = false;
     jobLoad = false;
     jobId: any;
@@ -23,6 +24,7 @@ export class ReferredApplicantInfoComponent implements OnInit, OnChanges {
     applicant?: any;
     applicantData?: any;
     applyJobs: any = [];
+    private _subs: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -54,7 +56,7 @@ export class ReferredApplicantInfoComponent implements OnInit, OnChanges {
     }
 
     getApplicantById(id: string) {
-        this.applicantInfoService.getApplicantById(id).subscribe(result => {
+        this._subs = this.applicantInfoService.getApplicantById(id).subscribe(result => {
             if (result) {
                 this.applicant = result['success']['data'];
                 this.applicantData = result['success']['data'];
@@ -69,7 +71,7 @@ export class ReferredApplicantInfoComponent implements OnInit, OnChanges {
 
     getJobsByApplicantId() {
         if (this.applicant._id) {
-            this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
+            this._subs = this.applicantInfoService.getJobsByApplicantId(this.applicant._id).subscribe(result => {
                 if (result && result['success'] && result['success']['data'] && result['success']['data'].length) {
                     this.applicant.jobs = result['success']['data'];
                     this.setJobsSkils(result['success']['data']);
@@ -91,5 +93,11 @@ export class ReferredApplicantInfoComponent implements OnInit, OnChanges {
         }
         this.jobLoad = true;
 
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

@@ -10,7 +10,7 @@ import {GoogleAnalyticsComponent} from './googleAnalytics/google.analytics.compo
 import {GoogleRecaptchaComponent} from './googleRecaptcha/google.recaptcha.component';
 import {InterviewIntegrationComponent} from './Interview-Integration/interview.integration.component';
 import {SettingsRouting} from './settings.routing';
-import {CompanaiesComponent} from './companycreate/companaies.component';
+import {CompaniesComponent} from './companycreate/companies.component';
 import {EmailTemplateComponent} from './emailsettings/email-template/email-template.component';
 import {InboundComponent} from './emailsettings/inbound/inbound.component';
 import {OutboundComponent} from './emailsettings/outbound/outbound.component';
@@ -35,7 +35,7 @@ import {ModalModule} from 'ngx-bootstrap';
         GoogleAnalyticsComponent,
         GoogleRecaptchaComponent,
         InterviewIntegrationComponent,
-        CompanaiesComponent,
+        CompaniesComponent,
         EmailTemplateComponent, InboundComponent, OutboundComponent
     ],
     entryComponents: [EmailTemplateComponent, InboundComponent, OutboundComponent]

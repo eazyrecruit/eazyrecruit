@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy  } from '@angular/core';
 import { AuthStorage } from '../../../services/account.service';
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html'
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent implements OnInit, OnDestroy {
   displayName: string;
   AuthStorage = new AuthStorage();
   authdata: any;

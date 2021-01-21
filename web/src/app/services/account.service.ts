@@ -176,7 +176,7 @@ export class RoleGuardService implements CanActivate {
 
     canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
         const authData = this.authStorage.getAuthData();
-        if (!this.accountService.isAuthorized()) {
+        if (!this._subs = this.accountService.isAuthorized()) {
             this.router.navigate(['/login']);
             return false;
         } else {

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, Output} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {Router, Params, ActivatedRoute} from '@angular/router';
 import {ValidationService} from '../../../../../services/validation.service';
@@ -8,6 +8,7 @@ import {DataShareService} from '../../../../../services/data-share.service';
 import {ApplicantDataService} from '../../../../../services/applicant-data.service';
 import {JobService} from '../../../../../services/job.service';
 import {ApplicantService} from '../../../../../services/applicant.service';
+import {Subscription} from "rxjs";
 
 declare var SiteJS: any;
 
@@ -16,7 +17,7 @@ declare var SiteJS: any;
     templateUrl: 'pipeline.list.component.html',
     providers: [PipelineService, SharedService, ValidationService, JobService, ApplicantService]
 })
-export class PipelineListComponent implements OnChanges {
+export class PipelineListComponent implements OnChanges, OnDestroy {
     @Input('jobId') jobId: any;
     @Input('pipeLines') pipeLines: any;
     @Input('filter') filter: any;
@@ -30,6 +31,7 @@ export class PipelineListComponent implements OnChanges {
     gettingApplicant = true;
     @Output()
     onChangeStatus: EventEmitter<any> = new EventEmitter();
+    private _subs: Subscription;
 
     constructor(private route: ActivatedRoute,
                 private pipelineService: PipelineService,
@@ -63,7 +65,7 @@ export class PipelineListComponent implements OnChanges {
 
     getPipeLine(jobId) {
         if (jobId) {
-            this.jobService.getWithApplicantsAndPipelineById(jobId).subscribe(result => {
+             this._subs = this.jobService.getWithApplicantsAndPipelineById(jobId).subscribe(result => {
                 if (result['success']) {
                     this.pipeLines = result['success'].data[0].pipelines;
                 }
@@ -120,7 +122,7 @@ export class PipelineListComponent implements OnChanges {
     }
 
     removeUser(jobApplicantId: any) {
-        this.applicantService.removeApplicantFromJob(jobApplicantId);
+         this._subs = this.applicantService.removeApplicantFromJob(jobApplicantId);
         this.getCandidate(this.jobId);
     }
 
@@ -179,7 +181,7 @@ export class PipelineListComponent implements OnChanges {
         if (jobId) {
             this.gettingApplicant = true;
             this.filter.jobId = jobId;
-            this.jobService.getJobApplicant(this.filter).subscribe((result) => {
+             this._subs = this.jobService.getJobApplicant(this.filter).subscribe((result) => {
                 if (result['success']) {
                     this.filterApplicant(result['success']['data']['records']);
                     this.totalRecords = result['success']['data']['total'];
@@ -188,6 +190,12 @@ export class PipelineListComponent implements OnChanges {
             }, () => {
                 this.gettingApplicant = false;
             });
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
         }
     }
 }

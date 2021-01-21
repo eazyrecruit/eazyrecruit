@@ -1,16 +1,17 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {CompanyService} from '../../../../../services/company.service';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ValidationService} from '../../../../../services/validation.service';
 import {BsModalRef} from 'ngx-bootstrap';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-inbound',
     templateUrl: './inbound.component.html',
     providers: [CompanyService, ValidationService]
 })
-export class InboundComponent implements OnInit {
+export class InboundComponent implements OnInit, OnDestroy {
+    private _subs: Subscription;
     inboundForm: FormGroup;
     closePopup: Subject<any>;
 
@@ -53,7 +54,7 @@ export class InboundComponent implements OnInit {
         if (!this.inboundForm.valid) {
             this.validationService.validateAllFormFields(this.inboundForm);
         } else {
-            this.companyService.editSettings(form, this.companyId, form.type).subscribe(result => {
+             this._subs = this.companyService.editSettings(form, this.companyId, form.type).subscribe(result => {
                 if (result['success'] && result['success']['data']) {
                     // emit updated data and close model
                     this.closePopup.next(result['success']['data']);
@@ -63,4 +64,9 @@ export class InboundComponent implements OnInit {
         }
     }
 
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+    }
 }

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Router, Params, ActivatedRoute} from '@angular/router';
 import {SearchService} from '../../../services/search.service';
@@ -10,6 +10,7 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {CreateApplicantComponent} from '../../common/create-applicant/create-applicant.component';
 import {UploadResumeComponent} from '../../common/upload-resume/upload-resume.component';
 import {SharedService} from '../../../services/shared.service';
+import {Subscription} from "rxjs";
 
 declare var SiteJS: any;
 
@@ -17,7 +18,7 @@ declare var SiteJS: any;
     templateUrl: 'database.component.html',
     providers: [SearchService, JobService, ApplyJobService, ApplicantService, ApplicantDataService, BsModalService]
 })
-export class DatabaseComponent implements OnInit {
+export class DatabaseComponent implements OnInit, OnDestroy {
     timeOut;
     filter = {
         pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at', isGridView: false,
@@ -31,7 +32,7 @@ export class DatabaseComponent implements OnInit {
     sourceType = ['Email', 'Upload', 'Website', 'Db'];
     job: any;
 
-
+    private _subs: Subscription;
     searchForm: FormGroup;
     applicantJobs: FormGroup;
     applicantForm: FormGroup;
@@ -135,7 +136,7 @@ export class DatabaseComponent implements OnInit {
     }
 
     getJobsName(jobId) {
-        this.jobService.getJobsName(jobId).subscribe(result => {
+         this._subs = this.jobService.getJobsName(jobId).subscribe(result => {
             if (result['success'] && result['success']['data'] && result['success']['data'].length) {
                 this.job = result['success']['data'][0];
             }
@@ -188,7 +189,7 @@ export class DatabaseComponent implements OnInit {
     }
 
     addApplicantToJob(applicantId: any) {
-        this.jobService.addJobApplicant({
+         this._subs = this.jobService.addJobApplicant({
             jobId: this.jobId,
             pipelineId: this.pipeId,
             applicantId: applicantId
@@ -239,7 +240,7 @@ export class DatabaseComponent implements OnInit {
     }
 
     // getCandidates(limit: any, offset: any) {
-    //   this.applicantService.getAllCandidates(this.filter).subscribe(result => {
+    //    this._subs = this.applicantService.getAllCandidates(this.filter).subscribe(result => {
     //     if (result['success']) {
     //       this.candidates = result['success']['data'];
     //       this.toasterService.pop('success', 'Retreived successfully', 'Data retreived.');
@@ -258,5 +259,11 @@ export class DatabaseComponent implements OnInit {
 
     onUpdate($event) {
         this.getCandidate();
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

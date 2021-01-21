@@ -1,16 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {InterviewService} from '../../../services/interview.service';
 import {ApplicantDataService} from '../../../services/applicant-data.service';
 import {FormGroup, FormBuilder} from '@angular/forms';
 import {AccountService} from '../../../services/account.service';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-interview',
     templateUrl: './interview.component.html',
     providers: [InterviewService, ApplicantDataService]
 })
-export class InterviewComponent implements OnInit {
+export class InterviewComponent implements OnInit, OnDestroy {
 
     interview: any;
     results: any;
@@ -22,6 +23,7 @@ export class InterviewComponent implements OnInit {
     newCriteria: String;
     isReadonly = true;
     role: any;
+    private _subs: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -35,10 +37,10 @@ export class InterviewComponent implements OnInit {
 
     getApplicantCompleteData() {
         if (this.interview) {
-            this.applicantDataService.getApplicantCompleteData(this.interview.jobApplicant).subscribe(result => {
+            this._subs = this.applicantDataService.getApplicantCompleteData(this.interview.jobApplicant).subscribe(result => {
                 if (result['success']['data']) {
                     this.applicant = result['success']['data'];
-                    this.applicantDataService.getResumeFile(this.applicant.resume._id).subscribe((res) => {
+                    this._subs = this.applicantDataService.getResumeFile(this.applicant.resume._id).subscribe((res) => {
                         const blob = new Blob([res], {
                             type: 'application/pdf'
                         });
@@ -54,7 +56,7 @@ export class InterviewComponent implements OnInit {
 
     getResults() {
         if (this.interview) {
-            this.interviewService.getResults(this.interview._id).subscribe(res => {
+            this._subs = this.interviewService.getResults(this.interview._id).subscribe(res => {
                 if (res['success'] && res['success']['data']) {
                     this.results = res['success']['data'];
                 }
@@ -64,7 +66,7 @@ export class InterviewComponent implements OnInit {
     }
 
     getInterview(isLoadAllData = false) {
-        this.interviewService.getInterview(this.interviewId).subscribe(res => {
+        this._subs = this.interviewService.getInterview(this.interviewId).subscribe(res => {
             if (res['success'] && res['success'].data && res['success'].data.length) {
                 this.interview = res['success'].data[0];
                 if (isLoadAllData) {
@@ -93,7 +95,7 @@ export class InterviewComponent implements OnInit {
             if (this.results == null) {
                 this.results = [];
             }
-            this.interviewService.addCriteria({name: this.newCriteria}).subscribe(result => {
+            this._subs = this.interviewService.addCriteria({name: this.newCriteria}).subscribe(result => {
                 if (result && result['success'] && result['success']['data']) {
                     this.results.push({
                         interview: this.interview._id,
@@ -113,7 +115,7 @@ export class InterviewComponent implements OnInit {
     removeCriteria(index) {
         if (index >= 0) {
             if (this.results[index]['_id']) {
-                this.interviewService.deleteResult(this.results[index]['_id']).subscribe(res => {
+                this._subs = this.interviewService.deleteResult(this.results[index]['_id']).subscribe(res => {
                     if (res['success'] && res['success']['data']) {
                         this.results.splice(index, 1);
                     }
@@ -127,9 +129,9 @@ export class InterviewComponent implements OnInit {
     onSubmit(action) {
         if (action && this.interview.comment) {
             this.interview.result = action;
-            this.interviewService.comment(this.interview).subscribe(res => {
+            this._subs = this.interviewService.comment(this.interview).subscribe(res => {
                 if (res['success'] && res['success']['data']) {
-                    this.interviewService.saveResult(this.results).subscribe(res => {
+                    this._subs = this.interviewService.saveResult(this.results).subscribe(res => {
                         if (res && res['success'] && res['success']['data'] && res['success']['data'].length) {
                             this.results = res['success']['data'].map((element, index) => {
                                 if (element.criteria && !element.criteria.hasOwnProperty('_id')) {
@@ -162,5 +164,11 @@ export class InterviewComponent implements OnInit {
 
     onUpdate($event) {
         this.getApplicantCompleteData();
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

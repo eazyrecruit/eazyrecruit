@@ -1,17 +1,18 @@
-import {Component, Input, OnChanges, Output, EventEmitter} from '@angular/core';
+import {Component, Input, OnChanges, Output, EventEmitter, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {InterviewService} from '../../../services/interview.service';
 import {AccountService} from '../../../services/account.service';
 import {SchedulerComponent} from '../scheduler/scheduler.component';
 import {CancelConformComponent} from '../cancelConfromBox/cancel.conform.component';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-applicant-interview',
     templateUrl: 'applicant.Interview.component.html',
     providers: [InterviewService, AccountService]
 })
-export class ApplicantInterviewComponent implements OnChanges {
+export class ApplicantInterviewComponent implements OnChanges, OnDestroy  {
     isReadonly = true;
     scheduledInterviews: Array<any>;
     interviewers: Array<any>;
@@ -25,6 +26,7 @@ export class ApplicantInterviewComponent implements OnChanges {
     onOnInterViewUpdate: EventEmitter<any> = new EventEmitter();
     applicantData?: any;
     modalRef: BsModalRef;
+    private _subs: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -84,7 +86,7 @@ export class ApplicantInterviewComponent implements OnChanges {
     getScheduledInterviews() {
         this.getAllUsers();
         if (this.applicant) {
-            this.interviewService.getInterviewsByCandidate(this.applicant._id).subscribe(result => {
+            this._subs = this.interviewService.getInterviewsByCandidate(this.applicant._id).subscribe(result => {
                 if (result['success']) this.scheduledInterviews = result['success'].data;
             });
         }
@@ -121,18 +123,30 @@ export class ApplicantInterviewComponent implements OnChanges {
     }
 
     getAllUsers() {
-        this.accountService.getAllUsers({offset: 0, pageSize: 10, searchText: '', all: true}).subscribe(result => {
+        this._subs = this.accountService.getAllUsers({
+            offset: 0,
+            pageSize: 10,
+            searchText: '',
+            all: true
+        }).subscribe(result => {
             if (result['success']['data']) {
                 this.interviewers = result['success']['data']['users'];
             }
         });
 
     }
-
     getFullName(firstName, middleName, lastName) {
         let name = firstName;
         if (middleName && middleName != 'null') name = name + ' ' + middleName;
         if (lastName && lastName != 'null') name = name + ' ' + lastName;
         return name;
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+
+
     }
 }

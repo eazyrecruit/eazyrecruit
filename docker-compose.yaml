@@ -24,7 +24,7 @@ services:
             - web_images:/usr/src/app/images
         environment:
             - NODE_ENV=dev
-            - JWT_EXPIRE_TIME=86400
+            - JWT_EXPIRE_TIME=604800
             - SERVER_CIPHER_ORDER=true
             - ALLOWED_ORIGINS=$ALLOWED_ORIGINS
             - WEB=$WEB

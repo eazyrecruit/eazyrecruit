@@ -1,16 +1,17 @@
-import {Component, OnInit, Input, OnChanges} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core';
 import {Router} from '@angular/router';
 import {InterviewService} from '../../../../services/interview.service';
 import {AccountService} from '../../../../services/account.service';
 import {CancelConformComponent} from '../../../common/cancelConfromBox/cancel.conform.component';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {ToasterService} from 'angular2-toaster';
+import {Subscription} from "rxjs";
 
 @Component({
     templateUrl: './interview.list.component.html',
     providers: [InterviewService]
 })
-export class InterviewListComponent implements OnInit, OnChanges {
+export class InterviewListComponent implements OnInit, OnChanges, OnDestroy {
 
     filter: any;
     interviews = [];
@@ -18,6 +19,7 @@ export class InterviewListComponent implements OnInit, OnChanges {
     applicant: any;
     role: any;
     modalRef: BsModalRef;
+    private _subs: Subscription;
 
     constructor(private router: Router,
                 private toasterService: ToasterService,
@@ -62,7 +64,7 @@ export class InterviewListComponent implements OnInit, OnChanges {
             const ael = document.activeElement;
             ael['disabled'] = true;
             ael['innerHTML'] = '<i class="fa fa-spinner fa-spin"></i>';
-            this.interviewService.startInterView(interview._id).subscribe(result => {
+            this._subs = this.interviewService.startInterView(interview._id).subscribe(result => {
                 ael['disabled'] = false;
                 ael['innerHTML'] = '<i class="fas fa-play"></i>Start Interview';
                 if (result['success']) {
@@ -82,7 +84,7 @@ export class InterviewListComponent implements OnInit, OnChanges {
     }
 
     getAllInterviews(filter: any) {
-        this.interviewService.getAllInterviews(filter).subscribe(result => {
+        this._subs = this.interviewService.getAllInterviews(filter).subscribe(result => {
             if (result['success']) {
                 if (result['success']['data'] && result['success']['data']['count']) {
                     this.interviews = result['success']['data']['interviews'];
@@ -138,5 +140,10 @@ export class InterviewListComponent implements OnInit, OnChanges {
         this.getAllInterviews(this.filter);
     }
 
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+    }
 
 }

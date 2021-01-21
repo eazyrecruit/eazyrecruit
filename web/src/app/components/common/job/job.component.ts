@@ -1,4 +1,4 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, OnDestroy, Output, EventEmitter} from '@angular/core';
 import {ValidationService} from '../../../services/validation.service';
 import {FormGroup, FormBuilder, Validators, FormArray} from '@angular/forms';
 import {JobService} from '../../../services/job.service';
@@ -9,7 +9,7 @@ import {CompanyService} from '../../../services/company.service';
 import {SkillsService} from '../../../services/skills.service';
 import {LocationService} from '../../../services/location.service';
 import {BsModalRef} from 'ngx-bootstrap';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 declare var SiteJS: any;
@@ -20,7 +20,7 @@ declare var SiteJS: any;
     providers: [JobService, SharedService, ValidationService,
         DepartmentService, CompanyService, SkillsService, LocationService]
 })
-export class JobComponent implements OnInit {
+export class JobComponent implements OnInit, OnDestroy {
     errInvalidFile: Boolean = false;
     jobTypes = [{display: 'Part-Time', value: 'Part-Time'}, {display: 'Full-Time', value: 'Full-Time'}];
     jobDetails: FormGroup;
@@ -42,6 +42,7 @@ export class JobComponent implements OnInit {
     closePopup: Subject<any>;
     metaImage: any;
     currentMetaImage: any;
+    private _subs: Subscription;
     quillConfig = {
 
         toolbar: {
@@ -156,7 +157,7 @@ export class JobComponent implements OnInit {
     }
 
     getJob(id) {
-        this.jobService.getJobById(id).subscribe(result => {
+         this._subs = this.jobService.getJobById(id).subscribe(result => {
             if (result['success']) {
                 this.closePopup.next(result['success'].data);
                 this.bsModelRef.hide();
@@ -230,7 +231,7 @@ export class JobComponent implements OnInit {
             } else if (this.currentMetaImage) {
                 formData.set('metaImage', this.currentMetaImage);
             }
-            this.jobService.saveJob(formData).subscribe(result => {
+             this._subs = this.jobService.saveJob(formData).subscribe(result => {
                 if (result['success'] && result['success'].data) {
                     this.getJob(result['success'].data._id);
                 }
@@ -244,7 +245,7 @@ export class JobComponent implements OnInit {
         // } else {
         //publish
 
-        // this.jobService.saveJob(jobForm).subscribe(result => {
+        //  this._subs = this.jobService.saveJob(jobForm).subscribe(result => {
         //   if (result['success']) {
         //     this.jobDetails.reset();
         //     this.refreshList.emit(true);
@@ -270,7 +271,7 @@ export class JobComponent implements OnInit {
             this.errorDescription = true;
             return;
         }
-        this.jobService.editJob(jobForm).subscribe(result => {
+         this._subs = this.jobService.editJob(jobForm).subscribe(result => {
             if (result['success']) {
                 this.jobDetails.reset();
                 this.getJob(result['success'].data._id);
@@ -317,6 +318,12 @@ export class JobComponent implements OnInit {
         } else {
             this.jobDetails.get(['metaImage']).setValue('');
             this.metaImage = null;
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
         }
     }
 }

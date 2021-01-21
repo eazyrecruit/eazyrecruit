@@ -7,17 +7,21 @@ import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 export class UserCardComponent implements OnInit {
     @Input()
     applicants?: any;
-
     applicant?: any;
+
     constructor() {
     }
+
     @Output()
     onSelect: EventEmitter<any> = new EventEmitter();
+
     ngOnInit() {
     }
+
     name_clicked(): void {
         this.onSelect.emit(this.applicants._id);
     }
+
     getName(applicant) {
         let name = '';
         if (applicant.firstName) {

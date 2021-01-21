@@ -1,14 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {CompanyService} from '../../../../services/company.service';
 import {ValidationService} from '../../../../services/validation.service';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-interview-integration',
     templateUrl: 'interview.integration.component.html',
     providers: [CompanyService, ValidationService]
 })
-export class InterviewIntegrationComponent implements OnInit {
+export class InterviewIntegrationComponent implements OnInit, OnDestroy {
+    private _subs: Subscription;
 
     interviewIntegrationForm: FormGroup;
     company: any;
@@ -30,10 +32,10 @@ export class InterviewIntegrationComponent implements OnInit {
     }
 
     setForm() {
-        this.companyService.getCompany().subscribe(company => {
+         this._subs = this.companyService.getCompany().subscribe(company => {
             if (company['success']['data']) {
                 this.company = company['success']['data'][0];
-                this.companyService.getSettings(this.company._id, 'interviewIntegration').subscribe(
+                 this._subs = this.companyService.getSettings(this.company._id, 'interviewIntegration').subscribe(
                     result => {
                         if (result['success']['data']) {
                             result['success']['data'].forEach(setting => {
@@ -57,7 +59,7 @@ export class InterviewIntegrationComponent implements OnInit {
                 return;
             }
         }
-        this.companyService.editSettings({
+         this._subs = this.companyService.editSettings({
             goLiveMeet: form.goLiveMeet,
             goLiveMeetClientID: form.goLiveMeetClientID,
             goLiveMeetClientSecret: form.goLiveMeetClientSecret
@@ -68,4 +70,9 @@ export class InterviewIntegrationComponent implements OnInit {
         });
     }
 
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+    }
 }

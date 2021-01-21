@@ -1,20 +1,22 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AccountService} from '../../../services/account.service';
 import {Router} from '@angular/router';
 import {ValidationService} from '../../../services/validation.service';
 import {ConstService} from '../../../services/const.service';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-login',
     templateUrl: 'login.component.html',
     providers: [AccountService, ValidationService]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
     loginForm: FormGroup;
     errorMessage: string;
     google;
+    private _subs: Subscription;
 
     constructor(private accountService: AccountService,
                 private router: Router,
@@ -46,11 +48,11 @@ export class LoginComponent implements OnInit {
         }
 
         if (this.loginForm.valid) {
-            this.accountService.login(this.loginForm.value).subscribe(result => {
+            this._subs = this.accountService.login(this.loginForm.value).subscribe(result => {
                 if (result['success']) {
                     this.accountService.setAuthorizationHeader(result['success']);
                     const role = this.accountService.getRole();
-                    this.router.navigate([this.accountService.getHomeUrl(role)]);
+                    this.router.navigate([this._subs = this.accountService.getHomeUrl(role)]);
                 } else {
                     this.errorMessage = result['error']['data'];
                 }
@@ -60,6 +62,12 @@ export class LoginComponent implements OnInit {
             });
         }
     }
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
 
+
+    }
 
 }

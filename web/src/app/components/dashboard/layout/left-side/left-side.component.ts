@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy } from '@angular/core';
 import {Router} from '@angular/router';
 import {SharedService} from '../../../../services/shared.service';
 import {AccountService, AuthStorage} from '../../../../services/account.service';
@@ -12,7 +12,7 @@ declare var SiteJS: any;
     templateUrl: './left-side.component.html',
     providers: [AccountService, CompanyService]
 })
-export class LeftSideComponent implements OnInit {
+export class LeftSideComponent implements OnInit, OnDestroy {
 
     biglogo: boolean = true;
     username: any;

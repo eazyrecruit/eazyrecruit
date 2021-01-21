@@ -1,4 +1,4 @@
-import {Component, OnInit, TemplateRef} from '@angular/core';
+import {Component, OnInit, OnDestroy, TemplateRef} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {PipelineService} from '../../../../services/pipeline.service';
 import {SharedService} from '../../../../services/shared.service';
@@ -9,6 +9,7 @@ import {ApplicantDataService} from '../../../../services/applicant-data.service'
 import {BsModalService, BsModalRef} from 'ngx-bootstrap';
 import {JobService} from '../../../../services/job.service';
 import {CreateApplicantComponent} from '../../../common/create-applicant/create-applicant.component';
+import {Subscription} from "rxjs";
 
 declare var SiteJS: any;
 
@@ -17,7 +18,7 @@ declare var SiteJS: any;
     templateUrl: './pipeline.component.html',
     providers: [PipelineService, SharedService, ValidationService, JobService]
 })
-export class PipelineComponent implements OnInit {
+export class PipelineComponent implements OnInit, OnDestroy {
     isGridView = true;
     jobId: any;
     filter = {
@@ -27,7 +28,7 @@ export class PipelineComponent implements OnInit {
     pipeLines = [];
     totalRecords = 1;
     JobApplicants = [];
-
+    private _subs: Subscription;
     bsConfig = Object.assign({}, {containerClass: 'theme-red'});
     gettingApplicant = false;
     searchText = '';
@@ -99,7 +100,7 @@ export class PipelineComponent implements OnInit {
 
     getPipeLine(jobId) {
         if (jobId) {
-            this.jobService.getWithApplicantsAndPipelineById(jobId).subscribe((result) => {
+             this._subs = this.jobService.getWithApplicantsAndPipelineById(jobId).subscribe((result) => {
                 if (result['success']) {
                     this.job = result['success'].data[0];
                     this.pipeLines = result['success'].data[0].pipelines;
@@ -116,7 +117,7 @@ export class PipelineComponent implements OnInit {
         if (jobId) {
             this.gettingApplicant = true;
             this.filter.jobId = jobId;
-            this.jobService.getJobApplicant(this.filter).subscribe((result) => {
+             this._subs = this.jobService.getJobApplicant(this.filter).subscribe((result) => {
                 if (result['success']) {
                     this.filterApplicant(result['success']['data']['records']);
                     this.totalRecords = result['success']['data']['total'];
@@ -194,7 +195,7 @@ export class PipelineComponent implements OnInit {
     }
 
     goToApplicant(data) {
-        this.applicantDataService.setApplicantId(data.applicant._id);
+         this._subs = this.applicantDataService.setApplicantId(data.applicant._id);
         this.router.navigate(['jobs/applicant']);
     }
 
@@ -249,5 +250,11 @@ export class PipelineComponent implements OnInit {
         //   this.toasterService.pop('error', 'Error', 'pipeline id is not available!');
         // }
 
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

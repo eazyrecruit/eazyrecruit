@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {BsModalRef} from 'ngx-bootstrap';
 import {FormBuilder, FormGroup, Validators, FormControl} from '@angular/forms';
 import {AccountService, AuthStorage} from '../../../services/account.service';
@@ -8,6 +8,7 @@ import {InterviewService} from '../../../services/interview.service';
 import {DatePipe} from '@angular/common';
 import {ApplicantInfoService} from '../applicantInfo/applicant-info.service';
 import {ToasterService} from "angular2-toaster";
+import {Subscription} from "rxjs";
 
 const month = {
     0: 'Jan',
@@ -29,7 +30,7 @@ const month = {
     templateUrl: './scheduler.component.html',
     providers: [JobService, AccountService, ApplicantDataService, ApplicantInfoService, InterviewService, AuthStorage, DatePipe]
 })
-export class SchedulerComponent implements OnInit {
+export class SchedulerComponent implements OnInit, OnDestroy {
 
     interviewForm: FormGroup;
     bsConfig = Object.assign({}, {containerClass: 'theme-red'});
@@ -54,6 +55,7 @@ export class SchedulerComponent implements OnInit {
     appliedJobs: any;
     appliedJob: any;
     role: any;
+    private _subs: Subscription;
 
     constructor(
         public modalRef: BsModalRef,
@@ -168,7 +170,12 @@ export class SchedulerComponent implements OnInit {
     }
 
     getAllUsers() {
-        this.accountService.getAllUsers({offset: 0, pageSize: 0, searchText: '', all: true}).subscribe(result => {
+        this._subs = this.accountService.getAllUsers({
+            offset: 0,
+            pageSize: 0,
+            searchText: '',
+            all: true
+        }).subscribe(result => {
             if (result['success'] && result['success']['data'] && result['success']['data']['users'].length) {
                 this.interviewers = result['success']['data']['users'];
                 this.interviewForm.get('interviewerId').setValue(this.event.extendedProps.interviewer);
@@ -178,7 +185,7 @@ export class SchedulerComponent implements OnInit {
 
     getCandidateDetails() {
         if (this.event && this.event.extendedProps && this.event.extendedProps.jobApplicant) {
-            this.applicantDataService.getApplicantCompleteData(this.event.extendedProps.jobApplicant._id ? this.event.extendedProps.jobApplicant._id : this.event.extendedProps.jobApplicant)
+             this._subs = this.applicantDataService.getApplicantCompleteData(this.event.extendedProps.jobApplicant._id ? this.event.extendedProps.jobApplicant._id : this.event.extendedProps.jobApplicant)
                 .subscribe(result => {
                     if (result['success'] && result['success']['data']) {
                         this.candidate = result['success']['data'];
@@ -192,7 +199,7 @@ export class SchedulerComponent implements OnInit {
 
     setJobDetails() {
         if (this.event && this.event && this.event.extendedProps.jobId) {
-            this.jobService.getJobById(this.event.extendedProps.jobId).subscribe(result => {
+             this._subs = this.jobService.getJobById(this.event.extendedProps.jobId).subscribe(result => {
                 if (result['success'] && result['success']['data']) {
                     this.job = result['success']['data'];
                     this.interviewForm.get('title').setValue(this.job.title);
@@ -273,7 +280,7 @@ export class SchedulerComponent implements OnInit {
 
             // tslint:disable-next-line:one-line
             if (this.event.extendedProps.interviewer) {
-                this.interviewService.reschedule(interview, interviewFormData.id, this.event.extendedProps.sequence).subscribe(result => {
+                this._subs = this.interviewService.reschedule(interview, interviewFormData.id, this.event.extendedProps.sequence).subscribe(result => {
                     if (result['success']) {
                         this.close(result['success'].data);
                     } else {
@@ -283,7 +290,7 @@ export class SchedulerComponent implements OnInit {
                     console.log(error);
                 });
             } else {
-                this.interviewService.schedule(interview, interviewFormData.id).subscribe(result => {
+                this._subs = this.interviewService.schedule(interview, interviewFormData.id).subscribe(result => {
                     if (result['success']) {
                         this.close(result['success'].data);
                     } else {
@@ -323,5 +330,11 @@ export class SchedulerComponent implements OnInit {
         if (middleName) name = name + ' ' + middleName;
         if (lastName) name = name + ' ' + lastName;
         return name;
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

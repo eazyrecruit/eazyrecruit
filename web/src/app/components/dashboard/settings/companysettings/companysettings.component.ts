@@ -1,14 +1,16 @@
-import {Component, OnInit,} from '@angular/core';
+import {Component, OnInit, OnDestroy,} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {CompanyService} from '../../../../services/company.service';
 import {ValidationService} from '../../../../services/validation.service';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-companysettings',
     templateUrl: './companysettings.component.html',
     providers: [CompanyService, ValidationService]
 })
-export class CompanysettingsComponent implements OnInit {
+export class CompanysettingsComponent implements OnInit, OnDestroy {
+    private _subs: Subscription;
 
     companyDetails: FormGroup;
     company: any;
@@ -21,6 +23,7 @@ export class CompanysettingsComponent implements OnInit {
     logoToLoad: any = null;
     errInvalidLogo: Boolean = false;
     errInvalidFavIcon: Boolean = false;
+
     constructor(private companyService: CompanyService,
                 private validationService: ValidationService,
                 private fbForm: FormBuilder) {
@@ -45,7 +48,7 @@ export class CompanysettingsComponent implements OnInit {
     }
 
     getDetails() {
-        this.companyService.getCompany().subscribe(result => {
+         this._subs = this.companyService.getCompany().subscribe(result => {
             if (result['success']['data']) {
                 this.company = result['success']['data'][0];
                 this.companyDetails.setValue({
@@ -100,7 +103,7 @@ export class CompanysettingsComponent implements OnInit {
             formData.set('headerTextColor', this.headerTextColor);
         }
         formData.append("id", this.company._id);
-        this.companyService.editCompany(formData).subscribe(result => {
+         this._subs = this.companyService.editCompany(formData).subscribe(result => {
             if (result['success']) {
                 this.getDetails();
             }
@@ -137,7 +140,7 @@ export class CompanysettingsComponent implements OnInit {
                 }
                 // console.log(file)
                 this.logoToLoad = file;
-            }else {
+            } else {
                 this.errInvalidLogo = true;
             }
 
@@ -168,5 +171,11 @@ export class CompanysettingsComponent implements OnInit {
 
     onTextColorChange(color: any) {
         this.headerTextColor = color;
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

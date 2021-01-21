@@ -1,15 +1,16 @@
-import {Component, OnInit, Input, Output, EventEmitter, OnChanges} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, Output, EventEmitter, OnChanges} from '@angular/core';
 import {ApplicantService} from '../../../services/applicant.service';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ValidationService} from '../../../services/validation.service';
 import {ConstService} from "../../../services/const.service";
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-comment',
     templateUrl: './comment.component.html',
     providers: [ApplicantService, ValidationService]
 })
-export class CommentComponent implements OnInit, OnChanges {
+export class CommentComponent implements OnInit, OnChanges, OnDestroy {
 
     commentDetails: FormGroup;
     commentObject: any = null;
@@ -24,6 +25,7 @@ export class CommentComponent implements OnInit, OnChanges {
     @Output()
     commentAdded?: EventEmitter<any> = new EventEmitter();
     time = new Date().getTime();
+    private _subs: Subscription;
 
     constructor(
         private applicantService: ApplicantService,
@@ -52,7 +54,7 @@ export class CommentComponent implements OnInit, OnChanges {
     }
 
     getComments(id: any) {
-        this.applicantService.getComments(id).subscribe(result => {
+         this._subs = this.applicantService.getComments(id).subscribe(result => {
             if (result['success'] && result['success']['data']) {
                 this.commentList = result['success']['data'];
             }
@@ -80,7 +82,7 @@ export class CommentComponent implements OnInit, OnChanges {
     }
 
     addComment(comment) {
-        this.applicantService.addComment(comment).subscribe(result => {
+         this._subs = this.applicantService.addComment(comment).subscribe(result => {
             if (result['success'] && result['success']['data']) {
                 this.commentDetails.reset();
                 this.commentList.push(result['success']['data']);
@@ -95,7 +97,7 @@ export class CommentComponent implements OnInit, OnChanges {
     }
 
     editComment(comment) {
-        this.applicantService.editComment(comment).subscribe(result => {
+         this._subs = this.applicantService.editComment(comment).subscribe(result => {
             if (result['success']) {
                 this.commentDetails.reset();
                 this.commentObject = null;
@@ -104,5 +106,11 @@ export class CommentComponent implements OnInit, OnChanges {
             }
             this.isSubmitting = false;
         });
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, Output, EventEmitter, OnChanges, TemplateRef} from '@angular/core';
+import {Component, OnInit, OnDestroy , Input, Output, EventEmitter, OnChanges, TemplateRef} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {UploadService} from '../../../services/upload.service';
 import {SearchService} from '../../../services/search.service';
@@ -7,6 +7,7 @@ import {ValidationService} from '../../../services/validation.service';
 import {InterviewService} from '../../../services/interview.service';
 import {AccountService} from '../../../services/account.service';
 import {ActivatedRoute} from '@angular/router';
+import {Subscription} from "rxjs";
 
 declare global {
     interface Window {
@@ -19,7 +20,7 @@ declare global {
     templateUrl: './applicant.info.component.html',
     providers: [UploadService, SearchService, ApplicantInfoService, ValidationService, InterviewService, AccountService]
 })
-export class ApplicantInfoComponent implements OnInit, OnChanges {
+export class ApplicantInfoComponent implements OnInit, OnChanges, OnDestroy {
     gettingApplicant = false;
     jobLoad = false;
     jobId: any;
@@ -30,7 +31,7 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
     applyJobs: any = [];
     @Input()
     applicant?: any;
-
+    private _subs: Subscription;
     @Output()
     onReject: EventEmitter<any> = new EventEmitter();
 
@@ -141,5 +142,10 @@ export class ApplicantInfoComponent implements OnInit, OnChanges {
 
     onUpdateInterview(result) {
         this.isActivityUpdate = !this.isActivityUpdate;
+    }
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

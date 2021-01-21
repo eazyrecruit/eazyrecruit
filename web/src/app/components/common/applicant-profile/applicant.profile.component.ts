@@ -1,6 +1,7 @@
-import {Component, Input, OnChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy} from '@angular/core';
 import {ApplicantInfoService} from '../../../services/applicant-info.service';
 import {ActivatedRoute} from '@angular/router';
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -8,7 +9,7 @@ import {ActivatedRoute} from '@angular/router';
     templateUrl: 'applicant.profile.component.html',
     providers: [ApplicantInfoService]
 })
-export class ApplicantProfileComponent implements OnChanges {
+export class ApplicantProfileComponent implements OnChanges, OnDestroy {
     defaultColor = 'label label-default';
     matchedColor = 'label label-info';
     matchedSkills: any[] = [];
@@ -22,6 +23,7 @@ export class ApplicantProfileComponent implements OnChanges {
     isRefereed?: any;
     @Input()
     jobsSkils: any;
+    private _subs: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -66,4 +68,11 @@ export class ApplicantProfileComponent implements OnChanges {
         return '<span class="display-inline-block box-shadow"> <span class="' + color + '">' + name + '</span></span>';
     }
 
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+
+
+    }
 }

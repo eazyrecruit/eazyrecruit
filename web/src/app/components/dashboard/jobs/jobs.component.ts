@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute, Params} from '@angular/router';
 import {JobService} from '../../../services/job.service';
 import {SharedService} from '../../../services/shared.service';
@@ -7,12 +7,13 @@ import {ConstService} from '../../../services/const.service';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {JobComponent} from '../../common/job/job.component';
+import {Subscription} from 'rxjs';
 
 @Component({
     templateUrl: 'jobs.component.html',
     providers: [JobService, SharedService]
 })
-export class JobsComponent implements OnInit {
+export class JobsComponent implements OnInit, OnDestroy {
     url: any;
     isArchive = false;
     jobs = [];
@@ -27,6 +28,7 @@ export class JobsComponent implements OnInit {
     jobLoading = false;
     totalItems = 0;
     CurrentPage: any = 1;
+    private _subs: Subscription;
 
     constructor(private jobService: JobService,
                 private sharedService: SharedService,
@@ -106,7 +108,7 @@ export class JobsComponent implements OnInit {
 
 
     archiveJob(jobId, flag, index) {
-        this.jobService.archiveActiveJob(jobId, flag).subscribe(result => {
+         this._subs = this.jobService.archiveActiveJob(jobId, flag).subscribe(result => {
             if (result['success'] && result['success']['data']) {
                 this.jobs.splice(index, 1);
                 this.totalItems = this.totalItems - 1;
@@ -118,7 +120,7 @@ export class JobsComponent implements OnInit {
 
     searchJob(event: any = '') {
         this.filter.searchText = event.target ? event.target.value : event;
-        this.jobService.getJob(this.filter, !this.isArchive).subscribe(result => {
+         this._subs = this.jobService.getJob(this.filter, !this.isArchive).subscribe(result => {
             if (result['success'] && result['success']['data']) {
                 this.jobs = result['success']['data']['jobs'];
                 // this.dataShared.notificationChangeMessage({ name: 'success', type: 'Success', message: 'No active job found' })
@@ -132,7 +134,7 @@ export class JobsComponent implements OnInit {
     }
 
     getUser() {
-        this.jobService.getHrAdmin().subscribe(result => {
+         this._subs = this.jobService.getHrAdmin().subscribe(result => {
             if (result['success'] && result['success'].data) {
                 this.userList = result['success'].data;
             }
@@ -160,6 +162,12 @@ export class JobsComponent implements OnInit {
             this.filter.pageIndex = this.CurrentPage;
             this.filter.offset = (this.CurrentPage - 1) * this.filter.pageSize;
             this.searchJob();
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
         }
     }
 }

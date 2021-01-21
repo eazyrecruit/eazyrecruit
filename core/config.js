@@ -35,7 +35,7 @@ module.exports = {
             },
             jwt: {
                 secret: process.env.JWT_SECRET || 'ATDHPTGPSF&(**DSFDFY^L&^USGHSODISOIY&D*SYDDH',
-                expireTime: Number(process.env.JWT_EXPIRE_TIME) || 86400, // for admin we will use 24hr
+                expireTime: Number(process.env.JWT_EXPIRE_TIME) || 604800, // for admin we will use 24hr
                 audience: process.env.JWT_AUDIENCE || 'EazyRecruitUsers',
                 issuer: process.env.JWT_ISSUER || 'https://www.eazyrecruit.in'
             },

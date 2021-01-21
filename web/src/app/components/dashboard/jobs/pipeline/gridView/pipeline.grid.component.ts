@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, TemplateRef} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, TemplateRef} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Router, Params, ActivatedRoute} from '@angular/router';
 import {ValidationService} from '../../../../../services/validation.service';
@@ -8,7 +8,7 @@ import {JobService} from '../../../../../services/job.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {DataShareService} from '../../../../../services/data-share.service';
 import {ApplicantDataService} from '../../../../../services/applicant-data.service';
-import {CreateApplicantComponent} from '../../../../common/create-applicant/create-applicant.component';
+import {Subscription} from 'rxjs';
 
 declare var SiteJS: any;
 
@@ -17,7 +17,7 @@ declare var SiteJS: any;
     templateUrl: 'pipeline.grid.component.html',
     providers: [PipelineService, SharedService, ValidationService, JobService]
 })
-export class PipelineGridComponent implements OnChanges {
+export class PipelineGridComponent implements OnChanges, OnDestroy  {
     @Input('jobId') jobId: any;
     @Input('pipeLines') pipeLines: any;
     @Input('JobApplicants') JobApplicants: any;
@@ -30,7 +30,6 @@ export class PipelineGridComponent implements OnChanges {
     onChangeStatus: EventEmitter<any> = new EventEmitter();
     @Output()
     getPipeLine: EventEmitter<any> = new EventEmitter();
-    jobApplicantIds = {};
     items = [];
     selectedApplicant: any;
     parameter: any = {};
@@ -45,7 +44,7 @@ export class PipelineGridComponent implements OnChanges {
     pipelineDialogTitle = 'Create';
     pipeline: any = {};
     modalRef: BsModalRef;
-
+    private _subs: Subscription;
     constructor(private route: ActivatedRoute,
                 private pipelineService: PipelineService,
                 private sharedService: SharedService,
@@ -178,7 +177,7 @@ export class PipelineGridComponent implements OnChanges {
         }
         form.position = this.pipeLines ? this.pipeLines.length + 1 : 1;
         form.jobPostId = this.jobId;
-        this.jobService.addPipeline(form, this.jobId).subscribe(result => {
+         this._subs = this.jobService.addPipeline(form, this.jobId).subscribe(result => {
             if (result['success']) {
                 this.closeModal();
                 this.getPipeLine.emit({});
@@ -293,5 +292,10 @@ export class PipelineGridComponent implements OnChanges {
 
     onUpdate($event) {
            this.getPipeLineList();
+    }
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute, Params} from '@angular/router';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
@@ -8,12 +8,13 @@ import {DataShareService} from '../../../../services/data-share.service';
 import {ConstService} from '../../../../services/const.service';
 import {JobComponent} from '../../../common/job/job.component';
 import {CreateReferredApplicantComponent} from '../create-referred-applicant/create.referred.applicant.component';
+import {Subscription} from "rxjs";
 
 @Component({
     templateUrl: 'referred.applicant.job.component.html',
     providers: [JobService, SharedService]
 })
-export class ReferredApplicantJobComponent implements OnInit {
+export class ReferredApplicantJobComponent implements OnInit, OnDestroy {
     url: any;
     jobs = [];
     limit = 10;
@@ -27,6 +28,7 @@ export class ReferredApplicantJobComponent implements OnInit {
     CurrentPage: any = 1;
     userList = [];
     jobLoading = false;
+    private _subs: Subscription;
 
     constructor(private jobService: JobService,
                 private sharedService: SharedService,
@@ -63,7 +65,7 @@ export class ReferredApplicantJobComponent implements OnInit {
     }
 
     getUser() {
-        this.jobService.getHrAdmin().subscribe(result => {
+        this._subs =  this._subs = this.jobService.getHrAdmin().subscribe(result => {
             if (result['success'] && result['success'].data) {
                 this.userList = result['success'].data;
             }
@@ -87,7 +89,7 @@ export class ReferredApplicantJobComponent implements OnInit {
 
     searchJob(event: any = '') {
         this.filter.searchText = event.target ? event.target.value : event;
-        this.jobService.getJob(this.filter).subscribe(result => {
+        this._subs =  this._subs = this.jobService.getJob(this.filter).subscribe(result => {
             if (result['success'] && result['success']['data']) {
                 this.jobs = result['success']['data']['jobs'];
                 // this.dataShared.notificationChangeMessage({ name: 'success', type: 'Success', message: 'No active job found' })
@@ -105,6 +107,12 @@ export class ReferredApplicantJobComponent implements OnInit {
             this.filter.pageIndex = this.CurrentPage;
             this.filter.offset = (this.CurrentPage - 1) * this.filter.pageSize;
             this.searchJob();
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
         }
     }
 }

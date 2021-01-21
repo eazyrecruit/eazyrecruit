@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy } from '@angular/core';
 import {BsModalRef} from 'ngx-bootstrap';
 import {InterviewService} from '../../../services/interview.service';
+import {Subscription} from "rxjs";
 
 const month = {
     0: 'Jan',
@@ -22,11 +23,11 @@ const month = {
     templateUrl: 'cancel.conform.component.html',
     providers: [InterviewService]
 })
-export class CancelConformComponent implements OnInit {
+export class CancelConformComponent implements OnInit, OnDestroy {
     conformDeleteForm = false;
     deleteInterViewId;
     close: any;
-
+    private _subs: Subscription;
     constructor(
         public modalRef: BsModalRef,
         private interviewService: InterviewService
@@ -36,7 +37,7 @@ export class CancelConformComponent implements OnInit {
 
     deleteInterView() {
         this.conformDeleteForm = true;
-        this.interviewService.deleteInterview(this.deleteInterViewId).subscribe(result => {
+        this._subs = this.interviewService.deleteInterview(this.deleteInterViewId).subscribe(result => {
             if (result['success']) {
                 this.close(result['success'].data);
             }
@@ -47,5 +48,11 @@ export class CancelConformComponent implements OnInit {
     }
 
     ngOnInit(): void {
+    }
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
     }
 }
