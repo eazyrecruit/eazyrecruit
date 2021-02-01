@@ -5,7 +5,7 @@ import { AuthStorage } from '../../../services/account.service';
   selector: 'app-layout',
   templateUrl: './layout.component.html'
 })
-export class LayoutComponent implements OnInit, OnDestroy {
+export class LayoutComponent implements OnInit {
   displayName: string;
   AuthStorage = new AuthStorage();
   authdata: any;

@@ -104,7 +104,10 @@ export class CreateApplicantComponent implements OnInit, OnDestroy {
                 currentLocation: [applicant.location, []],
                 preferredLocation: [applicant.preferredLocations, []]
             });
-            this.currentResume = applicant.resume._id;
+            if (applicant.resume) {
+                this.currentResume = applicant.resume._id;
+            }
+
         } else {
             this.applicantForm = this.fbForm.group({
                 resume: [null],

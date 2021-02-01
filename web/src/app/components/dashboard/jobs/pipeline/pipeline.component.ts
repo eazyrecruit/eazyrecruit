@@ -100,7 +100,7 @@ export class PipelineComponent implements OnInit, OnDestroy {
 
     getPipeLine(jobId) {
         if (jobId) {
-             this._subs = this.jobService.getWithApplicantsAndPipelineById(jobId).subscribe((result) => {
+            this._subs = this.jobService.getWithApplicantsAndPipelineById(jobId).subscribe((result) => {
                 if (result['success']) {
                     this.job = result['success'].data[0];
                     this.pipeLines = result['success'].data[0].pipelines;
@@ -117,7 +117,7 @@ export class PipelineComponent implements OnInit, OnDestroy {
         if (jobId) {
             this.gettingApplicant = true;
             this.filter.jobId = jobId;
-             this._subs = this.jobService.getJobApplicant(this.filter).subscribe((result) => {
+            this._subs = this.jobService.getJobApplicant(this.filter).subscribe((result) => {
                 if (result['success']) {
                     this.filterApplicant(result['success']['data']['records']);
                     this.totalRecords = result['success']['data']['total'];
@@ -195,7 +195,7 @@ export class PipelineComponent implements OnInit, OnDestroy {
     }
 
     goToApplicant(data) {
-         this._subs = this.applicantDataService.setApplicantId(data.applicant._id);
+        this.applicantDataService.setApplicantId(data.applicant._id);
         this.router.navigate(['jobs/applicant']);
     }
 

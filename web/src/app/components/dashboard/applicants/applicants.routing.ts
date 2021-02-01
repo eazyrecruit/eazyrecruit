@@ -5,7 +5,7 @@ import {ApplicantpageComponent} from './applicantpage/applicantpage.component';
 const applicantsRoute: Routes = [
     {path: '', component: ApplicantsComponent},
     {
-        path: '/:id',
+        path: ':id',
         component: ApplicantpageComponent
     },
 ];

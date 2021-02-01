@@ -12,7 +12,7 @@ declare var SiteJS: any;
     templateUrl: './left-side.component.html',
     providers: [AccountService, CompanyService]
 })
-export class LeftSideComponent implements OnInit, OnDestroy {
+export class LeftSideComponent implements OnInit {
 
     biglogo: boolean = true;
     username: any;

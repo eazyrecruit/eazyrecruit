@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 if (result['success']) {
                     this.accountService.setAuthorizationHeader(result['success']);
                     const role = this.accountService.getRole();
-                    this.router.navigate([this._subs = this.accountService.getHomeUrl(role)]);
+                    this.router.navigate([this.accountService.getHomeUrl(role)]);
                 } else {
                     this.errorMessage = result['error']['data'];
                 }
@@ -62,6 +62,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             });
         }
     }
+
     ngOnDestroy(): void {
         if (this._subs) {
             this._subs.unsubscribe();
