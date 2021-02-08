@@ -1,22 +1,23 @@
-import {Component, OnInit, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import {FullCalendarOptions, EventObject, FullCalendarComponent} from 'ngx-fullcalendar';
 import {InterviewService} from '../../services/interview.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
-import {SchedulerComponent} from '../interview/scheduler/scheduler.component';
+import {SchedulerComponent} from '../common/scheduler/scheduler.component';
 import {ChartDataSets, ChartOptions} from 'chart.js';
 import {Color, BaseChartDirective, Label} from 'ng2-charts';
 import {ReportService} from '../../services/report.service';
 import {Router} from '@angular/router';
 import {AccountService} from '../../services/account.service';
 import * as moment from 'moment';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     providers: [InterviewService, ReportService]
 })
-export class DashboardComponent implements OnInit {
-
+export class DashboardComponent implements OnInit, OnDestroy {
+    private _subs: Subscription;
     events: EventObject[] = [];
     modalRef: BsModalRef;
 
@@ -54,7 +55,7 @@ export class DashboardComponent implements OnInit {
     }
 
     loadCalendar(start, end) {
-        this.interviewService.getEventBetweenDates(start, end).subscribe(res => {
+        this._subs = this.interviewService.getEventBetweenDates(start, end).subscribe(res => {
             if (res['success']) {
                 const allevents = this.fullCalendarElement.calendar.getEvents();
                 allevents.forEach(el => {
@@ -81,7 +82,7 @@ export class DashboardComponent implements OnInit {
     }
 
     loadResumeByDay() {
-        this.reportService.getForLast15Days().subscribe(res => {
+        this._subs = this.reportService.getForLast15Days().subscribe(res => {
             if (res['success'] && res['success'].data && res['success'].data.aggregations) {
                 if (res['success'].data.aggregations.byday && res['success'].data.aggregations.byday.buckets
                     && res['success'].data.aggregations.byday.buckets.length > 0) {
@@ -116,7 +117,7 @@ export class DashboardComponent implements OnInit {
     }
 
     getAnalyticsData() {
-        this.reportService.getAnalyticsData().subscribe(res => {
+        this._subs = this.reportService.getAnalyticsData().subscribe(res => {
             const labels = [], totals = [];
             if (res['success'] && res['success'].data && res['success'].data
                 && res['success'].data.rows && res['success'].data.rows.length > 0) {
@@ -193,4 +194,10 @@ export class DashboardComponent implements OnInit {
         },
         maintainAspectRatio: false
     };
+
+    ngOnDestroy(): void {
+        if (this._subs) {
+            this._subs.unsubscribe();
+        }
+    }
 }

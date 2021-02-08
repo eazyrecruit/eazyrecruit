@@ -36,7 +36,7 @@ constructor(private http: HttpClient, private accountService: AccountService) { 
     // save (resume)  {
     //     const headers = new HttpHeaders();
     //     headers.set('Content-Type', 'multipart/form-data');
-    //     headers.set('Authorization', `Bearer ${this.accountService.getToken()}`);
+    //     headers.set('Authorization', `Bearer ${this._subs = this.accountService.getToken()}`);
     //     return this.http.post(this.constService.pyUrl + 'resume', resume, { headers: headers });
     //     //return this.http.post("/engine/resume", resume, { headers: headers });
     // }
