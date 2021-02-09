@@ -51,7 +51,8 @@ export class ReferredApplicantJobComponent implements OnInit, OnDestroy {
             searchText: 'title',
             sortField: '',
             sortOrder: '1',
-            offset: 0
+            offset: 0,
+            basic: true
         };
         this.jobLoading = true;
         this.searchJob();
@@ -65,7 +66,7 @@ export class ReferredApplicantJobComponent implements OnInit, OnDestroy {
     }
 
     getUser() {
-        this._subs =  this._subs = this.jobService.getHrAdmin().subscribe(result => {
+        this._subs = this._subs = this.jobService.getHrAdmin().subscribe(result => {
             if (result['success'] && result['success'].data) {
                 this.userList = result['success'].data;
             }
@@ -89,7 +90,7 @@ export class ReferredApplicantJobComponent implements OnInit, OnDestroy {
 
     searchJob(event: any = '') {
         this.filter.searchText = event.target ? event.target.value : event;
-        this._subs =  this._subs = this.jobService.getJob(this.filter).subscribe(result => {
+        this._subs = this._subs = this.jobService.getJob(this.filter).subscribe(result => {
             if (result['success'] && result['success']['data']) {
                 this.jobs = result['success']['data']['jobs'];
                 // this.dataShared.notificationChangeMessage({ name: 'success', type: 'Success', message: 'No active job found' })
@@ -102,12 +103,12 @@ export class ReferredApplicantJobComponent implements OnInit, OnDestroy {
         });
     }
 
-    filterChanged(refilter) {
-        if (refilter == false) {
-            this.filter.pageIndex = this.CurrentPage;
-            this.filter.offset = (this.CurrentPage - 1) * this.filter.pageSize;
-            this.searchJob();
-        }
+    onFilterChange(filter: any) {
+        this.filter.offset = (filter.pageIndex - 1) * filter.pageSize;
+        this.filter.pageSize = filter.pageSize;
+        this.filter.pageIndex = filter.pageIndex;
+        this.searchJob();
+
     }
 
     ngOnDestroy(): void {

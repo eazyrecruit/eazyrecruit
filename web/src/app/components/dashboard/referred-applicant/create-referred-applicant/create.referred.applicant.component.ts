@@ -1,14 +1,10 @@
-import {Component, OnInit, OnDestroy, Input, OnChanges, Output, EventEmitter} from '@angular/core';
-import {Router, ActivatedRoute, Params} from '@angular/router';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
+import {FormGroup, FormBuilder} from '@angular/forms';
 import {ValidationService} from '../../../../services/validation.service';
 import {SkillsService} from '../../../../services/skills.service';
-import {DataShareService} from '../../../../services/data-share.service';
 import {LocationService} from '../../../../services/location.service';
-import {ToasterModule, ToasterService, ToasterConfig} from 'angular2-toaster';
 import {SearchService} from '../../../../services/search.service';
-import {Observable, Subject, Subscription} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {Subject, Subscription} from 'rxjs';
 import {BsModalRef} from 'ngx-bootstrap';
 import {ApplicantService} from '../../../../services/applicant.service';
 import {AccountService} from '../../../../services/account.service';

@@ -10,7 +10,7 @@ export class JobService {
 
     // (title = '') - this is to assign a default value to the title variable
     getJob(filter, active = true) {
-        return this.http.get(`${this.constService.baseUrl}job?searchText=${filter.searchText}&offset=${filter.offset}&limit=${filter.pageSize}&active=${active}`);
+        return this.http.get(`${this.constService.baseUrl}job?searchText=${filter.searchText}&offset=${filter.offset}&limit=${filter.pageSize}&active=${active}&basic=${filter.basic}`);
     }
 
     archiveActiveJob(jouId, active) {

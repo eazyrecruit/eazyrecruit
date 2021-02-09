@@ -199,9 +199,6 @@ exports.getJobsApplicant = async (data) => {
             jobApplicantsQuery["job"] = ObjectId(data.jobId);
         }
         const result = {total: 0, records: []};
-        let jobsQuery = {
-            _id: {"$in": []}
-        };
         let sort = {};
         if (data.sortBy === "modified_at") {
             sort["modified_at"] = parseInt(data.order);

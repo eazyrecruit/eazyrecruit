@@ -20,8 +20,6 @@
                 Add profiles to this job
             </div>
         </div>
-
-
         <div id="database" class="main-content padding-20px-tb plr-15">
             <div class="row">
 
@@ -54,9 +52,8 @@
                                             <div class="sorting">Candidate
                                                 <!--<i class="fa fa-sort ml-2" (click)="onSort('email')" aria-hidden="true"></i>--></div>
                                         </th>
-                                        <th>Experience</th>
-                                        <th>Salary</th>
-                                        <th>Notice Period</th>
+                                        <th>Job</th>
+                                        <th>Status</th>
                                         <th>Source</th>
                                     </tr>
                                     </thead>
@@ -71,26 +68,15 @@
                                                 <input type="checkbox" (change)="addApplicantToJob(applicant._id)"/>
                                             </td>
                                             <td>
-                                                <app-user-card (onSelect)="openCandidate($event)"
-                                                               [applicants]="applicant"></app-user-card>
+                                                <app-user-card [applicants]="applicant"></app-user-card>
                                             </td>
                                             <td>
-                                                <div *ngIf="applicant?.totalExperience">{{applicant?.totalExperience || "" }}
-                                                    Year(s)
+                                                <div *ngIf="applicant?.jobApplicant">{{applicant?.jobApplicant.job || "" }}
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="info-box-wrapper line-height-22">
-                                                    <p *ngIf="applicant?.currentCtc"
-                                                       class="font-weight-500 mb-0 line-height-20">{{applicant?.currentCtc || ""}}
-                                                        LPA</p>
-                                                    <p *ngIf="applicant?.expectedCtc"
-                                                       class="font-weight-500 text-11 line-height-20">
-                                                        Expected: {{applicant?.expectedCtc || ""}} LPA</p>
+                                                <div *ngIf="applicant?.jobApplicant">{{applicant?.jobApplicant.pipeline || "" }}
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <div *ngIf="applicant?.noticePeriod">{{applicant?.noticePeriod || "" }}</div>
                                             </td>
                                             <td>
                                                 <span [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant?.source}}</span>
@@ -117,4 +103,3 @@
         </div>
     </div>
 </section>
-<app-referred-applicant-info id="applicant-info" [applicant]="applicant"></app-referred-applicant-info>
