@@ -10,7 +10,7 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {CreateApplicantComponent} from '../../common/create-applicant/create-applicant.component';
 import {UploadResumeComponent} from '../../common/upload-resume/upload-resume.component';
 import {SharedService} from '../../../services/shared.service';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
 
 declare var SiteJS: any;
 
@@ -22,7 +22,7 @@ export class DatabaseComponent implements OnInit, OnDestroy {
     timeOut;
     filter = {
         pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at', isGridView: false,
-        order: -1, searchText: '', source: '',
+        order: -1, searchText: '', source: '', searchJob: ''
     };
     pipeLines = [];
     totalRecords = 1;
@@ -42,10 +42,7 @@ export class DatabaseComponent implements OnInit, OnDestroy {
     file: File;
     candidates = [];
     ApplicantList = [];
-    isJobSelected: Boolean;
     applicant: any;
-    dataTableName = 'applicant';
-    isResultAvailable = false;
     modalRef: BsModalRef;
 
     jobId: any;
@@ -136,19 +133,37 @@ export class DatabaseComponent implements OnInit, OnDestroy {
     }
 
     getJobsName(jobId) {
-         this._subs = this.jobService.getJobsName(jobId).subscribe(result => {
-            if (result['success'] && result['success']['data'] && result['success']['data'].length) {
-                this.job = result['success']['data'][0];
+        this._subs = this.jobService.getJobById(jobId).subscribe(result => {
+            if (result['success'] && result['success']['data'] && result['success']['data']) {
+                this.job = result['success']['data'];
+                this.getCandidate();
+            } else {
+                this.gettingApplicant = false;
             }
+        }, () => {
+            this.gettingApplicant = false;
         });
     }
 
     ngOnInit() {
         this.gettingApplicant = true;
-        this.getCandidate();
+        if (!this.jobId) {
+            this.getCandidate();
+        }
     }
 
+
     getCandidate() {
+        if (this.job && this.jobId && !this.filter.searchText) {
+            console.log('addming searchJob');
+            this.filter.searchJob = JSON.stringify({
+                'role': this.job.title,
+                'experience': this.job.minExperience,
+                'skills': this.job.skills
+            });
+        } else {
+            this.filter.searchJob = '';
+        }
         this.searchService.getApplicantData(this.filter).subscribe((result) => {
             if (result['success'] && result['success']['data']) {
                 this.ApplicantList = result['success']['data'].applicants;
@@ -189,7 +204,7 @@ export class DatabaseComponent implements OnInit, OnDestroy {
     }
 
     addApplicantToJob(applicantId: any) {
-         this._subs = this.jobService.addJobApplicant({
+        this._subs = this.jobService.addJobApplicant({
             jobId: this.jobId,
             pipelineId: this.pipeId,
             applicantId: applicantId

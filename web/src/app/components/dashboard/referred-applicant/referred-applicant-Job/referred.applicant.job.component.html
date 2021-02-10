@@ -42,34 +42,44 @@
                                             <div class="sorting">Job
                                                 <!--<i class="fa fa-sort ml-2" (click)="onSort('email')" aria-hidden="true"></i>--></div>
                                         </th>
-                                        <th>Experience</th>
-                                        <th>Job Type</th>
-                                        <th>view Job</th>
-                                        <th>Upload Resume</th>
-                                        <th>Referral</th>
+                                        <th width="20%">
+                                            <div class="sorting">Location
+                                                <!--<i class="fa fa-sort ml-2" (click)="onSort('email')" aria-hidden="true"></i>--></div>
+                                        </th>
+                                        <th width="20%">
+                                            <div class="sorting">Job Type
+                                                <!--<i class="fa fa-sort ml-2" (click)="onSort('email')" aria-hidden="true"></i>--></div>
+                                        </th>
+                                        <th width="20%">
+                                            <div class="sorting">Action
+                                                <!--<i class="fa fa-sort ml-2" (click)="onSort('email')" aria-hidden="true"></i>--></div>
+                                        </th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr *ngFor="let job of jobs; let jobIndex = index;"
-                                        class="font-weight-bold">
+                                    <tr *ngFor="let job of jobs; let jobIndex = index;" class="font-weight-bold">
                                         <td>
-                                            {{job.title}}
+                                            <app-referer-job-card [job]="job"></app-referer-job-card>
                                         </td>
                                         <td>
-                                            {{job.minExperience}} - {{job.maxExperience}} (Years)
+                                            <ng-container *ngIf="job.locations">
+                                                <span *ngFor="let location of job.locations;"
+                                                      class="display-inline-block"> <span> {{location.city}}
+                                                    , {{location.state}}  </span></span>
+
+                                            </ng-container>
                                         </td>
                                         <td>
                                             {{job.type}}
                                         </td>
                                         <td>
-                                            <a><i class="fa fa-eye" (click)="viewJob(job)"></i></a>
-                                        </td>
-                                        <td>
-                                            <a><i class="fa fa-upload" (click)="uploadResume(job._id)"></i></a>
-                                        </td>
-                                        <td>
-                                            <a><i class="fa fa-users" (click)="searchApplicant(job)"> </i></a>
-                                        </td>
+
+                                            <a (click)="viewJob(job)" class="btn btn-sm btn-info mr-3"><i
+                                                    class="fa fa-eye"></i></a><a (click)="uploadResume(job._id)"
+                                                                                 class="btn btn-sm btn-success mr-3"><i
+                                                class="fa fa-upload"></i></a><a (click)="searchApplicant(job)"
+                                                                                class="btn btn-sm btn-danger"><i
+                                                class="fa fa-users"></i></a></td>
 
                                     </tr>
                                     </tbody>

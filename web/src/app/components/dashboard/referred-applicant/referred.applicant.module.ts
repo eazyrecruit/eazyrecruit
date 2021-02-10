@@ -8,6 +8,7 @@ import {DashboardCommonModule} from '../../common/common.module';
 import {ModalModule, PaginationModule} from 'ngx-bootstrap';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
+import {RefererJobCardComponent} from "./refered-job-card/referer-job-card.component";
 
 @NgModule({
     imports: [ReferredApplicantRouting, ModalModule.forRoot(), CommonModule,
@@ -17,7 +18,8 @@ import {CommonModule} from '@angular/common';
         CreateReferredApplicantComponent,
         ReferredApplicantComponent,
         ReferredApplicantJobComponent,
-        ReferredApplicantInfoComponent
+        ReferredApplicantInfoComponent,
+        RefererJobCardComponent
     ]
 })
 export class ReferredApplicantModule {

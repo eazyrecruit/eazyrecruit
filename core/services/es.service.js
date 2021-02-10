@@ -54,6 +54,7 @@ exports.searchApplicantsByJob = async (req) => {
         if (requestBody.offset) from = parseInt(requestBody.offset);
         if (requestBody.searchJob) {
             const searchJob = JSON.parse(requestBody.searchJob);
+
             query = {
                 "bool": {
                     "should": [
@@ -62,10 +63,33 @@ exports.searchApplicantsByJob = async (req) => {
 
                     ]
                 }
+            };
+            if (requestBody.source) {
+                query = {
+                    "bool": {
+                        "must": [
+                            {
+                                "bool": {
+                                    "should": [
+                                        {"match": {"roles": searchJob.role}},
+                                        {"term": {"totalExperience": searchJob.experience}},
+
+                                    ]
+                                }
+                            },
+                            {"match": {"source": requestBody.source}}
+                        ]
+                    }
+                };
+                for (const skill of searchJob.skills) {
+                    query.bool.must[0].bool.should.push({"match": {"skills.name": skill.name}})
+                }
+            } else {
+                for (const skill of searchJob.skills) {
+                    query.bool.should.push({"match": {"skills.name": skill.name}})
+                }
             }
-            for (const skill of searchJob.skills) {
-                query.bool.should.push({"match": {"skills.name": skill.name}})
-            }
+
         }
         if (query) {
             Applicants.search(query, {
