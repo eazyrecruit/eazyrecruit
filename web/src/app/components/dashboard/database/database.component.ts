@@ -22,7 +22,7 @@ export class DatabaseComponent implements OnInit, OnDestroy {
     timeOut;
     filter = {
         pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at', isGridView: false,
-        order: -1, searchText: '', source: '', searchJob: ''
+        order: -1, searchText: '', source: '',
     };
     pipeLines = [];
     totalRecords = 1;
@@ -133,37 +133,19 @@ export class DatabaseComponent implements OnInit, OnDestroy {
     }
 
     getJobsName(jobId) {
-        this._subs = this.jobService.getJobById(jobId).subscribe(result => {
-            if (result['success'] && result['success']['data'] && result['success']['data']) {
-                this.job = result['success']['data'];
-                this.getCandidate();
-            } else {
-                this.gettingApplicant = false;
+        this._subs = this.jobService.getJobsName(jobId).subscribe(result => {
+            if (result['success'] && result['success']['data'] && result['success']['data'].length) {
+                this.job = result['success']['data'][0];
             }
-        }, () => {
-            this.gettingApplicant = false;
         });
     }
 
     ngOnInit() {
         this.gettingApplicant = true;
-        if (!this.jobId) {
-            this.getCandidate();
-        }
+        this.getCandidate();
     }
 
-
     getCandidate() {
-        if (this.job && this.jobId && !this.filter.searchText) {
-            console.log('addming searchJob');
-            this.filter.searchJob = JSON.stringify({
-                'role': this.job.title,
-                'experience': this.job.minExperience,
-                'skills': this.job.skills
-            });
-        } else {
-            this.filter.searchJob = '';
-        }
         this.searchService.getApplicantData(this.filter).subscribe((result) => {
             if (result['success'] && result['success']['data']) {
                 this.ApplicantList = result['success']['data'].applicants;
