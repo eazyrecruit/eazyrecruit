@@ -108,7 +108,7 @@ export class JobsComponent implements OnInit, OnDestroy {
 
 
     archiveJob(jobId, flag, index) {
-         this._subs = this.jobService.archiveActiveJob(jobId, flag).subscribe(result => {
+        this._subs = this.jobService.archiveActiveJob(jobId, flag).subscribe(result => {
             if (result['success'] && result['success']['data']) {
                 this.jobs.splice(index, 1);
                 this.totalItems = this.totalItems - 1;
@@ -120,7 +120,7 @@ export class JobsComponent implements OnInit, OnDestroy {
 
     searchJob(event: any = '') {
         this.filter.searchText = event.target ? event.target.value : event;
-         this._subs = this.jobService.getJob(this.filter, !this.isArchive).subscribe(result => {
+        this._subs = this.jobService.getJob(this.filter, !this.isArchive).subscribe(result => {
             if (result['success'] && result['success']['data']) {
                 this.jobs = result['success']['data']['jobs'];
                 // this.dataShared.notificationChangeMessage({ name: 'success', type: 'Success', message: 'No active job found' })
@@ -134,7 +134,7 @@ export class JobsComponent implements OnInit, OnDestroy {
     }
 
     getUser() {
-         this._subs = this.jobService.getHrAdmin().subscribe(result => {
+        this._subs = this.jobService.getJobsUser().subscribe(result => {
             if (result['success'] && result['success'].data) {
                 this.userList = result['success'].data;
             }

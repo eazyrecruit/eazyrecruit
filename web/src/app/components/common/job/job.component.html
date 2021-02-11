@@ -144,6 +144,23 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
+                        <label for="vendors" class="required">Vendors</label>
+                        <tag-input [placeholder]="'Vendor'" [secondaryPlaceholder]="'Enter vendor'" id="vendors"
+                                   [onlyFromAutocomplete]="true" formControlName="vendors">
+                            <tag-input-dropdown [showDropdownIfEmpty]="true" [focusFirstElement]="true"
+                                                [identifyBy]="'email'" [displayBy]="'email'"
+                                                [autocompleteItems]="userList">
+                                <ng-template let-item="item" let-index="index">
+                                    {{item.email}}
+                                </ng-template>
+                            </tag-input-dropdown>
+                        </tag-input>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
                         <label for="skills" class="required">Skills</label>
                         <tag-input id="skills" [onlyFromAutocomplete]="true" formControlName="skills">
                             <tag-input-dropdown aria-placeholder="Enter new skill" [identifyBy]="'_id'"
@@ -239,7 +256,7 @@
                         <label for="locations1" class="required">Job Locations</label>
                         <tag-input [disable]="this.isView ==true" id="locations1" [onlyFromAutocomplete]="true"
                                    formControlName="locations">
-                            <tag-input-dropdown  aria-placeholder="Enter new Job Location"
+                            <tag-input-dropdown aria-placeholder="Enter new Job Location"
                                                 [identifyBy]="'_id'"
                                                 [displayBy]="'city'" [autocompleteObservable]="asyncLocations">
                                 <ng-template let-item="item" let-index="index">
@@ -248,18 +265,6 @@
                             </tag-input-dropdown>
                         </tag-input>
                     </div>
-                </div>
-                <div class="col-sm-3 mt-10">
-                    <label for="recruitmentManager1">Recruitment Manager</label>
-                    <select id="recruitmentManager1" disabled formControlName="recruitmentManager" class="form-control">
-                        <option value="" disabled selected>Select Assignee</option>
-                        <option *ngFor="let user of userList;"
-                                value="{{user._id}}"> {{user.name}}{{'<' + user.email + '>'}}</option>
-                    </select>
-                    <small class="text-danger"
-                           *ngIf="jobDetails.controls['recruitmentManager'].hasError('required') && (jobDetails.controls['recruitmentManager'].touched || submit)">
-                        Please select an Recruitment Manager
-                    </small>
                 </div>
                 <div class="col-sm-3">
                     <div class="form-group">
@@ -275,7 +280,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label for="skills1" class="required">Skills</label>
-                        <tag-input id="skills1" [disable]="this.isView ==true" [onlyFromAutocomplete]="true" formControlName="skills">
+                        <tag-input id="skills1" [disable]="this.isView ==true" [onlyFromAutocomplete]="true"
+                                   formControlName="skills">
                             <tag-input-dropdown aria-placeholder="Enter new skill" [identifyBy]="'_id'"
                                                 [displayBy]="'name'"
                                                 [autocompleteObservable]="asyncSkills">

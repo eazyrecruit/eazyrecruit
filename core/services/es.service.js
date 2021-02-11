@@ -263,6 +263,54 @@ exports.updateJob = async (id, job) => {
     });
 }
 
+
+exports.searchVendorJobs = async (data) => {
+    return new Promise(function (resolve, reject) {
+            var query = {};
+            if (data.searchText) {
+                query = {
+                    "bool": {
+                        "must": [
+                            {"match_phrase_prefix": {"title": data.searchText}}, {"match_phrase": {"active": true}}, {"match_phrase": {"vendors": data.owner}},]
+                    }
+                }
+            } else {
+                query = {
+                    "bool": {
+                        "must": [
+                            {"match_all": {}},
+                            {"match_phrase": {"vendors": data.owner}},
+                            {"match_phrase": {"active": true}}]
+                    }
+                }
+            }
+            if (query) {
+                Jobs.search(query, {
+                        from: parseInt(data.offset), size: parseInt(data.limit),
+                        sort: [{
+                            "is_published": {
+                                "order": "desc"
+                            }
+                        }, {
+                            "created_at": {
+                                "order": "desc"
+                            }
+                        }]
+                    },
+                    function (err, results) {
+                        if (err)
+                            reject(err);
+                        else {
+                            resolve(results);
+                        }
+                    });
+            } else {
+                reject("No data found");
+            }
+        }
+    );
+}
+
 // var elasticsearch = require("elasticsearch");
 
 // var client = new elasticsearch.Client({

@@ -1,6 +1,6 @@
 import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {Router, Params, ActivatedRoute} from '@angular/router';
+import {FormGroup, FormBuilder} from '@angular/forms';
+import {Router, ActivatedRoute} from '@angular/router';
 import {SearchService} from '../../../services/search.service';
 import {JobService} from '../../../services/job.service';
 import {ApplyJobService} from '../../../services/apply-job.service';

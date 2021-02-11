@@ -1,16 +1,23 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {ConstService} from './const.service';
+import {AccountService} from "./account.service";
 
 @Injectable()
 export class JobService {
 
-    constructor(private http: HttpClient, private constService: ConstService) {
+    constructor(private http: HttpClient, private constService: ConstService, private accountService: AccountService,) {
     }
 
     // (title = '') - this is to assign a default value to the title variable
     getJob(filter, active = true) {
-        return this.http.get(`${this.constService.baseUrl}job?searchText=${filter.searchText}&offset=${filter.offset}&limit=${filter.pageSize}&active=${active}&basic=${filter.basic}`);
+        const user = this.accountService.isAuthorized();
+        if (user.role === 'vendor') {
+            return this.http.get(`${this.constService.baseUrl}vendor/job?searchText=${filter.searchText}&offset=${filter.offset}&limit=${filter.pageSize}`);
+        } else {
+            return this.http.get(`${this.constService.baseUrl}job?searchText=${filter.searchText}&offset=${filter.offset}&limit=${filter.pageSize}&active=${active}`);
+        }
+
     }
 
     archiveActiveJob(jouId, active) {
@@ -21,8 +28,8 @@ export class JobService {
         return this.http.get(this.constService.baseUrl + 'job/' + id);
     }
 
-    getHrAdmin() {
-        return this.http.get(`${this.constService.baseUrl}user/adminHr`);
+    getJobsUser() {
+        return this.http.get(`${this.constService.baseUrl}user/jobsUser`);
     }
 
     getJobsName(jobId = null) {

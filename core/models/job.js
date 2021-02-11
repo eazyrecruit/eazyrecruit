@@ -15,6 +15,7 @@ var jobSchema = new Schema({
     maxExperience: Number,
     mode: String,
     type: String,
+    vendors: [String],
     locations: [{
         type: Schema.Types.ObjectId,
         ref: 'Locations',

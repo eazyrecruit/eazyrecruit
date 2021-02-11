@@ -102,6 +102,7 @@ export class JobComponent implements OnInit, OnDestroy {
             metaImage: [null],
             metaImageAltText: [null],
             metaTitle: [null],
+            vendors: [null]
         });
         if (job && job._id) {
             this.active = job.active;
@@ -116,15 +117,26 @@ export class JobComponent implements OnInit, OnDestroy {
             this.jobDetails.controls['type'].setValue(job.type);
             this.jobDetails.controls['expiryDate'].setValue(new Date(job.expiryDate));
             this.jobDetails.controls['recruitmentManager'].setValue(job.recruitmentManager || null);
+            this.jobDetails.controls['vendors'].setValue(this.addVendorsName(job.vendors || []));
             this.jobDetails.controls['skills'].setValue(this.addDisplayName(job.skills));
             this.jobDetails.controls['locations'].setValue(this.addDisplayName(job.locations));
             this.jobDetails.controls['description'].setValue(job.description);
             this.jobDetails.controls['responsibilities'].setValue(job.responsibilities);
-            this.jobDetails.controls['metaImage'].setValue(job.metaImage);
+            this.jobDetails.controls['metaImage'].setValue(null);
             this.jobDetails.controls['metaImageAltText'].setValue(job.metaImageAltText);
             this.jobDetails.controls['metaTitle'].setValue(job.metaTitle);
             this.currentMetaImage = job.metaImage;
         }
+    }
+
+    addVendorsName(array: any) {
+        const data = [];
+        for (let index = 0; index < array.length; index++) {
+            data.push({
+                display: array[index], email: array[index]
+            });
+        }
+        return data;
     }
 
     addDisplayName(array: any) {
@@ -157,7 +169,7 @@ export class JobComponent implements OnInit, OnDestroy {
     }
 
     getJob(id) {
-         this._subs = this.jobService.getJobById(id).subscribe(result => {
+        this._subs = this.jobService.getJobById(id).subscribe(result => {
             if (result['success']) {
                 this.closePopup.next(result['success'].data);
                 this.bsModelRef.hide();
@@ -182,6 +194,13 @@ export class JobComponent implements OnInit, OnDestroy {
                 if (jobForm[key] !== null) {
                     formData.append(key, jobForm[key]);
                 }
+            }
+            const vendors = {};
+            if (jobForm.vendors) {
+                for (let index = 0; index < jobForm.vendors.length; index++) {
+                    vendors[jobForm.vendors[index].email] = jobForm.vendors[index].email;
+                }
+                formData.set('vendors', JSON.stringify(Object.keys(vendors)));
             }
             const skill = [];
             const current = [];
@@ -231,7 +250,7 @@ export class JobComponent implements OnInit, OnDestroy {
             } else if (this.currentMetaImage) {
                 formData.set('metaImage', this.currentMetaImage);
             }
-             this._subs = this.jobService.saveJob(formData).subscribe(result => {
+            this._subs = this.jobService.saveJob(formData).subscribe(result => {
                 if (result['success'] && result['success'].data) {
                     this.getJob(result['success'].data._id);
                 }
@@ -271,7 +290,7 @@ export class JobComponent implements OnInit, OnDestroy {
             this.errorDescription = true;
             return;
         }
-         this._subs = this.jobService.editJob(jobForm).subscribe(result => {
+        this._subs = this.jobService.editJob(jobForm).subscribe(result => {
             if (result['success']) {
                 this.jobDetails.reset();
                 this.getJob(result['success'].data._id);
