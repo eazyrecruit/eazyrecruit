@@ -107,6 +107,7 @@ module.exports.setup = (app) => {
     app.use('/api/task', require('./controllers/task.ctrl').task);
     app.use('/api/referred', require('./controllers/referred.ctrl').referred);
     app.use('/api/activity', require('./controllers/activity.ctrl').activity);
+    app.use('/api/vendor', require('./controllers/vendor.ctrl').vendor);
 };
 
 var secretRecruitCallBack = function (req, payload, done) {

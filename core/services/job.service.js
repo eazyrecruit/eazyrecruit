@@ -37,6 +37,11 @@ exports.save = async (req) => {
         }
 
         modelJob.title = req.body.title;
+        if (req.body.vendors) {
+            modelJob.vendors = [];
+            req.body.vendors = JSON.parse(req.body.vendors);
+            modelJob.vendors = req.body.vendors;
+        }
         modelJob.recruitmentManager = req.body.recruitmentManager || modelJob.recruitmentManager;
         modelJob.guid = modelJob.guid || createSlug(req.body.title);
         modelJob.active = req.body.active ? req.body.active : true;

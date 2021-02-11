@@ -4,7 +4,7 @@ import {AccountService} from '../../../services/account.service';
 import {Router} from '@angular/router';
 import {ValidationService} from '../../../services/validation.service';
 import {ConstService} from '../../../services/const.service';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-login',
@@ -28,7 +28,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         const user = this.accountService.isAuthorized();
         if (user && user.isAuthorized) {
             const url = this.accountService.getHomeUrl(user.role);
-            console.log('url', url)
             this.router.navigate([url]);
         }
         this.loginForm = fbuilder.group({

@@ -30,8 +30,8 @@ exports.getUsers = async (req) => {
     }
     return {count, users};
 };
-exports.getHrAdmin = async () => {
-    let roles = await Role.find({is_deleted: false, name: {$in: ["hr", "admin"]}});
+exports.getJobsUser = async () => {
+    let roles = await Role.find({is_deleted: false, name: {$in: ["hr", "admin", "vendor"]}});
     const roleIds = [];
     for (let index = 0; index < roles.length; index++) {
         roleIds.push(roles[index]._id);

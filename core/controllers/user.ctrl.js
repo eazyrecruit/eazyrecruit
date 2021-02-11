@@ -11,7 +11,6 @@ router.get('/', async (req, res) => {
         } else {
             result = await userService.getUsers(req);
         }
-
         responseService.successResponse(result, 'get users', res);
     } catch (err) {
         console.log('get users - error : ', err);
@@ -19,13 +18,13 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/adminHr', async (req, res) => {
+router.get('/jobsUser', async (req, res) => {
     try {
-        const result = await userService.getHrAdmin();
-        responseService.successResponse(result, 'getHrAdmin', res);
+        const result = await userService.getJobsUser();
+        responseService.successResponse(result, 'getJobsUser', res);
     } catch (err) {
-        console.log('get users - error : ', err);
-        responseService.errorResponse(err, 'getHrAdmin', res);
+        console.log('getJobsUser - error : ', err);
+        responseService.errorResponse(err, 'getJobsUser', res);
     }
 });
 
