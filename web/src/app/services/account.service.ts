@@ -26,6 +26,17 @@ export class AccountService {
     constructor(private http: HttpClient, private constService: ConstService) {
     }
 
+    getHomeUrl(role) {
+        const url = {
+            hr: 'jobs/',
+            admin: 'jobs/',
+            user: 'referred-applicants/',
+            interviewer: 'dashboard/',
+            vendor: 'referred-applicants/'
+        };
+        return url[role];
+    }
+
     isAuthorized() {
         const authData = this.authStorage.getAuthData();
         let isexpire = true;
@@ -146,7 +157,7 @@ export class AuthGuard implements CanActivate {
 
     canActivate() {
         // logged in so return true
-        let user = this.accountService.isAuthorized();
+        const user = this.accountService.isAuthorized();
         if (user && user.isAuthorized) {
             return true;
         }

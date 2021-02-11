@@ -1,7 +1,7 @@
 let mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const ISODate = mongoose.Types.ISODate;
-let Interview = require('../models/interview')
+let Interview = require('../models/interview');
 let interviewResults = mongoose.model('InterviewResults');
 const ics = require('./ics').IcsService;
 const uuidv1 = require('uuid/v1');
@@ -9,77 +9,148 @@ var emailService = require('../services/email.service');
 let interviewCriteria = require('../models/interviewCriteria');
 let Applicant = require('../models/applicant');
 let config = require('../config').config();
+var interviewIntegration = require('./interview.Integration.service');
 let Company = require('../models/company');
-
+var Activity = require('./activity.service');
 exports.createAndInvite = async (req) => {
-
-    let company = await getCompany();
-    req.body["companyName"] = company.name;
-    req.body.interview.interview = await Interview.create(
-        {
-            uid: uuidv1(),
-            sequence: 1,
-            status: "CONFIRMED",
-            start: new Date(new Date(req.body.interview.start)),
-            end: new Date(new Date(req.body.interview.end)),
-            note: req.body.interview.note,
+    try {
+        const data = {
+            jobName: req.body.interview.job.name,
             round: req.body.interview.round,
+            uid: uuidv1(),
+            companyName: "",
+            start: req.body.interview.start,
+            end: req.body.interview.end,
+            note: req.body.interview.note,
             jobId: req.body.interview.job.id,
             jobApplicant: req.body.interview.candidate.id,
-            interviewer: req.body.interview.interviewer.id,
-            organizer: req.body.interview.organizer.id,
+            owner: req.user.id,
+            localStartDate: req.body.interview.localStartDate,
             channel: req.body.interview.channel,
+            applicantName: req.body.interview.candidate.name,
+            applicantEmail: req.body.interview.candidate.email,
+            organizerName: req.body.interview.organizer.name,
+            organizerId: req.body.interview.organizer.id,
+            organizerEmail: req.body.interview.organizer.email,
+            interviewerName: req.body.interview.interviewer.name,
+            interviewerEmail: req.body.interview.interviewer.email,
             channelLink: req.body.interview.channelLink,
-            result: "PENDING",
-            is_deleted: false,
-            created_by: req.body.interview.created_by.id,
-            created_at: Date.now(),
-            modified_by: req.body.interview.modified_by.id,
-            modified_at: Date.now()
+            interviewerId: req.body.interview.interviewer.id,
+            localStartTime: req.body.interview.localStartTime
+        };
+
+        const requestResult = await interviewIntegration.getCreateInterviewRequest(data);
+        const request = requestResult.request;
+        let description = request.jobName + " profile ";
+        if (request.round) {
+            description = description + request.round + "round " + "interview created";
+        } else {
+            description = description + "interview created "
+        }
+        Activity.addActivity({
+            applicant: request.jobApplicant,
+            created_by: request.owner,
+            title: "interview Created",
+            description: description
         });
 
-    // Invite Participants
-    await inviteCandidate(req, "Invitation: Interview scheduled with " + req.body["companyName"] + " for " + req.body.interview.job.name + " profile");
-    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
-    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
-    // Return Interview Details
-    return req.body.interview;
-}
+        // Invite Participants
+        await inviteCandidate(request, "Invitation: Interview scheduled with " + request["companyName"] + " for " + request.jobName + " profile");
+        await inviteInterviewer(request, "Interview scheduled with " + request.applicantName + " for " + request.jobName + " profile");
+        await inviteOrganizer(request, "Interview scheduled with " + request.applicantName + " for " + request.jobName + " profile");
+        // Return Interview Detailsa
+        req.body.interview.interview = requestResult.result;
+        req.body.interview.interview["_id"] = request.interviewId;
+        return req.body.interview;
+    } catch (error) {
+        console.log("error", error);
+        throw  error;
+    }
 
+};
 exports.rescheduleAndInvite = async (req) => {
-    let interview = await Interview.findById({_id: req.body.id});
-    let company = await getCompany();
-    req.body["companyName"] = company.name;
-    req.body.interview.interview = await Interview.findByIdAndUpdate({_id: req.body.id, is_deleted: {$ne: true}},
-        {
-            sequence: req.body.sequence + 1,
-            status: "CONFIRMED",
-            start: new Date(new Date(req.body.interview.start)),
-            end: new Date(new Date(req.body.interview.end)),
-            note: req.body.interview.note,
+    try {
+        let interview = await Interview.findById({_id: req.body.id});
+        const data = {
+            jobName: req.body.interview.job.name,
             round: req.body.interview.round,
+            uid: interview.interview,
+            companyName: "",
+            sequence: interview.sequence + 1,
+            start: req.body.interview.start,
+            end: req.body.interview.end,
+            note: req.body.interview.note,
             jobId: req.body.interview.job.id,
             jobApplicant: req.body.interview.candidate.id,
-            interviewer: req.body.interview.interviewer.id,
-            organizer: req.body.interview.organizer.id,
+            owner: req.user.id,
+            localStartDate: req.body.interview.localStartDate,
             channel: req.body.interview.channel,
+            applicantName: req.body.interview.candidate.name,
+            applicantEmail: req.body.interview.candidate.email,
+            organizerName: req.body.interview.organizer.name,
+            organizerId: req.body.interview.organizer.id,
+            organizerEmail: req.body.interview.organizer.email,
+            interviewerName: req.body.interview.interviewer.name,
+            interviewerEmail: req.body.interview.interviewer.email,
             channelLink: req.body.interview.channelLink,
             result: interview.result,
-            is_deleted: false,
-            modified_by: req.body.interview.modified_by.id,
-            modified_at: Date.now()
-        }, {new: true});
-    // Invite Participants
-    await inviteCandidate(req, "Invitation: Interview scheduled with " + req.body["companyName"] + " for " + req.body.interview.job.name + " profile");
-    await inviteInterviewer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
-    await inviteOrganizer(req, "Interview scheduled with " + req.body.interview.candidate.name + " for " + req.body.interview.job.name + " profile");
-    // Return Interview Details
-    return req.body.interview;
-}
+            interviewerId: req.body.interview.interviewer.id,
+            localStartTime: req.body.interview.localStartTime,
+            channelProperty: interview.channelProperty,
+            interviewId: interview._id.toString(),
+            status: "CONFIRMED",
+        };
 
+        const request = await interviewIntegration.getUpdateInterviewRequest(data);
+        let description = request.jobName + " profile ";
+        if (request.round) {
+            description = description + request.round + "round interview updated"
+        } else {
+            description = description + "interview Updated "
+        }
+        Activity.addActivity({
+            applicant: request.jobApplicant,
+            created_by: request.owner,
+            title: "interview Created",
+            description: description
+        });
+
+        // Invite Participants
+        await inviteCandidate(request, "Invitation: Interview scheduled with " + request["companyName"] + " for " + request.jobName + " profile");
+        await inviteInterviewer(request, "Interview scheduled with " + request.applicantName + " for " + request.jobName + " profile");
+        await inviteOrganizer(request, "Interview scheduled with " + request.applicantName + " for " + request.jobName + " profile");
+        // Return Interview Details
+        req.body.interview.interview = interview;
+        return req.body.interview;
+    } catch (error) {
+        console.log("error", error);
+        throw  error;
+    }
+
+
+}
+exports.startInterView = async (id) => {
+    try {
+        let interview = await Interview.findById({_id: id}).populate("interviewer", ['email', "name", "firstName", "lastName"]);
+        const data = {
+            channelProperty: interview.channelProperty,
+            interviewId: interview.interviewId,
+            channel: interview.channel,
+            channelLink: interview.channelLink,
+            interviewerName: interview.interviewer.name
+        };
+
+        return await interviewIntegration.startInterview(data);
+    } catch (error) {
+        throw  error;
+    }
+
+
+}
 exports.getAllBetweenDates = async (req) => {
     let query = {
         is_deleted: {$ne: true},
+        result: "PENDING",
         start: {
             $gte: new Date(new Date(parseInt(req.params.start)).toISOString()),
             $lt: new Date(new Date(parseInt(req.params.end)).toISOString())
@@ -118,10 +189,23 @@ exports.getAllByInterview = async (req) => {
 }
 
 exports.comment = async (req) => {
-    return await Interview.findByIdAndUpdate({_id: req.body._id, is_deleted: {$ne: true}}, {
-        comment: req.body.comment,
-        result: req.body.result
-    }, {new: true});
+    let interview = await Interview.findOne({_id: req.body._id, is_deleted: {$ne: true}}).populate("jobId");
+    interview["result"] = req.body.result;
+    interview["comment"] = req.body.comment;
+    await interview.save();
+    let description = interview.jobId.title + " profile ";
+    if (interview.round) {
+        description = description + interview.round + "round " + "interview Result set to  " + req.body.result
+    } else {
+        description = description + "interview Result set to  " + req.body.result
+    }
+    Activity.addActivity({
+        applicant: interview.jobApplicant,
+        created_by: req.user.id,
+        title: "Updated Interview Result",
+        description: description
+    });
+    return true;
 }
 
 exports.getResult = async (req) => {
@@ -150,6 +234,19 @@ exports.cancelInterview = async (id, user) => {
             interview["modified_at"] = new Date();
             await interview.save();
             SendDeleteInterviewNotification(interview);
+            let description = interview.jobId.title + " profile ";
+            if (interview.round) {
+                description = description + interview.round + "round " + "interview cancel";
+            } else {
+                description = description + "interview cancel "
+            }
+            Activity.addActivity({
+                applicant: interview.jobApplicant._id,
+                created_by: user,
+                title: "Cancel Interview",
+                description: description
+            });
+            interviewIntegration.getDeleteInterviewRequest(interview);
             resolve(true);
         } catch (error) {
             return reject(error);
@@ -295,55 +392,55 @@ exports.getInterviews = async (req) => {
     return {count, interviews};
 }
 
-async function inviteCandidate(req, title) {
-    return await createInvitation(req, "Interview scheduled", title,
+async function inviteCandidate(request, title) {
+    return await createInvitation(request, "Interview scheduled", title,
         `
-        <p>Dear ${req.body.interview.candidate.name},</p>
-        <p>You are invited for an interview with  ${req.body["companyName"]}. Please find your interview details below. </p>
+        <p>Dear ${request.applicantName},</p>
+        <p>You are invited for an interview with  ${request.companyName}. Please find your interview details below. </p>
         <p> <b>Interview details </b> <br>
-         <b> Profile:</b> ${req.body.interview.job.name}</p>
-         <b> Interview date: </b>${req.body.interview.localStartDate}<br/>
-          <b>Interview Time: </b>${req.body.interview.localStartTime}<br/>
-         <b> Mode : </b>${req.body.interview.channel}  <a href="${req.body.interview.channelLink}">${req.body.interview.channelLink}</a><br/></p>
+         <b> Profile:</b> ${request.jobName}</p>
+         <b> Interview date: </b>${request.localStartDate}<br/>
+          <b>Interview Time: </b>${request.localStartTime}<br/>
+         <b> Mode : </b>${request.channel}  <a href="${request.channelLink}">${request.channelLink}</a><br/></p>
           </p>
        Please reach out to us in case of any query or availability issues. Contact details are provided below.</p>
-    `, req.body.interview.candidate.email, req.body.interview.organizer.email);
+    `, request.applicantEmail, request.organizerEmail);
 }
 
 async function inviteInterviewer(req, title) {
     return await createInvitation(req, "Interview scheduled", title,
         `
-        <p>Dear ${req.body.interview.interviewer.name},</p>
-        <p>${req.body.interview.organizer.name} has invited you for an interview.
+        <p>Dear ${req.interviewerName},</p>
+        <p>${req.organizerName} has invited you for an interview.
     <p> <b>Interview details </b> <br>
-         <b> Candidate Name: </b>${req.body.interview.candidate.name}<br>
+         <b> Candidate Name: </b>${req.applicantName}<br>
  
-        <b>Profile:</b> ${req.body.interview.job.name}</p>
-      <b> Interview date: </b>${req.body.interview.localStartDate}<br/>
-          <b>Interview Time: </b>${req.body.interview.localStartTime}<br/>
-        <b>  Mode : </b>${req.body.interview.channel}  <a href="${req.body.interview.channelLink}">${req.body.interview.channelLink}</a> <br/></p>
+        <b>Profile:</b> ${req.jobName}</p>
+      <b> Interview date: </b>${req.localStartDate}<br/>
+          <b>Interview Time: </b>${req.localStartTime}<br/>
+        <b>  Mode : </b>${req.channel}  <a href="${req.channelLink}">${req.channelLink}</a> <br/></p>
         Please click on below link to access more details about the interview.</p>
-        <p><a href="${config.website}/admin/interview/${req.body.interview.interview._id.toString()}">${config.website}/admin/interview/${req.body.interview.interview.id}</p>
-    `, req.body.interview.interviewer.email, req.body.interview.organizer.email);
+        <p><a href="${config.website}/admin/interview/${req.interviewId.toString()}">${config.website}/admin/interview/${req.interviewId.toString()}</p>
+    `, req.interviewerEmail, req.organizerEmail);
 }
 
 async function inviteOrganizer(req, title) {
     return await createInvitation(req, "Interview scheduled", title,
         `
-        <p>Dear ${req.body.interview.organizer.name},</p>
+        <p>Dear ${req.organizerName},</p>
         <p>You have successfully scheduled an interview.</p>
        
         <p> 
         <b>Interview details </b> <br>
-             <b>Candidate Name:   </b> ${req.body.interview.candidate.name}<br>
-           <b>Interviewer Name:</b>  ${req.body.interview.interviewer.name}<br>
-           <b>Profile:</b>  ${req.body.interview.job.name}</p>
-             <b> Interview date: </b>${req.body.interview.localStartDate}<br/>
-          <b>Interview Time: </b>${req.body.interview.localStartTime}<br/>
-             <b>Mode : </b>  ${req.body.interview.channel}    <a href="${req.body.interview.channelLink}">${req.body.interview.channelLink}</a> <b><br/>
+             <b>Candidate Name:   </b> ${req.applicantName}<br>
+           <b>Interviewer Name:</b>  ${req.interviewerName}<br>
+           <b>Profile:</b>  ${req.jobName}</p>
+             <b> Interview date: </b>${req.localStartDate}<br/>
+          <b>Interview Time: </b>${req.localStartTime}<br/>
+             <b>Mode : </b>  ${req.channel}    <a href="${req.channelLink}">${req.channelLink}</a> <b><br/>
         <p>Please click on below link to access more details about the interview.<p>
-        <p>${config.website}/admin/interview/${req.body.interview.interview._id.toString()}</p>
-    `, req.body.interview.organizer.email, req.body.interview.organizer.email);
+        <p>${config.website}/admin/interview/${req.interviewId.toString()}</p>
+    `, req.organizerEmail, req.organizerEmail);
 }
 
 async function createInvitation(req, title, subject, body, attendee, organizer) {
@@ -352,17 +449,17 @@ async function createInvitation(req, title, subject, body, attendee, organizer) 
             let inviteData = {
                 organizer: organizer,
                 title: subject,
-                start: req.body.interview.start,
-                end: req.body.interview.end,
-                sequence: req.body.interview.interview.sequence,
-                uuid: req.body.interview.interview.uid,
+                start: req.start,
+                end: req.end,
+                sequence: req.sequence,
+                uuid: req.uid,
                 method: "REQUEST",
                 status: "CONFIRMED",
-                body: "Please Join On " + req.body.interview.channel + " " + req.body.interview.channelLink,
+                body: "Please Join On " + req.channel + " " + req.channelLink,
                 attendees: [{
                     email: attendee,
                     rsvp: true,
-                    name: req.body.interview.candidate.name || " ",
+                    name: req.applicantName || " ",
                     partstat: "NEEDS-ACTION",
                     role: "REQ-PARTICIPANT"
                 }],

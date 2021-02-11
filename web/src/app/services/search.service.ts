@@ -16,6 +16,17 @@ export class SearchService {
         return this.http.post(this.constService.baseUrl + 'applicant/search', details);
     }
 
+    getReferredApplicantData(filter) {
+        let url = `${this.constService.baseUrl}referred?offset=${filter.offset}&limit=${filter.pageSize}`;
+        if (filter.searchText) {
+            url = `${url}&search=${filter.searchText}`;
+        }
+        if (filter.sortBy && filter.order) {
+            url = `${url}&sortBy=${filter.sortBy}&order=${filter.order}`;
+        }
+        return this.http.get(url);
+    }
+
     getAllResume(filter) {
         return this.http.post(this.constService.baseUrl + 'applicant/', filter);
     }
@@ -28,27 +39,31 @@ export class SearchService {
     }
 
     getApplicantData(filter) {
-        let url = `${this.constService.baseUrl}applicant/search?offset=${filter.offset}&limit=${filter.pageSize}`;
-        if (filter.searchText) {
-            url = `${url}&search=${filter.searchText}`;
+        if (filter.searchJob) {
+            return this.http.post(`${this.constService.baseUrl}applicant/search-by-job`, filter);
+        } else {
+            let url = `${this.constService.baseUrl}applicant/search?offset=${filter.offset}&limit=${filter.pageSize}`;
+            if (filter.searchText) {
+                url = `${url}&search=${filter.searchText}`;
+            }
+            if (filter.source) {
+                url = `${url}&source=${filter.source}`;
+            }
+            if (filter.startDate && filter.endDate) {
+                url = `${url}&startDate=${filter.startDate}&endDate=${filter.endDate}`;
+            }
+            if (filter.sortBy && filter.order) {
+                url = `${url}&sortBy=${filter.sortBy}&order=${filter.order}`;
+            }
+            return this.http.get(url);
         }
-        if (filter.source) {
-            url = `${url}&source=${filter.source}`;
-        }
-        if (filter.startDate && filter.endDate) {
-            url = `${url}&startDate=${filter.startDate}&endDate=${filter.endDate}`;
-        }
-        if (filter.sortBy && filter.order) {
-            url = `${url}&sortBy=${filter.sortBy}&order=${filter.order}`;
-        }
-        return this.http.get(url);
+
     }
 
     getHeaders() {
         const token = this.sharedService.getAuthToken();
         const headerDict = {'Authorization': 'Bearer ' + token, 'Accept': 'application/pdf'};
-        const headerObj = {headers: new HttpHeaders(headerDict)};
-        return headerObj;
+        return {headers: new HttpHeaders(headerDict)};
     }
 
     downloadPdf(id) {

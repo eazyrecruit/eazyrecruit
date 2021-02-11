@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var applicantService = require("../services/applicant.service");
+var Activity = require("../services/activity.service");
 var responseService = require('../services/response.service');
 var Logs = require('../models/logs');
 var multer = require('multer');
@@ -47,16 +48,6 @@ router.get("/search", async (req, res) => {
             order: req.query.order || -1,
             search: req.query.search || null
         };
-        if (req.query.startDate && req.query.endDate) {
-            let startDate = new Date(req.query.startDate);
-            let endDate = new Date(req.query.endDate);
-            if (startDate !== undefined && endDate !== undefined) {
-                endDate.setHours(23, 59, 59);
-                startDate.setHours(0, 0, 0);
-                data["startDate"] = startDate;
-                data["endDate"] = endDate;
-            }
-        }
         var results = await esService.searchApplicants(data);
         if (results.hits && results.hits.hits && results.hits.hits.length) {
             var applicants = [];

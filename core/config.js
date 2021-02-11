@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 var pathToRegexp = require('path-to-regexp');
 const fs = require('fs');
-dotenv.config({ path: "./.env" });
+dotenv.config({path: "./.env"});
 normalize = (param) => {
     if (typeof (param) == 'string') {
         param = param.replace(/\s+/g, '');
@@ -35,7 +35,7 @@ module.exports = {
             },
             jwt: {
                 secret: process.env.JWT_SECRET || 'ATDHPTGPSF&(**DSFDFY^L&^USGHSODISOIY&D*SYDDH',
-                expireTime: Number(process.env.JWT_EXPIRE_TIME) || 86400, // for admin we will use 24hr
+                expireTime: Number(process.env.JWT_EXPIRE_TIME) || 604800, // for admin we will use 24hr
                 audience: process.env.JWT_AUDIENCE || 'EazyRecruitUsers',
                 issuer: process.env.JWT_ISSUER || 'https://www.eazyrecruit.in'
             },
@@ -60,11 +60,21 @@ module.exports = {
             admin: {
                 username: process.env.ADMIN_USER_NAME || "admin@eazyrecruit.in"
             },
+            InterviewInterviewIntegration: {
+                GoLiveMeet: {
+                    BaseUrl: process.env.GO_LIVE_MEET_BASE_URL || "http://localhost:3009/api",
+                    createWebinar: "events/createWebinar",
+                    updateWebinar: "events/updateWebinar",
+                    startWebinar: "events/startWebinar",
+                    deleteWebinar: "events/deleteWebinar",
+
+                }
+            },
             rootPath: __dirname,
             profileSupportFileType: ['image/jpeg', 'image/png'],
             profileSupportFileSize: 1024 * 1024 * 2,
             googleAnalyticsApi: process.env.GOOGLE_ANALYTICS_API || "https://www.googleapis.com/auth/analytics.readonly",
-            roles: ['admin', 'hr', 'interviewer'],
+            roles: ['admin', 'hr', 'interviewer', "user", "vendor"],
             companyInfo: {
                 signature: process.env.COMPANY_SIGNATURE || "<b>HR team</b><br>Eazyrecruit<br><a href='mailto:hr@eazyrecruit.in'>hr@eazyrecruit.in</a>",
                 name: process.env.COMPANY_NAME || 'Eazyrecruit',

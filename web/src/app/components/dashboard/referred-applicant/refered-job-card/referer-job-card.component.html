@@ -1,0 +1,11 @@
+<div class="info-box-wrapper line-height-22">
+    <p class="font-weight-600 text-meteorite mb-0">
+        {{job.title}}</p>
+    <p class="font-weight-500 text-11 line-height-20">  {{job.minExperience}}
+        - {{job.maxExperience}} (Years)</p>
+    <ng-container *ngIf="job.skills">
+        <p class="display-inline-block box-shadow"><span
+                *ngFor="let skill of job.skills"> <span
+                class="label label-default"> {{skill.name}}</span> </span></p>
+    </ng-container>
+</div>

@@ -54,6 +54,7 @@ exports.searchApplicantsByJob = async (req) => {
         if (requestBody.offset) from = parseInt(requestBody.offset);
         if (requestBody.searchJob) {
             const searchJob = JSON.parse(requestBody.searchJob);
+
             query = {
                 "bool": {
                     "should": [
@@ -62,10 +63,33 @@ exports.searchApplicantsByJob = async (req) => {
 
                     ]
                 }
+            };
+            if (requestBody.source) {
+                query = {
+                    "bool": {
+                        "must": [
+                            {
+                                "bool": {
+                                    "should": [
+                                        {"match": {"roles": searchJob.role}},
+                                        {"term": {"totalExperience": searchJob.experience}},
+
+                                    ]
+                                }
+                            },
+                            {"match": {"source": requestBody.source}}
+                        ]
+                    }
+                };
+                for (const skill of searchJob.skills) {
+                    query.bool.must[0].bool.should.push({"match": {"skills.name": skill.name}})
+                }
+            } else {
+                for (const skill of searchJob.skills) {
+                    query.bool.should.push({"match": {"skills.name": skill.name}})
+                }
             }
-            for (const skill of searchJob.skills) {
-                query.bool.should.push({"match": {"skills.name": skill.name}})
-            }
+
         }
         if (query) {
             Applicants.search(query, {
@@ -134,27 +158,14 @@ exports.searchApplicants = async (req) => {
                     query = {
                         "bool": {
                             "must": [
-                                {"match": {"source": req.source}},
-                                {
-                                    "range": {
-                                        "created_at": {
-                                            "gte": req.startDate,
-                                            "lt": req.endDate
-                                        }
-                                    }
-                                }]
+                                {"match": {"source": req.source}}]
                         }
                     }
                 }
 
                 if (!req.source && !req.search) {
                     query = {
-                        "range": {
-                            "created_at": {
-                                "gte": req.startDate,
-                                "lt": req.endDate
-                            }
-                        }
+                        "match_all": {}
                     }
                 }
                 Applicants.search(query, {
@@ -250,6 +261,54 @@ exports.updateJob = async (id, job) => {
             reject({status: 400, message: "job id is missing"});
         }
     });
+}
+
+
+exports.searchVendorJobs = async (data) => {
+    return new Promise(function (resolve, reject) {
+            var query = {};
+            if (data.searchText) {
+                query = {
+                    "bool": {
+                        "must": [
+                            {"match_phrase_prefix": {"title": data.searchText}}, {"match_phrase": {"active": true}}, {"match_phrase": {"vendors": data.owner}},]
+                    }
+                }
+            } else {
+                query = {
+                    "bool": {
+                        "must": [
+                            {"match_all": {}},
+                            {"match_phrase": {"vendors": data.owner}},
+                            {"match_phrase": {"active": true}}]
+                    }
+                }
+            }
+            if (query) {
+                Jobs.search(query, {
+                        from: parseInt(data.offset), size: parseInt(data.limit),
+                        sort: [{
+                            "is_published": {
+                                "order": "desc"
+                            }
+                        }, {
+                            "created_at": {
+                                "order": "desc"
+                            }
+                        }]
+                    },
+                    function (err, results) {
+                        if (err)
+                            reject(err);
+                        else {
+                            resolve(results);
+                        }
+                    });
+            } else {
+                reject("No data found");
+            }
+        }
+    );
 }
 
 // var elasticsearch = require("elasticsearch");

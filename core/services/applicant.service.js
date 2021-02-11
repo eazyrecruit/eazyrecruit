@@ -3,6 +3,7 @@ var User = require('../models/user');
 var config = require('../config').config();
 var Role = require('../models/userRole');
 var ApplicantComments = require('../models/applicantComment');
+var Activity = require('./activity.service');
 var ApplicantResumes = require('../models/applicantResume');
 var ApplicantEducation = require('../models/applicantEducation');
 var ApplicantEmployer = require('../models/applicantEmployer');
@@ -17,11 +18,12 @@ var Jobs = require('../models/job');
 var Histories = require('../models/history');
 var emailService = require('../services/email.service');
 var histroyService = require('../services/history.service');
+var httpService = require('../services/httpService');
 let Company = require('../models/company');
-const request = require('request');
 exports.save = async (req, enableEmail) => {
     return new Promise(async (resolve, reject) => {
         try {
+            var isNew = false;
             if (req.body.body) req.body = JSON.parse(req.body.body);
             if (req.body && (req.body.email || req.body._id)) {
                 // Get email from body
@@ -40,6 +42,7 @@ exports.save = async (req, enableEmail) => {
                 }
                 // Create applicant if unable to find
                 if (modelApplicant == null) {
+                    isNew = true;
                     modelApplicant = new Applicants();
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
@@ -55,7 +58,11 @@ exports.save = async (req, enableEmail) => {
                 modelApplicant.totalExperience = req.body.experience || modelApplicant.totalExperience || '';
                 modelApplicant.availability = req.body.availability || modelApplicant.availability || '';
                 modelApplicant.roles = req.body.roles || modelApplicant.roles || [];
-                modelApplicant.referredBy = req.body.referredBy || null;
+                modelApplicant.referredBy = req.body.referredBy;
+                if (req.user.email) {
+                    modelApplicant.referredBy = req.body.referredBy || req.user.email;
+                }
+
                 if (req.body.firstName) {
                     modelApplicant.firstName = req.body.firstName ? req.body.firstName : '';
                     modelApplicant.middleName = req.body.middleName ? req.body.middleName : '';
@@ -75,24 +82,33 @@ exports.save = async (req, enableEmail) => {
                 // Create/Update resume
                 if (req.body.resumeId && req.body.resumeId.length > 0) {
                     modelApplicant.resume = req.body.resumeId;
-                } else {
-                    if (req.files && req.files.length > 0) {
-                        modelResume = await ApplicantResumes.findById(modelApplicant.resume);
-                        if (modelResume == null) {
-                            modelResume = new ApplicantResumes();
-                            modelResume.created_by = req.user.id;
-                            modelResume.created_at = new Date();
-                        }
-                        modelResume.resume = req.files[0].buffer.toString('base64');
-                        modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
-                        modelResume.fileType = req.files[0].mimetype;
-                        modelResume.modified_by = req.user.id;
-                        modelResume.modified_at = new Date();
-                        modelResume = await modelResume.save();
-                        modelApplicant.resume = modelResume._id;
+                }
+                var modelResume = await ApplicantResumes.findById(modelApplicant.resume).populate("created_by");
+                if (modelResume && modelResume.created_by) {
+                    if (req.user) {
+                        req.user["id"] = req.user.id || modelResume.created_by._id;
                     } else {
-                        modelApplicant.resume = req.body.resumeId;
+                        req["user"] = {
+                            id: modelResume.created_by._id
+                        }
                     }
+                    modelApplicant.referredBy = modelApplicant.referredBy || modelResume.created_by.email;
+                }
+                if (req.files && req.files.length > 0) {
+                    if (!modelResume) {
+                        modelResume = new ApplicantResumes();
+                        modelResume.created_by = req.user.id;
+                        modelResume.created_at = new Date();
+                    }
+                    modelResume.resume = req.files[0].buffer.toString('base64');
+                    modelResume.fileName = req.body.resume && req.body.resume.file ? req.body.resume.file : req.files[0].originalname;
+                    modelResume.fileType = req.files[0].mimetype;
+                    modelResume.modified_by = req.user.id;
+                    modelResume.modified_at = new Date();
+                    modelResume = await modelResume.save();
+                    modelApplicant.resume = modelResume._id;
+                } else {
+                    modelApplicant.resume = req.body.resumeId;
                 }
 
                 // Create/Update skills
@@ -103,8 +119,7 @@ exports.save = async (req, enableEmail) => {
                     } else {
                         skills = JSON.parse(req.body.skills);
                     }
-                    let skillsResult = await findOrCreate(skills, req.user.id);
-                    modelApplicant.skills = skillsResult;
+                    modelApplicant.skills = await findOrCreate(skills, req.user.id);
                 }
 
                 // Create/Update Address
@@ -112,7 +127,7 @@ exports.save = async (req, enableEmail) => {
                 if (req.body.currentLocation) {
                     var current = JSON.parse(req.body.currentLocation);
                     if (current && current.length > 0) {
-                        modelCurrentLocation = await Locations.findOne({_id: current[0].id})
+                        modelCurrentLocation = await Locations.findOne({_id: current[0].id});
                         if (modelCurrentLocation == null) {
                             modelCurrentLocation = new Locations();
                             modelCurrentLocation.country = current.country || '';
@@ -184,24 +199,29 @@ exports.save = async (req, enableEmail) => {
                     }
                 }
 
-                // Referral
-                if (req.body.referralEmail) {
-                    var modelUser = await Users.findOne({email: req.body.referralEmail});
-                    if (modelUser == null) {
-                        modelUser.email = req.body.referralEmail.trim();
-                        modelUser.created_by = req.user.id;
-                        modelUser.created_at = new Date();
-                        modelUser.modified_by = req.user.id;
-                        modelUser.modified_at = new Date();
-                        modelUser = await modelUser.save();
-                    }
-                    modelApplicant.referral = modelUser._id;
-                }
-
                 // Save profile in the end to ensure elastic searchis sycned
                 modelApplicant.modified_by = req.user.id;
                 modelApplicant.modified_at = new Date();
+                if (isNew) {
+                    modelApplicant["created_by"] = req.user.id;
+                }
                 modelApplicant = await modelApplicant.save();
+                if (isNew) {
+                    Activity.addActivity({
+                        applicant: modelApplicant._id,
+                        created_by: req.user.id,
+                        title: "Applicant Created",
+                        description: "Applicant created from " + modelApplicant.source
+                    });
+                } else {
+                    Activity.addActivity({
+                        applicant: modelApplicant._id,
+                        created_by: req.user.id,
+                        title: "Applicant Updated",
+                        description: "Applicant details updated"
+                    });
+                }
+
 
                 // if jobid and pipelinid available then add applicant to that job
                 let jobPipeline = null;
@@ -239,6 +259,16 @@ exports.save = async (req, enableEmail) => {
                         job: modelJob.id,
                         createdBy: req.user.id,
                         modifiedBy: req.user.id,
+                    });
+                    let description = "applicant apply for  " + modelJob.title;
+                    if (jobPipeline.name) {
+                        description = description + " and move to " + jobPipeline.name + " pipeline ";
+                    }
+                    Activity.addActivity({
+                        applicant: modelApplicant._id,
+                        created_by: req.user.id,
+                        title: "Apply for job",
+                        description: description
                     });
                 } else {
                     console.log('job id is missing : ', req.body.jobId)
@@ -354,21 +384,36 @@ exports.getById = async (_id) => {
 exports.getjobsByApplicantId = async (_id) => {
     return await JobApplicant.find({applicant: _id, is_deleted: {$ne: true}}).populate({
         path: 'job',
-        select: 'title skills',
-        populate: {
+        select: 'title skills active minExperience is_deleted maxExperience locations, recruitmentManager ',
+        populate: [{
             path: 'skills',
             select: 'name',
-        }
+        }, {
+            path: 'locations',
+            select: 'city',
+        }, {
+            path: 'recruitmentManager',
+            select: 'name email picture',
+        }]
     }).populate({path: 'pipeline', select: 'name'});
 }
 
-exports.delete = async (_id) => {
-    var modelApplicant = Applicants.findById(req.body._id);
+exports.delete = async (req) => {
+    var modelApplicant = Applicants.findById(req.body.id);
     if (modelApplicant) {
         modelApplicant.is_deleted = true;
         modelApplicant.modified_by = req.user.id;
         modelApplicant = new Date();
-        return await modelApplicant.save();
+        let result = await modelApplicant.save();
+        Activity.addActivity({
+            applicant: modelApplicant._id,
+            created_by: req.user.id,
+            title: "Delete Applicant ",
+            description: "Applicant deleted "
+        });
+
+        return result;
+
     }
     throw 'invalid id';
 };
@@ -383,8 +428,15 @@ exports.addComment = async (req) => {
         created_by: req.user.id,
         modified_at: Date.now(),
         modified_by: req.user.id
-    }
-    return await ApplicantComments.create(comment);
+    };
+    let result = await ApplicantComments.create(comment);
+    Activity.addActivity({
+        applicant: req.body.applicant,
+        created_by: req.user.id,
+        title: "Comment Added ",
+        description: req.body.comment + " comment added"
+    });
+    return result;
 }
 
 exports.updateCommentsById = async (req) => {
@@ -393,7 +445,15 @@ exports.updateCommentsById = async (req) => {
         modified_at: Date.now(),
         modified_by: req.user.id
     }
-    return await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
+    let result = await ApplicantComments.findByIdAndUpdate({_id: req.body._id}, comment);
+
+    Activity.addActivity({
+        applicant: req.body.applicant,
+        created_by: req.user.id,
+        title: "Comment updated ",
+        description: req.body.comment + " comment updated"
+    });
+    return result;
 }
 
 exports.getComments = async (req) => {
@@ -531,18 +591,12 @@ exports.validateRecaptcha = async (token, origin, secretKey) => {
             if (token === null || token === undefined) {
                 reject("invalid Recaptcha");
             }
-            request(url, function (err, response, body) {
-                if (err || !body) {
-                    reject("invalid Recaptcha");
-                }
-                //the body is the data that contains success message
-                body = JSON.parse(body);
-                if (body && body.success) {
-                    resolve();
-                } else {
-                    reject("invalid Recaptcha");
-                }
-            });
+            let body = await httpService.get({url: url});
+            if (body && body.success) {
+                resolve();
+            } else {
+                reject("invalid Recaptcha");
+            }
         } catch (error) {
             reject("invalid Recaptcha");
         }

@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <button id="closeButton" type="button" class="close" (click)="bsModelRef.hide()" data-dismiss="modal">&times;
+    </button>
+    <h4 class="modal-title">Create Task</h4>
+</div>
+<div class="modal-body content-move">
+    <form [formGroup]="addActivityForm" novalidate (ngSubmit)="createActivity(addActivityForm.value)">
+        <div class="col-sm-12">
+            <label for="title">Activity title</label>
+            <input type="text" id="title" formControlName="title" placeholder="Task title" class="form-control"
+                   required>
+            <small class="text-danger"
+                   *ngIf="addActivityForm.controls['title'].hasError('required') && addActivityForm.controls['title'].touched">
+                Please enter Title
+            </small>
+        </div>
+        <div class="col-sm-12 mt-10">
+            <label for="description">Description</label>
+            <textarea id="description" rows="3" placeholder="Description" formControlName="description"
+                      class="form-control"></textarea>
+            <small class="text-danger"
+                   *ngIf="addActivityForm.controls['description'].hasError('required') && addActivityForm.controls['description'].touched">
+                Please enter Description.
+            </small>
+        </div>
+        <br>
+        <div class="row" style="margin: 6px;">
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-success">Submit
+                    <i class="fa fa-arrow-circle-right"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

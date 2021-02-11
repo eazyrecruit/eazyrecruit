@@ -1,0 +1,65 @@
+<!--side panel card-->
+<div class="applicant-info">
+    <div class="scroll-content">
+        <div class="row ">
+            <div class="col-sm-12">
+                <!-- Profile Image -->
+                <div class="box">
+                    <ul class="sidebar-panel-icon">
+                        <li class="closed-panel" id="closed-panel"><a><i class="fa fa-close"></i></a></li>
+                        <li><a data-toggle="tab" id="home" title="Details" href="#basic"><i class="fa fa-home"></i></a>
+                        </li>
+                        <li><a data-toggle="tab" title="Jobs" href="#job-applied"> <i class="ti-bag"></i></a></li>
+                        <!-- <li><a data-toggle="tab" title="Rejection" href="#rejectApplicant"><i class="fa fa-trash"></i></a></li> -->
+                        <li><a data-toggle="tab" title="Activity" href="#history"><i
+                                class="fa fa-history"></i></a></li>
+                    </ul>
+                    <ng-container *ngIf="gettingApplicant">
+                        <div class="box-body box-profile"><i *ngIf="gettingApplicant" class="fa fa-spinner fa-spin"></i>
+                        </div>
+
+                    </ng-container>
+                    <ng-container *ngIf="!gettingApplicant">
+                        <div class="box-body box-profile">
+                            <ng-container *ngIf="applicantData">
+                                <app-applicant-profile-card [isFullPage]="true" [notEdit]="true"
+                                                            [applicant]="applicantData"></app-applicant-profile-card>
+                            </ng-container>
+                            <ul class="tab-content p-0">
+                                <div id="basic" class="tab-pane fade in">
+
+                                    <ng-container *ngIf="applicantData">
+                                        <app-applicant-profile [isRefereed]="true" [applicant]="applicantData"
+                                                               [jobsSkils]="jobsSkils"></app-applicant-profile>
+                                    </ng-container>
+                                </div>
+                                <div id="job-applied" class="tab-pane fade in">
+                                    <ng-container *ngIf="applyJobs.length">
+                                        <app-applicant-jobs [applyJobs]="applyJobs"></app-applicant-jobs>
+                                    </ng-container>
+
+                                </div>
+                                <div id="history" class="tab-pane fade in active ">
+                                    <ng-container *ngIf="applicant && applicant._id">
+                                        <app-applicant-activity [applicantId]="applicant._id"></app-applicant-activity>
+                                    </ng-container>
+
+                                </div>
+
+                            </ul>
+
+                        </div>
+                    </ng-container>
+
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #rating let-i="index" let-v="value">
+    <button disabled style="margin-right:5px;" class="btn btn-xs btn-rating btn-{{i < v ? 'warning' : 'default'}}">
+        {{i < v ? '&#9733;' : '&#9734;'}}
+    </button>
+</ng-template>

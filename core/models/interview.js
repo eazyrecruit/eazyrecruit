@@ -13,7 +13,8 @@ var interview = new Schema({
     channelLink: String,
     comment: String,
     round: String,
-    score: { type: Number, default: 0 },
+    score: {type: Number, default: 0},
+    channelProperty: {type: Object, default: {}},
     jobId: {
         type: Schema.Types.ObjectId,
         ref: 'Jobs'

@@ -1,0 +1,39 @@
+<div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <strong>Interview</strong>
+        <button class="btn btn-primary btn-xs" (click)="schduleInterview()"><i class="fa fa-calendar"></i> Schedule
+            Interview
+        </button>
+    </div>
+    <ul class="products-list product-list-in-box" *ngIf="scheduledInterviews && scheduledInterviews.length > 0">
+        <li class="item" *ngFor="let scheduledInterview of scheduledInterviews; let i=index;">
+            <div class="product-info interview-result">
+                <a [routerLink]="['/interview',scheduledInterview._id]"
+                    class="product-title">{{getDisplayName(scheduledInterview.interviewer)}}
+                    <span *ngIf="scheduledInterview.result" class="label pull-right"
+                        [ngClass]="{'label-warning': scheduledInterview.result == 'HOLD', 'label-success': scheduledInterview.result == 'SELECTED', 'label-danger': scheduledInterview.result == 'REJECTED', 'label-defualt': scheduledInterview.result == 'PENDING'}">{{scheduledInterview.result}}</span></a>
+                <span class="product-description">
+                    <i class="fa fa-clock-o"></i>
+                    {{scheduledInterview.start | date :'medium'}}
+                </span>
+                <rating disabled [customTemplate]="rating" readonly class="card-body" name="Interviewratting"
+                    [readonly]="isReadonly" [(ngModel)]="scheduledInterview.score" [max]="10"></rating>
+                <p class="message mt-10">{{scheduledInterview.comment}}</p>
+                <button class="btn btn-success btn-xs mr-2"
+                    *ngIf="scheduledInterview.result &&   ['HOLD', 'PENDING'].indexOf(scheduledInterview.result)>=0"
+                    (click)="openInterview(scheduledInterview, i)"><i class="fa fa-calendar"></i> Reschedule
+                </button>
+
+                <button class="btn btn-xs"
+                    *ngIf="scheduledInterview.result && ['HOLD', 'PENDING'].indexOf(scheduledInterview.result)>=0"
+                    (click)="openDeleteModel(scheduledInterview._id)"><i class="fa fa-close"></i> Cancel
+                </button>
+            </div>
+        </li>
+    </ul>
+</div>
+<ng-template #rating let-i="index" let-v="value">
+    <button disabled style="margin-right:5px;" class="btn btn-xs btn-rating btn-{{i < v ? 'warning' : 'default'}}">
+        {{i < v ? '&#9733;' : '&#9734;' }} </button>
+</ng-template>

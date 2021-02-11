@@ -1,0 +1,46 @@
+<div class="mt-3">
+    <!-- <strong>Resume</strong> -->
+    <applicant-resume *ngIf="applicant" [(applicant)]="applicant"></applicant-resume>
+    <hr>
+    <!-- <strong><i class="fas fa-user-graduate"></i> Contract</strong>
+    <ul class="bg-box list-style-none padding-six" *ngIf="applicant">
+        <li>Referred By : <span
+                *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
+        <li>Notice Period : <span>{{applicant?.noticePeriod}}</span></li>
+        <li>Notice Period(negotiable) :
+            <span>{{applicant?.noticePeriodNegotiable}}</span></li>
+    </ul>
+    <hr> -->
+    <!-- <strong class="display-block mb-10">Experience</strong> -->
+    <ul class="todo-list ui-sortable mb-3 list-box">
+        <li class="border text-12"><span>Total Experience : </span> <span> {{applicant?.totalExperience}} Years </span>
+        </li>
+        <ng-container *ngIf="!isRefereed">
+            <li class="border text-12"><span>Current CTC :</span> <span>{{applicant?.currentCtc}}</span></li>
+        </ng-container>
+
+    </ul>
+
+    <ul class="todo-list ui-sortable mb-3 list-box">
+        <ng-container *ngIf="!isRefereed">
+            <li class="border text-12"><span>Expected CTC :</span> <span> {{applicant?.expectedCtc}} </span></li>
+        </ng-container>
+
+        <li class="border text-12"><span> Notice Period : </span> <span> {{applicant?.noticePeriod}} </span></li>
+    </ul>
+    <ng-container *ngIf="!isRefereed">
+        <ul class="todo-list ui-sortable list-box">
+            <li class="border text-12" style="border-bottom: 1px solid #dee2e6!important;"><span> Referred By : </span>
+                <span
+                        *ngIf="applicant?.referredBy">{{applicant?.referredBy}}</span></li>
+        </ul>
+    </ng-container>
+
+    <hr>
+    <ng-container *ngIf="!isRefereed">
+        <p class="skill-box" [innerHTML]="SkillDiv | sanitizeHtml">
+        </p>
+    </ng-container>
+
+
+</div>

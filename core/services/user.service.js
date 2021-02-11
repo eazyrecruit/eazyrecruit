@@ -18,7 +18,7 @@ exports.getUsers = async (req) => {
     let count = 0;
     let users;
     if (req.query.all == 'true') {
-        users = await User.find({is_deleted: false}, {password: 0, passwordResetToken: 0});
+        users = await User.find({is_deleted: false}, {email: 1, name: 1});
     } else {
         if (req.query.limit) limit = parseInt(req.query.limit);
         if (req.query.offset) skip = parseInt(req.query.offset);
@@ -30,7 +30,17 @@ exports.getUsers = async (req) => {
     }
     return {count, users};
 };
-
+exports.getJobsUser = async () => {
+    let roles = await Role.find({is_deleted: false, name: {$in: ["hr", "admin", "vendor"]}});
+    const roleIds = [];
+    for (let index = 0; index < roles.length; index++) {
+        roleIds.push(roles[index]._id);
+    }
+    return await User.find({roles: {$elemMatch: {$in: roleIds}}, is_deleted: false}, {
+        name: 1, email: 1, firstName: 1,
+        lastName: 1
+    });
+};
 exports.getUser = async (ownerId) => {
     return await User.findOne({_id: ownerId, is_deleted: false}, {passwordResetToken: 0});
 };
