@@ -1,16 +1,17 @@
 var Jobs = require('../models/job');
 var JobPipelines = require('../models/jobPipeline');
-var Applicant = require('../models/applicant');
 var JobApplicants = require('../models/jobApplicant');
-var JobMetaImage = require('../models/jobMetaImage');
 var Interview = require('../models/interview');
-const uuidv4 = require('uuid/v4');
+var emailService = require('../services/email.service');
 var histroyService = require('../services/history.service');
 var utilService = require('../services/util.service');
 var esService = require('../services/es.service');
-var config = require('../config').config();
 var ObjectId = require('mongodb').ObjectID;
 var Activity = require('./activity.service');
+var User = require('../models/user');
+var config = require('../config').config();
+var Role = require('../models/userRole');
+var Applicants = require('../models/applicant');
 exports.save = async (req) => {
     if (req.body) {
         var modelJob = await Jobs.findById(req.body._id);
@@ -427,6 +428,7 @@ exports.addApplicant = async (req) => {
                 createdBy: req.user.id,
                 modifiedBy: req.user.id,
             });
+            notifyHRForApply(req.body.applicantId, modelJob.title, req.user.email);
             return jobApplicant;
         } else {
             return {status: 403, message: "already exist"};
@@ -553,6 +555,67 @@ exports.removeApplicant = async (req) => {
     });
 }
 
+
+function notifyHRForApply(applicantId, jobName, owner) {
+    return new Promise(async (resolve, reject) => {
+        // Get all HR (role = 2
+        let applicant = await Applicants.findOne({_id: applicantId});
+        if (!applicant) {
+            return null;
+        }
+        let hrRole = await Role.findOne({name: "hr"});
+        if (hrRole) {
+            var hrTeam = await User.find({is_deleted: false, roles: {$elemMatch: {$eq: hrRole}}});
+            if (hrTeam && hrTeam.length > 0) {
+                // Get list of hr emails
+                var hrEmails = "";
+                hrTeam.forEach(hr => {
+                    if (owner !== hr.email) {
+                        hrEmails = hrEmails + hr.email + ","
+                    }
+                });
+
+                var body = `
+                <p>Dear HR,</p>
+                <p>A candidate is  referred by ${owner} for the Job <b> ${jobName}</p>
+                <p> <b>Candidate Name:</b>  ${getName(applicant)}<br>
+               <b> Email:</b> ${applicant.email}<br>
+               <b> Phone:</b> ${applicant.phones[0]}<br>
+                <p>Please click on below link to view details<p>
+                <p>${config.website}/admin/applicants/${applicantId}</p>
+            `;
+                var email = {
+                    toEmail: hrEmails, // list of receivers
+                    subject: "Applicant for the job", // Subject line
+                    body: body,
+                    title: "Applicant for the job"
+                };
+                if (hrEmails) {
+                    emailService.sendEmail(email, (err, data) => {
+                        if (err) reject(err);
+                        else resolve(data);
+                    });
+                }
+            }
+        }
+
+
+    });
+}
+
+function getName(data) {
+    let name = data.firstName;
+    if (data.middleName) {
+        name = name + " " + data.middleName;
+    }
+    if (data.middleName) {
+        name = name + " " + data.middleName;
+    }
+    if (data.lastName) {
+        name = name + " " + data.lastName;
+    }
+    return name;
+}
 
 function createSlug(title) {
     let date = new Date();

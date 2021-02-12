@@ -1,34 +1,22 @@
-<section class="content">
-    <ng-container *ngIf="jobLoading">
-        <i class="fa fa-spinner fa-spin"></i>
-    </ng-container>
-    <ng-container *ngIf="!jobLoading">
-        <div class="box box-info">
-            <div class="box-header">
-                <i class="fa fa-inbox"></i>
-                <h3 class="box-title"> Jobs</h3>
-                <div class="row">
-                    <div class="col-sm-5">
-                    </div>
-                    <div class="col-sm-7">
-                        <div class="pull-right">
-                            <div class="form-inline">
-                                <div class="form-group ">
-                                    <label for="">Search Job :</label><input type="text" placeholder="Job Title"
-                                                                             class="form-control margin-left-15px"
-                                                                             (keyup)="searchJob($event)">
-                                </div>
-                            </div>
-                        </div>
+<section class="content content-wrapper">
+    <div class="box box-info">
+        <div class="box-header">
+            <i class="fa fa-inbox"></i>
+            <h3 class="box-title"> Jobs</h3>
+        </div>
+        <div id="database" class="main-content padding-20px-tb plr-15">
+            <div class="row">
+                <div class='col-lg-4 mb-3'>
+                    <div class="form-group">
+                        <input (keyup)="searchJob($event)" type="text" class="form-control"
+                               placeholder="Search Jobs">
                     </div>
                 </div>
             </div>
-            <ng-container *ngIf="!(jobs && jobs.length > 0)">
-                <div class="main-content padding-20px-tb plr-15">
-                    <p class="text-muted">No jobs available to show</p>
-                </div>
+            <ng-container *ngIf="jobLoading">
+                <i *ngIf="jobLoading" class="fa fa-spinner fa-spin"></i>
             </ng-container>
-            <ng-container *ngIf="jobs && jobs.length > 0">
+            <ng-container *ngIf="!jobLoading">
                 <data-table [showViewField]='false' pageSize='10' sortField='name' sortOrder='1'
                             [showSearchFeild]='false'
                             [totalItems]='totalItems' (onFilterChange)="onFilterChange($event)">
@@ -59,31 +47,37 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr *ngFor="let job of jobs; let jobIndex = index;" class="font-weight-bold">
-                                        <td>
-                                            <app-referer-job-card [job]="job"></app-referer-job-card>
-                                        </td>
-                                        <td>
-                                            <ng-container *ngIf="job.locations">
+                                    <ng-container *ngIf="!(jobs && jobs.length > 0)">
+                                        <p class="text-muted">No Applicant available to show</p>
+                                    </ng-container>
+                                    <ng-container *ngIf="jobs && jobs.length > 0">
+                                        <tr *ngFor="let job of jobs; let jobIndex = index;" class="font-weight-bold">
+                                            <td>
+                                                <app-referer-job-card [job]="job"></app-referer-job-card>
+                                            </td>
+                                            <td>
+                                                <ng-container *ngIf="job.locations">
                                                 <span *ngFor="let location of job.locations;"
                                                       class="display-inline-block"> <span> {{location.city}}
                                                     , {{location.state}}  </span></span>
 
-                                            </ng-container>
-                                        </td>
-                                        <td>
-                                            {{job.type}}
-                                        </td>
-                                        <td>
+                                                </ng-container>
+                                            </td>
+                                            <td>
+                                                {{job.type}}
+                                            </td>
+                                            <td>
 
-                                            <a (click)="viewJob(job)" class="btn btn-sm btn-info mr-3"><i
-                                                    class="fa fa-eye"></i></a><a (click)="uploadResume(job._id)"
-                                                                                 class="btn btn-sm btn-success mr-3"><i
-                                                class="fa fa-upload"></i></a><a (click)="searchApplicant(job)"
-                                                                                class="btn btn-sm btn-danger"><i
-                                                class="fa fa-users"></i></a></td>
+                                                <a (click)="viewJob(job)" class="btn btn-sm btn-info mr-3"><i
+                                                        class="fa fa-eye"></i></a><a (click)="uploadResume(job._id)"
+                                                                                     class="btn btn-sm btn-success mr-3"><i
+                                                    class="fa fa-upload"></i></a><a (click)="searchApplicant(job)"
+                                                                                    class="btn btn-sm btn-danger"><i
+                                                    class="fa fa-users"></i></a></td>
 
-                                    </tr>
+                                        </tr>
+                                    </ng-container>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -91,8 +85,6 @@
                     </div>
                 </data-table>
             </ng-container>
-
         </div>
-    </ng-container>
-
+    </div>
 </section>

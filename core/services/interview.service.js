@@ -43,7 +43,7 @@ exports.createAndInvite = async (req) => {
         const request = requestResult.request;
         let description = request.jobName + " profile ";
         if (request.round) {
-            description = description + request.round + "round " + "interview created";
+            description = description + request.round + " round " + "interview created";
         } else {
             description = description + "interview created "
         }
@@ -104,7 +104,7 @@ exports.rescheduleAndInvite = async (req) => {
         const request = await interviewIntegration.getUpdateInterviewRequest(data);
         let description = request.jobName + " profile ";
         if (request.round) {
-            description = description + request.round + "round interview updated"
+            description = description + request.round + " round interview updated"
         } else {
             description = description + "interview Updated "
         }
@@ -195,7 +195,7 @@ exports.comment = async (req) => {
     await interview.save();
     let description = interview.jobId.title + " profile ";
     if (interview.round) {
-        description = description + interview.round + "round " + "interview Result set to  " + req.body.result
+        description = description + interview.round + " round " + "interview Result set to  " + req.body.result
     } else {
         description = description + "interview Result set to  " + req.body.result
     }
@@ -236,7 +236,7 @@ exports.cancelInterview = async (id, user) => {
             SendDeleteInterviewNotification(interview);
             let description = interview.jobId.title + " profile ";
             if (interview.round) {
-                description = description + interview.round + "round " + "interview cancel";
+                description = description + interview.round + " round " + "interview cancel";
             } else {
                 description = description + "interview cancel "
             }
