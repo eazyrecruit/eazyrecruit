@@ -281,7 +281,7 @@ exports.save = async (req, enableEmail) => {
                 if (enableEmail && modelApplicant.source && (modelApplicant.source === 'email' || modelApplicant.source === 'website')) {
                     notifyHR(candidate);
                 } else if (enableEmail && !(modelApplicant.source === 'email' || modelApplicant.source === 'website')) {
-                    notifyHRForNewRefered(candidate, req.user.email);
+                    notifyHRForNewRefered(candidate, modelApplicant.referredBy);
                 }
 
                 try {
