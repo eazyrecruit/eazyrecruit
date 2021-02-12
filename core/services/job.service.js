@@ -577,7 +577,7 @@ function notifyHRForApply(applicantId, jobName, owner) {
 
                 var body = `
                 <p>Dear HR,</p>
-                <p>A new profile has been referred by the ${owner} for the  <b> ${jobName}  </b> Profile  </p>
+                <p>A candidate is  referred by ${owner} for the Job <b> ${jobName}</p>
                 <p> <b>Candidate Name:</b>  ${getName(applicant)}<br>
                <b> Email:</b> ${applicant.email}<br>
                <b> Phone:</b> ${applicant.phones[0]}<br>
@@ -586,9 +586,9 @@ function notifyHRForApply(applicantId, jobName, owner) {
             `;
                 var email = {
                     toEmail: hrEmails, // list of receivers
-                    subject: "Apply for the job", // Subject line
+                    subject: "Applicant for the job", // Subject line
                     body: body,
-                    title: "Apply for the job"
+                    title: "Applicant for the job"
                 };
                 if (hrEmails) {
                     emailService.sendEmail(email, (err, data) => {

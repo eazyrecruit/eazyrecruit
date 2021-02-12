@@ -573,16 +573,16 @@ function notifyHRForNewRefered(candidate, owner) {
 
                 var body = `
                 <p>Dear HR,</p>
-                <p>A new profile has been referred by the  ${owner} </p>
+                <p>A new candidate is uploaded by ${owner} </p>
                 <p> <b>Candidate Name:</b>  ${candidate.name}<br>
                <b> Email:</b> ${candidate.email}<br>
                <b> Phone:</b> ${candidate.phone}<br>
                 <p>Please click on below link to view details<p>
                 <p>${config.website}/admin/applicants/${candidate.id}</p>
-            `
+            `;
                 var email = {
                     toEmail: hrEmails, // list of receivers
-                    subject: "New profile received", // Subject line
+                    subject: "New candidate received", // Subject line
                     body: body,
                     title: "Resume received"
                 };

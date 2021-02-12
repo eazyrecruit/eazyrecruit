@@ -21,7 +21,7 @@ declare var SiteJS: any;
 export class DatabaseComponent implements OnInit, OnDestroy {
     timeOut;
     filter = {
-        pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at', isGridView: false,
+        pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'created_at', isGridView: false,
         order: -1, searchText: '', source: '',
     };
     pipeLines = [];
