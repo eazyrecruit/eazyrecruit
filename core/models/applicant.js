@@ -79,20 +79,8 @@ var applicantSchema = new Schema({
         ref: 'Users'
     },
     created_at: {type: Date, default: Date.now},
-    modified_at: {type: Date, default: Date.now}
+    modified_at: {type: Date, default: Date.now},
 }, {versionKey: false});
-applicantSchema.pre('save', function (next) {
-    this.modified_at = new Date;
-    return next();
-});
-applicantSchema.pre('updateOne', function (next) {
-    this.modified_at = new Date;
-    return next();
-});
-applicantSchema.pre('update', function (next) {
-    this.modified_at = new Date;
-    return next();
-});
 applicantSchema.plugin(mexp, {
     hosts: [
         config.elasticSearch.host

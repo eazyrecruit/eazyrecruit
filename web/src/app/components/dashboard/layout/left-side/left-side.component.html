@@ -76,7 +76,7 @@
         <ul class="sidebar-menu tree" (click)="sidebarMenu();">
             <ng-container *ngIf="['admin', 'hr', 'interviewer'].indexOf(role)>=0">
                 <li>
-                    <a routerLink="/home">
+                    <a routerLinkActive="active" routerLink="/home">
                         <i class="fa fa-dashboard"></i>
                         <span>Dashboard</span>
                     </a>
@@ -95,27 +95,37 @@
                         </a>
                     </li>
                     <li>
-                        <a routerLink="/database">
+                        <a routerLinkActive="active" routerLink="/database">
                             <i class="fa fa-database" aria-hidden="true"></i>
                             <span>Database</span>
                         </a>
                     </li>
                 </ng-container>
                 <li>
-                    <a routerLink="/interview">
+                    <a routerLinkActive="active" routerLink="/interview">
                         <i class="fa fa-check-square-o"></i>
                         <span>Interviews</span>
                     </a>
                 </li>
             </ng-container>
+            <ng-container *ngIf="['admin', 'hr', 'interviewer', 'user'].indexOf(role)>=0">
+                <li>
+                    <a routerLinkActive="active" routerLink="/referred-applicants">
+                        <i class="fa fa-users"></i>
+                        <span>My Referral</span>
+                    </a>
+                </li>
+            </ng-container>
+            <ng-container *ngIf="['vendor'].indexOf(role)>=0">
+                <li>
+                    <a routerLinkActive="active" routerLink="/referred-applicants">
+                        <i class="fa fa-users"></i>
+                        <span>Candidates</span>
+                    </a>
+                </li>
+            </ng-container>
             <li>
-                <a routerLink="/referred-applicants">
-                    <i class="fa fa-users"></i>
-                    <span>My Referral</span>
-                </a>
-            </li>
-            <li>
-                <a routerLink="/profile">
+                <a routerLinkActive="active" routerLink="/profile">
                     <i class="fa fa-user"></i>
                     <span>Profile</span>
                 </a>
