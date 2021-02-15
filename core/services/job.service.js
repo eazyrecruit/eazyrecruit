@@ -19,6 +19,7 @@ exports.save = async (req) => {
             modelJob = new Jobs();
             modelJob.created_by = req.user.id;
             modelJob.created_at = new Date();
+            modelJob.modified_at = new Date();
 
             let name = ['New', 'Pending', 'Hold', 'Selected', 'Rejected'];
             req.body['jobId'] = modelJob._id;

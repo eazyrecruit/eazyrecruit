@@ -77,12 +77,8 @@
             </div>
             <div class="form-group col-sm-4">
                 <label for="referredBy" class="not-required">Referred By</label>
-                <input type="email" id="referredBy" placeholder="referredBy" required class="form-control"
+                <input type="email" id="referredBy" placeholder="referredBy" class="form-control"
                        formControlName="referredBy">
-                <small class="text-danger"
-                       *ngIf="applicantForm.controls['referredBy'].hasError('required') && applicantForm.controls['referredBy'].touched">
-                    Please enter referred by Email
-                </small>
                 <small class="text-danger" *ngIf="applicantForm.controls['referredBy'].hasError('emailValid')">
                     Please enter correct referred by email
                 </small>
