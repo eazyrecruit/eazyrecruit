@@ -85,6 +85,7 @@ export class PipelineComponent implements OnInit, OnDestroy {
             this.filter.isGridView = value;
             this.isGridView = value;
             if (this.isGridView) {
+                this.gettingApplicant = true;
                 this.getCandidate(this.jobId);
             }
 
@@ -115,7 +116,6 @@ export class PipelineComponent implements OnInit, OnDestroy {
 
     getCandidate(jobId) {
         if (jobId) {
-            this.gettingApplicant = true;
             this.filter.jobId = jobId;
             this._subs = this.jobService.getJobApplicant(this.filter).subscribe((result) => {
                 if (result['success']) {

@@ -46,6 +46,7 @@ exports.save = async (req, enableEmail) => {
                     modelApplicant = new Applicants();
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
+                    modelApplicant.modified_at = new Date();
                 }
                 modelApplicant.email = email;
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];

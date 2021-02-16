@@ -65,7 +65,7 @@ export class PipelineListComponent implements OnChanges, OnDestroy {
 
     getPipeLine(jobId) {
         if (jobId) {
-             this._subs = this.jobService.getWithApplicantsAndPipelineById(jobId).subscribe(result => {
+            this._subs = this.jobService.getWithApplicantsAndPipelineById(jobId).subscribe(result => {
                 if (result['success']) {
                     this.pipeLines = result['success'].data[0].pipelines;
                 }
@@ -122,7 +122,7 @@ export class PipelineListComponent implements OnChanges, OnDestroy {
     }
 
     removeUser(jobApplicantId: any) {
-         this._subs = this.applicantService.removeApplicantFromJob(jobApplicantId);
+        this._subs = this.applicantService.removeApplicantFromJob(jobApplicantId);
         this.getCandidate(this.jobId);
     }
 
@@ -179,9 +179,8 @@ export class PipelineListComponent implements OnChanges, OnDestroy {
 
     getCandidate(jobId) {
         if (jobId) {
-            this.gettingApplicant = true;
             this.filter.jobId = jobId;
-             this._subs = this.jobService.getJobApplicant(this.filter).subscribe((result) => {
+            this._subs = this.jobService.getJobApplicant(this.filter).subscribe((result) => {
                 if (result['success']) {
                     this.filterApplicant(result['success']['data']['records']);
                     this.totalRecords = result['success']['data']['total'];
