@@ -27,8 +27,10 @@
                 <span *ngFor="let phone of applicantData.phones">{{phone }}</span>
             </p>
             <ul class="rating">
-                <rating [customTemplate]="rating" name="Userratting" [readonly]="isReadonly"
+                <rating [customTemplate]="rating"  name="Userratting"
                         class="card-body"
+                        [readonly]="true"
+                        [disabled]="false"
                         [(ngModel)]="applicantData.score" [max]="10"></rating>
             </ul>
             <p class="text-muted" *ngIf="applicantData && applicantData.location">
@@ -37,7 +39,7 @@
             </p>
             <span
                     [ngClass]="[getSourceColor(applicant?.source), 'badge badge-secondary bg-red mt-2']">{{applicant?.source}}</span>
-            <ng-container *ngIf="!notEdit" >
+            <ng-container *ngIf="!notEdit">
                 <i class="fa fa-pencil editApplcant" (click)="updateApplicant()"></i>
             </ng-container>
         </div>
@@ -46,7 +48,7 @@
 </ng-container>
 
 <ng-template #rating let-i="index" let-v="value">
-    <button disabled style="margin-right:5px;" class="btn btn-xs btn-rating btn-{{i < v ? 'warning' : 'default'}}">
+    <button style="margin-right:5px;" class="btn btn-xs btn-rating btn-{{i < v ? 'warning' : 'default'}}" disabled>
         {{i < v ? '&#9733;' : '&#9734;'}}
     </button>
 </ng-template>

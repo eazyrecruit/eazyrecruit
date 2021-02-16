@@ -1,8 +1,20 @@
-<section class="content content-wrapper">
+<section class="content">
     <div class="box box-info">
         <div class="box-header">
             <i class="fa fa-inbox"></i>
             <h3 class="box-title"> Task</h3>
+            <div class="pull-right box-tools">
+                <div class="btn-group form-group" role="group" aria-label="Basic example">
+                    <div class="btn-group">
+                        <button type="button" style="margin-right: 10px" class="btn btn-warning btn-xs"
+                                (click)="onStatusFilterChange('ACTIVE')"> Active
+                        </button>
+                        <button type="button" style="margin-right: 10px" class="btn btn-success btn-xs"
+                                (click)="onStatusFilterChange('COMPLETED')">Completed
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="database" class="main-content padding-20px-tb plr-15">
             <div class="row">
@@ -19,14 +31,6 @@
                         <option *ngFor="let filters of filterType"
                                 [selected]="filters.value===filter.filter"
                                 [value]="filters.value">{{filters.displayName}}</option>
-                    </select>
-                </div>
-                <div class="col-lg-2 mb-3">
-                    <select (change)="onStatusFilterChange($event.target.value)"
-                            class="form-control ng-pristine ng-valid ng-touched">
-                        <option value="">Status</option>
-                        <option value="ACTIVE">Active</option>
-                        <option value="COMPLETED">Completed</option>
                     </select>
                 </div>
             </div>
@@ -57,7 +61,7 @@
                                     </thead>
                                     <tbody>
                                     <ng-container *ngIf="TaskList.length<=0">
-                                        <p class="text-muted">No Applicant available to show</p>
+                                        <p class="text-muted">No Task available to show</p>
                                     </ng-container>
                                     <ng-container *ngIf="TaskList.length>0">
                                         <tr *ngFor="let task of TaskList; let i = index;"
@@ -69,7 +73,7 @@
                                                        [checked]="task.status==='COMPLETED'"/>
                                             </td>
                                             <td>
-                                                <app-user-card (onSelect)="openCandidate($event)"
+                                                <app-user-card [routerLink]="['/applicants',task.applicant?._id]"
                                                                [applicants]="task.applicant"></app-user-card>
                                             </td>
                                             <td>
@@ -81,7 +85,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span [ngClass]="[getSourceColor(task?.status), 'badge badge-secondary bg-red mt-2']">{{task?.status.charAt(0)}} {{task?.status.slice(1).toLocaleLowerCase()}}</span>
+                                                <span [ngClass]="[getSourceColor(task?.status), 'badge badge-secondary bg-red mt-2']">{{task?.status}}</span>
                                                 <ng-container *ngIf="task?.createdOn">
                                                     <p class="text-11 font-weight-500 mb-0 line-height-20">Created:
                                                         {{task?.createdOn | date:'MMM d, y'}}</p>
@@ -115,7 +119,4 @@
         </div>
     </div>
 </section>
-<ng-container *ngIf="['admin', 'hr'].indexOf(role)>=0">
-    <applicant-info id="applicant-info" (onUpdate)="onUpdate($event)" [applicant]="applicant"></applicant-info>
-</ng-container>
 

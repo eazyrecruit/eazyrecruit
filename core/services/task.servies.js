@@ -99,7 +99,7 @@ getTask = async (data) => {
                 query["$or"] = [{createdBy: data.ownerId}, {assignee: data.ownerId}];
             }
             const count = await Task.find(query).countDocuments();
-            let result = await Task.find(query).sort({_id: -1}).skip(parseInt(data.offset)).limit(parseInt(data.limit)).populate("createdBy", ["name", "email"]).populate("assignee", ["name", "email"]).populate("applicant", ["firstName", "middleName", "Phone", "lastName", "email"]).populate("modifiedBy", ["name", "email"]);
+            let result = await Task.find(query).sort({targetDate: 1}).skip(parseInt(data.offset)).limit(parseInt(data.limit)).populate("createdBy", ["name", "email"]).populate("assignee", ["name", "email"]).populate("applicant", ["firstName", "middleName", "Phone", "lastName", "email"]).populate("modifiedBy", ["name", "email"]);
             resolve({total: count, records: result});
         } catch (error) {
             reject(error);

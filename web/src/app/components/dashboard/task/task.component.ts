@@ -17,8 +17,8 @@ declare var SiteJS: any;
 export class TaskComponent implements OnInit, OnDestroy {
     timeOut;
     filter = {
-        pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modifiedOn', status: '',
-        order: -1, searchText: '', filter: '',
+        pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modifiedOn', status: 'ACTIVE',
+        order: -1, searchText: '', filter: 'assignee',
     };
     totalRecords = 1;
     gettingTask = false;
@@ -40,7 +40,6 @@ export class TaskComponent implements OnInit, OnDestroy {
                 private activateRoute: ActivatedRoute,
                 private modalService: BsModalService,
                 private sharedService: SharedService) {
-        this.role = this.accountService.getRole();
     }
 
     getSourceColor(source) {
@@ -48,9 +47,6 @@ export class TaskComponent implements OnInit, OnDestroy {
     }
 
     onSourceFilterChange(item) {
-        if (item === 'Filter By') {
-            item = '';
-        }
         if (this.filter.filter !== item) {
             this.filter.filter = item;
             this.TaskList = [];
@@ -77,10 +73,8 @@ export class TaskComponent implements OnInit, OnDestroy {
     }
 
     openCandidate(applicantId: any) {
-        if (['admin', 'hr'].indexOf(this.role) >= 0) {
-            this.applicant = {_id: applicantId, isApplicantList: true};
-            SiteJS.slideOpen('applicant-info');
-        }
+        this.applicant = {_id: applicantId, isApplicantList: true};
+        SiteJS.slideOpen('applicant-info');
 
     }
 

@@ -83,11 +83,18 @@
                 </li>
                 <ng-container *ngIf="['admin', 'hr'].indexOf(role)>=0">
                     <li>
+                        <a routerLinkActive="active" routerLink="/tasks">
+                            <i class="fa fa-inbox"></i>
+                            <span>Inbox</span>
+                        </a>
+                    </li>
+                    <li>
                         <a routerLinkActive="active" routerLink="/jobs">
                             <i class="ti-bag"></i>
                             <span>Jobs</span>
                         </a>
                     </li>
+
                     <li>
                         <a routerLinkActive="active" routerLink="/applicants">
                             <i class="fa fa-graduation-cap"></i>
@@ -128,13 +135,6 @@
                 <a routerLinkActive="active" routerLink="/profile">
                     <i class="fa fa-user"></i>
                     <span>Profile</span>
-                </a>
-            </li>
-
-            <li>
-                <a routerLinkActive="active" routerLink="/tasks">
-                    <i class="fa fa-tasks"></i>
-                    <span>Tasks</span>
                 </a>
             </li>
             <li *ngIf="role == 'admin'">
