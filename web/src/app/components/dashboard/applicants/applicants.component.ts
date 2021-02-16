@@ -3,7 +3,7 @@ import {SearchService} from '../../../services/search.service';
 import {JobService} from '../../../services/job.service';
 import {PipelineService} from '../../../services/pipeline.service';
 import {SharedService} from '../../../services/shared.service';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-applicants',
