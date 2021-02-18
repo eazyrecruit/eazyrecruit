@@ -49,8 +49,8 @@
                                 </ng-container>
                                 <ng-container *ngIf="TaskList.length>0">
                                     <div *ngFor="let task of TaskList; let i = index;">
-
-                                        <app-task-model [taskData]="task"></app-task-model>
+                                        <app-task-model [index]="i" (onUpdate)="onUpdate($event)"
+                                                        [taskData]="task"></app-task-model>
                                     </div>
                                 </ng-container>
                             </div>

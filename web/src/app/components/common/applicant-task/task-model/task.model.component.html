@@ -45,7 +45,9 @@
                 </div>
                 <div class="col-sm-4 d-flex align-items-center justify-content-end edithover">
                     <small class="font-75 font-weight-500 text-muted mr-2">{{taskData.targetDate | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</small>
-                    <i class="fa fa-pencil editApplcant editApplcant-custom" (click)="editTask(taskData)"></i>
+                    <ng-container *ngIf="authData &&  authData.id===taskData.createdBy._id">
+                        <i class="fa fa-pencil editApplcant editApplcant-custom" (click)="editTask(taskData)"></i>
+                    </ng-container>
                 </div>
             </div>
 

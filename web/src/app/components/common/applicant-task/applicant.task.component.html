@@ -11,7 +11,7 @@
 <ng-container *ngIf="!isLoading">
     <ng-container *ngIf="taskData.length >0">
         <div *ngFor="let data of taskData; let i=index;">
-            <app-task-model [taskData]="data"></app-task-model>
+            <app-task-model  [index]="i"  [taskData]="data"></app-task-model>
         </div>
     </ng-container>
     <ng-container *ngIf="taskData.length <=0">

@@ -12,7 +12,7 @@ declare var SiteJS: any;
 
 @Component({
     templateUrl: 'task.component.html',
-    providers: [ApplicantTaskService, BsModalService]
+    providers: [ApplicantTaskService]
 })
 export class TaskComponent implements OnInit, OnDestroy {
     timeOut;
@@ -29,7 +29,6 @@ export class TaskComponent implements OnInit, OnDestroy {
     private _subs: Subscription;
     TaskList = [];
     sourceColor: any = this.sharedService.getStatusColor();
-    modalRef: BsModalRef;
     role: any;
     applicant: any;
 
@@ -38,7 +37,6 @@ export class TaskComponent implements OnInit, OnDestroy {
                 private router: Router,
                 private accountService: AccountService,
                 private activateRoute: ActivatedRoute,
-                private modalService: BsModalService,
                 private sharedService: SharedService) {
     }
 
@@ -57,34 +55,8 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     }
 
-    updateStatus(id, status, index) {
-        const message = status === 'ACTIVE' ? 'Are you want to completed task ' : 'Are you sure want to reopen task';
-        this.modalRef = this.modalService.show(ConformComponent, {
-            initialState: {
-                message: message,
-            }
-        });
-        this.modalRef.content.close = (data) => {
-            if (data) {
-                this.changeStatus(id, status, index);
-            }
-            this.modalRef.hide();
-        };
-    }
-
-    openCandidate(applicantId: any) {
-        this.applicant = {_id: applicantId, isApplicantList: true};
-        SiteJS.slideOpen('applicant-info');
-
-    }
-
-    changeStatus(id, status, index) {
-        this._subs = this.applicantTaskService.updateTask(id, {status: status === 'ACTIVE' ? 'COMPLETED' : 'ACTIVE'}).subscribe(result => {
-            if (result['success']) {
-                this.TaskList[index]['status'] = status === 'ACTIVE' ? 'COMPLETED' : 'ACTIVE';
-                this.getTask();
-            }
-        });
+    onUpdate(data) {
+        this.TaskList.splice(data.index, 1);
     }
 
     onStatusFilterChange(status) {
@@ -149,37 +121,11 @@ export class TaskComponent implements OnInit, OnDestroy {
         });
     }
 
-    getName(applicant) {
-        let name = '';
-        if (applicant.firstName) {
-            name = name + ' ' + applicant.firstName;
-        }
-        if (applicant.middleName) {
-            name = name + ' ' + applicant.middleName;
-        }
-        if (applicant.lastName) {
-            name = name + ' ' + applicant.lastName;
-        }
-
-        return name;
-    }
-
-    getFullName(firstName, middleName, lastName) {
-        let name = firstName;
-        if (middleName && middleName != 'null') name = name + ' ' + middleName;
-        if (lastName && lastName != 'null') name = name + ' ' + lastName;
-        return name;
-    }
-
     onFilterChange(filter: any) {
         this.filter.offset = (filter.pageIndex - 1) * filter.pageSize;
         this.filter.pageSize = filter.pageSize;
         this.filter.pageIndex = filter.pageIndex;
         this.getTask();
-
-    }
-
-    onUpdate($event) {
 
     }
 

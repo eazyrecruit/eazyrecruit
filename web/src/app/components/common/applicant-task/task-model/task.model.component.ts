@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, OnChanges, Output, EventEmitter} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {ToasterService} from 'angular2-toaster';
@@ -7,6 +7,7 @@ import {ApplicantTaskService} from '../applicant.task.service';
 import {ConstService} from '../../../../services/const.service';
 import {ConformComponent} from '../../conformBox/conform.component';
 import {AddTaskComponent} from '../add-task/add.task.component';
+import {AuthStorage} from '../../../../services/account.service';
 
 @Component({
     selector: 'app-task-model',
@@ -16,9 +17,15 @@ import {AddTaskComponent} from '../add-task/add.task.component';
 export class TaskModelComponent implements OnChanges, OnDestroy {
     @Input()
     taskData?: any;
+    @Input()
+    index?: any;
     time = new Date().getTime();
     modalRef: BsModalRef;
     private _subs: Subscription;
+    @Output()
+    onUpdate: EventEmitter<any> = new EventEmitter();
+    authStorage = new AuthStorage();
+    authData;
 
     constructor(
         private route: ActivatedRoute,
@@ -27,6 +34,8 @@ export class TaskModelComponent implements OnChanges, OnDestroy {
         private toasterService: ToasterService,
         private applicantActivityService: ApplicantTaskService
     ) {
+        this.authData = this.authStorage.getAuthData();
+        console.log(this.authData);
     }
 
     updateStatus(id, status) {
@@ -42,6 +51,7 @@ export class TaskModelComponent implements OnChanges, OnDestroy {
             }
             this.modalRef.hide();
         };
+        this.taskData['status'] = status;
     }
 
     editTask(data) {
@@ -71,6 +81,7 @@ export class TaskModelComponent implements OnChanges, OnDestroy {
         this._subs = this.applicantActivityService.updateTask(id,
             {status: status === 'ACTIVE' ? 'COMPLETED' : 'ACTIVE'}).subscribe(result => {
             if (result['success']) {
+                this.onUpdate.emit({index: this.index});
             }
         });
     }
@@ -81,6 +92,7 @@ export class TaskModelComponent implements OnChanges, OnDestroy {
     }
 
     ngOnChanges(): void {
+        console.log('this.t', this.taskData);
     }
 
     ngOnDestroy(): void {
