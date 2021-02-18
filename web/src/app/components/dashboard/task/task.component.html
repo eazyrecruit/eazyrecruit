@@ -44,73 +44,15 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="table-responsive">
-                                <table class="table bg-dark-black border-light  no-footer data-table"
-                                       id="DataTables_Table_0"
-                                       role="grid">
-                                    <thead>
-                                    <tr class="font-weight-bold">
-                                        <th></th>
-                                        <th width="20%">
-                                            <div class="sorting">Applicant</div>
-                                        </th>
-                                        <th>Created By</th>
-                                        <th>Assigned</th>
-                                        <th>Status</th>
-                                        <th>Description</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <ng-container *ngIf="TaskList.length<=0">
-                                        <p class="text-muted">No Task available to show</p>
-                                    </ng-container>
-                                    <ng-container *ngIf="TaskList.length>0">
-                                        <tr *ngFor="let task of TaskList; let i = index;"
-                                            class="font-weight-bold">
-                                            <td>
-                                                <input class="custom-checkbox mx-4-auto"
-                                                       (change)="updateStatus(task._id, task.status, i)"
-                                                       type="checkbox"
-                                                       [checked]="task.status==='COMPLETED'"/>
-                                            </td>
-                                            <td>
-                                                <app-user-card [routerLink]="['/applicants',task.applicant?._id]"
-                                                               [applicants]="task.applicant"></app-user-card>
-                                            </td>
-                                            <td>
-                                                <div>{{task?.createdBy.name || "" }}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div>{{task?.assignee.name || "" }}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span [ngClass]="[getSourceColor(task?.status), 'badge badge-secondary bg-red mt-2']">{{task?.status}}</span>
-                                                <ng-container *ngIf="task?.createdOn">
-                                                    <p class="text-11 font-weight-500 mb-0 line-height-20">Created:
-                                                        {{task?.createdOn | date:'MMM d, y'}}</p>
-                                                </ng-container>
-                                                <ng-container *ngIf="task?.targetDate">
-                                                    <p class="text-11 font-weight-500 mb-0 line-height-20">
-                                                        Target Date:
-                                                        {{task?.targetDate | date:'MMM d, y'}}</p>
-                                                </ng-container>
-                                                <p *ngIf="task.modifiedBy"
-                                                   class="font-weight-500 text-11 mb-0 line-height-20">
-                                                    By: {{task.modifiedBy.name || task.modifiedBy.email}}</p>
-                                            </td>
-                                            <td *ngIf="task.description != null">
-                                                <div class="skills">
-                                                    <span>
-                                                        {{task.description}}<span></span>
-                                                    </span>
-                                                </div>
-                                            </td>
+                                <ng-container *ngIf="TaskList.length<=0">
+                                    <p class="text-muted">No Task available to show</p>
+                                </ng-container>
+                                <ng-container *ngIf="TaskList.length>0">
+                                    <div *ngFor="let task of TaskList; let i = index;">
 
-                                        </tr>
-                                    </ng-container>
-                                    </tbody>
-                                </table>
+                                        <app-task-model [taskData]="task"></app-task-model>
+                                    </div>
+                                </ng-container>
                             </div>
                         </div>
                     </div>

@@ -99,7 +99,8 @@ getTask = async (data) => {
                 query["$or"] = [{createdBy: data.ownerId}, {assignee: data.ownerId}];
             }
             const count = await Task.find(query).countDocuments();
-            let result = await Task.find(query).sort({targetDate: 1}).skip(parseInt(data.offset)).limit(parseInt(data.limit)).populate("createdBy", ["name", "email"]).populate("assignee", ["name", "email"]).populate("applicant", ["firstName", "middleName", "Phone", "lastName", "email"]).populate("modifiedBy", ["name", "email"]);
+         let result = filterPicture(await Task.find(query).sort({targetDate: 1}).skip(parseInt(data.offset)).limit(parseInt(data.limit)).populate("createdBy", ["name", "email"]).populate("assignee", ["name", "email"]).populate("applicant", ["firstName", "middleName", "Phone", "lastName", "email"]).populate("createdBy", ["name", "email"]));
+
             resolve({total: count, records: result});
         } catch (error) {
             reject(error);
@@ -108,6 +109,25 @@ getTask = async (data) => {
 
     })
 }
+
+function filterPicture(result) {
+    if (result) {
+        for (let index = 0; index < result.length; index++) {
+            if (result[index].hasOwnProperty("_doc") && result[index]._doc) {
+                result[index] = result[index]["_doc"];
+            }
+            if (result[index].created_by && result[index].created_by.picture) {
+                result[index].created_by.picture = true;
+            }
+            if (result[index].assignee && result[index].assignee.picture) {
+                result[index].assignee.picture = true;
+            }
+        }
+    }
+
+    return result;
+}
+
 /**
  * update the task
  * @returns
@@ -118,7 +138,7 @@ getApplicantTask = async (data) => {
         try {
             let query = {isDeleted: false, applicant: data.applicant};
             const count = await Task.find(query).countDocuments();
-            let result = await Task.find(query).sort({_id: -1}).skip(parseInt(data.offset)).limit(parseInt(data.limit)).populate("created_by", ["name", "email", "picture"]).populate("assignee", ["name", "email", "picture"]);
+            let result = filterPicture(await Task.find(query).sort({_id: -1}).skip(parseInt(data.offset)).limit(parseInt(data.limit)).populate("createdBy", ["name", "email"]).populate("assignee", ["name", "email", "picture"]));
             resolve({total: count, records: result});
         } catch (error) {
             reject(error);

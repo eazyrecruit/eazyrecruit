@@ -31,6 +31,7 @@ import {BsDatepickerModule, ModalModule, RatingModule, TimepickerModule} from 'n
 import {SanitizeHtmlPipe} from '../../pipe/callback.pipe';
 import {CommonModule} from '@angular/common';
 import {ConformComponent} from "./conformBox/conform.component";
+import {TaskModelComponent} from "./applicant-task/task-model/task.model.component";
 
 @NgModule({
     declarations: [
@@ -56,7 +57,8 @@ import {ConformComponent} from "./conformBox/conform.component";
         UserCardComponent,
         ConformComponent,
         ApplicantCardComponent,
-        SanitizeHtmlPipe
+        SanitizeHtmlPipe,
+        TaskModelComponent
     ],
     imports: [
         FormsModule,
@@ -96,7 +98,8 @@ import {ConformComponent} from "./conformBox/conform.component";
         DatatableComponent,
         ResumeComponent,
         UserCardComponent,
-        ApplicantCardComponent
+        ApplicantCardComponent,
+        TaskModelComponent
     ],
     entryComponents: [
         ConformComponent,

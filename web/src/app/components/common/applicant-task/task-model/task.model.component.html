@@ -1,0 +1,66 @@
+<div class="border pad-15-10 mb-10 bg-light border-radius-8 box-shadow">
+    <div class="d-flex align-items-center">
+        <div class="w-100">
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="d-flex align-items-center mb-2">
+                        <input class="custom-checkbox mx-4-auto" (change)="updateStatus(taskData._id, taskData.status)"
+                               type="checkbox"
+                               [checked]="taskData.status==='COMPLETED'"/>
+                        <div>
+                            <p class="profile-username mb-5 mt-0 text-12 mb-0">
+                                <strong> {{taskData.title}} </strong>
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 d-flex align-items-center justify-content-end">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="profile_image-wrapper activity-img mr-2">
+                            <ng-container *ngIf="!taskData.assignee.picture">
+                                <img src="/admin/assets/img/short_profile.png"
+                                     class="profile-user-img img-responsive img-circle" alt="User Image">
+                            </ng-container>
+                            <ng-container *ngIf="taskData.assignee.picture">
+                                <img [src]="getImageData(taskData.assignee._id)" alt="User profile picture"
+                                     class="profile-user-img img-responsive img-circle">
+                            </ng-container>
+                        </div>
+                        <div>
+                            <p class="profile-username mb-5 mt-0 text-12 mb-0">
+                                <strong> {{taskData.assignee.name || taskData.assignee.email }} </strong>
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <ng-container *ngIf="taskData.applicant?._id">
+                        <a class="font-weight-600 text-meteorite mb-0 c-pointer"
+                           [routerLink]="['/applicants',taskData.applicant?._id]">
+                            {{getName(taskData.applicant)}}
+                        </a>
+                    </ng-container>
+                </div>
+                <div class="col-sm-4 d-flex align-items-center justify-content-end edithover">
+                    <small class="font-75 font-weight-500 text-muted mr-2">{{taskData.targetDate | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</small>
+                    <i class="fa fa-pencil editApplcant editApplcant-custom" (click)="editTask(taskData)"></i>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12"><span
+                        class="text-12">  {{taskData.description}}  </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12"><span
+                        class="text-12"> <b> {{taskData.createdBy.name}} </b> Created task on                <ng-container
+                        *ngIf="taskData.createdOn">  <small
+                        class="font-75 font-weight-500 text-muted mr-2">{{taskData.createdOn | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</small> </ng-container></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
