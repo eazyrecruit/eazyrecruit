@@ -8,7 +8,7 @@ import {DataShareService} from '../../../../services/data-share.service';
 import {ConstService} from '../../../../services/const.service';
 import {JobComponent} from '../../../common/job/job.component';
 import {CreateReferredApplicantComponent} from '../create-referred-applicant/create.referred.applicant.component';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
 
 @Component({
     templateUrl: 'referred.applicant.job.component.html',

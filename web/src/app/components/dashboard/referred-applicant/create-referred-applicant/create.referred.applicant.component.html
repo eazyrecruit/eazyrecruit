@@ -6,45 +6,40 @@
 <div class="modal-body content-move">
     <form novalidate [formGroup]="applicantForm" (ngSubmit)="createApplicant(applicantForm.value)">
         <div class="row">
-            <div class="col-sm-4">
-                <label for="resume">Resume</label>
-                <input id="resume" type="file" class="form-control" formControlName="resume" #file
-                       (change)="onFileChange(file.files)" multiple="" accept=".doc, .docx, .pdf">
-                <small class="text-danger" *ngIf="errInvalidFile">
-                    {{errInvalidFile}}
-                </small>
-            </div>
-            <div class="col-sm-4">
-                <label for="dob">Date of Birth</label>
-                <input id="dob" type="text" class="form-control" placeholder="Select Your Date of Birth"
-                       formControlName="dob"
-                       bsDatepicker/>
-            </div>
-            <div class="form-group col-md-4">
-                <input type="hidden" placeholder="Source" class="form-control" formControlName="source">
-            </div>
-        </div>
-
-        <div class="row">
             <div class="form-group col-md-4">
                 <label for="fname" class="required">First Name</label>
-                <input id="fname" type="text" placeholder="First name" class="form-control" formControlName="firstName">
+                <input id="fname" type="text" placeholder="First name" class="form-control" formControlName="firstName" required>
+                <small class="text-danger"
+                       *ngIf="applicantForm.controls['firstName'].hasError('required') && applicantForm.controls['firstName'].touched">
+                    Please enter First Name
+                </small>
+                <small class="text-danger" *ngIf="applicantForm.controls['firstName'].hasError('nameValid')">
+                    Please enter correct first name
+                </small>
             </div>
             <div class="form-group col-md-4">
-                <label for="middleName" class="not-required">Middle Name</label>
-                <input id="middleName" type="text" placeholder="Middle name" class="form-control"
-                       formControlName="middleName">
+                <label for="mname" class="not-required">Middle Name</label>
+                <input id="mname" type="text" placeholder="Middle name" class="form-control" formControlName="middleName">
+                <small class="text-danger" *ngIf="applicantForm.controls['middleName'].hasError('nameValid')">
+                    Please enter correct middle name
+                </small>
             </div>
             <div class="form-group col-md-4">
                 <label for="lname" class="not-required">Last Name</label>
                 <input id="lname" type="text" placeholder="Last name" class="form-control" formControlName="lastName">
+                <small class="text-danger" *ngIf="applicantForm.controls['lastName'].hasError('nameValid')">
+                    Please enter correct last name
+                </small>
             </div>
         </div>
-
         <div class="row">
             <div class="form-group col-md-4">
                 <label for="email" class="required">Email Address</label>
                 <input id="email" type="text" placeholder="Email address" class="form-control" formControlName="email">
+                <small class="text-danger"
+                       *ngIf="applicantForm.controls['email'].hasError('required') && applicantForm.controls['email'].touched">
+                    Please enter Email
+                </small>
                 <small class="text-danger" *ngIf="applicantForm.controls['email'].hasError('emailValid')">
                     Please enter correct email
                 </small>
@@ -53,9 +48,6 @@
                 <label for="contact" class="not-required">Contact No.</label>
                 <input id="contact" type="text" placeholder="900000000" class="form-control" formControlName="phone">
             </div>
-        </div>
-
-        <div class="row">
             <div class="form-group col-md-4">
                 <label for="availability">Availability</label>
                 <select id="availability" class="form-control" formControlName="availability"
@@ -69,14 +61,69 @@
             </div>
         </div>
         <div class="row">
+            <div class="form-group col-md-4 taggingBox">
+                <label for="contact">Experience (Year)</label>
+                <input type="text" placeholder="Experience" class="form-control" formControlName="experience">
+                <small class="text-danger"
+                       *ngIf="applicantForm.controls['experience'].hasError('required') && applicantForm.controls['experience'].touched">
+                    Please enter Experience.
+                </small>
+                <small class="text-danger"
+                       *ngIf="applicantForm.controls['experience'].hasError('experienceValid') && applicantForm.controls['experience'].touched">
+                    Please enter correct Experience.
+                </small>
+            </div>
+            <div class="form-group col-md-4 taggingBox">
+                <label for="contact">Current CTC (P.A.)</label>
+                <input type="text" placeholder="Current CTC" class="form-control" formControlName="currentCtc">
+                <small class="text-danger"
+                       *ngIf="applicantForm.controls['currentCtc'].hasError('required') && applicantForm.controls['currentCtc'].touched">
+                    Please enter Current CTC.
+                </small>
+                <small class="text-danger"
+                       *ngIf="applicantForm.controls['currentCtc'].hasError('ctcValid') && applicantForm.controls['currentCtc'].touched">
+                    Please enter correct Current CTC.
+                </small>
+            </div>
+
+            <div class="form-group col-md-4 taggingBox">
+                <label for="contact">Expected CTC (P.A.)</label>
+                <input type="text" placeholder="Expected CTC" class="form-control" formControlName="expectedCtc">
+                <small class="text-danger"
+                       *ngIf="applicantForm.controls['expectedCtc'].hasError('required') && applicantForm.controls['expectedCtc'].touched">
+                    Please enter Expected CTC.
+                </small>
+                <small class="text-danger"
+                       *ngIf="applicantForm.controls['expectedCtc'].hasError('ctcValid') && applicantForm.controls['expectedCtc'].touched">
+                    Please enter correct Expected CTC.
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <label for="resume">Resume</label>
+                <input id="resume" type="file" class="form-control" formControlName="resume" #file
+                       (change)="onFileChange(file.files)" multiple="" accept=".doc, .docx, .pdf">
+                <small class="text-danger" *ngIf="errInvalidFile">
+                    {{errInvalidFile}}
+                </small>
+            </div>
+            <div class="form-group col-md-4">
+                <input type="hidden" placeholder="Source" class="form-control" formControlName="source">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+            <textarea rows="6" type="text" placeholder="Please enter Comment Here." id="txtDescriptionComment"
+                      class="form-control" formControlName="comment"></textarea>
+            </div>
+        </div>
+        <div class="row">
             <div class="form-group col-md-12">
-                <button [disabled]="isSubmitDisabled" type="submit"
+                <button type="submit"
                         class="btn btn-primary mt-10 mb-10 border-radius-30">Submit
-                    <span *ngIf="!isDetailsUploading">
+                    <span>
             <i class="fa fa-arrow-circle-right"></i>
-          </span>
-                    <span *ngIf="isDetailsUploading">
-            <i class="fa fa-spinner fa-spin"></i>
           </span>
                 </button>
             </div>
