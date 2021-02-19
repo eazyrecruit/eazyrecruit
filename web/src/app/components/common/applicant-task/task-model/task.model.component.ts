@@ -7,7 +7,7 @@ import {ApplicantTaskService} from '../applicant.task.service';
 import {ConstService} from '../../../../services/const.service';
 import {ConformComponent} from '../../conformBox/conform.component';
 import {AddTaskComponent} from '../add-task/add.task.component';
-import {AuthStorage} from '../../../../services/account.service';
+import {AccountService, AuthStorage} from '../../../../services/account.service';
 
 @Component({
     selector: 'app-task-model',
@@ -24,18 +24,17 @@ export class TaskModelComponent implements OnChanges, OnDestroy {
     private _subs: Subscription;
     @Output()
     onUpdate: EventEmitter<any> = new EventEmitter();
-    authStorage = new AuthStorage();
     authData;
 
     constructor(
         private route: ActivatedRoute,
         private constService: ConstService,
         private modalService: BsModalService,
+        private accountService: AccountService,
         private toasterService: ToasterService,
         private applicantActivityService: ApplicantTaskService
     ) {
-        this.authData = this.authStorage.getAuthData();
-        console.log(this.authData);
+        this.authData = this.accountService.getUserAuthData();
     }
 
     updateStatus(id, status) {
@@ -86,13 +85,11 @@ export class TaskModelComponent implements OnChanges, OnDestroy {
         });
     }
 
-
     getImageData(id) {
         return this.constService.publicUrl + '/api/user/profile/' + id + '?' + this.time;
     }
 
     ngOnChanges(): void {
-        console.log('this.t', this.taskData);
     }
 
     ngOnDestroy(): void {
