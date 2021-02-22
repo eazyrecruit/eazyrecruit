@@ -2,8 +2,8 @@ import {Component, OnInit, OnDestroy, Input, Output, EventEmitter, OnChanges} fr
 import {ApplicantService} from '../../../services/applicant.service';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ValidationService} from '../../../services/validation.service';
-import {ConstService} from "../../../services/const.service";
-import {Subscription} from "rxjs";
+import {ConstService} from '../../../services/const.service';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-comment',

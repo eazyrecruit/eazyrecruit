@@ -22,8 +22,7 @@ export class LeftSideComponent implements OnInit {
     constructor(private sharedService: SharedService,
                 private router: Router,
                 private constService: ConstService,
-                private accountService: AccountService,
-                private companyService: CompanyService) {
+                private accountService: AccountService) {
     }
 
     ngOnInit() {

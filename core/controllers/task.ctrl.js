@@ -22,6 +22,22 @@ router.put("/:id", async (req, res) => {
     }
 });
 
+router.get("/", async (req, res) => {
+    try {
+        let data = {
+            offset: req.query.offset || 0,
+            limit: req.query.limit || 100,
+            filter: req.query.filter,
+            status: req.query.status,
+            ownerId: req.user.id
+        };
+        let result = await TaskService.getTask(data);
+        responseService.successResponse(result, 'getTask', res);
+    } catch (error) {
+        responseService.errorResponse(error, 'getTask', res);
+    }
+});
+
 router.get("/:id", async (req, res) => {
     try {
         let data = {
@@ -29,10 +45,10 @@ router.get("/:id", async (req, res) => {
             limit: req.query.limit || 100,
             applicant: req.params.id
         };
-        let result = await TaskService.getTask(data);
-        responseService.successResponse(result, 'getTask', res);
+        let result = await TaskService.getApplicantTask(data);
+        responseService.successResponse(result, 'getApplicantTask', res);
     } catch (error) {
-        responseService.errorResponse(error, 'getTask', res);
+        responseService.errorResponse(error, 'getApplicantTask', res);
     }
 });
 router.delete("/:id", async (req, res) => {

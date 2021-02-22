@@ -11,54 +11,7 @@
 <ng-container *ngIf="!isLoading">
     <ng-container *ngIf="taskData.length >0">
         <div *ngFor="let data of taskData; let i=index;">
-            <div class="border pad-15-10 mb-10 bg-light border-radius-8 box-shadow">
-
-                <div class="d-flex align-items-center">
-
-                    <div class="w-100">
-                        <div class="row">
-
-                            <div class="col-sm-8">
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="profile_image-wrapper activity-img mr-2">
-                                        <ng-container *ngIf="!data.assignee.picture">
-                                            <img src="/admin/assets/img/short_profile.png"
-                                                 class="profile-user-img img-responsive img-circle" alt="User Image">
-                                        </ng-container>
-                                        <ng-container *ngIf="data.assignee.picture">
-                                            <img [src]="getImageData(data.assignee._id)" alt="User profile picture"
-                                                 class="profile-user-img img-responsive img-circle">
-                                        </ng-container>
-                                    </div>
-
-                                    <div>
-                                        <p class="profile-username mb-5 mt-0 text-12 mb-0">
-                                            <strong> {{data.assignee.name || data.assignee.email }} </strong>
-                                        </p>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-4 d-flex align-items-center justify-content-end edithover">
-                                <small class="font-75 font-weight-500 text-muted mr-2">{{data.targetDate | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</small>
-                                <i class="fa fa-pencil editApplcant editApplcant-custom" (click)="editTask(data)"></i>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <input class="custom-checkbox mx-4-auto" (change)="changeStatus(data._id, data.status)"
-                                       type="checkbox"
-                                       [checked]="data.status==='COMPLETED'"/> <span
-                                    class="text-12">  {{data.description}}  </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div>
+            <app-task-model  [index]="i"  [taskData]="data"></app-task-model>
         </div>
     </ng-container>
     <ng-container *ngIf="taskData.length <=0">

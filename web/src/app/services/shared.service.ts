@@ -80,6 +80,13 @@ export class SharedService {
         };
     }
 
+    getStatusColor() {
+        return {
+            'COMPLETED': 'bg-green-light',
+            'ACTIVE': 'bg-yellow-light'
+        };
+    }
+
     getLoggedInUsername() {
         const username = JSON.parse(localStorage.getItem('auth_data'));
         return username['data'].displayName;

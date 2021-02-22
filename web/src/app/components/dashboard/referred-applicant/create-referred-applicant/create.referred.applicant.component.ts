@@ -1,18 +1,15 @@
 import {Component, OnInit, OnDestroy, Input} from '@angular/core';
-import {FormGroup, FormBuilder} from '@angular/forms';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ValidationService} from '../../../../services/validation.service';
-import {SkillsService} from '../../../../services/skills.service';
-import {LocationService} from '../../../../services/location.service';
-import {SearchService} from '../../../../services/search.service';
 import {Subject, Subscription} from 'rxjs';
 import {BsModalRef} from 'ngx-bootstrap';
 import {ApplicantService} from '../../../../services/applicant.service';
-import {AccountService} from '../../../../services/account.service';
+import {ToasterService} from 'angular2-toaster';
 
 @Component({
     selector: 'app-create-referred-applicant',
     templateUrl: 'create.referred.applicant.component.html',
-    providers: [ValidationService, SkillsService, SearchService, LocationService, ApplicantService]
+    providers: [ValidationService, ApplicantService]
 })
 export class CreateReferredApplicantComponent implements OnInit, OnDestroy {
 
@@ -27,10 +24,9 @@ export class CreateReferredApplicantComponent implements OnInit, OnDestroy {
 
     constructor(
         private bsModelRef: BsModalRef,
-        private accountService: AccountService,
         private fbForm: FormBuilder,
         private validationService: ValidationService,
-        private skillService: SkillsService,
+        private toasterService: ToasterService,
         private applicantService: ApplicantService) {
         this.populate();
     }
@@ -42,18 +38,20 @@ export class CreateReferredApplicantComponent implements OnInit, OnDestroy {
 
     populate() {
         this.applicantForm = this.fbForm.group({
-            firstName: [null],
-            middleName: [null, []],
-            lastName: [null, []],
-            email: [null, ''],
-            phone: [null, []],
+            firstName: [null, [<any>Validators.required], this.validationService.nameValid],
+            middleName: [null, [], this.validationService.nameValid],
+            lastName: [null, [], this.validationService.nameValid],
+            email: [null, [<any>Validators.required], this.validationService.emailValid],
+            phone: [null],
             availability: [null],
+            resume: [null],
             noticePeriod: [null],
             noticePeriodNegotiable: [null],
-            resume: [null],
-            dob: [null],
-            source: ['upload']
-
+            comment: [null],
+            source: ['upload'],
+            experience: [null],
+            currentCtc: [null],
+            expectedCtc: [null]
         });
 
     }
@@ -87,7 +85,10 @@ export class CreateReferredApplicantComponent implements OnInit, OnDestroy {
             this.errInvalidFile = 'Resume is required';
             return;
         }
-
+        if (!this.applicantForm.valid) {
+            this.validationService.validateAllFormFields(this.applicantForm);
+            return;
+        }
         const formData = new FormData();
         for (const key in applicantForm) {
             if (applicantForm[key] !== null) {
@@ -99,11 +100,16 @@ export class CreateReferredApplicantComponent implements OnInit, OnDestroy {
             formData.append('jobId', this.jobId);
         }
 
-        this._subs = this.applicantService.resume(formData).subscribe(result => {
+        this._subs = this.applicantService.uploadReferred(formData).subscribe(result => {
             if (result && result['success']) {
                 this.closePopup.next(result['success']);
-                this.bsModelRef.hide();
+            } else if (result && result['error']) {
+                this.toasterService.pop('error', 'Referer Applicant', result['error'].message);
             }
+            this.bsModelRef.hide();
+        }, (error) => {
+            this.bsModelRef.hide();
+            console.log('errrr', error);
         });
     }
 

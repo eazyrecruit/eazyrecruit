@@ -11,11 +11,11 @@
                    required>
             <small class="text-danger"
                    *ngIf="addTaskForm.controls['title'].hasError('required') && addTaskForm.controls['title'].touched">
-                Please enter Title
+                Please enter title
             </small>
         </div>
         <div class="col-sm-6 mt-10">
-            <label for="targetDate">TargetDate</label>
+            <label for="targetDate">Target Date</label>
             <div class="datepicker-box">
                 <input type="text" id="targetDate" [bsConfig]='bsConfig' formControlName="targetDate"
                        class="form-control datepicker-date" placeholder="Datepicker" bsDatepicker></div>
@@ -29,7 +29,7 @@
             </select>
             <small class="text-danger"
                    *ngIf="addTaskForm.controls['assignee'].hasError('required') && (addTaskForm.controls['assignee'].touched || submit)">
-                Please select an Assignee
+                Please select an assignee
             </small>
         </div>
         <div class="col-sm-12 mt-10">
@@ -38,7 +38,7 @@
                       class="form-control"></textarea>
             <small class="text-danger"
                    *ngIf="addTaskForm.controls['description'].hasError('required') && addTaskForm.controls['description'].touched">
-                Please enter Description.
+                Please enter description.
             </small>
         </div>
         <br>

@@ -1,4 +1,3 @@
-
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TagInputModule} from 'ngx-chips';
@@ -31,6 +30,8 @@ import {RouterModule} from '@angular/router';
 import {BsDatepickerModule, ModalModule, RatingModule, TimepickerModule} from 'ngx-bootstrap';
 import {SanitizeHtmlPipe} from '../../pipe/callback.pipe';
 import {CommonModule} from '@angular/common';
+import {ConformComponent} from "./conformBox/conform.component";
+import {TaskModelComponent} from "./applicant-task/task-model/task.model.component";
 
 @NgModule({
     declarations: [
@@ -54,8 +55,10 @@ import {CommonModule} from '@angular/common';
         DatatableComponent,
         ResumeComponent,
         UserCardComponent,
+        ConformComponent,
         ApplicantCardComponent,
-        SanitizeHtmlPipe
+        SanitizeHtmlPipe,
+        TaskModelComponent
     ],
     imports: [
         FormsModule,
@@ -75,6 +78,7 @@ import {CommonModule} from '@angular/common';
     ],
     exports: [
         SanitizeHtmlPipe,
+        ConformComponent,
         SchedulerComponent,
         ApplicantInfoComponent,
         UploadResumeComponent,
@@ -94,9 +98,11 @@ import {CommonModule} from '@angular/common';
         DatatableComponent,
         ResumeComponent,
         UserCardComponent,
-        ApplicantCardComponent
+        ApplicantCardComponent,
+        TaskModelComponent
     ],
     entryComponents: [
+        ConformComponent,
         SchedulerComponent,
         UploadResumeComponent,
         AddTaskComponent,

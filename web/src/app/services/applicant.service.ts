@@ -34,6 +34,12 @@ export class ApplicantService {
         return this.http.post(this.constService.baseUrl + 'applicant/resume/', data, {headers: headers});
     }
 
+    uploadReferred(data) {
+        const headers = new HttpHeaders();
+        headers.set('Content-Type', 'multipart/form-data');
+        return this.http.post(this.constService.baseUrl + 'referred/', data, {headers: headers});
+    }
+
     // save (resume)  {
     //     const headers = new HttpHeaders();
     //     headers.set('Content-Type', 'multipart/form-data');
