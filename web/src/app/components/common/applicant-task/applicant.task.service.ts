@@ -18,6 +18,14 @@ export class ApplicantTaskService {
         return this.http.get(`${this.constService.baseUrl}task/${applicantId}`);
     }
 
+    getAllTask(filter) {
+        let url = `${this.constService.baseUrl}task?offset=${filter.offset}&limit=${filter.pageSize}&status=${filter.status}&filter=${filter.filter}`;
+        if (filter.searchText) {
+            url = `${url}&search=${filter.searchText}`;
+        }
+        return this.http.get(url);
+    }
+
     deleteTask(id) {
         return this.http.delete(`${this.constService.baseUrl}task/${id}`);
     }

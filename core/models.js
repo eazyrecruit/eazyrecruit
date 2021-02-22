@@ -87,32 +87,32 @@ module.exports.initialize = async () => {
     var dbJobs = await Job.find();
     if (dbJobs.length <= 0) {
         let job = new Job();
-        job.title = "TestJob"
-        job.active = true
-        job.is_published = true
-        job.type = "Full-Time"
-        job.minExperience = 2
-        job.maxExperience = 3
-        job.ctc = 4
-        job.metaTitle = "Python"
-        job.created_at = new Date()
-        console.log('*** Test Job Creation***')
+        job.title = "TestJob";
+        job.active = true;
+        job.is_published = true;
+        job.type = "Full-Time";
+        job.minExperience = 2;
+        job.maxExperience = 3;
+        job.ctc = 4;
+        job.metaTitle = "Python";
+        job.created_at = new Date();
+        console.log('*** Test Job Creation***');
         await job.save();
     }
 
     var dbapplicants = await Applicant.find();
     if (dbapplicants.length <= 0) {
         let applicant = new Applicant();
-        applicant.firstName = "Test"
-        applicant.lastName = "Applicant"
-        applicant.created_at = new Date()
+        applicant.firstName = "Test";
+        applicant.lastName = "Applicant";
+        applicant.created_at = new Date();
         console.log('*** Test Applicant Creation ***');
         await applicant.save();
     }
 
     esService.syncApplicants();
     esService.syncJobs();
-    console.log("Done")
+    console.log("Done");
 
-    return "Done"
+    return "Done";
 }

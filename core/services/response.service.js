@@ -42,6 +42,11 @@ module.exports.errorResponse = (err, logType, res) => {
             }
         });
     } else {
-        console.log('error data and error status is required');
+        console.log(err);
+        res.status(400).json({
+            error: {
+                message: err.message || err
+            }
+        });
     }
 };

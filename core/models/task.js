@@ -18,11 +18,11 @@ var taskSchema = new Schema({
     isDeleted: {type: Boolean, default: false},
     createdBy: {
         type: Schema.Types.ObjectId,
-        ref: 'users'
+        ref: 'Users'
     },
     modifiedBy: {
         type: Schema.Types.ObjectId,
-        ref: 'users'
+        ref: 'Users'
     },
     modifiedOn: {type: Date, default: Date.now},
     createdOn: {type: Date, default: Date.now}

@@ -65,18 +65,6 @@ var jobSchema = new Schema({
     usePushEach: true,
     strict: false
 });
-jobSchema.pre('save', function (next) {
-    this.modified_at = new Date;
-    return next();
-});
-jobSchema.pre('updateOne', function (next) {
-    this.modified_at = new Date;
-    return next();
-});
-jobSchema.pre('update', function (next) {
-    this.modified_at = new Date;
-    return next();
-});
 jobSchema.plugin(mexp, {
     hosts: [
         config.elasticSearch.host

@@ -10,8 +10,9 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {CreateApplicantComponent} from '../../common/create-applicant/create-applicant.component';
 import {UploadResumeComponent} from '../../common/upload-resume/upload-resume.component';
 import {SharedService} from '../../../services/shared.service';
-import {CreateReferredApplicantComponent} from "./create-referred-applicant/create.referred.applicant.component";
+import {CreateReferredApplicantComponent} from './create-referred-applicant/create.referred.applicant.component';
 import {Subscription} from 'rxjs';
+import {AccountService} from '../../../services/account.service';
 
 declare var SiteJS: any;
 
@@ -25,6 +26,7 @@ export class ReferredApplicantComponent implements OnInit, OnDestroy {
         pageIndex: 1, pageSize: 10, offset: 0, sortBy: 'modified_at',
         order: -1, searchText: '',
     };
+    title = 'Referred Applicant';
     totalRecords = 1;
     gettingApplicant = false;
     searchText = '';
@@ -48,8 +50,12 @@ export class ReferredApplicantComponent implements OnInit, OnDestroy {
                 private applicantService: ApplicantService,
                 private sharedService: SharedService,
                 private applicantDataService: ApplicantDataService,
-                private modalService: BsModalService) {
+                private modalService: BsModalService, private accountService: AccountService,) {
+        const role = this.accountService.getRole();
+        if (role === 'vendor') {
+            this.title = 'Candidates';
 
+        }
         this.activateRoute.params.subscribe((params) => {
             this.jobId = params.jobId ? params.jobId : null;
             this.pipeId = params.pipelineId ? params.pipelineId : null;
@@ -93,7 +99,7 @@ export class ReferredApplicantComponent implements OnInit, OnDestroy {
     }
 
     getJobsName(jobId) {
-        this._subs =  this._subs = this.jobService.getJobsName(jobId).subscribe(result => {
+        this._subs = this._subs = this.jobService.getJobsName(jobId).subscribe(result => {
             if (result['success'] && result['success']['data'] && result['success']['data'].length) {
                 this.job = result['success']['data'][0];
             }
@@ -146,7 +152,7 @@ export class ReferredApplicantComponent implements OnInit, OnDestroy {
     }
 
     addApplicantToJob(applicantId: any) {
-        this._subs =  this._subs = this.jobService.addJobApplicant({
+        this._subs = this._subs = this.jobService.addJobApplicant({
             jobId: this.jobId,
             pipelineId: this.pipeId,
             applicantId: applicantId

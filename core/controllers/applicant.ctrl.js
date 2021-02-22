@@ -44,7 +44,7 @@ router.get("/search", async (req, res) => {
             offset: req.query.offset || 0,
             limit: req.query.limit || 20,
             source: req.query.source || null,
-            sortBy: req.query.sortBy || "modified_at",
+            sortBy: req.query.sortBy || "created_at",
             order: req.query.order || -1,
             search: req.query.search || null
         };

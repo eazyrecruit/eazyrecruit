@@ -93,7 +93,7 @@ export class CreateApplicantComponent implements OnInit, OnDestroy {
                 lastName: [applicant.lastName, [], this.validationService.nameValid],
                 email: [applicant.email, [<any>Validators.required], this.validationService.emailValid],
                 phone: [applicant.phones.toString(), [], this.validationService.mobileValid],
-                referredBy: [applicant.referredBy || '', [<any>Validators.required], this.validationService.emailValid],
+                referredBy: [applicant.referredBy || '', [], this.validationService.emailValid],
                 noticePeriod: [applicant.noticePeriod],
                 noticePeriodNegotiable: [applicant.noticePeriodNegotiable],
                 skills: [applicant.skills, []],
@@ -118,7 +118,7 @@ export class CreateApplicantComponent implements OnInit, OnDestroy {
                 lastName: [null, [], this.validationService.nameValid],
                 email: [null, [<any>Validators.required], this.validationService.emailValid],
                 phone: [null, [], this.validationService.mobileValid],
-                referredBy: [null, [<any>Validators.required], this.validationService.emailValid],
+                referredBy: [null, [], this.validationService.emailValid],
                 noticePeriod: [null],
                 noticePeriodNegotiable: [null],
                 skills: [null, []],
@@ -240,7 +240,7 @@ export class CreateApplicantComponent implements OnInit, OnDestroy {
                 formData.append('jobId', this.jobId);
             }
 
-             this._subs = this.applicantService.resume(formData).subscribe(result => {
+            this._subs = this.applicantService.resume(formData).subscribe(result => {
                 if (result && result['success']) {
                     this.closePopup.next(result['success']);
                     this.bsModelRef.hide();

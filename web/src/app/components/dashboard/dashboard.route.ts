@@ -67,6 +67,18 @@ const dashboardRoutes: Routes = [
                 canActivate: [AuthGuard]
             },
             {
+                path: 'tasks',
+                children:
+                    [
+                        {
+                            path: '',
+                            loadChildren: () =>
+                                import('./task/task.module').then(m => m.TaskModule)
+                        },
+                    ],
+                canActivate: [AuthGuard]
+            },
+            {
                 path: 'settings', children:
                     [
                         {

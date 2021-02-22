@@ -1,0 +1,70 @@
+<div class="border pad-15-10 mb-10 bg-light border-radius-8 box-shadow">
+    <div class="d-flex align-items-center">
+        <div class="w-100">
+            <div class="row">
+                <div [ngClass]="(taskData.applicant?._id)?'col-lg-10':'col-lg-8'">
+
+
+                    <div class="d-flex align-items-center mb-3">
+                        <input class="custom-checkbox mr-2" (change)="updateStatus(taskData._id, taskData.status)"
+                               type="checkbox"
+                               [checked]="taskData.status==='COMPLETED'"/>
+                        <div>
+                            <p class="profile-username mb-5 mt-0 text-12 mb-0">
+                                <strong> {{taskData.title}} </strong>
+                            </p>
+                            <ng-container *ngIf="taskData.applicant?._id">
+                                <a class="font-weight-600 text-meteorite mb-0 c-pointer text-12"
+                                   [routerLink]="['/applicants',taskData.applicant?._id]">
+                                    {{getName(taskData.applicant)}}
+                                </a>
+                            </ng-container>
+
+                        </div>
+                    </div>
+                    <span class="text-12 discriptionbox"> <strong> {{taskData.description}} </strong></span>
+                </div>
+
+                <div [ngClass]="(taskData.applicant?._id)?'col-lg-2':'col-lg-4'" class="d-flex  flex-column">
+                    <div class="d-flex align-items-center">
+
+                        <div class="mr-2">
+                            <ng-container *ngIf="!taskData.assignee.picture">
+                                <img src="/admin/assets/img/short_profile.png"
+                                     class="profile-user-img img-responsive img-circle max-25" alt="User Image">
+                            </ng-container>
+                            <ng-container *ngIf="taskData.assignee.picture">
+                                <img [src]="getImageData(taskData.assignee._id)" alt="User profile picture"
+                                     class="profile-user-img img-responsive img-circle max-25">
+                            </ng-container>
+                        </div>
+
+                        <p class="profile-username mb-5 mt-0 text-12 mb-0">
+                            <strong class="d-block"> {{taskData.assignee.name || taskData.assignee.email }} </strong>
+                            <small class="font-75 font-weight-500 text-muted mr-2">{{taskData.targetDate | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</small>
+                            <ng-container *ngIf="authData.id ===taskData.createdBy._id">
+                                <i class="fa fa-pencil editApplcant"
+                                   (click)="editTask(taskData)"></i>
+                            </ng-container>
+
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="row">
+                <div class="col-sm-12"><span
+                        class="text-12"> <b> {{taskData.createdBy.name}} </b> Created task on                <ng-container
+                        *ngIf="taskData.createdOn">  <small
+                        class="font-75 font-weight-500 text-muted mr-2">{{taskData.createdOn | amDateFormat:'DD/MM/YYYY, hh:mmA'}}</small> </ng-container></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

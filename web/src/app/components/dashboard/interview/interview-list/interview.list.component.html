@@ -75,7 +75,7 @@
                                 {{interview.start | amDateFormat:'DD/MM/YYYY, hh:mmA'}}
                                 <p *ngIf="interview.channel" class="font-weight-500 text-11 mb-0 line-height-20">
                                     Channel: {{interview.channel}}</p>
-                                <ng-container *ngIf="filter.type!=='CANCEL'">
+                                <ng-container *ngIf="filter.type==='PENDING'">
                                     <ng-container *ngIf="interview.channel==='GoLiveMeet'">
                                         <p class="font-weight-500 text-11 mb-0 line-height-20">
                                             <button class="btn btn-primary btn-xs" (click)="startInterview(interview)">

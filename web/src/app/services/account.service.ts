@@ -67,6 +67,15 @@ export class AccountService {
         }
     }
 
+    getUserAuthData() {
+        const payload = this.helper.decodeToken(this.authStorage.getAuthData().data.token);
+        if (payload) {
+            return payload;
+        } else {
+            return null;
+        }
+    }
+
     getToken() {
         return this.authStorage.getAuthData().data.token;
     }

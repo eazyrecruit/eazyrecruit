@@ -1,0 +1,64 @@
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header">
+            <i class="fa fa-inbox"></i>
+            <h3 class="box-title"> Task</h3>
+            <div class="pull-right box-tools">
+                <div class="btn-group form-group" role="group" aria-label="Basic example">
+                    <div class="btn-group">
+                        <button type="button" style="margin-right: 10px" class="btn btn-warning btn-xs"
+                                (click)="onStatusFilterChange('ACTIVE')"> Active
+                        </button>
+                        <button type="button" style="margin-right: 10px" class="btn btn-success btn-xs"
+                                (click)="onStatusFilterChange('COMPLETED')">Completed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="database" class="main-content padding-20px-tb plr-15">
+            <div class="row">
+<!--                <div class='col-lg-4 mb-3'>
+                    <div class="form-group">
+                        <input [(ngModel)]="searchText" (keyup)="onSearch()" type="text" class="form-control"
+                               placeholder="Search Applicant">
+                    </div>
+                </div>-->
+                <div class="col-lg-2 mb-3">
+                    <select (change)="onSourceFilterChange($event.target.value)"
+                            class="form-control ng-pristine ng-valid ng-touched">
+                        <option [value]="">Filter By</option>
+                        <option *ngFor="let filters of filterType"
+                                [selected]="filters.value===filter.filter"
+                                [value]="filters.value">{{filters.displayName}}</option>
+                    </select>
+                </div>
+            </div>
+            <ng-container *ngIf="gettingTask">
+                <i *ngIf="gettingTask" class="fa fa-spinner fa-spin"></i>
+            </ng-container>
+            <ng-container *ngIf="!gettingTask">
+                <data-table [showViewField]='false' pageSize='10' sortField='name' sortOrder='1'
+                            [showSearchFeild]='false'
+                            [totalItems]='totalRecords' (onFilterChange)="onFilterChange($event)">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <ng-container *ngIf="TaskList.length<=0">
+                                    <p class="text-muted">No Task available to show</p>
+                                </ng-container>
+                                <ng-container *ngIf="TaskList.length>0">
+                                    <div *ngFor="let task of TaskList; let i = index;">
+                                        <app-task-model [index]="i" (onUpdate)="onUpdate($event)"
+                                                        [taskData]="task"></app-task-model>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </data-table>
+            </ng-container>
+        </div>
+    </div>
+</section>
+

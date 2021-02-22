@@ -43,30 +43,6 @@ export class ApplicantTaskComponent implements OnChanges, OnDestroy {
         });
     }
 
-    editTask(data) {
-        this.modalRef = this.modalService.show(AddTaskComponent, {
-            class: 'modal-md',
-            initialState: {
-                applicant: this.applicantId, isEdit: true,
-                taskData: {
-                    id: data._id,
-                    assignee: data.assignee._id,
-                    title: data.title,
-                    description: data.description,
-                    applicant: data.applicant,
-                    targetDate: data.targetDate
-
-                }
-            }
-        });
-        this.modalRef.content.closePopup.subscribe(result => {
-            if (result) {
-                this.toasterService.pop('success', 'Task Updated', 'Task Created successfully');
-                this.getTask();
-            }
-        });
-    }
-
     getTask() {
         this.time = new Date().getTime();
         this.isLoading = true;
@@ -80,12 +56,7 @@ export class ApplicantTaskComponent implements OnChanges, OnDestroy {
         });
     }
 
-    changeStatus(id, status) {
-        this._subs = this.applicantActivityService.updateTask(id, {status: status === 'ACTIVE' ? 'COMPLETED' : 'ACTIVE'}).subscribe(result => {
-            if (result['success']) {
-                this.getTask();
-            }
-        });
+    onUpdate(data) {
     }
 
 

@@ -46,6 +46,7 @@ exports.save = async (req, enableEmail) => {
                     modelApplicant = new Applicants();
                     modelApplicant.created_by = req.user.id;
                     modelApplicant.created_at = new Date();
+                    modelApplicant.modified_at = new Date();
                 }
                 modelApplicant.email = email;
                 modelApplicant.phones = modelApplicant.phone ? modelApplicant.phone : req.body.phone ? req.body.phone : [];
@@ -273,15 +274,15 @@ exports.save = async (req, enableEmail) => {
                 } else {
                     console.log('job id is missing : ', req.body.jobId)
                 }
-
+                var candidate = {
+                    id: modelApplicant._id, name: req.body.name, email: email,
+                    phone: req.body.phone, source: modelApplicant.source
+                };
                 // Update HR and candidate
                 if (enableEmail && modelApplicant.source && (modelApplicant.source === 'email' || modelApplicant.source === 'website')) {
-                    var candidate = {
-                        id: modelApplicant._id, name: req.body.name, email: email,
-                        phone: req.body.phone, source: modelApplicant.source
-                    };
                     notifyHR(candidate);
-                    //await notifyCandidate(candidate);
+                } else if (enableEmail && !(modelApplicant.source === 'email' || modelApplicant.source === 'website')) {
+                    notifyHRForNewRefered(candidate, modelApplicant.referredBy);
                 }
 
                 try {
@@ -548,6 +549,50 @@ function notifyHR(candidate) {
                     if (err) reject(err);
                     else resolve(data);
                 });
+            }
+        }
+
+
+    });
+}
+
+function notifyHRForNewRefered(candidate, owner) {
+    return new Promise(async (resolve, reject) => {
+        // Get all HR (role = 2
+
+        let hrRole = await Role.findOne({name: "hr"});
+        if (hrRole) {
+            var hrTeam = await User.find({is_deleted: false, roles: {$elemMatch: {$eq: hrRole}}});
+            if (hrTeam && hrTeam.length > 0) {
+                // Get list of hr emails
+                var hrEmails = "";
+                hrTeam.forEach(hr => {
+                    if (owner !== hr.email) {
+                        hrEmails = hrEmails + hr.email + ","
+                    }
+                });
+
+                var body = `
+                <p>Dear HR,</p>
+                <p>A new candidate is uploaded by ${owner} </p>
+                <p> <b>Candidate Name:</b>  ${candidate.name}<br>
+               <b> Email:</b> ${candidate.email}<br>
+               <b> Phone:</b> ${candidate.phone}<br>
+                <p>Please click on below link to view details<p>
+                <p>${config.website}/admin/applicants/${candidate.id}</p>
+            `;
+                var email = {
+                    toEmail: hrEmails, // list of receivers
+                    subject: "New candidate received", // Subject line
+                    body: body,
+                    title: "Resume received"
+                };
+                if (hrEmails) {
+                    emailService.sendEmail(email, (err, data) => {
+                        if (err) reject(err);
+                        else resolve(data);
+                    });
+                }
             }
         }
 
